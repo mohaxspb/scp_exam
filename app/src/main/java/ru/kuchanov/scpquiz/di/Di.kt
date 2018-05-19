@@ -1,4 +1,12 @@
 package ru.kuchanov.scpquiz.di
 
-const val SCOPE_APP = "SCOPE_APP"
+class Di {
+
+    class Scope {
+
+        companion object {
+            const val APP = "APP"
+        }
+    }
+}
 
