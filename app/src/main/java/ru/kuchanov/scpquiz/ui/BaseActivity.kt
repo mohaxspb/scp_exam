@@ -2,32 +2,42 @@ package ru.kuchanov.scpquiz.ui
 
 import android.os.Bundle
 import android.support.annotation.LayoutRes
+import android.view.LayoutInflater
 import android.widget.Toast
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.MvpPresenter
 import com.arellomobile.mvp.MvpView
-import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.mvp.BaseView
 import toothpick.Scope
 import toothpick.Toothpick
+import toothpick.config.Module
+import toothpick.smoothie.module.SmoothieActivityModule
 import javax.inject.Inject
-import javax.inject.Provider
 
 abstract class BaseActivity<V : MvpView, P : MvpPresenter<V>> : MvpAppCompatActivity(), BaseView {
 
-    abstract var scopes: Array<String>
+    abstract val scopes: Array<String>
 
-    private val scope: Scope by lazy { Toothpick.openScopes(*scopes) }
+    abstract val modules: Array<out Module>
+
+    @Inject
+    lateinit var myLayoutInflater: LayoutInflater
+
+    /**
+     * your activity scope, which constructs from [scopes]
+     *
+     * and contains installed [modules]
+     */
+    val scope: Scope by lazy {
+        val _scope = Toothpick.openScopes(*scopes)
+        _scope.installModules(SmoothieActivityModule(this), *modules)
+        _scope
+    }
 
     /**
      * add @InjectPresenter annotation in realization
      */
     abstract var presenter: P
-
-    /**
-     * provides single instance of concrete presenter in realization
-     */
-    abstract var presenterProvider: P
 
     /**
      * add @ProvidePresenter annotation in realization
@@ -39,7 +49,7 @@ abstract class BaseActivity<V : MvpView, P : MvpPresenter<V>> : MvpAppCompatActi
     abstract fun getLayoutResId(): Int
 
     /**
-     * call Toothpick#inject in concrete realization here
+     * call [Toothpick].inject(YorActivityClass.this, [scope]) in concrete realization here
      */
     abstract fun inject()
 
