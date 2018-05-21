@@ -1,0 +1,182 @@
+[
+  {
+    "id": 2,
+    "scpNumber": "173",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-173/scp-173_th.jpg",
+    "quizTranslations": [
+      {
+        "id": 3,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "The Sculpture",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-05-20T14:57:40.698+0000",
+        "updated": "2018-05-20T14:57:40.706+0000"
+      },
+      {
+        "id": 2,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Скульптура",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-05-20T14:55:39.154+0000",
+        "updated": "2018-05-20T14:55:39.205+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-05-20T14:55:04.668+0000",
+    "updated": "2018-05-20T14:57:40.704+0000"
+  },
+  {
+    "id": 3,
+    "scpNumber": "087",
+    "imageUrl": "http://scpfoundation.org/087/rf.php",
+    "quizTranslations": [
+      {
+        "id": 5,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "The Stairwell",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-05-20T15:02:47.844+0000",
+        "updated": "2018-05-20T15:02:47.848+0000"
+      },
+      {
+        "id": 4,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Лестница",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-05-20T15:02:00.609+0000",
+        "updated": "2018-05-20T15:02:00.614+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-05-20T15:01:37.221+0000",
+    "updated": "2018-05-20T15:02:47.847+0000"
+  },
+  {
+    "id": 4,
+    "scpNumber": "682",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-682/monster8editub9.jpg",
+    "quizTranslations": [
+      {
+        "id": 6,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Неуязвимая рептилия",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-05-20T15:12:19.887+0000",
+        "updated": "2018-05-20T15:12:19.894+0000"
+      },
+      {
+        "id": 7,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Hard-to-Destroy Reptile",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-05-20T15:14:07.699+0000",
+        "updated": "2018-05-20T15:14:07.704+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-05-20T15:11:45.720+0000",
+    "updated": "2018-05-20T15:14:07.702+0000"
+  },
+  {
+    "id": 5,
+    "scpNumber": "106",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-106/scp-106-1_th.jpg",
+    "quizTranslations": [
+      {
+        "id": 8,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Старик",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-05-20T15:16:30.162+0000",
+        "updated": "2018-05-20T15:16:30.165+0000"
+      },
+      {
+        "id": 9,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "The Old Man",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-05-20T15:17:03.710+0000",
+        "updated": "2018-05-20T15:17:03.715+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-05-20T15:16:11.115+0000",
+    "updated": "2018-05-20T15:17:03.713+0000"
+  },
+  {
+    "id": 6,
+    "scpNumber": "914",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-914/914.jpg",
+    "quizTranslations": [
+      {
+        "id": 11,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "The Clockworks",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-05-20T15:19:41.336+0000",
+        "updated": "2018-05-20T15:19:41.341+0000"
+      },
+      {
+        "id": 10,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Часовой механизм",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-05-20T15:19:12.897+0000",
+        "updated": "2018-05-20T15:19:12.901+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-05-20T15:18:55.176+0000",
+    "updated": "2018-05-20T15:19:41.340+0000"
+  }
+]
