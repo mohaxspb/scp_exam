@@ -21,6 +21,12 @@ android {
         versionCode buildVersionCode()
         versionName version
         multiDexEnabled true
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas".toString())
+            }
+        }
     }
     buildTypes {
         release {
