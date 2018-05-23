@@ -2,7 +2,7 @@ package ru.kuchanov.scpquiz.model.db
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import java.sql.Timestamp
+import java.util.*
 
 @Entity
 data class QuizTranslation(
@@ -18,6 +18,6 @@ data class QuizTranslation(
     val authorId: Long,
     val approverId: Long?,
     //dates
-    val created: Timestamp,
-    val updated: Timestamp
+    val created: Date,
+    val updated: Date
 )

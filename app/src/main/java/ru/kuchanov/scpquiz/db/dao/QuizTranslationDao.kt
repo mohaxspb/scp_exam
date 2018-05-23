@@ -19,11 +19,11 @@ interface QuizTranslationDao {
     fun getByIdOrErrorOnce(id: Long): Single<QuizTranslation>
 
     @Insert
-    fun insert(quiz: QuizTranslation): Single<Long>
+    fun insert(quiz: QuizTranslation): Long
 
     @Update
-    fun update(quiz: QuizTranslation): Single<Long>
+    fun update(quiz: QuizTranslation): Int
 
     @Delete
-    fun delete(quiz: QuizTranslation): Single<Long>
+    fun delete(quiz: QuizTranslation): Int
 }

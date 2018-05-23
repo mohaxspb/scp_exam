@@ -2,7 +2,7 @@ package ru.kuchanov.scpquiz.model.api
 
 import android.arch.persistence.room.PrimaryKey
 import com.squareup.moshi.JsonClass
-import java.sql.Timestamp
+import java.util.*
 
 @JsonClass(generateAdapter = true)
 data class NwQuizTranslation(
@@ -17,6 +17,6 @@ data class NwQuizTranslation(
     val authorId: Long,
     val approverId: Long?,
     //dates
-    val created: Timestamp,
-    val updated: Timestamp
+    val created: Date,
+    val updated: Date
 )

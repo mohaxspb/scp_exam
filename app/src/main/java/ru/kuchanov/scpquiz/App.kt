@@ -2,6 +2,7 @@ package ru.kuchanov.scpquiz
 
 import android.support.multidex.MultiDexApplication
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.AppModule
 import ru.kuchanov.scpquiz.model.api.NwQuiz
@@ -24,8 +25,11 @@ class App : MultiDexApplication() {
         initDi()
 
         val json = StorageUtils.readFromAssets(this, "baseData.json")
-        val quizes = moshi.adapter(NwQuiz::class.java).fromJson(json)
-        Timber.d("quizes: $quizes")
+//        Timber.d("json: $json")
+        val type = Types.newParameterizedType(List::class.java, NwQuiz::class.java)
+        val adapter = moshi.adapter<List<NwQuiz>>(type)
+        val quizes = adapter.fromJson(json)
+//        Timber.d("quizes: $quizes")
     }
 
     private fun initTimber() {
@@ -39,6 +43,8 @@ class App : MultiDexApplication() {
                     SmoothieApplicationModule(this),
                     AppModule(this)
                 )
+
+        Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
 
         if (BuildConfig.DEBUG) {
             Toothpick.setConfiguration(Configuration.forDevelopment());
