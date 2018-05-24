@@ -25,6 +25,16 @@ data class Quiz(
     var quizTranslations: List<QuizTranslation>? = null
 
     override fun toString(): String {
-        return "Quiz(id=$id, scpNumber='$scpNumber', imageUrl='$imageUrl', authorId=$authorId, approved=$approved, approverId=$approverId, created=$created, updated=$updated, quizTranslations=$quizTranslations)"
+        return "Quiz(\n" +
+                "id=$id, \n" +
+                "scpNumber='$scpNumber', \n" +
+                "imageUrl='$imageUrl', \n" +
+                "authorId=$authorId, \n" +
+                "approved=$approved, \n" +
+                "approverId=$approverId, \n" +
+                "created=$created, \n" +
+                "updated=$updated, \n" +
+                "quizTranslations=$quizTranslations\n" +
+                ")\n\n"
     }
 }

@@ -18,7 +18,10 @@ class AppModule(context: Context) : Module() {
                 context,
                 AppDatabase::class.java,
                 "database"
-            ).build()
+            )
+                    //todo create migrations if need
+                    .fallbackToDestructiveMigration()
+                    .build()
         )
 
         bind(QuizConverter::class.java).singletonInScope()

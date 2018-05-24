@@ -5,45 +5,58 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.QuizTranslation
+import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase
 
 
 @Dao
 interface QuizDao {
 
-    @Query("SELECT * FROM quiz")
-    abstract fun getAll(): Flowable<List<Quiz>>
+    @Query("SELECT * FROM Quiz")
+    fun getAll(): Flowable<List<Quiz>>
+
+    @Query("SELECT * FROM Quiz WHERE id = :id")
+    fun getByIdWithUpdates(id: Long): Flowable<List<Quiz>>
+
+    @Query("SELECT * FROM Quiz WHERE id = :id")
+    fun getById(id: Long): Quiz
+
+    @Query("SELECT * FROM QuizTranslation WHERE quizId = :id")
+    fun getQuizTranslationsByQuizId(id: Long): List<QuizTranslation>
+
+    @Query("SELECT * FROM QuizTranslationPhrase WHERE quizTranslationId = :id")
+    fun getQuizTranslationPhrasesByQuizTranslationId(id: Long): List<QuizTranslationPhrase>
 
     @Query("SELECT * FROM quiz WHERE id = :id")
-    abstract fun getByIdWithUpdates(id: Long): Flowable<List<Quiz>>
-
-    @Query("SELECT * FROM quiz WHERE id = :id")
-    abstract fun getById(id: Long): Quiz
-
-    @Query("SELECT * FROM quiztranslation WHERE quizId = :id")
-    abstract fun getQuizTranslationsByQuizId(id: Long): List<QuizTranslation>
-
-    @Query("SELECT * FROM quiz WHERE id = :id")
-    abstract fun getByIdOrErrorOnce(id: Long): Single<Quiz>
+    fun getByIdOrErrorOnce(id: Long): Single<Quiz>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    abstract fun insert(quiz: Quiz): Long
+    fun insert(quiz: Quiz): Long
 
-    @Insert
-    abstract fun insertQuizTranslations(list: List<QuizTranslation>): List<Long>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertQuizTranslations(list: List<QuizTranslation>): List<Long>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertQuizTranslationPhrases(list: List<QuizTranslationPhrase>): List<Long>
 
     @Update
-    abstract fun update(quiz: Quiz): Int
+    fun update(quiz: Quiz): Int
 
     @Delete
-    abstract fun delete(quiz: Quiz): Int
+    fun delete(quiz: Quiz): Int
 
     @Transaction
     fun insertQuizWithQuizTranslations(quiz: Quiz): Long {
-        quiz.quizTranslations?.let {
-            it.forEach {
-                it.quizId = quiz.id
+        quiz.quizTranslations?.let { quizTranslations ->
+            quizTranslations.forEach { quizTranslation ->
+                quizTranslation.quizId = quiz.id
+                quizTranslation.quizTranslationPhrases?.let { quizTranslationPhrases ->
+                    quizTranslationPhrases.forEach { quizTranslationPhrase ->
+                        quizTranslationPhrase.quizTranslationId = quizTranslation.id
+                    }
+                    insertQuizTranslationPhrases(quizTranslationPhrases)
+                }
             }
-            insertQuizTranslations(it)
+            insertQuizTranslations(quizTranslations)
         }
 
         return insert(quiz)
@@ -55,8 +68,10 @@ interface QuizDao {
     @Transaction
     fun getQuizWithQuizTranslations(id: Long): Quiz {
         val quiz = getById(id)
-        val quizTranslations = getQuizTranslationsByQuizId(id)
-        quiz.quizTranslations = quizTranslations
+        quiz.quizTranslations = getQuizTranslationsByQuizId(id)
+        quiz.quizTranslations?.forEach { quizTranslation ->
+            quizTranslation.quizTranslationPhrases = getQuizTranslationPhrasesByQuizTranslationId(quizTranslation.id)
+        }
         return quiz
     }
 }

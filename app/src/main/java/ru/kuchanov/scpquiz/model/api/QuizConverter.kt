@@ -2,12 +2,13 @@ package ru.kuchanov.scpquiz.model.api
 
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.QuizTranslation
+import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase
 import javax.inject.Inject
 
 class QuizConverter @Inject constructor() {
 
     fun convert(source: NwQuiz): Quiz {
-        val quiz = Quiz(
+        val result = Quiz(
             id = source.id,
             scpNumber = source.scpNumber,
             imageUrl = source.imageUrl,
@@ -17,14 +18,30 @@ class QuizConverter @Inject constructor() {
             created = source.created,
             updated = source.updated
         )
-        quiz.quizTranslations = convertCollection(source.quizTranslations, ::convert)
-        return quiz;
+        result.quizTranslations = convertCollection(source.quizTranslations, ::convert)
+        return result;
     }
 
-    fun convert(source: NwQuizTranslation) = QuizTranslation(
+    fun convert(source: NwQuizTranslation): QuizTranslation {
+        val result = QuizTranslation(
+            id = source.id,
+            quizId = 0,
+            langCode = source.langCode,
+            translation = source.translation,
+            authorId = source.authorId,
+            approved = source.approved,
+            approverId = source.approverId,
+            created = source.created,
+            updated = source.updated
+        )
+
+        result.quizTranslationPhrases = convertCollection(source.quizTranslationPhrases, ::convert)
+        return result
+    }
+
+    fun convert(source: NwQuizTranslationPhrase) = QuizTranslationPhrase(
         id = source.id,
-        quizId = 0,
-        langCode = source.langCode,
+        quizTranslationId = 0,
         translation = source.translation,
         authorId = source.authorId,
         approved = source.approved,

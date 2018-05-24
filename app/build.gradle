@@ -79,7 +79,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
 
     //db
-    def roomVersion = "1.1.0"
+    def roomVersion = "1.1.1-rc1"
     implementation "android.arch.persistence.room:runtime:$roomVersion"
     kapt "android.arch.persistence.room:compiler:$roomVersion"
     //optional - RxJava support for Room
