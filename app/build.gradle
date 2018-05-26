@@ -16,7 +16,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "ru.kuchanov.scpquiz"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 27
         versionCode buildVersionCode()
         versionName version
@@ -72,6 +72,9 @@ dependencies {
     implementation "com.arello-mobile:moxy:$moxyVersion"
     kapt "com.arello-mobile:moxy-compiler:$moxyVersion"
     implementation "com.arello-mobile:moxy-app-compat:$moxyVersion"
+
+    //routing
+    implementation 'ru.terrakok.cicerone:cicerone:3.0.0'
 
     //rx
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'

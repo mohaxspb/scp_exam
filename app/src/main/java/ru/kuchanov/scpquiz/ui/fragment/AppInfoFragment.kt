@@ -4,6 +4,7 @@ import android.content.pm.PackageInfo
 import android.os.Bundle
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
+import com.arellomobile.mvp.presenter.ProvidePresenter
 import kotlinx.android.synthetic.main.fragment_app_info.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.di.Di
@@ -26,6 +27,7 @@ class AppInfoFragment : BaseFragment<AppInfoView, AppInfoPresenter>(), AppInfoVi
     @InjectPresenter
     override lateinit var presenter: AppInfoPresenter
 
+    @ProvidePresenter
     override fun providePresenter(): AppInfoPresenter = scope.getInstance(AppInfoPresenter::class.java)
 
     override fun inject() = Toothpick.inject(this, scope)
@@ -37,5 +39,9 @@ class AppInfoFragment : BaseFragment<AppInfoView, AppInfoPresenter>(), AppInfoVi
 
         appVersionTextView.text = packageInfo.versionName
         appVersionTextView.setOnClickListener { presenter.onSomethingClick() }
+    }
+
+    companion object {
+        fun newInstance() = AppInfoFragment()
     }
 }

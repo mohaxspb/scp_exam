@@ -3,7 +3,6 @@ package ru.kuchanov.scpquiz.ui
 import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.arellomobile.mvp.MvpAppCompatFragment
@@ -55,9 +54,8 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(getLayoutResId(), container, false);
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+            inflater.inflate(getLayoutResId(), container, false)
 
     override fun showMessage(message: String) = Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
 

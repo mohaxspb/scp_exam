@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz
+package ru.kuchanov.scpquiz.utils
 
 import android.content.Context
 import java.io.BufferedReader
