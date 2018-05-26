@@ -3,6 +3,7 @@ package ru.kuchanov.scpquiz.ui.fragment
 import android.os.Bundle
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
+import com.arellomobile.mvp.presenter.ProvidePresenter
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.EnterModule
@@ -21,6 +22,7 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
     @InjectPresenter
     override lateinit var presenter: EnterPresenter
 
+    @ProvidePresenter
     override fun providePresenter(): EnterPresenter = scope.getInstance(EnterPresenter::class.java)
 
     override fun inject() = Toothpick.inject(this, scope)

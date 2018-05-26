@@ -13,8 +13,9 @@ import javax.inject.Inject
 
 @InjectViewState
 class EnterPresenter @Inject constructor(
-    var appDatabase: AppDatabase? = null,
-    var router: Router? = null
+    var appDatabase: AppDatabase
+    ,
+    var router: Router
 ) : MvpPresenter<EnterView>() {
 
 //    @Inject
@@ -22,14 +23,14 @@ class EnterPresenter @Inject constructor(
 //    @Inject
 //    lateinit var router: Router
 //
-//    init {
-//        Timber.d("constructor")
-//    }
+    init {
+        Timber.d("constructor")
+    }
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
-        appDatabase!!.quizDao().getAll().subscribeOn(Schedulers.io()).subscribeBy(
+        appDatabase.quizDao().getAll().subscribeOn(Schedulers.io()).subscribeBy(
             onNext = { Timber.d("it: $it") }
         )
     }

@@ -3,7 +3,6 @@ package ru.kuchanov.scpquiz.mvp.presenter
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import ru.kuchanov.scpquiz.Constants
-import ru.kuchanov.scpquiz.db.AppDatabase
 import ru.kuchanov.scpquiz.mvp.view.MainView
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
@@ -11,7 +10,6 @@ import javax.inject.Inject
 
 @InjectViewState
 class MainPresenter @Inject constructor(
-    private val appDatabase: AppDatabase,
     private val router: Router
 ) : MvpPresenter<MainView>() {
 
