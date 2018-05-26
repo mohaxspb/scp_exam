@@ -11,6 +11,7 @@ import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.AppModule
 import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.QuizConverter
+import ru.kuchanov.scpquiz.utils.StorageUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
@@ -35,12 +36,11 @@ class App : MultiDexApplication() {
         initTimber()
         initDi()
 
+        //todo move to enter screen
         val json = StorageUtils.readFromAssets(this, "baseData.json")
-//        Timber.d("json: $json")
         val type = Types.newParameterizedType(List::class.java, NwQuiz::class.java)
         val adapter = moshi.adapter<List<NwQuiz>>(type)
         val quizes = adapter.fromJson(json)!!
-//        Timber.d("quizes: $quizes")
 
         Single.fromCallable {
             appDatabase.quizDao().insertQuizesWithQuizTranslations(
@@ -54,17 +54,6 @@ class App : MultiDexApplication() {
                     onError = { Timber.e(it) },
                     onSuccess = { Timber.d(it.toString()) }
                 )
-
-//        Single.fromCallable { appDatabase.quizDao().getQuizWithQuizTranslations(2) }
-//                .subscribeOn(Schedulers.io())
-//                .subscribeBy(
-//                    onError = { Timber.e(it) },
-//                    onSuccess = { Timber.d("quiz: $it") }
-//                )
-
-//        appDatabase.quizDao().insertQuizesWithQuizTranslations(quizConverter.convertCollection(quizes, quizConverter::convert))
-//        val quizesFromDb = appDatabase.quizDao().getQuizWithQuizTranslations(2)
-//        Timber.d("quizesFromDb: $quizesFromDb")
     }
 
     private fun initTimber() {

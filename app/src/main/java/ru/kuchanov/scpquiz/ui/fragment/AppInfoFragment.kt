@@ -38,4 +38,8 @@ class AppInfoFragment : BaseFragment<AppInfoView, AppInfoPresenter>(), AppInfoVi
         appVersionTextView.text = packageInfo.versionName
         appVersionTextView.setOnClickListener { presenter.onSomethingClick() }
     }
+
+    companion object {
+        fun newInstance() = AppInfoFragment()
+    }
 }

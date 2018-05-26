@@ -8,6 +8,8 @@ import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.MvpPresenter
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.mvp.BaseView
+import ru.terrakok.cicerone.Navigator
+import ru.terrakok.cicerone.NavigatorHolder
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -22,6 +24,24 @@ abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatAct
 
     @Inject
     lateinit var myLayoutInflater: LayoutInflater
+
+    @Inject
+    lateinit var navigationHolder: NavigatorHolder
+
+    /**
+     * initialize it to provide navigation for concrete activity
+     */
+    abstract var navigator: Navigator
+
+    override fun onResumeFragments() {
+        super.onResumeFragments()
+        navigationHolder.setNavigator(navigator)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        navigationHolder.removeNavigator()
+    }
 
     /**
      * your activity scope, which constructs from [scopes]
