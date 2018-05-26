@@ -1,9 +1,12 @@
 package ru.kuchanov.scpquiz.ui.fragment
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
+import kotlinx.android.synthetic.main.fragment_enter.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.EnterModule
@@ -32,6 +35,18 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+    }
+
+    override fun showProgressAnimation() {
+        val progressAnimator = ObjectAnimator.ofInt(
+            progressBar,
+            "progress",
+            0,
+            1000
+        )
+        progressAnimator.duration = 1000
+        progressAnimator.interpolator = AccelerateDecelerateInterpolator()
+        progressAnimator.start()
     }
 
     companion object {
