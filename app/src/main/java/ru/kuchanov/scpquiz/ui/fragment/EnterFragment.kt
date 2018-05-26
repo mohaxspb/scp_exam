@@ -15,6 +15,7 @@ import ru.kuchanov.scpquiz.mvp.view.EnterView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import toothpick.Toothpick
 import toothpick.config.Module
+import java.util.*
 
 class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
 
@@ -35,6 +36,11 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+    }
+
+    override fun showProgressText() {
+        val progressTexts = resources.getStringArray(R.array.progress_texts)
+        progressTextView.text = progressTexts[Random().nextInt(progressTexts.size)]
     }
 
     override fun showProgressAnimation() {

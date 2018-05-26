@@ -6,16 +6,29 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_enter_screen">
 
+    <TextView
+        android:id="@+id/progressTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="24sp"
+        android:padding="@dimen/defaultMargin"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toTopOf="@+id/progressBar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:text="Выдаётся разрешение на доступ к БД" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="8dp"
+        android:max="1000"
         android:progressDrawable="@drawable/progress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:max="1000"
         tools:progress="5"
         tools:targetApi="lollipop" />
 
