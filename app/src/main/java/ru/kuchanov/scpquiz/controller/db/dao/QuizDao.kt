@@ -11,6 +11,12 @@ import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase
 @Dao
 interface QuizDao {
 
+    @Query("SELECT COUNT(*) FROM Quiz")
+    fun getCountFlowable(): Flowable<Long>
+
+    @Query("SELECT COUNT(*) FROM Quiz")
+    fun getCount(): Long
+
     @Query("SELECT * FROM Quiz")
     fun getAll(): Flowable<List<Quiz>>
 

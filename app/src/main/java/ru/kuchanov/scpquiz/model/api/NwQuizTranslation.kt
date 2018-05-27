@@ -12,6 +12,7 @@ data class NwQuizTranslation(
     //content
     val langCode: String,
     val translation: String,
+    val description: String,
     val quizTranslationPhrases: MutableList<NwQuizTranslationPhrase>,
     //status
     val approved: Boolean,

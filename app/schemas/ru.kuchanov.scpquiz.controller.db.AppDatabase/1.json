@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "685f6b576b9a12e456d16c9450060aca",
+    "identityHash": "4fb174e86d71ef6ace1d488d5e4e2dc8",
     "entities": [
       {
         "tableName": "Quiz",
@@ -68,7 +68,7 @@
       },
       {
         "tableName": "QuizTranslation",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `quizId` INTEGER NOT NULL, `langCode` TEXT NOT NULL, `translation` TEXT NOT NULL, `approved` INTEGER NOT NULL, `authorId` INTEGER NOT NULL, `approverId` INTEGER, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `quizId` INTEGER NOT NULL, `langCode` TEXT NOT NULL, `translation` TEXT NOT NULL, `description` TEXT NOT NULL, `approved` INTEGER NOT NULL, `authorId` INTEGER NOT NULL, `approverId` INTEGER, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -91,6 +91,12 @@
           {
             "fieldPath": "translation",
             "columnName": "translation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -199,7 +205,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"685f6b576b9a12e456d16c9450060aca\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"4fb174e86d71ef6ace1d488d5e4e2dc8\")"
     ]
   }
 }
