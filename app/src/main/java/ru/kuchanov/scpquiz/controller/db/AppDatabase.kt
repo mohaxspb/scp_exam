@@ -1,11 +1,11 @@
-package ru.kuchanov.scpquiz.db
+package ru.kuchanov.scpquiz.controller.db
 
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
-import ru.kuchanov.scpquiz.db.converter.MyDateConverter
-import ru.kuchanov.scpquiz.db.dao.QuizDao
-import ru.kuchanov.scpquiz.db.dao.QuizTranslationDao
+import ru.kuchanov.scpquiz.controller.db.converter.MyDateConverter
+import ru.kuchanov.scpquiz.controller.db.dao.QuizDao
+import ru.kuchanov.scpquiz.controller.db.dao.QuizTranslationDao
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.QuizTranslation
 import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase

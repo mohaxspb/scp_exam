@@ -3,4 +3,5 @@
     <color name="colorPrimary">#EEEEEE</color>
     <color name="colorPrimaryDark">#E0E0E0</color>
     <color name="colorAccent">#5FB0F2</color>
+    <color name="stokeColor">#707070</color>
 </resources>

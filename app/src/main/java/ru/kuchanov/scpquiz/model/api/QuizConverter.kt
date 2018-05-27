@@ -19,15 +19,16 @@ class QuizConverter @Inject constructor() {
             updated = source.updated
         )
         result.quizTranslations = convertCollection(source.quizTranslations, ::convert)
-        return result;
+        return result
     }
 
-    fun convert(source: NwQuizTranslation): QuizTranslation {
+    private fun convert(source: NwQuizTranslation): QuizTranslation {
         val result = QuizTranslation(
             id = source.id,
             quizId = 0,
             langCode = source.langCode,
             translation = source.translation,
+            description = source.description,
             authorId = source.authorId,
             approved = source.approved,
             approverId = source.approverId,
@@ -39,7 +40,7 @@ class QuizConverter @Inject constructor() {
         return result
     }
 
-    fun convert(source: NwQuizTranslationPhrase) = QuizTranslationPhrase(
+    private fun convert(source: NwQuizTranslationPhrase) = QuizTranslationPhrase(
         id = source.id,
         quizTranslationId = 0,
         translation = source.translation,

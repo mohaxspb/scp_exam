@@ -14,6 +14,7 @@ data class QuizTranslation(
     //content
     val langCode: String,
     val translation: String,
+    val description: String,
     //status
     val approved: Boolean,
     val authorId: Long,
@@ -31,6 +32,7 @@ data class QuizTranslation(
                 "quizId=$quizId, \n" +
                 "langCode='$langCode', \n" +
                 "translation='$translation', \n" +
+                "description='$description', \n" +
                 "approved=$approved, \n" +
                 "authorId=$authorId, \n" +
                 "approverId=$approverId, \n" +

@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.db.converter
+package ru.kuchanov.scpquiz.controller.db.converter
 
 import android.arch.persistence.room.TypeConverter
 import java.text.SimpleDateFormat

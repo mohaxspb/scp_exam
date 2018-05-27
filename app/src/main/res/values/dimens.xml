@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="defaultMargin">16dp</dimen>
+    <dimen name="levelImageSize">90dp</dimen>
+    <dimen name="levelItemPadding">8dp</dimen>
+    <dimen name="defaultMarginSmall">8dp</dimen>
+    <dimen name="defaultMarginTiny">4dp</dimen>
 </resources>

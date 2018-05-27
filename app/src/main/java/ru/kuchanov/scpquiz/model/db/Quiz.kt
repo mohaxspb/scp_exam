@@ -13,11 +13,11 @@ data class Quiz(
     //content
     val scpNumber: String,
     val imageUrl: String,
-    //status
+//status
     val authorId: Long,
     val approved: Boolean,
     val approverId: Long?,
-    //dates
+//dates
     val created: Date,
     val updated: Date
 ) {

@@ -11,7 +11,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
-import ru.kuchanov.scpquiz.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.kuchanov.scpquiz.mvp.view.EnterView
@@ -45,12 +45,14 @@ class EnterPresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
 
         val dbFillObservable = Single.fromCallable {
+            Timber.d("read initial data from json")
             val json = StorageUtils.readFromAssets(appContext, "baseData.json")
             val type = Types.newParameterizedType(List::class.java, NwQuiz::class.java)
             val adapter = moshi.adapter<List<NwQuiz>>(type)
             adapter.fromJson(json)
         }
                 .map {
+                    Timber.d("write initial data to DB")
                     appDatabase.quizDao().insertQuizesWithQuizTranslations(
                         quizConverter.convertCollection(
                             it,
@@ -59,7 +61,18 @@ class EnterPresenter @Inject constructor(
                     -1L
                 }
 
-        Flowable.merge(timerObservable, dbFillObservable.toFlowable())
+        val dbFillIfEmptyObservable = Single.fromCallable { appDatabase.quizDao().getCount() }
+                .flatMap {
+                    if (it != 0L) {
+                        Timber.d("data in DB already exists")
+                        Single.just(-1L)
+                    } else {
+                        Timber.d("fill DB with initial data")
+                        dbFillObservable
+                    }
+                }
+
+        Flowable.merge(timerObservable, dbFillIfEmptyObservable.toFlowable())
                 .doOnNext {
                     if (it != -1L) {
                         secondsPast = it
@@ -83,8 +96,7 @@ class EnterPresenter @Inject constructor(
                     },
                     onComplete = {
                         Timber.d("onComplete")
-                        /*todo navigate to main*/
-                        router.newRootScreen(Constants.Screens.APP_INFO)
+                        router.newRootScreen(Constants.Screens.QUIZ_LIST)
                     },
                     onError = Timber::e
                 )

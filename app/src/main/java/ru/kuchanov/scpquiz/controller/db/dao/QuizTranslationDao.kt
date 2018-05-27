@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.db.dao
+package ru.kuchanov.scpquiz.controller.db.dao
 
 import android.arch.persistence.room.*
 import io.reactivex.Flowable
