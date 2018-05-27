@@ -1,0 +1,47 @@
+package ru.kuchanov.scpquiz.controller.adapter.delegate
+
+import android.support.v4.content.ContextCompat
+import android.support.v7.widget.RecyclerView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import com.bumptech.glide.Glide
+import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate
+import kotlinx.android.synthetic.main.list_item_level.view.*
+import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.adapter.MyListItem
+import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
+
+
+class LevelDelegate(private val clickListener: (Long) -> Unit) : AbsListItemAdapterDelegate<LevelViewModel, MyListItem, LevelDelegate.LevelViewHolder>() {
+
+    override fun isForViewType(item: MyListItem, items: MutableList<MyListItem>, position: Int) = item is LevelViewModel
+
+    override fun onCreateViewHolder(parent: ViewGroup) =
+            LevelViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.list_item_level, parent, false))
+
+    override fun onBindViewHolder(item: LevelViewModel, viewHolder: LevelViewHolder, payloads: MutableList<Any>) {
+        val context = viewHolder.itemView.context
+        with(viewHolder.itemView) {
+            if (item.levelCompleted) {
+                Glide.with(imageView.context)
+                        .load(item.quiz.imageUrl)
+                        .centerCrop()
+                        .into(imageView)
+                strokeBottomView.visibility = View.GONE
+                strokeTopView.visibility = View.GONE
+                scpNumberTextView.visibility = View.VISIBLE
+                scpNumberTextView.text = item.quiz.scpNumber
+            } else {
+                imageView.setImageResource(R.drawable.ic_level_unknown)
+                strokeBottomView.visibility = View.VISIBLE
+                strokeTopView.visibility = View.VISIBLE
+                scpNumberTextView.visibility = View.GONE
+            }
+
+            setOnClickListener { clickListener(item.quiz.id) }
+        }
+    }
+
+    class LevelViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+}

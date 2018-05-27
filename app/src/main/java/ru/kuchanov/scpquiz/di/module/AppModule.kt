@@ -4,7 +4,7 @@ import android.arch.persistence.room.Room
 import android.content.Context
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
-import ru.kuchanov.scpquiz.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.terrakok.cicerone.Cicerone
 import ru.terrakok.cicerone.NavigatorHolder

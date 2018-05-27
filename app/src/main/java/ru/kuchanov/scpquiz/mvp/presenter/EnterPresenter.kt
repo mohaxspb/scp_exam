@@ -11,7 +11,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
-import ru.kuchanov.scpquiz.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.kuchanov.scpquiz.mvp.view.EnterView
@@ -84,7 +84,7 @@ class EnterPresenter @Inject constructor(
                     onComplete = {
                         Timber.d("onComplete")
                         /*todo navigate to main*/
-                        router.newRootScreen(Constants.Screens.APP_INFO)
+                        router.newRootScreen(Constants.Screens.QUIZ_LIST)
                     },
                     onError = Timber::e
                 )

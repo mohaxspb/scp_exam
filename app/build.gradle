@@ -102,6 +102,9 @@ dependencies {
     implementation "com.squareup.moshi:moshi-kotlin:$moshiVersion"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
 
+    //adapter delegate
+    implementation 'com.hannesdorfmann:adapterdelegates3:3.0.1'
+
     //logs
     implementation 'com.jakewharton.timber:timber:4.6.0'
 
