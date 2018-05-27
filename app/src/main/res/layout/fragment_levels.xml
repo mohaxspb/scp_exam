@@ -9,8 +9,11 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingEnd="@dimen/defaultMargin"
-        android:paddingStart="@dimen/defaultMargin" />
+        android:paddingTop="20dp"
+        tools:itemCount="15"
+        tools:layoutManager="android.support.v7.widget.GridLayoutManager"
+        tools:listitem="@layout/list_item_level"
+        tools:spanCount="3" />
 
     <FrameLayout
         android:id="@+id/progressView"

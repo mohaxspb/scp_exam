@@ -2,7 +2,6 @@ package ru.kuchanov.scpquiz.ui.fragment
 
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.StaggeredGridLayoutManager
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
@@ -18,7 +17,6 @@ import ru.kuchanov.scpquiz.di.module.EnterModule
 import ru.kuchanov.scpquiz.mvp.presenter.LevelsPresenter
 import ru.kuchanov.scpquiz.mvp.view.LevelsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
-import ru.kuchanov.scpquiz.ui.utils.SpacesItemDecoration
 import toothpick.Toothpick
 import toothpick.config.Module
 
@@ -32,7 +30,7 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
     override lateinit var presenter: LevelsPresenter
 
     @ProvidePresenter
-    override fun providePresenter() = scope.getInstance(LevelsPresenter::class.java)
+    override fun providePresenter(): LevelsPresenter = scope.getInstance(LevelsPresenter::class.java)
 
     override fun inject() = Toothpick.inject(this, scope)
 
@@ -48,10 +46,9 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
 
     private fun initRecyclerView() {
         recyclerView.layoutManager = GridLayoutManager(activity, 3)
-//        recyclerView.addItemDecoration(SpacesItemDecoration(20));
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
         delegateManager.addDelegate(LevelDelegate({ presenter.onLevelClick(it) }))
-        adapter = ListDelegationAdapter(delegateManager);
+        adapter = ListDelegationAdapter(delegateManager)
         recyclerView.adapter = adapter
     }
 
