@@ -1,8 +1,6 @@
 package ru.kuchanov.scpquiz.ui.fragment
 
 import android.animation.ObjectAnimator
-import android.os.Bundle
-import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
@@ -32,11 +30,6 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
     override fun inject() = Toothpick.inject(this, scope)
 
     override fun getLayoutResId() = R.layout.fragment_enter
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
 
     override fun showProgressText() {
         val progressTexts = resources.getStringArray(R.array.progress_texts)
