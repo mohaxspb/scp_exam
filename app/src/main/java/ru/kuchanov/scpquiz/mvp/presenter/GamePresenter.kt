@@ -2,12 +2,16 @@ package ru.kuchanov.scpquiz.mvp.presenter
 
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
+import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.model.db.FinishedLevels
+import ru.kuchanov.scpquiz.model.db.Quiz
+import ru.kuchanov.scpquiz.model.db.QuizTranslation
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
@@ -27,6 +31,7 @@ class GamePresenter @Inject constructor(
     }
 
     override fun onFirstViewAttach() {
+        Timber.d("onFirstViewAttach")
         super.onFirstViewAttach()
 
         loadLevel()
@@ -39,6 +44,44 @@ class GamePresenter @Inject constructor(
 
     fun loadLevel() {
         //todo load level and some other levels to create keyboard
+
+        Timber.d("loadLevel")
+
+        viewState.showProgress(true)
+
+        val randomQuizesSingle = appDatabase.quizDao().getRandomQuizes(2)
+                .flatMap { Flowable.fromIterable(it) }
+                .map {
+                    //todo create prefs for lang and use it
+                    appDatabase.quizDao().getQuizTranslationsByQuizIdAndLang(it.id, "ru").first()
+                }
+                .limit(2)
+                .toList()
+
+        Single.zip(
+            //todo create prefs for lang and use it
+            Single.fromCallable {
+                val quiz = appDatabase.quizDao().getQuizWithTranslationsAndPhrases(quizId, "ru")
+                Timber.d("quiz:$quiz")
+                quiz
+            },
+            randomQuizesSingle,
+            BiFunction { quiz: Quiz, quizTranslations: List<QuizTranslation> -> Pair(quiz, quizTranslations) }
+        )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onSuccess = {
+                        Timber.d("quiz:${it.first.scpNumber}\ntranslationTexts:${it.second.map { it.translation }}")
+                        viewState.showProgress(false)
+                        viewState.showLevel(it.first, it.second)
+                    },
+                    onError = {
+                        Timber.e(it)
+                        viewState.showProgress(false)
+                        viewState.showError(it)
+                    }
+                )
     }
 
     fun onLevelCompleted() {
@@ -49,7 +92,8 @@ class GamePresenter @Inject constructor(
                 .subscribeBy(
                     onSuccess = {
                         Timber.d("updated!")
-                    }
+                    },
+                    onError = { /*todo*/ }
                 )
     }
 }

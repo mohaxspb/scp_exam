@@ -13,6 +13,8 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.GameModule
+import ru.kuchanov.scpquiz.model.db.Quiz
+import ru.kuchanov.scpquiz.model.db.QuizTranslation
 import ru.kuchanov.scpquiz.mvp.presenter.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
@@ -49,16 +51,24 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initRecyclerView()
+//        initRecyclerView()
     }
 
-    private fun initRecyclerView() {
-        recyclerView.layoutManager = GridLayoutManager(activity, 3)
-        val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
+//    private fun initRecyclerView() {
+//        recyclerView.layoutManager = GridLayoutManager(activity, 3)
+//        val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
+//        //todo
+////        delegateManager.addDelegate(LevelDelegate({ presenter.onLevelClick(it) }))
+//        adapter = ListDelegationAdapter(delegateManager)
+//        recyclerView.adapter = adapter
+//    }
+
+    override fun showLevel(quiz: Quiz, randomTranslations: List<QuizTranslation>) {
         //todo
-//        delegateManager.addDelegate(LevelDelegate({ presenter.onLevelClick(it) }))
-        adapter = ListDelegationAdapter(delegateManager)
-        recyclerView.adapter = adapter
+    }
+
+    override fun showError(error: Throwable) {
+        //todo
     }
 
     override fun showProgress(show: Boolean) {
