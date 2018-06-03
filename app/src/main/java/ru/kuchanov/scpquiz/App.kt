@@ -9,6 +9,7 @@ import toothpick.configuration.Configuration
 import toothpick.smoothie.module.SmoothieApplicationModule
 
 
+@SuppressWarnings("unused")
 class App : MultiDexApplication() {
 
     override fun onCreate() {

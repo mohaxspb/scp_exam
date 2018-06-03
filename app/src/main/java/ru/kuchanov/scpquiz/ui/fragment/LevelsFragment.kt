@@ -13,7 +13,7 @@ import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.LevelDelegate
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.di.Di
-import ru.kuchanov.scpquiz.di.module.EnterModule
+import ru.kuchanov.scpquiz.di.module.LevelsModule
 import ru.kuchanov.scpquiz.mvp.presenter.LevelsPresenter
 import ru.kuchanov.scpquiz.mvp.view.LevelsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
@@ -22,9 +22,9 @@ import toothpick.config.Module
 
 class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
 
-    override val scopes: Array<String> = arrayOf(Di.Scope.ENTER_FRAGMENT)
+    override val scopes: Array<String> = arrayOf(Di.Scope.LEVELS_FRAGMENT)
 
-    override val modules: Array<Module> = arrayOf(EnterModule())
+    override val modules: Array<Module> = arrayOf(LevelsModule())
 
     @InjectPresenter
     override lateinit var presenter: LevelsPresenter

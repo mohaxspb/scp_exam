@@ -14,6 +14,7 @@ import ru.kuchanov.scpquiz.mvp.view.MainView
 import ru.kuchanov.scpquiz.ui.BaseActivity
 import ru.kuchanov.scpquiz.ui.fragment.AppInfoFragment
 import ru.kuchanov.scpquiz.ui.fragment.EnterFragment
+import ru.kuchanov.scpquiz.ui.fragment.GameFragment
 import ru.kuchanov.scpquiz.ui.fragment.LevelsFragment
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.android.SupportAppNavigator
@@ -42,7 +43,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                 Constants.Screens.APP_INFO -> AppInfoFragment.newInstance()
                 Constants.Screens.QUIZ_LIST -> LevelsFragment.newInstance()
             //todo create and use quiz screen
-                Constants.Screens.QUIZ -> AppInfoFragment.newInstance()
+                Constants.Screens.QUIZ -> GameFragment.newInstance(data as Long)
                 else -> null
             }
         }
