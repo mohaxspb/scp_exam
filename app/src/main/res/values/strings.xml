@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Scp Quiz</string>
+    <string name="menu">Menu</string>
+    <string name="level">Уровень %d</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>
