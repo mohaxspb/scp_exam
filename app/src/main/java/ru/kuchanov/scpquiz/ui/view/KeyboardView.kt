@@ -2,6 +2,7 @@ package ru.kuchanov.scpquiz.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import kotlinx.android.synthetic.main.view_keyboard.view.*
 import ru.kuchanov.scpquiz.R
@@ -39,6 +40,11 @@ class KeyboardView @JvmOverloads constructor(
 
             characterView.layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
             characterView.layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT
+
+            val marginParams = characterView.layoutParams as ViewGroup.MarginLayoutParams
+            marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)
+
+            characterView.layoutParams = marginParams
         }
         //todo use https://github.com/google/flexbox-layout
         characters.forEach {
@@ -48,6 +54,11 @@ class KeyboardView @JvmOverloads constructor(
 
             characterView.layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
             characterView.layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT
+
+            val marginParams = characterView.layoutParams as ViewGroup.MarginLayoutParams
+            marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)
+
+            characterView.layoutParams = marginParams
         }
         //todo use https://github.com/google/flexbox-layout
         characters.forEach {
@@ -57,6 +68,11 @@ class KeyboardView @JvmOverloads constructor(
 
             characterView.layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
             characterView.layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT
+
+            val marginParams = characterView.layoutParams as ViewGroup.MarginLayoutParams
+            marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)
+
+            characterView.layoutParams = marginParams
         }
     }
 }

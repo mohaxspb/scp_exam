@@ -41,16 +41,16 @@ class CharacterView : TextView {
 
     //todo use https://github.com/google/flexbox-layout
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-
-        val width = View.MeasureSpec.getSize(widthMeasureSpec)
-        val height = View.MeasureSpec.getSize(heightMeasureSpec)
-        val size = if (width > height) height else width
-        setMeasuredDimension(size, size)
-
-        val marginParams = layoutParams as ViewGroup.MarginLayoutParams
-        marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)
-
-        layoutParams = marginParams
+        super.onMeasure(heightMeasureSpec, heightMeasureSpec)
+//
+//        val width = View.MeasureSpec.getSize(widthMeasureSpec)
+//        val height = View.MeasureSpec.getSize(heightMeasureSpec)
+//        val size = if (width > height) height else width
+//        setMeasuredDimension(size, size)
+//
+//        val marginParams = layoutParams as ViewGroup.MarginLayoutParams
+//        marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)
+//
+//        layoutParams = marginParams
     }
 }
