@@ -15,6 +15,8 @@ class App : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
 
+        INSTANCE = this
+
         initTimber()
         initDi()
     }
@@ -34,5 +36,9 @@ class App : MultiDexApplication() {
         if (BuildConfig.DEBUG) {
             Toothpick.setConfiguration(Configuration.forDevelopment())
         }
+    }
+
+    companion object {
+        lateinit var INSTANCE: App
     }
 }

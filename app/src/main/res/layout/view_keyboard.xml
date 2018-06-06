@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/topLineView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#ff0000"
+        android:orientation="horizontal"
+        android:padding="8dp" />
+
+    <LinearLayout
+        android:id="@+id/middleLineView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#00ff00"
+        android:orientation="horizontal"
+        android:padding="8dp" />
+
+    <LinearLayout
+        android:id="@+id/bottomLineView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#0000ff"
+        android:orientation="horizontal"
+        android:padding="8dp" />
+</merge>

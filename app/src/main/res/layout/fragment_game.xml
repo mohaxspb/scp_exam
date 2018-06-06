@@ -4,10 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
     android:fitsSystemWindows="true"
     tools:context=".ui.activity.MainActivity"
-    android:layout_height="match_parent"
-    android:background="@color/backgroundColor">
+    tools:layout_marginTop="25dp">
 
     <ImageView
         android:id="@+id/hamburgerButton"
@@ -27,9 +28,9 @@
         android:layout_height="wrap_content"
         android:background="?selectableItemBackground"
         android:padding="@dimen/defaultMargin"
-        android:textSize="16sp"
         android:text="@string/level"
         android:textColor="@android:color/black"
+        android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@+id/hamburgerButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -57,9 +58,9 @@
 
         <TextView
             android:id="@+id/coinsValueTextView"
-            android:text="0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@string/zero"
             android:textColor="@android:color/black"
             tools:text="200" />
 
@@ -165,18 +166,24 @@
 
     </android.support.v4.widget.NestedScrollView>
 
-    <android.support.v4.widget.NestedScrollView
+    <HorizontalScrollView
         android:id="@+id/keyboardScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        tools:background="#80ff0000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/gameView"
         app:layout_constraintVertical_weight="1">
 
+        <ru.kuchanov.scpquiz.ui.view.KeyboardView
+            android:id="@+id/keyboardView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+        <!--android:background="#8000ff00"-->
 
-    </android.support.v4.widget.NestedScrollView>
+    </HorizontalScrollView>
 
     <FrameLayout
         android:id="@+id/progressView"

@@ -11,4 +11,15 @@
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
+    <!--<style name="CharacterViewStyle" parent="@android:style/TextAppearance.Widget.TextView">-->
+
+    <style name="CharacterViewStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/bg_keyboard_character</item>
+        <item name="android:gravity">center</item>
+        <item name="android:foreground">?selectableItemBackgroundBorderless</item>
+        <item name="android:textColor">@color/characterBorderColor</item>
+        <item name="android:textSize">23sp</item>
+        <item name="android:padding">6dp</item>
+    </style>
+
 </resources>

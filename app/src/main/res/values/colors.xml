@@ -7,4 +7,5 @@
     <color name="backgroundColor">#F2F2F2</color>
     <color name="controlColor">#797979</color>
     <color name="whiteHalfTransparent">#80ffffff</color>
+    <color name="characterBorderColor">#707070</color>
 </resources>
