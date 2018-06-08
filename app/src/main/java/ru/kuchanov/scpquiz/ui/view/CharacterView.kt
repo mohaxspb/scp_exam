@@ -3,13 +3,9 @@ package ru.kuchanov.scpquiz.ui.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.ContextThemeWrapper
-import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import ru.kuchanov.scpquiz.R
-import timber.log.Timber
 
-//todo use https://github.com/google/flexbox-layout
 class CharacterView : TextView {
 
     var char: Char = ' '
@@ -35,22 +31,9 @@ class CharacterView : TextView {
 
     init {
         text = char.toString()
-
-        setOnClickListener { Timber.d("CLicked!!!") }
     }
 
-    //todo use https://github.com/google/flexbox-layout
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(heightMeasureSpec, heightMeasureSpec)
-//
-//        val width = View.MeasureSpec.getSize(widthMeasureSpec)
-//        val height = View.MeasureSpec.getSize(heightMeasureSpec)
-//        val size = if (width > height) height else width
-//        setMeasuredDimension(size, size)
-//
-//        val marginParams = layoutParams as ViewGroup.MarginLayoutParams
-//        marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)
-//
-//        layoutParams = marginParams
     }
 }

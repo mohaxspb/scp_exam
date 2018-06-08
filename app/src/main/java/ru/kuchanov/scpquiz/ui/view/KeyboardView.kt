@@ -8,6 +8,7 @@ import kotlinx.android.synthetic.main.view_keyboard.view.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.utils.DimensionUtils
 
+
 class KeyboardView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -27,50 +28,29 @@ class KeyboardView @JvmOverloads constructor(
         setPadding(PADDING_TOP_LEFT, PADDING_TOP_LEFT, 0, 0)
 
         //fixme test
-        setCharacters(listOf('a', 'b', 'c', 'd', 'e'))
+        val chars = mutableListOf('a', 'b', 'c', 'd', 'e')
+        chars.addAll(listOf('a', 'b', 'c', 'd', 'e'))
+        chars.addAll(listOf('a', 'b', 'c', 'd', 'e'))
+        chars.addAll(listOf('a', 'b', 'c', 'd', 'e'))
+        chars.addAll(listOf('a', 'b', 'c', 'd', 'e'))
+        setCharacters(chars)
     }
 
     fun setCharacters(characters: List<Char>) {
         val charsCount = characters.size
-        //todo use https://github.com/google/flexbox-layout
         characters.forEach {
             val characterView = CharacterView(context)
             characterView.char = it
-            topLineView.addView(characterView)
+            flexBoxLayout.addView(characterView)
 
             characterView.layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
             characterView.layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT
 
             val marginParams = characterView.layoutParams as ViewGroup.MarginLayoutParams
             marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)
-
-            characterView.layoutParams = marginParams
-        }
-        //todo use https://github.com/google/flexbox-layout
-        characters.forEach {
-            val characterView = CharacterView(context)
-            characterView.char = it
-            middleLineView.addView(characterView)
-
-            characterView.layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
-            characterView.layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT
-
-            val marginParams = characterView.layoutParams as ViewGroup.MarginLayoutParams
-            marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)
-
-            characterView.layoutParams = marginParams
-        }
-        //todo use https://github.com/google/flexbox-layout
-        characters.forEach {
-            val characterView = CharacterView(context)
-            characterView.char = it
-            bottomLineView.addView(characterView)
-
-            characterView.layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
-            characterView.layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT
-
-            val marginParams = characterView.layoutParams as ViewGroup.MarginLayoutParams
-            marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)
+            marginParams.bottomMargin = resources.getDimensionPixelSize(R.dimen.defaultMargin)
+            marginParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
+            marginParams.height = LinearLayout.LayoutParams.MATCH_PARENT
 
             characterView.layoutParams = marginParams
         }

@@ -1,29 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/topLineView"
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/flexBoxLayout"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:paddingBottom="@dimen/defaultMargin"
-        android:layout_weight="1"
-        android:orientation="horizontal" />
-
-    <LinearLayout
-        android:id="@+id/middleLineView"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:paddingBottom="@dimen/defaultMargin"
-        android:layout_weight="1"
-        android:orientation="horizontal" />
-
-    <LinearLayout
-        android:id="@+id/bottomLineView"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingBottom="@dimen/defaultMargin"
-        android:orientation="horizontal" />
+        android:layout_height="wrap_content"
+        android:paddingEnd="@dimen/defaultMargin"
+        app:flexDirection="column"
+        app:flexWrap="wrap"
+        app:justifyContent="flex_start"
+        tools:ignore="RtlSymmetry" />
 </merge>
