@@ -51,6 +51,12 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         super.onViewCreated(view, savedInstanceState)
 
         keyboardView.keyPressListener = { Timber.d("char pressed: $it") }
+
+        coinsButton.setOnClickListener { presenter.onCoinsClicked() }
+
+        hamburgerButton.setOnClickListener { presenter.onHamburgerMenuClicked() }
+
+        levelNumberTextView.setOnClickListener { presenter.onLevelsClicked() }
     }
 
     override fun showLevel(quiz: Quiz, randomTranslations: List<QuizTranslation>) {

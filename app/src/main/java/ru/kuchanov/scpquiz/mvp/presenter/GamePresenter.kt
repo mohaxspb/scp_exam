@@ -8,6 +8,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.model.db.FinishedLevels
 import ru.kuchanov.scpquiz.model.db.Quiz
@@ -93,7 +94,22 @@ class GamePresenter @Inject constructor(
                     onSuccess = {
                         Timber.d("updated!")
                     },
-                    onError = { /*todo*/ }
+                    onError = {
+                        Timber.e(it)
+                        /*todo*/
+                    }
                 )
+    }
+
+    fun onLevelsClicked() = router.backTo(Constants.Screens.QUIZ_LIST)
+
+    fun onCoinsClicked() {
+        //todo
+        Timber.d("coins button clicked!")
+    }
+
+    fun onHamburgerMenuClicked() {
+        //todo
+        Timber.d("hamburgerButton button clicked!")
     }
 }
