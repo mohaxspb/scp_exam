@@ -21,6 +21,8 @@ class KeyboardView @JvmOverloads constructor(
 
     private var characters = listOf<Char>()
 
+    var keyPressListener: (Char) -> Unit = {}
+
     init {
         //to do?..
         orientation = VERTICAL
@@ -41,10 +43,10 @@ class KeyboardView @JvmOverloads constructor(
         characters.forEach {
             val characterView = CharacterView(context)
             characterView.char = it
-            flexBoxLayout.addView(characterView)
 
-            characterView.layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
-            characterView.layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT
+            characterView.setOnClickListener { keyPressListener((it as CharacterView).char) }
+
+            flexBoxLayout.addView(characterView)
 
             val marginParams = characterView.layoutParams as ViewGroup.MarginLayoutParams
             marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)

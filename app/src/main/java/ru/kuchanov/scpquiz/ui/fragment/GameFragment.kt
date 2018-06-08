@@ -1,14 +1,12 @@
 package ru.kuchanov.scpquiz.ui.fragment
 
 import android.os.Bundle
-import android.support.v7.widget.GridLayoutManager
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.arellomobile.mvp.presenter.ProvidePresenterTag
-import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
-import kotlinx.android.synthetic.main.fragment_levels.*
+import kotlinx.android.synthetic.main.fragment_game.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.di.Di
@@ -18,6 +16,7 @@ import ru.kuchanov.scpquiz.model.db.QuizTranslation
 import ru.kuchanov.scpquiz.mvp.presenter.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
 
@@ -51,17 +50,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        initRecyclerView()
+        keyboardView.keyPressListener = { Timber.d("char pressed: $it") }
     }
-
-//    private fun initRecyclerView() {
-//        recyclerView.layoutManager = GridLayoutManager(activity, 3)
-//        val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
-//        //todo
-////        delegateManager.addDelegate(LevelDelegate({ presenter.onLevelClick(it) }))
-//        adapter = ListDelegationAdapter(delegateManager)
-//        recyclerView.adapter = adapter
-//    }
 
     override fun showLevel(quiz: Quiz, randomTranslations: List<QuizTranslation>) {
         //todo
