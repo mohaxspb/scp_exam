@@ -112,4 +112,9 @@ class GamePresenter @Inject constructor(
         //todo
         Timber.d("hamburgerButton button clicked!")
     }
+
+    fun onCharClicked(char: Char) {
+        //todo
+        Timber.d("char pressed: $char")
+    }
 }

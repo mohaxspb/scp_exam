@@ -50,7 +50,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        keyboardView.keyPressListener = { Timber.d("char pressed: $it") }
+        keyboardView.keyPressListener = {
+            presenter.onCharClicked(it)
+        }
 
         coinsButton.setOnClickListener { presenter.onCoinsClicked() }
 
