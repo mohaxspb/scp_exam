@@ -17,6 +17,8 @@ class KeyboardView @JvmOverloads constructor(
 
     companion object {
         val PADDING_TOP_LEFT = DimensionUtils.dpToPx(24)
+        val PADDING_LEFT = DimensionUtils.dpToPx(16)
+        const val MIN_KEY_COUNT = 21
     }
 
     private var characters = listOf<Char>()
@@ -24,22 +26,13 @@ class KeyboardView @JvmOverloads constructor(
     var keyPressListener: (Char) -> Unit = {}
 
     init {
-        //to do?..
         orientation = VERTICAL
         inflate(context, R.layout.view_keyboard, this)
-        setPadding(PADDING_TOP_LEFT, PADDING_TOP_LEFT, 0, 0)
-
-        //fixme test
-        val chars = mutableListOf('a', 'b', 'c', 'd', 'e')
-        chars.addAll(listOf('a', 'b', 'c', 'd', 'e'))
-        chars.addAll(listOf('a', 'b', 'c', 'd', 'e'))
-        chars.addAll(listOf('a', 'b', 'c', 'd', 'e'))
-        chars.addAll(listOf('a', 'b', 'c', 'd', 'e'))
-        setCharacters(chars)
+        setPadding(PADDING_LEFT, PADDING_TOP_LEFT, 0, 0)
     }
 
     fun setCharacters(characters: List<Char>) {
-        val charsCount = characters.size
+        this.characters=characters
         characters.forEach {
             val characterView = CharacterView(context)
             characterView.char = it

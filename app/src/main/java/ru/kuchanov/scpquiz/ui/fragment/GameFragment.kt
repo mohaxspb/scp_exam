@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.ui.fragment
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
@@ -16,6 +17,8 @@ import ru.kuchanov.scpquiz.model.db.QuizTranslation
 import ru.kuchanov.scpquiz.mvp.presenter.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.ui.utils.GlideApp
+import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -62,7 +65,55 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showLevel(quiz: Quiz, randomTranslations: List<QuizTranslation>) {
-        //todo
+        //todo show level number
+        GlideApp
+                .with(imageView.context)
+                .load(quiz.imageUrl)
+                .fitCenter()
+                .into(imageView)
+
+        var chars = quiz.quizTranslations?.let {
+            it[0].translation.replace(" ", "").toCharArray().toMutableList()
+        }
+                ?: throw IllegalStateException("translations is null")
+        Timber.d("chars.size: ${chars.size}")
+        val availableChars = randomTranslations
+                .joinToString(separator = "") { it.translation }
+                .replace(" ", "")
+                .toCharArray()
+                .toList()
+        chars = fillCharsList(chars, availableChars).apply { shuffle() }
+        keyboardView.setCharacters(chars)
+
+        keyboardScrollView.postDelayed({
+            ObjectAnimator
+                    .ofInt(keyboardScrollView, "scrollX", keyboardScrollView.right)
+                    .setDuration(500)
+                    .start()
+            val animBack = ObjectAnimator
+                    .ofInt(keyboardScrollView, "scrollX", 0)
+                    .setDuration(500)
+
+            animBack.startDelay = 500
+            animBack.start()
+        }, 100)
+    }
+
+    private fun fillCharsList(chars: MutableList<Char>, availableChars: List<Char>): MutableList<Char> {
+        if (chars.size < KeyboardView.MIN_KEY_COUNT) {
+            val charsToAddCount = KeyboardView.MIN_KEY_COUNT - chars.size
+
+            Timber.d("chars: $chars")
+            Timber.d("aviableChars: $availableChars")
+            val topBorder = if (availableChars.size > charsToAddCount) charsToAddCount else availableChars.size
+            chars.addAll(availableChars.subList(0, topBorder))
+            Timber.d("chars.size: ${chars.size}")
+        }
+        if (chars.size < KeyboardView.MIN_KEY_COUNT) {
+            return fillCharsList(chars, availableChars)
+        } else {
+            return chars
+        }
     }
 
     override fun showError(error: Throwable) {

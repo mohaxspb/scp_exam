@@ -9,7 +9,6 @@
         android:id="@+id/flexBoxLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingEnd="@dimen/defaultMargin"
         app:flexDirection="column"
         app:flexWrap="wrap"
         app:justifyContent="flex_start"

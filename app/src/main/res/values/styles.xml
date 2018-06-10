@@ -11,7 +11,7 @@
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
-    <style name="CharacterViewStyle" parent="android:Widget.TextView">
+    <style name="CharacterViewStyle" >
         <item name="android:background">@drawable/bg_keyboard_character</item>
         <item name="android:gravity">center</item>
         <item name="android:foreground">?selectableItemBackgroundBorderless</item>

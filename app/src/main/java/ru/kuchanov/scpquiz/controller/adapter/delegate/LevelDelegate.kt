@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.list_item_level.view.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
+import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.utils.DimensionUtils
 
 
@@ -26,8 +27,9 @@ class LevelDelegate(private val clickListener: (Long) -> Unit) : AbsListItemAdap
     override fun onBindViewHolder(item: LevelViewModel, viewHolder: LevelViewHolder, payloads: MutableList<Any>) {
         with(viewHolder.itemView) {
             if (item.levelCompleted) {
-                Glide.with(imageView.context)
+                GlideApp.with(imageView.context)
                         .load(item.quiz.imageUrl)
+                        .dontAnimate()
                         .centerCrop()
                         .into(imageView)
                 strokeView.visibility = View.GONE

@@ -38,14 +38,7 @@ class GamePresenter @Inject constructor(
         loadLevel()
     }
 
-    override fun onDestroy() {
-        Timber.d("onDestroy")
-        super.onDestroy()
-    }
-
     fun loadLevel() {
-        //todo load level and some other levels to create keyboard
-
         Timber.d("loadLevel")
 
         viewState.showProgress(true)
@@ -87,7 +80,12 @@ class GamePresenter @Inject constructor(
 
     fun onLevelCompleted() {
         //mark level as completed
-        Single.fromCallable { appDatabase.finishedLevelsDao().insert(FinishedLevels(quizId = quizId, finished = true)) }
+        Single.fromCallable {
+            appDatabase.finishedLevelsDao().insert(FinishedLevels(
+                quizId = quizId,
+                finished = true
+            ))
+        }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
@@ -116,5 +114,10 @@ class GamePresenter @Inject constructor(
     fun onCharClicked(char: Char) {
         //todo
         Timber.d("char pressed: $char")
+    }
+
+    override fun onDestroy() {
+        Timber.d("onDestroy")
+        super.onDestroy()
     }
 }
