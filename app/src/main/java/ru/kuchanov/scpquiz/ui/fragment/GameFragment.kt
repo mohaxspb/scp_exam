@@ -3,9 +3,12 @@ package ru.kuchanov.scpquiz.ui.fragment
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.arellomobile.mvp.presenter.ProvidePresenterTag
+import com.google.android.flexbox.FlexboxLayout
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import kotlinx.android.synthetic.main.fragment_game.*
 import ru.kuchanov.scpquiz.R
@@ -18,6 +21,7 @@ import ru.kuchanov.scpquiz.mvp.presenter.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
+import ru.kuchanov.scpquiz.ui.view.CharacterView
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import timber.log.Timber
 import toothpick.Toothpick
@@ -53,8 +57,11 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        keyboardView.keyPressListener = {
-            presenter.onCharClicked(it)
+        keyboardView.keyPressListener = { char, charView ->
+            presenter.onCharClicked(char)
+            keyboardView.removeCharView(charView)
+            addCharToFlexBox(char, scpNameFlexBoxLayout)
+//            scpNameTextView.text = presenter.enteredName.joinToString("")
         }
 
         coinsButton.setOnClickListener { presenter.onCoinsClicked() }
@@ -97,6 +104,32 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             animBack.startDelay = 500
             animBack.start()
         }, 100)
+    }
+
+    private fun addCharToFlexBox(char: Char, flexBoxContainer: FlexboxLayout) {
+        val characterView = CharacterView(context!!)
+        characterView.squareByHeight = false
+        characterView.char = char
+
+        characterView.setOnClickListener {
+            presenter.onCharRemoved(char)
+            flexBoxContainer.removeView(it)
+            keyboardView.addCharView((it as CharacterView).char)
+        }
+
+        flexBoxContainer.addView(characterView)
+
+        val marginParams = characterView.layoutParams as ViewGroup.MarginLayoutParams
+        marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMarginSmall)
+//        marginParams.bottomMargin = resources.getDimensionPixelSize(R.dimen.defaultMargin)
+        marginParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
+        marginParams.height = LinearLayout.LayoutParams.WRAP_CONTENT
+
+        characterView.layoutParams = marginParams
+    }
+
+    override fun showLevelCompleted() {
+        //todo
     }
 
     private fun fillCharsList(chars: MutableList<Char>, availableChars: List<Char>): MutableList<Char> {

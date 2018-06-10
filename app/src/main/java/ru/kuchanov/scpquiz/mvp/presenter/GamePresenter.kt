@@ -27,6 +27,10 @@ class GamePresenter @Inject constructor(
 
     var quizId: Long by Delegates.notNull()
 
+    lateinit var quiz: Quiz
+
+    val enteredName = mutableListOf<Char>()
+
     init {
         Timber.d("constructor")
     }
@@ -67,8 +71,11 @@ class GamePresenter @Inject constructor(
                 .subscribeBy(
                     onSuccess = {
                         Timber.d("quiz:${it.first.scpNumber}\ntranslationTexts:${it.second.map { it.translation }}")
+
+                        quiz = it.first
+
                         viewState.showProgress(false)
-                        viewState.showLevel(it.first, it.second)
+                        viewState.showLevel(quiz, it.second)
                     },
                     onError = {
                         Timber.e(it)
@@ -81,10 +88,11 @@ class GamePresenter @Inject constructor(
     fun onLevelCompleted() {
         //mark level as completed
         Single.fromCallable {
-            appDatabase.finishedLevelsDao().insert(FinishedLevels(
-                quizId = quizId,
-                finished = true
-            ))
+            appDatabase.finishedLevelsDao().insert(
+                FinishedLevels(
+                    quizId = quizId,
+                    finished = true
+                ))
         }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -114,6 +122,24 @@ class GamePresenter @Inject constructor(
     fun onCharClicked(char: Char) {
         //todo
         Timber.d("char pressed: $char")
+
+        enteredName += char
+
+        //check result
+        quiz.quizTranslations?.get(0)?.let {
+            if (enteredName.joinToString("").toLowerCase() == it.translation.toLowerCase()) {
+                Timber.d("level completed!")
+                //todo
+
+                viewState.showLevelCompleted()
+            } else {
+                //todo?
+            }
+        }
+    }
+
+    fun onCharRemoved(char: Char) {
+        //todo
     }
 
     override fun onDestroy() {

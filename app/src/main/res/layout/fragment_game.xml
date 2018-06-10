@@ -142,15 +142,25 @@
 
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/scpNameTextView"
-                        android:layout_width="wrap_content"
+                    <com.google.android.flexbox.FlexboxLayout
+                        android:id="@+id/scpNameFlexBoxLayout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text=""
-                        android:textAllCaps="true"
-                        android:textSize="20sp"
-                        tools:text="The shy gay" />
+                        android:paddingEnd="@dimen/defaultMarginSmall"
+                        android:paddingStart="@dimen/defaultMarginSmall"
+                        app:flexDirection="row"
+                        app:flexWrap="nowrap"
+                        app:justifyContent="center" />
+
+                    <!--<TextView-->
+                    <!--android:id="@+id/scpNameTextView"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center_horizontal"-->
+                    <!--android:text=""-->
+                    <!--android:textAllCaps="true"-->
+                    <!--android:textSize="20sp"-->
+                    <!--tools:text="The shy gay" />-->
 
                     <View
                         android:layout_width="match_parent"
@@ -171,12 +181,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        tools:background="#80ff0000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/gameView"
-        app:layout_constraintVertical_weight="1">
+        app:layout_constraintVertical_weight="1"
+        tools:background="#80ff0000">
 
         <ru.kuchanov.scpquiz.ui.view.KeyboardView
             android:id="@+id/keyboardView"

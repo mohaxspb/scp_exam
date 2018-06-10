@@ -14,6 +14,8 @@ class CharacterView : TextView {
             text = field.toString()
         }
 
+    var squareByHeight = true
+
     constructor(context: Context) : this(context, null, R.style.CharacterViewStyle)
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, R.style.CharacterViewStyle)
@@ -34,6 +36,19 @@ class CharacterView : TextView {
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(heightMeasureSpec, heightMeasureSpec)
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+
+        if (squareByHeight) {
+            val height = measuredHeight
+            setMeasuredDimension(height, height)
+        } else {
+            val width = measuredWidth
+            setMeasuredDimension(width, width)
+        }
+//        if (squareByHeight) {
+//            super.onMeasure(heightMeasureSpec, heightMeasureSpec)
+//        } else{
+//            super.onMeasure(widthMeasureSpec, widthMeasureSpec)
+//        }
     }
 }
