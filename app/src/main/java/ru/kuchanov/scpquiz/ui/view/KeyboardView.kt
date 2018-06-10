@@ -16,7 +16,7 @@ class KeyboardView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     companion object {
-        val PADDING_TOP_LEFT = DimensionUtils.dpToPx(24)
+        val PADDING_TOP_BOTTOM = DimensionUtils.dpToPx(16)
         val PADDING_LEFT = DimensionUtils.dpToPx(16)
         const val MIN_KEY_COUNT = 21
     }
@@ -28,7 +28,7 @@ class KeyboardView @JvmOverloads constructor(
     init {
         orientation = VERTICAL
         inflate(context, R.layout.view_keyboard, this)
-        setPadding(PADDING_LEFT, PADDING_TOP_LEFT, 0, 0)
+        setPadding(PADDING_LEFT, PADDING_TOP_BOTTOM, PADDING_LEFT, PADDING_TOP_BOTTOM)
     }
 
     fun removeCharView(view: CharacterView) {
@@ -53,10 +53,10 @@ class KeyboardView @JvmOverloads constructor(
         val params = characterView.layoutParams as FlexboxLayout.LayoutParams
 //        marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)
 //        marginParams.bottomMargin = resources.getDimensionPixelSize(R.dimen.defaultMargin)
-        params.width = LinearLayout.LayoutParams.WRAP_CONTENT
-        params.height = LinearLayout.LayoutParams.MATCH_PARENT
+//        params.width = LinearLayout.LayoutParams.WRAP_CONTENT
+//        params.height = LinearLayout.LayoutParams.MATCH_PARENT
 
-        params.flexBasisPercent = 30f
+        params.flexBasisPercent = .3f
 
         characterView.layoutParams = params
     }

@@ -68,8 +68,9 @@
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/gameView"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
+        android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@+id/keyboardScrollView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -82,7 +83,8 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/scpView"
+                android:layout_width="235dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@drawable/bg_level_card"
@@ -142,25 +144,33 @@
 
                     </LinearLayout>
 
-                    <com.google.android.flexbox.FlexboxLayout
-                        android:id="@+id/scpNameFlexBoxLayout"
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="@dimen/defaultMarginSmall"
-                        android:paddingStart="@dimen/defaultMarginSmall"
-                        app:flexDirection="row"
-                        app:flexWrap="nowrap"
-                        app:justifyContent="center" />
+                        android:minHeight="@dimen/defaultMargin">
+
+                        <com.google.android.flexbox.FlexboxLayout
+                            android:id="@+id/scpNameFlexBoxLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:flexDirection="row"
+                            app:flexWrap="wrap"
+                            app:justifyContent="center" />
+                    </FrameLayout>
+                    <!--app:showDivider="middle"-->
+                    <!--app:dividerDrawable="@drawable/divider_small"-->
+                    <!--app:showDividerVertical="middle"-->
 
                     <!--<TextView-->
                     <!--android:id="@+id/scpNameTextView"-->
-                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_width="match_parent"-->
                     <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_gravity="center_horizontal"-->
                     <!--android:text=""-->
+                    <!--android:gravity="center"-->
                     <!--android:textAllCaps="true"-->
+                    <!--android:background="#800000ff"-->
                     <!--android:textSize="20sp"-->
-                    <!--tools:text="The shy gay" />-->
+                    <!--tools:text="The shy gay The shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gay" />-->
 
                     <View
                         android:layout_width="match_parent"
@@ -202,9 +212,11 @@
         android:background="@color/whiteHalfTransparent"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintVertical_bias="1.0"
         tools:visibility="visible">
 
         <ProgressBar

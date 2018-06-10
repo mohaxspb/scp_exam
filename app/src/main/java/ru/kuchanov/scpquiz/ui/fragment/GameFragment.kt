@@ -2,15 +2,16 @@ package ru.kuchanov.scpquiz.ui.fragment
 
 import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
-import android.widget.LinearLayout
+import android.widget.TextView
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.arellomobile.mvp.presenter.ProvidePresenterTag
 import com.google.android.flexbox.FlexboxLayout
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import kotlinx.android.synthetic.main.fragment_game.*
+import kotlinx.android.synthetic.main.fragment_game.view.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.di.Di
@@ -23,6 +24,7 @@ import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.ui.view.CharacterView
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
+import ru.kuchanov.scpquiz.utils.DimensionUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -62,6 +64,11 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             keyboardView.removeCharView(charView)
             addCharToFlexBox(char, scpNameFlexBoxLayout)
 //            scpNameTextView.text = presenter.enteredName.joinToString("")
+//            with(root.gameView.strokeView.scpNameTextView) {
+//                text = presenter.enteredName.joinToString("")
+//                Timber.d("height: $height")
+//                Timber.d("height: ${layoutParams.height}")
+//            }
         }
 
         coinsButton.setOnClickListener { presenter.onCoinsClicked() }
@@ -106,26 +113,49 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         }, 100)
     }
 
+//    private fun addCharToFlexBox(char: Char, flexBoxContainer: FlexboxLayout) {
+//        val characterView = CharacterView(context!!)
+//        characterView.squareByHeight = false
+//        characterView.char = char
+//
+//        characterView.setBackgroundResource(0)
+//        characterView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+//
+//        characterView.setOnClickListener {
+//            presenter.onCharRemoved(char)
+//            flexBoxContainer.removeView(it)
+//            keyboardView.addCharView((it as CharacterView).char)
+//        }
+//
+//        flexBoxContainer.addView(characterView)
+//
+//        val params = characterView.layoutParams as FlexboxLayout.LayoutParams
+//        params.minHeight = DimensionUtils.dpToPx(16)
+//        params.minWidth = DimensionUtils.dpToPx(16)
+//
+////        val marginParams = characterView.layoutParams as ViewGroup.MarginLayoutParams
+////        marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMarginSmall)
+//////        marginParams.bottomMargin = resources.getDimensionPixelSize(R.dimen.defaultMargin)
+////        marginParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
+////        marginParams.height = LinearLayout.LayoutParams.WRAP_CONTENT
+////
+////        characterView.layoutParams = marginParams
+//    }
+
     private fun addCharToFlexBox(char: Char, flexBoxContainer: FlexboxLayout) {
-        val characterView = CharacterView(context!!)
-        characterView.squareByHeight = false
-        characterView.char = char
+        val characterView = TextView(context!!)
+        characterView.text = char.toString()
+
+//        characterView.setBackgroundResource(0)
+        characterView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
 
         characterView.setOnClickListener {
             presenter.onCharRemoved(char)
             flexBoxContainer.removeView(it)
-            keyboardView.addCharView((it as CharacterView).char)
+            keyboardView.addCharView((it as TextView).text[0])
         }
 
         flexBoxContainer.addView(characterView)
-
-        val marginParams = characterView.layoutParams as ViewGroup.MarginLayoutParams
-        marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMarginSmall)
-//        marginParams.bottomMargin = resources.getDimensionPixelSize(R.dimen.defaultMargin)
-        marginParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
-        marginParams.height = LinearLayout.LayoutParams.WRAP_CONTENT
-
-        characterView.layoutParams = marginParams
     }
 
     override fun showLevelCompleted() {

@@ -7,11 +7,13 @@
     <com.google.android.flexbox.FlexboxLayout
         android:id="@+id/flexBoxLayout"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:flexDirection="column"
-        app:showDividerHorizontal="beginning|middle"
-        app:showDividerVertical="beginning|middle"
+        app:showDividerVertical="middle"
+        app:dividerDrawable="@drawable/divider"
+        app:justifyContent="space_between"
         app:flexWrap="wrap"/>
+    <!--app:dividerDrawable="@dimen/defaultMargin"-->
     <!--app:justifyContent="space_around"-->
     <!--app:showDividerHorizontal="beginning|middle"-->
     <!--app:showDividerVertical="beginning|middle"-->
