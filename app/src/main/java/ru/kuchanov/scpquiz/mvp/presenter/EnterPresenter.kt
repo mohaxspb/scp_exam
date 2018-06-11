@@ -11,13 +11,18 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
+import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.QuizConverter
+import ru.kuchanov.scpquiz.model.db.FinishedLevel
+import ru.kuchanov.scpquiz.model.db.User
+import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.view.EnterView
 import ru.kuchanov.scpquiz.utils.StorageUtils
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -53,11 +58,33 @@ class EnterPresenter @Inject constructor(
         }
                 .map {
                     Timber.d("write initial data to DB")
+
+                    Timber.d("write users:")
+                    val doctorUser = User(
+                        name = appContext.getString(R.string.doctor_name),
+                        role = UserRole.DOCTOR
+                    )
+                    appDatabase.userDao().insert(doctorUser)
+
+                    val playerUser = User(
+                        name = appContext.getString(R.string.player_name, Random().nextInt(10000)),
+                        role = UserRole.PLAYER
+                    )
+                    appDatabase.userDao().insert(playerUser)
+
+                    Timber.d("write quizes")
                     appDatabase.quizDao().insertQuizesWithQuizTranslations(
                         quizConverter.convertCollection(
                             it,
                             quizConverter::convert
                         ))
+                    appDatabase.finishedLevelsDao().insert(it.map { nwQuiz ->
+                        FinishedLevel(
+                            nwQuiz.id,
+                            false,
+                            false
+                        )
+                    })
                     -1L
                 }
 

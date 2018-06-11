@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "92716f3a8b4b90a87b2806799dd5a10b",
+    "identityHash": "15f0fd6757b237e2d6dd705474d0a8e9",
     "entities": [
       {
         "tableName": "Quiz",
@@ -204,13 +204,13 @@
       },
       {
         "tableName": "User",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `avatarUrl` TEXT, `score` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `name` TEXT NOT NULL, `avatarUrl` TEXT, `score` INTEGER NOT NULL, `role` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "name",
@@ -228,6 +228,12 @@
             "fieldPath": "score",
             "columnName": "score",
             "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "role",
+            "columnName": "role",
+            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -275,7 +281,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"92716f3a8b4b90a87b2806799dd5a10b\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"15f0fd6757b237e2d6dd705474d0a8e9\")"
     ]
   }
 }

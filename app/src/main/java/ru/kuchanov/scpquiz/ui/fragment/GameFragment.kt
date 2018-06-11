@@ -4,6 +4,8 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.TextView
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
@@ -11,25 +13,39 @@ import com.arellomobile.mvp.presenter.ProvidePresenterTag
 import com.google.android.flexbox.FlexboxLayout
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import kotlinx.android.synthetic.main.fragment_game.*
-import kotlinx.android.synthetic.main.fragment_game.view.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.GameModule
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.QuizTranslation
+import ru.kuchanov.scpquiz.model.db.User
+import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.mvp.presenter.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
-import ru.kuchanov.scpquiz.ui.view.CharacterView
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
-import ru.kuchanov.scpquiz.utils.DimensionUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
 
 class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
+
+    companion object {
+        const val ARG_QUIZ_ID = "ARG_QUIZ_ID"
+        const val ARG_NEXT_QUIZ_ID = "ARG_NEXT_QUIZ_ID"
+        const val NO_NEXT_QUIZ_ID = -1L
+
+        fun newInstance(quizId: Long, nextQuizId: Long): GameFragment {
+            val fragment = GameFragment()
+            val args = Bundle()
+            args.putLong(ARG_QUIZ_ID, quizId)
+            args.putLong(ARG_NEXT_QUIZ_ID, nextQuizId)
+            fragment.arguments = args
+            return fragment
+        }
+    }
 
     override val scopes: Array<String> = arrayOf(Di.Scope.GAME_FRAGMENT)
 
@@ -43,6 +59,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         val presenter = scope.getInstance(GamePresenter::class.java)
         presenter.quizId = arguments?.getLong(ARG_QUIZ_ID)
                 ?: throw IllegalStateException("cant create presenter without quizId in fragment args!")
+        presenter.nextQuizId = arguments?.getLong(ARG_NEXT_QUIZ_ID)
+                ?: throw IllegalStateException("cant create presenter without nextQuizId in fragment args!")
         return presenter
     }
 
@@ -129,6 +147,23 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         flexBoxContainer.addView(characterView)
     }
 
+    override fun showChatActions(vararg chatAction: ChatAction) {
+        //todo
+        Timber.d("chatActions: ${chatAction.joinToString()}")
+    }
+
+    //    override fun showScpNameEntered() {
+//        //todo show message with suggestion to try enter scp number
+//    }
+
+    override fun showKeyboard(show: Boolean) {
+        keyboardScrollView.visibility = if (show) VISIBLE else GONE
+    }
+
+    override fun showChatMessage(message: String, user: User) {
+        //todo
+    }
+
     override fun showLevelCompleted() {
         //todo
     }
@@ -156,17 +191,5 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     override fun showProgress(show: Boolean) {
         progressView.visibility = if (show) View.VISIBLE else View.GONE
-    }
-
-    companion object {
-        const val ARG_QUIZ_ID = "ARG_QUIZ_ID"
-
-        fun newInstance(quizId: Long): GameFragment {
-            val fragment = GameFragment()
-            val args = Bundle()
-            args.putLong(ARG_QUIZ_ID, quizId)
-            fragment.arguments = args
-            return fragment
-        }
     }
 }

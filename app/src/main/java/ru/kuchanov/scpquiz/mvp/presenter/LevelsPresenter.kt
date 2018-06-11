@@ -13,8 +13,10 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.mvp.view.LevelsView
+import ru.kuchanov.scpquiz.ui.fragment.GameFragment
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 @InjectViewState
@@ -22,6 +24,8 @@ class LevelsPresenter @Inject constructor(
     private var appDatabase: AppDatabase,
     private var router: Router
 ) : MvpPresenter<LevelsView>() {
+
+    lateinit var levels: List<Quiz>
 
     init {
         Timber.d("constructor")
@@ -40,7 +44,9 @@ class LevelsPresenter @Inject constructor(
 
     fun onLevelClick(quizId: Long) {
         Timber.d("onLevelClick: %s", quizId)
-        router.navigateTo(Constants.Screens.QUIZ, quizId)
+        val clickedIndex = levels.indexOfFirst { quiz -> quiz.id == quizId }
+        val nextQuizId = if (clickedIndex < levels.size - 1) levels[clickedIndex + 1].id else GameFragment.NO_NEXT_QUIZ_ID
+        router.navigateTo(Constants.Screens.QUIZ, listOf(quizId, nextQuizId))
     }
 
     private fun updateLevels() {
@@ -51,12 +57,16 @@ class LevelsPresenter @Inject constructor(
         )
                 .map { pair ->
                     Timber.d("pair.second: ${pair.second}")
+
+                    levels = LinkedList(pair.first)
+
                     pair.first.map { quiz ->
                         val finishedLevel = pair.second.find { it.quizId == quiz.id }
+                                ?: throw IllegalStateException("level not found for quizId: ${quiz.id}")
                         LevelViewModel(
                             quiz,
-                            finishedLevel?.scpNameFilled ?: false,
-                            finishedLevel?.scpNumberFilled ?: false
+                            finishedLevel.scpNameFilled,
+                            finishedLevel.scpNumberFilled
                         )
                     }
                 }

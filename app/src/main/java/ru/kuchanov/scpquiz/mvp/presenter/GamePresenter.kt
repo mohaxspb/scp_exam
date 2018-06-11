@@ -1,18 +1,15 @@
 package ru.kuchanov.scpquiz.mvp.presenter
 
+import android.app.Application
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
-import io.reactivex.Flowable
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
+import ru.kuchanov.scpquiz.App
 import ru.kuchanov.scpquiz.Constants
-import ru.kuchanov.scpquiz.controller.db.AppDatabase
-import ru.kuchanov.scpquiz.model.db.FinishedLevel
-import ru.kuchanov.scpquiz.model.db.Quiz
-import ru.kuchanov.scpquiz.model.db.QuizTranslation
+import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
+import ru.kuchanov.scpquiz.model.ui.ChatAction
+import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
@@ -21,13 +18,16 @@ import kotlin.properties.Delegates
 
 @InjectViewState
 class GamePresenter @Inject constructor(
-    private var appDatabase: AppDatabase,
+    private var appContext: Application,
+    private var gameInteractor: GameInteractor,
     private var router: Router
 ) : MvpPresenter<GameView>() {
 
     var quizId: Long by Delegates.notNull()
 
-    lateinit var quiz: Quiz
+    var nextQuizId: Long by Delegates.notNull()
+
+    lateinit var quizLevelInfo: QuizLevelInfo
 
     private val enteredName = mutableListOf<Char>()
 
@@ -46,40 +46,21 @@ class GamePresenter @Inject constructor(
         loadLevel()
     }
 
-    fun loadLevel() {
-        Timber.d("loadLevel")
+    private fun loadLevel() {
+        Timber.d("loadLevelInfo")
 
         viewState.showProgress(true)
 
-        val randomQuizesSingle = appDatabase.quizDao().getRandomQuizes(2)
-                .flatMap { Flowable.fromIterable(it) }
-                .map {
-                    //todo create prefs for lang and use it
-                    appDatabase.quizDao().getQuizTranslationsByQuizIdAndLang(it.id, "ru").first()
-                }
-                .limit(2)
-                .toList()
-
-        Single.zip(
-            //todo create prefs for lang and use it
-            Single.fromCallable {
-                val quiz = appDatabase.quizDao().getQuizWithTranslationsAndPhrases(quizId, "ru")
-                Timber.d("quiz:$quiz")
-                quiz
-            },
-            randomQuizesSingle,
-            BiFunction { quiz: Quiz, quizTranslations: List<QuizTranslation> -> Pair(quiz, quizTranslations) }
-        )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        gameInteractor
+                .getLevelInfo(quizId)
                 .subscribeBy(
-                    onSuccess = {
-                        Timber.d("quiz:${it.first.scpNumber}\ntranslationTexts:${it.second.map { it.translation }}")
+                    onNext = {
+                        Timber.d("quiz:${it.quiz.scpNumber}\ntranslationTexts:${it.randomTranslations.map { it.translation }}")
 
-                        quiz = it.first
+                        quizLevelInfo = it
 
                         viewState.showProgress(false)
-                        viewState.showLevel(quiz, it.second)
+                        viewState.showLevel(it.quiz, it.randomTranslations)
                     },
                     onError = {
                         Timber.e(it)
@@ -114,7 +95,7 @@ class GamePresenter @Inject constructor(
     }
 
     private fun checkEnteredScpName() {
-        quiz.quizTranslations?.get(0)?.let {
+        quizLevelInfo.quiz.quizTranslations?.get(0)?.let {
             if (enteredName.joinToString("").toLowerCase() == it.translation.toLowerCase()) {
                 Timber.d("level completed!")
 
@@ -123,6 +104,21 @@ class GamePresenter @Inject constructor(
 
                 //todo show state for different cases
 //                viewState.showLevelCompleted()
+
+                viewState.showChatMessage(appContext.getString(R.string.message_suggest_scp_number), quizLevelInfo.doctor)
+                val nextLevelAction = ChatAction(
+                    appContext.getString(R.string.chat_action_next_level),
+                    { router.navigateTo(Constants.Screens.QUIZ, nextQuizId) }
+                )
+                val enterNumberAction = ChatAction(
+                    appContext.getString(R.string.chat_action_enter_number),
+                    {
+                        viewState.showKeyboard(true)
+                        //todo fill keyboard with digits
+                    }
+                )
+                viewState.showChatActions(nextLevelAction, enterNumberAction)
+                viewState.showKeyboard(false)
             } else {
                 //todo?
             }
@@ -131,16 +127,11 @@ class GamePresenter @Inject constructor(
 
     private fun onLevelCompleted() {
         //mark level as completed
-        Single.fromCallable {
-            appDatabase.finishedLevelsDao().insert(
-                FinishedLevel(
-                    quizId = quizId,
-                    scpNameFilled = isScpNameCompleted,
-                    scpNumberFilled = isScpNumberCompleted
-                ))
-        }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+        gameInteractor.updateFinishedLevel(
+            quizId,
+            isScpNameCompleted,
+            isScpNumberCompleted
+        )
                 .subscribeBy(
                     onSuccess = {
                         Timber.d("updated!")
