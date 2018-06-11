@@ -112,7 +112,9 @@ class GamePresenter @Inject constructor(
                 if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
                     val nextLevelAction = ChatAction(
                         appContext.getString(R.string.chat_action_next_level),
-                        { router.navigateTo(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId) }
+                        {
+                            router.replaceScreen(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
+                        }
                     )
                     chatActions += nextLevelAction
                 }
