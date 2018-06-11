@@ -7,7 +7,7 @@
     <string name="player_name" translatable="false">D-%d</string>
     <string name="message_suggest_scp_number">Wanna try to remember this scp number?</string>
     <string name="chat_action_next_level">Next scp</string>
-    <string name="chat_action_enter_number">I\'ll try to remember scp number</string>
+    <string name="chat_action_enter_number">I\'ll try!</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>

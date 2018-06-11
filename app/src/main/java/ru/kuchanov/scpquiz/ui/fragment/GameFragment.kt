@@ -1,6 +1,7 @@
 package ru.kuchanov.scpquiz.ui.fragment
 
 import android.animation.ObjectAnimator
+import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
@@ -25,10 +26,18 @@ import ru.kuchanov.scpquiz.mvp.presenter.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
+import ru.kuchanov.scpquiz.ui.view.ChatMessageView
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
+import android.support.v4.view.ViewCompat.animate
+import android.R.attr.scrollY
+import android.opengl.ETC1.getHeight
+import android.opengl.ETC1.getWidth
+import android.view.LayoutInflater
+import android.view.ViewTreeObserver
+
 
 class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
@@ -74,9 +83,10 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         super.onViewCreated(view, savedInstanceState)
 
         keyboardView.keyPressListener = { char, charView ->
+            val inputFlexBox = if(presenter.isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
+            addCharToFlexBox(char, inputFlexBox)
             presenter.onCharClicked(char)
             keyboardView.removeCharView(charView)
-            addCharToFlexBox(char, scpNameFlexBoxLayout)
         }
 
         coinsButton.setOnClickListener { presenter.onCoinsClicked() }
@@ -88,6 +98,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     override fun showLevel(quiz: Quiz, randomTranslations: List<QuizTranslation>) {
         //todo show level number
+        Timber.d("showLevel!")
         GlideApp
                 .with(imageView.context)
                 .load(quiz.imageUrl)
@@ -95,13 +106,14 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                 .into(imageView)
 
         var chars = quiz.quizTranslations?.let {
-            it[0].translation.replace(" ", "").toCharArray().toMutableList()
+            it[0].translation
+                    .toCharArray()
+                    .toMutableList()
         }
                 ?: throw IllegalStateException("translations is null")
         Timber.d("chars.size: ${chars.size}")
         val availableChars = randomTranslations
                 .joinToString(separator = "") { it.translation }
-                .replace(" ", "")
                 .toCharArray()
                 .toList()
         chars = fillCharsList(chars, availableChars).apply { shuffle() }
@@ -129,33 +141,76 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         characterView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
 
         characterView.setOnClickListener {
-            presenter.onCharRemoved(char)
+            presenter.onCharRemoved(char, flexBoxContainer.indexOfChild(it))
             flexBoxContainer.removeView(it)
             keyboardView.addCharView((it as TextView).text[0])
         }
 
         flexBoxContainer.addView(characterView)
+
+        //todo create logic for words wrapping
+//        val params = characterView.layoutParams as FlexboxLayout.LayoutParams
+//        params.isWrapBefore =
+//        characterView.layoutParams = params
     }
 
-    override fun showChatActions(chatActions: List<ChatAction>) {
-        //todo
+    override fun showChatActions(chatActions: List<ChatAction>, containerId: Int) {
         Timber.d("chatActions: ${chatActions.joinToString()}")
 
+        val chatActionsFlexBoxLayout = LayoutInflater.from(activity!!)
+                .inflate(R.layout.view_chat_actions, chatView, false) as FlexboxLayout
+        chatView.addView(chatActionsFlexBoxLayout)
+
         chatActions.forEach { chatAction ->
-            val chatActionView = TextView(chatView.context)
+            //todo correct design
+            val chatActionView = TextView(chatActionsFlexBoxLayout.context)
+            chatActionsFlexBoxLayout.addView(chatActionView)
             chatActionView.text = chatAction.actionName
+            chatActionView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
+            chatActionView.setBackgroundColor(Color.YELLOW)
             chatActionView.setPadding(20, 20, 20, 20)
-            chatActionView.setOnClickListener { chatAction.action.invoke() }
-            chatView.addView(chatActionView)
+            chatActionView.setOnClickListener { chatAction.action.invoke(chatView.indexOfChild(chatActionsFlexBoxLayout)) }
         }
+    }
+
+    override fun removeChatAction(indexInParent: Int) {
+        chatView.removeViewAt(indexInParent)
     }
 
     override fun showKeyboard(show: Boolean) {
         keyboardScrollView.visibility = if (show) VISIBLE else GONE
     }
 
+    override fun setKeyboardChars(characters: List<Char>) {
+        keyboardView.setCharacters(characters)
+    }
+
     override fun showChatMessage(message: String, user: User) {
-        //todo
+        val chatMessageView = ChatMessageView(
+            context = activity!!,
+            user = user,
+            message = message
+        )
+
+        chatView.addView(chatMessageView)
+//        Timber.d("chatMessageView.top: ${chatMessageView.top}")
+//        Timber.d("chatMessageView.y: ${chatMessageView.y}")
+//        gameScrollView.smoothScrollTo(0, chatMessageView.top)
+
+        chatMessageView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val width = chatMessageView.width
+                val height = chatMessageView.height
+                if (width > 0 && height > 0) {
+                    chatMessageView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                    ObjectAnimator
+                            .ofInt(gameScrollView, "scrollY", chatMessageView.top)
+                            .setDuration(500)
+                            .start()
+                }
+            }
+        })
     }
 
     override fun showLevelCompleted() {
@@ -167,15 +222,14 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             val charsToAddCount = KeyboardView.MIN_KEY_COUNT - chars.size
 
             Timber.d("chars: $chars")
-            Timber.d("aviableChars: $availableChars")
+            Timber.d("availableChars: $availableChars")
             val topBorder = if (availableChars.size > charsToAddCount) charsToAddCount else availableChars.size
             chars.addAll(availableChars.subList(0, topBorder))
             Timber.d("chars.size: ${chars.size}")
         }
-        if (chars.size < KeyboardView.MIN_KEY_COUNT) {
-            return fillCharsList(chars, availableChars)
-        } else {
-            return chars
+        return when {
+            chars.size < KeyboardView.MIN_KEY_COUNT -> fillCharsList(chars, availableChars)
+            else -> chars
         }
     }
 

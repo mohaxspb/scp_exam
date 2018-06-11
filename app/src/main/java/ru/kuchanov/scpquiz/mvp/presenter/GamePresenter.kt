@@ -13,6 +13,7 @@ import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.fragment.GameFragment
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -23,15 +24,15 @@ class GamePresenter @Inject constructor(
     private var router: Router
 ) : MvpPresenter<GameView>() {
 
-    var quizId: Long by Delegates.notNull()
+    private var isLevelShown: Boolean = false
 
-//    var nextQuizId: Long by Delegates.notNull()
+    var quizId: Long by Delegates.notNull()
 
     lateinit var quizLevelInfo: QuizLevelInfo
 
     private val enteredName = mutableListOf<Char>()
 
-    private var isScpNameCompleted = false
+    var isScpNameCompleted = false
 
     private var isScpNumberCompleted = false
 
@@ -60,7 +61,10 @@ class GamePresenter @Inject constructor(
                         quizLevelInfo = it
 
                         viewState.showProgress(false)
-                        viewState.showLevel(it.quiz, it.randomTranslations)
+                        if (!isLevelShown) {
+                            isLevelShown = true
+                            viewState.showLevel(it.quiz, it.randomTranslations)
+                        }
                     },
                     onError = {
                         Timber.e(it)
@@ -80,6 +84,14 @@ class GamePresenter @Inject constructor(
     fun onHamburgerMenuClicked() {
         //todo
         Timber.d("hamburgerButton button clicked!")
+
+        val randomMessage = if (Random().nextBoolean()) {
+            "kjdhfdskjfh skjdh ksjh ksjdskjhksjhkjshkjshksjhf ksjhf kjshskjhskjfh"
+        } else {
+            "test"
+        }
+
+        viewState.showChatMessage(randomMessage, quizLevelInfo.doctor)
     }
 
     fun onCharClicked(char: Char) {
@@ -95,9 +107,11 @@ class GamePresenter @Inject constructor(
     }
 
     private fun checkEnteredScpName() {
-        quizLevelInfo.quiz.quizTranslations?.get(0)?.let {
-            if (enteredName.joinToString("").toLowerCase() == it.translation.toLowerCase()) {
-                Timber.d("level completed!")
+        quizLevelInfo.quiz.quizTranslations?.first()?.let {
+            //            if (enteredName.joinToString("").toLowerCase() == it.translation.toLowerCase()) {
+            //fixme test
+            if (enteredName.size > 0) {
+                Timber.d("level completed0!")
 
                 isScpNameCompleted = true
                 onLevelCompleted()
@@ -118,17 +132,23 @@ class GamePresenter @Inject constructor(
                     )
                     chatActions += nextLevelAction
                 }
+                val message = appContext.getString(R.string.chat_action_enter_number)
                 val enterNumberAction = ChatAction(
-                    appContext.getString(R.string.chat_action_enter_number),
+                    message,
                     {
+                        //todo need to pass correct numbers, as it can have duplicated ones
+                        viewState.setKeyboardChars(listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0'))
                         viewState.showKeyboard(true)
-                        //todo fill keyboard with digits
+                        viewState.showChatMessage(message, quizLevelInfo.player)
+                        viewState.removeChatAction(it)
                     }
                 )
                 chatActions += enterNumberAction
-                viewState.showChatActions(chatActions)
+                viewState.showChatActions(chatActions, 0)
                 viewState.showKeyboard(false)
             } else {
+                Timber.d("check entered: ${enteredName.joinToString("").toLowerCase()}")
+                Timber.d("check translation: ${it.translation.toLowerCase()}")
                 //todo?
             }
         }
@@ -152,8 +172,8 @@ class GamePresenter @Inject constructor(
                 )
     }
 
-    fun onCharRemoved(char: Char) {
-        enteredName.remove(char.toLowerCase())
+    fun onCharRemoved(char: Char, indexOfChild: Int) {
+        enteredName.removeAt(indexOfChild)
     }
 
     override fun onDestroy() {

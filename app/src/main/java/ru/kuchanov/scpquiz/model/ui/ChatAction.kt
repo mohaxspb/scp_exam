@@ -1,6 +1,6 @@
 package ru.kuchanov.scpquiz.model.ui
 
-data class ChatAction(
+class ChatAction(
     val actionName: String,
-    val action: () -> Unit
+    val action: (Int) -> Unit
 )

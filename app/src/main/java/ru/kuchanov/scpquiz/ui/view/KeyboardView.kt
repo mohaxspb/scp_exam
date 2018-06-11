@@ -7,6 +7,7 @@ import com.google.android.flexbox.FlexboxLayout
 import kotlinx.android.synthetic.main.view_keyboard.view.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.utils.DimensionUtils
+import timber.log.Timber
 
 
 class KeyboardView @JvmOverloads constructor(
@@ -44,26 +45,16 @@ class KeyboardView @JvmOverloads constructor(
 
         flexBoxLayout.addView(characterView)
 
-//        val marginParams = characterView.layoutParams as ViewGroup.MarginLayoutParams
-////        marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)
-////        marginParams.bottomMargin = resources.getDimensionPixelSize(R.dimen.defaultMargin)
-//        marginParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
-//        marginParams.height = LinearLayout.LayoutParams.MATCH_PARENT
-
         val params = characterView.layoutParams as FlexboxLayout.LayoutParams
-//        marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMargin)
-//        marginParams.bottomMargin = resources.getDimensionPixelSize(R.dimen.defaultMargin)
-//        params.width = LinearLayout.LayoutParams.WRAP_CONTENT
-//        params.height = LinearLayout.LayoutParams.MATCH_PARENT
-
         params.flexBasisPercent = .3f
-
         characterView.layoutParams = params
     }
 
     fun setCharacters(characters: List<Char>) {
+        Timber.d("setCharacters: $characters")
         this.characters.clear()
         this.characters.addAll(characters)
-        characters.forEach { addCharView(it) }
+        flexBoxLayout.removeAllViews()
+        this.characters.forEach { addCharView(it) }
     }
 }
