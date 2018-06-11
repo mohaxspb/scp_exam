@@ -34,14 +34,12 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     companion object {
         const val ARG_QUIZ_ID = "ARG_QUIZ_ID"
-        const val ARG_NEXT_QUIZ_ID = "ARG_NEXT_QUIZ_ID"
         const val NO_NEXT_QUIZ_ID = -1L
 
-        fun newInstance(quizId: Long, nextQuizId: Long): GameFragment {
+        fun newInstance(quizId: Long): GameFragment {
             val fragment = GameFragment()
             val args = Bundle()
             args.putLong(ARG_QUIZ_ID, quizId)
-            args.putLong(ARG_NEXT_QUIZ_ID, nextQuizId)
             fragment.arguments = args
             return fragment
         }
@@ -59,8 +57,6 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         val presenter = scope.getInstance(GamePresenter::class.java)
         presenter.quizId = arguments?.getLong(ARG_QUIZ_ID)
                 ?: throw IllegalStateException("cant create presenter without quizId in fragment args!")
-        presenter.nextQuizId = arguments?.getLong(ARG_NEXT_QUIZ_ID)
-                ?: throw IllegalStateException("cant create presenter without nextQuizId in fragment args!")
         return presenter
     }
 
@@ -81,12 +77,6 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             presenter.onCharClicked(char)
             keyboardView.removeCharView(charView)
             addCharToFlexBox(char, scpNameFlexBoxLayout)
-//            scpNameTextView.text = presenter.enteredName.joinToString("")
-//            with(root.gameView.strokeView.scpNameTextView) {
-//                text = presenter.enteredName.joinToString("")
-//                Timber.d("height: $height")
-//                Timber.d("height: ${layoutParams.height}")
-//            }
         }
 
         coinsButton.setOnClickListener { presenter.onCoinsClicked() }
@@ -147,14 +137,18 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         flexBoxContainer.addView(characterView)
     }
 
-    override fun showChatActions(vararg chatAction: ChatAction) {
+    override fun showChatActions(chatActions: List<ChatAction>) {
         //todo
-        Timber.d("chatActions: ${chatAction.joinToString()}")
-    }
+        Timber.d("chatActions: ${chatActions.joinToString()}")
 
-    //    override fun showScpNameEntered() {
-//        //todo show message with suggestion to try enter scp number
-//    }
+        chatActions.forEach { chatAction ->
+            val chatActionView = TextView(chatView.context)
+            chatActionView.text = chatAction.actionName
+            chatActionView.setPadding(20, 20, 20, 20)
+            chatActionView.setOnClickListener { chatAction.action.invoke() }
+            chatView.addView(chatActionView)
+        }
+    }
 
     override fun showKeyboard(show: Boolean) {
         keyboardScrollView.visibility = if (show) VISIBLE else GONE

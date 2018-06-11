@@ -15,5 +15,5 @@ interface GameView : BaseView {
     fun showChatMessage(message: String, user: User)
 
     fun showKeyboard(show: Boolean)
-    fun showChatActions(vararg chatAction: ChatAction)
+    fun showChatActions(chatActions: List<ChatAction>)
 }

@@ -96,4 +96,7 @@ interface QuizDao {
         }
         return quiz
     }
+
+    @Query("SELECT id FROM quiz WHERE id > :quizId ORDER BY id ASC LIMIT 1")
+    fun getNextQuizId(quizId: Long): Single<Long>
 }

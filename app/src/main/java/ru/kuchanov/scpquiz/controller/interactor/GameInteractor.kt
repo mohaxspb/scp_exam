@@ -3,11 +3,12 @@ package ru.kuchanov.scpquiz.controller.interactor
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Function5
+import io.reactivex.functions.Function6
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
+import ru.kuchanov.scpquiz.ui.fragment.GameFragment
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -21,17 +22,20 @@ class GameInteractor @Inject constructor(
         getPlayer(),
         getDoctor(),
         getFinishedLevel(quizId),
-        Function5 { quiz: Quiz,
+        getNextQuizId(quizId),
+        Function6 { quiz: Quiz,
             randomTranslations: List<QuizTranslation>,
             player: User,
             doctor: User,
-            finishedLevel: FinishedLevel ->
+            finishedLevel: FinishedLevel,
+            nextQuizId:Long->
             QuizLevelInfo(
                 quiz = quiz,
                 randomTranslations = randomTranslations,
                 player = player,
                 doctor = doctor,
-                finishedLevel = finishedLevel
+                finishedLevel = finishedLevel,
+                nextQuizId = nextQuizId
             )
         }
     )
@@ -79,4 +83,9 @@ class GameInteractor @Inject constructor(
     private fun getFinishedLevel(quizId: Long) = appDatabase.finishedLevelsDao()
             .getByIdWithUpdates(quizId)
             .map { it.first() }
+
+    private fun getNextQuizId(quizId: Long) = appDatabase.quizDao()
+            .getNextQuizId(quizId)
+            .onErrorReturn { GameFragment.NO_NEXT_QUIZ_ID }
+            .toFlowable()
 }

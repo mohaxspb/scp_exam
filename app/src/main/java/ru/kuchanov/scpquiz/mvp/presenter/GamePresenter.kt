@@ -4,13 +4,13 @@ import android.app.Application
 import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import io.reactivex.rxkotlin.subscribeBy
-import ru.kuchanov.scpquiz.App
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
 import ru.kuchanov.scpquiz.mvp.view.GameView
+import ru.kuchanov.scpquiz.ui.fragment.GameFragment
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import javax.inject.Inject
@@ -25,7 +25,7 @@ class GamePresenter @Inject constructor(
 
     var quizId: Long by Delegates.notNull()
 
-    var nextQuizId: Long by Delegates.notNull()
+//    var nextQuizId: Long by Delegates.notNull()
 
     lateinit var quizLevelInfo: QuizLevelInfo
 
@@ -90,7 +90,7 @@ class GamePresenter @Inject constructor(
             //check result
             checkEnteredScpName()
         } else {
-            //todo chaeck if number is correct
+            //todo check if number is correct
         }
     }
 
@@ -106,10 +106,16 @@ class GamePresenter @Inject constructor(
 //                viewState.showLevelCompleted()
 
                 viewState.showChatMessage(appContext.getString(R.string.message_suggest_scp_number), quizLevelInfo.doctor)
-                val nextLevelAction = ChatAction(
-                    appContext.getString(R.string.chat_action_next_level),
-                    { router.navigateTo(Constants.Screens.QUIZ, nextQuizId) }
-                )
+
+                val chatActions = mutableListOf<ChatAction>()
+
+                if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
+                    val nextLevelAction = ChatAction(
+                        appContext.getString(R.string.chat_action_next_level),
+                        { router.navigateTo(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId) }
+                    )
+                    chatActions += nextLevelAction
+                }
                 val enterNumberAction = ChatAction(
                     appContext.getString(R.string.chat_action_enter_number),
                     {
@@ -117,7 +123,8 @@ class GamePresenter @Inject constructor(
                         //todo fill keyboard with digits
                     }
                 )
-                viewState.showChatActions(nextLevelAction, enterNumberAction)
+                chatActions += enterNumberAction
+                viewState.showChatActions(chatActions)
                 viewState.showKeyboard(false)
             } else {
                 //todo?

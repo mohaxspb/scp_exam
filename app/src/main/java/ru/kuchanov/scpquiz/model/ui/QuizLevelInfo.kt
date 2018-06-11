@@ -10,6 +10,6 @@ data class QuizLevelInfo(
     val randomTranslations: List<QuizTranslation>,
     val finishedLevel: FinishedLevel? = null,
     val player: User,
-    val doctor: User
-
+    val doctor: User,
+    val nextQuizId: Long
 )

@@ -44,9 +44,9 @@ class LevelsPresenter @Inject constructor(
 
     fun onLevelClick(quizId: Long) {
         Timber.d("onLevelClick: %s", quizId)
-        val clickedIndex = levels.indexOfFirst { quiz -> quiz.id == quizId }
-        val nextQuizId = if (clickedIndex < levels.size - 1) levels[clickedIndex + 1].id else GameFragment.NO_NEXT_QUIZ_ID
-        router.navigateTo(Constants.Screens.QUIZ, listOf(quizId, nextQuizId))
+//        val clickedIndex = levels.indexOfFirst { quiz -> quiz.id == quizId }
+//        val nextQuizId = if (clickedIndex < levels.size - 1) levels[clickedIndex + 1].id else GameFragment.NO_NEXT_QUIZ_ID
+        router.navigateTo(Constants.Screens.QUIZ, quizId)
     }
 
     private fun updateLevels() {

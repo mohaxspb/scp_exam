@@ -43,11 +43,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                 Constants.Screens.ENTER -> EnterFragment.newInstance()
                 Constants.Screens.APP_INFO -> AppInfoFragment.newInstance()
                 Constants.Screens.QUIZ_LIST -> LevelsFragment.newInstance()
-                Constants.Screens.QUIZ ->
-                    @Suppress("UNCHECKED_CAST")
-                    with(data as List<Long>) {
-                        GameFragment.newInstance(data[0], data[1])
-                    }
+                Constants.Screens.QUIZ -> GameFragment.newInstance(data as Long)
                 else -> null
             }
         }
