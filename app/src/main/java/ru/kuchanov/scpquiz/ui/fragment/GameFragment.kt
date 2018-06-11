@@ -113,40 +113,11 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         }, 100)
     }
 
-//    private fun addCharToFlexBox(char: Char, flexBoxContainer: FlexboxLayout) {
-//        val characterView = CharacterView(context!!)
-//        characterView.squareByHeight = false
-//        characterView.char = char
-//
-//        characterView.setBackgroundResource(0)
-//        characterView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-//
-//        characterView.setOnClickListener {
-//            presenter.onCharRemoved(char)
-//            flexBoxContainer.removeView(it)
-//            keyboardView.addCharView((it as CharacterView).char)
-//        }
-//
-//        flexBoxContainer.addView(characterView)
-//
-//        val params = characterView.layoutParams as FlexboxLayout.LayoutParams
-//        params.minHeight = DimensionUtils.dpToPx(16)
-//        params.minWidth = DimensionUtils.dpToPx(16)
-//
-////        val marginParams = characterView.layoutParams as ViewGroup.MarginLayoutParams
-////        marginParams.marginEnd = resources.getDimensionPixelSize(R.dimen.defaultMarginSmall)
-//////        marginParams.bottomMargin = resources.getDimensionPixelSize(R.dimen.defaultMargin)
-////        marginParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
-////        marginParams.height = LinearLayout.LayoutParams.WRAP_CONTENT
-////
-////        characterView.layoutParams = marginParams
-//    }
-
     private fun addCharToFlexBox(char: Char, flexBoxContainer: FlexboxLayout) {
-        val characterView = TextView(context!!)
+        val characterView = TextView(flexBoxContainer.context)
         characterView.text = char.toString()
 
-//        characterView.setBackgroundResource(0)
+        characterView.setAllCaps(true)
         characterView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
 
         characterView.setOnClickListener {

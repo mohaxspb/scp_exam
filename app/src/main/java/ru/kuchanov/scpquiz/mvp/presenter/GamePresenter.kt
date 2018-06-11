@@ -120,10 +120,9 @@ class GamePresenter @Inject constructor(
     }
 
     fun onCharClicked(char: Char) {
-        //todo
         Timber.d("char pressed: $char")
 
-        enteredName += char
+        enteredName += char.toLowerCase()
 
         //check result
         quiz.quizTranslations?.get(0)?.let {
@@ -139,7 +138,7 @@ class GamePresenter @Inject constructor(
     }
 
     fun onCharRemoved(char: Char) {
-        //todo
+        enteredName.remove(char.toLowerCase())
     }
 
     override fun onDestroy() {

@@ -147,7 +147,7 @@
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="@dimen/defaultMargin">
+                        android:minHeight="24dp">
 
                         <com.google.android.flexbox.FlexboxLayout
                             android:id="@+id/scpNameFlexBoxLayout"
@@ -157,20 +157,6 @@
                             app:flexWrap="wrap"
                             app:justifyContent="center" />
                     </FrameLayout>
-                    <!--app:showDivider="middle"-->
-                    <!--app:dividerDrawable="@drawable/divider_small"-->
-                    <!--app:showDividerVertical="middle"-->
-
-                    <!--<TextView-->
-                    <!--android:id="@+id/scpNameTextView"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text=""-->
-                    <!--android:gravity="center"-->
-                    <!--android:textAllCaps="true"-->
-                    <!--android:background="#800000ff"-->
-                    <!--android:textSize="20sp"-->
-                    <!--tools:text="The shy gay The shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gayThe shy gay" />-->
 
                     <View
                         android:layout_width="match_parent"
