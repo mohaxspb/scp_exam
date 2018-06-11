@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c0356ce196083cd6c0bdc367b4864fe3",
+    "identityHash": "92716f3a8b4b90a87b2806799dd5a10b",
     "entities": [
       {
         "tableName": "Quiz",
@@ -241,15 +241,9 @@
         "foreignKeys": []
       },
       {
-        "tableName": "FinishedLevels",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `quizId` INTEGER NOT NULL, `finished` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "tableName": "FinishedLevel",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`quizId` INTEGER NOT NULL, `scpNameFilled` INTEGER NOT NULL, `scpNumberFilled` INTEGER NOT NULL, PRIMARY KEY(`quizId`))",
         "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
           {
             "fieldPath": "quizId",
             "columnName": "quizId",
@@ -257,15 +251,21 @@
             "notNull": true
           },
           {
-            "fieldPath": "finished",
-            "columnName": "finished",
+            "fieldPath": "scpNameFilled",
+            "columnName": "scpNameFilled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scpNumberFilled",
+            "columnName": "scpNumberFilled",
             "affinity": "INTEGER",
             "notNull": true
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "quizId"
           ],
           "autoGenerate": false
         },
@@ -275,7 +275,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"c0356ce196083cd6c0bdc367b4864fe3\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"92716f3a8b4b90a87b2806799dd5a10b\")"
     ]
   }
 }

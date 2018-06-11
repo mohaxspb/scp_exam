@@ -25,15 +25,20 @@ class LevelDelegate(private val clickListener: (Long) -> Unit) : AbsListItemAdap
 
     override fun onBindViewHolder(item: LevelViewModel, viewHolder: LevelViewHolder, payloads: MutableList<Any>) {
         with(viewHolder.itemView) {
-            if (item.levelCompleted) {
+            if (item.scpNameFilled || item.scpNumberFilled) {
                 GlideApp.with(imageView.context)
                         .load(item.quiz.imageUrl)
                         .dontAnimate()
                         .centerCrop()
                         .into(imageView)
-                strokeView.visibility = View.GONE
-                scpNumberTextView.visibility = View.VISIBLE
-                scpNumberTextView.text = item.quiz.scpNumber
+                if (item.scpNumberFilled && item.scpNameFilled) {
+                    strokeView.visibility = View.GONE
+                    scpNumberTextView.visibility = View.VISIBLE
+                    scpNumberTextView.text = item.quiz.scpNumber
+                } else{
+                    strokeView.visibility = View.VISIBLE
+                    scpNumberTextView.visibility = View.GONE
+                }
             } else {
                 imageView.setImageResource(R.drawable.ic_level_unknown)
                 strokeView.visibility = View.VISIBLE

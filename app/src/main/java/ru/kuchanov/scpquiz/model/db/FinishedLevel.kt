@@ -4,11 +4,9 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 
 @Entity
-data class FinishedLevels(
-    //db
+data class FinishedLevel(
     @PrimaryKey
-    val id: Long? = null,
-    //content
     val quizId: Long,
-    var finished: Boolean
+    var scpNameFilled: Boolean = false,
+    var scpNumberFilled: Boolean = false
 )

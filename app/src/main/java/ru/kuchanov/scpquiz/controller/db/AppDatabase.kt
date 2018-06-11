@@ -17,7 +17,7 @@ import ru.kuchanov.scpquiz.model.db.*
         QuizTranslation::class,
         QuizTranslationPhrase::class,
         User::class,
-        FinishedLevels::class
+        FinishedLevel::class
     ],
     version = 1
 )

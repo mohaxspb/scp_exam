@@ -10,7 +10,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
-import ru.kuchanov.scpquiz.model.db.FinishedLevels
+import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.QuizTranslation
 import ru.kuchanov.scpquiz.mvp.view.GameView
@@ -29,7 +29,11 @@ class GamePresenter @Inject constructor(
 
     lateinit var quiz: Quiz
 
-    val enteredName = mutableListOf<Char>()
+    private val enteredName = mutableListOf<Char>()
+
+    private var isScpNameCompleted = false
+
+    private var isScpNumberCompleted = false
 
     init {
         Timber.d("constructor")
@@ -85,28 +89,6 @@ class GamePresenter @Inject constructor(
                 )
     }
 
-    fun onLevelCompleted() {
-        //mark level as completed
-        Single.fromCallable {
-            appDatabase.finishedLevelsDao().insert(
-                FinishedLevels(
-                    quizId = quizId,
-                    finished = true
-                ))
-        }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                    onSuccess = {
-                        Timber.d("updated!")
-                    },
-                    onError = {
-                        Timber.e(it)
-                        /*todo*/
-                    }
-                )
-    }
-
     fun onLevelsClicked() = router.backTo(Constants.Screens.QUIZ_LIST)
 
     fun onCoinsClicked() {
@@ -122,19 +104,52 @@ class GamePresenter @Inject constructor(
     fun onCharClicked(char: Char) {
         Timber.d("char pressed: $char")
 
-        enteredName += char.toLowerCase()
+        if (!isScpNumberCompleted) {
+            enteredName += char.toLowerCase()
+            //check result
+            checkEnteredScpName()
+        } else {
+            //todo chaeck if number is correct
+        }
+    }
 
-        //check result
+    private fun checkEnteredScpName() {
         quiz.quizTranslations?.get(0)?.let {
             if (enteredName.joinToString("").toLowerCase() == it.translation.toLowerCase()) {
                 Timber.d("level completed!")
-                //todo
 
-                viewState.showLevelCompleted()
+                isScpNameCompleted = true
+                onLevelCompleted()
+
+                //todo show state for different cases
+//                viewState.showLevelCompleted()
             } else {
                 //todo?
             }
         }
+    }
+
+    private fun onLevelCompleted() {
+        //mark level as completed
+        Single.fromCallable {
+            appDatabase.finishedLevelsDao().insert(
+                FinishedLevel(
+                    quizId = quizId,
+                    scpNameFilled = isScpNameCompleted,
+                    scpNumberFilled = isScpNumberCompleted
+                ))
+        }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onSuccess = {
+                        Timber.d("updated!")
+                    },
+                    onError = {
+                        Timber.e(it)
+                        /*todo*/
+                    }
+                )
     }
 
     fun onCharRemoved(char: Char) {
