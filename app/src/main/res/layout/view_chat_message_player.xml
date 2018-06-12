@@ -15,18 +15,18 @@
 
     <TextView
         android:id="@+id/messageTextView"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:layout_marginTop="@dimen/defaultMargin"
         android:background="@drawable/bg_chat_message_player"
         android:gravity="end"
         android:padding="@dimen/defaultMargin"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/space"
         app:layout_constraintRight_toLeftOf="@+id/avatarImageView"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_default="wrap"
         tools:text="Очень хорошо D-3087,\nпродолжайте.Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо " />
 
     <!--tools:text="Очень хорошо D-3087,\nпродолжайте."/>-->

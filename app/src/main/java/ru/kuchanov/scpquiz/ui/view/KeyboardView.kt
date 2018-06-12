@@ -20,6 +20,22 @@ class KeyboardView @JvmOverloads constructor(
         val PADDING_TOP_BOTTOM = DimensionUtils.dpToPx(16)
         val PADDING_LEFT = DimensionUtils.dpToPx(16)
         const val MIN_KEY_COUNT = 21
+
+        fun fillCharsList(chars: MutableList<Char>, availableChars: List<Char>): MutableList<Char> {
+            if (chars.size < KeyboardView.MIN_KEY_COUNT) {
+                val charsToAddCount = KeyboardView.MIN_KEY_COUNT - chars.size
+
+                Timber.d("chars: $chars")
+                Timber.d("availableChars: $availableChars")
+                val topBorder = if (availableChars.size > charsToAddCount) charsToAddCount else availableChars.size
+                chars.addAll(availableChars.subList(0, topBorder))
+                Timber.d("chars.size: ${chars.size}")
+            }
+            return when {
+                chars.size < KeyboardView.MIN_KEY_COUNT -> fillCharsList(chars, availableChars)
+                else -> chars
+            }
+        }
     }
 
     private var characters = mutableListOf<Char>()

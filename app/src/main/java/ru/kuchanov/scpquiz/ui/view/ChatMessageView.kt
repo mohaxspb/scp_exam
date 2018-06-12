@@ -10,8 +10,8 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
-import kotlinx.android.synthetic.main.view_chat_message.view.avatarImageView as doctorAvatar
-import kotlinx.android.synthetic.main.view_chat_message.view.messageTextView as doctorMessage
+import kotlinx.android.synthetic.main.view_chat_message_doctor.view.avatarImageView as doctorAvatar
+import kotlinx.android.synthetic.main.view_chat_message_doctor.view.messageTextView as doctorMessage
 import kotlinx.android.synthetic.main.view_chat_message_player.view.avatarImageView as playerAvatar
 import kotlinx.android.synthetic.main.view_chat_message_player.view.messageTextView as playerMessage
 
@@ -33,7 +33,7 @@ class ChatMessageView @JvmOverloads constructor(
         var avatarRes = 0
         when (user.role) {
             UserRole.DOCTOR -> {
-                inflate(context, R.layout.view_chat_message, this)
+                inflate(context, R.layout.view_chat_message_doctor, this)
                 mAvatarImageView = doctorAvatar
                 mMessageTextView = doctorMessage
                 avatarRes = R.drawable.ic_doctor

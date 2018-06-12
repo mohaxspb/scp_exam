@@ -4,9 +4,11 @@ import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.ViewTreeObserver
 import android.widget.TextView
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
@@ -31,12 +33,6 @@ import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
-import android.support.v4.view.ViewCompat.animate
-import android.R.attr.scrollY
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
-import android.view.LayoutInflater
-import android.view.ViewTreeObserver
 
 
 class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
@@ -116,7 +112,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                 .joinToString(separator = "") { it.translation }
                 .toCharArray()
                 .toList()
-        chars = fillCharsList(chars, availableChars).apply { shuffle() }
+        chars = KeyboardView.fillCharsList(chars, availableChars).apply { shuffle() }
         keyboardView.setCharacters(chars)
 
         keyboardScrollView.postDelayed({
@@ -193,9 +189,6 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         )
 
         chatView.addView(chatMessageView)
-//        Timber.d("chatMessageView.top: ${chatMessageView.top}")
-//        Timber.d("chatMessageView.y: ${chatMessageView.y}")
-//        gameScrollView.smoothScrollTo(0, chatMessageView.top)
 
         chatMessageView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -215,22 +208,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     override fun showLevelCompleted() {
         //todo
-    }
-
-    private fun fillCharsList(chars: MutableList<Char>, availableChars: List<Char>): MutableList<Char> {
-        if (chars.size < KeyboardView.MIN_KEY_COUNT) {
-            val charsToAddCount = KeyboardView.MIN_KEY_COUNT - chars.size
-
-            Timber.d("chars: $chars")
-            Timber.d("availableChars: $availableChars")
-            val topBorder = if (availableChars.size > charsToAddCount) charsToAddCount else availableChars.size
-            chars.addAll(availableChars.subList(0, topBorder))
-            Timber.d("chars.size: ${chars.size}")
-        }
-        return when {
-            chars.size < KeyboardView.MIN_KEY_COUNT -> fillCharsList(chars, availableChars)
-            else -> chars
-        }
+        Timber.d("showLevelCompleted")
     }
 
     override fun showError(error: Throwable) {

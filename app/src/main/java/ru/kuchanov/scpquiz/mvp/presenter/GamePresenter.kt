@@ -11,6 +11,7 @@ import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.fragment.GameFragment
+import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import java.util.*
@@ -28,9 +29,11 @@ class GamePresenter @Inject constructor(
 
     var quizId: Long by Delegates.notNull()
 
-    lateinit var quizLevelInfo: QuizLevelInfo
+    private lateinit var quizLevelInfo: QuizLevelInfo
 
     private val enteredName = mutableListOf<Char>()
+
+    private val enteredNumber = mutableListOf<Char>()
 
     var isScpNameCompleted = false
 
@@ -97,12 +100,58 @@ class GamePresenter @Inject constructor(
     fun onCharClicked(char: Char) {
         Timber.d("char pressed: $char")
 
-        if (!isScpNumberCompleted) {
+        if (!isScpNameCompleted) {
             enteredName += char.toLowerCase()
             //check result
             checkEnteredScpName()
         } else {
-            //todo check if number is correct
+            enteredNumber += char.toLowerCase()
+            checkEnteredScpNumber()
+        }
+    }
+
+    fun onCharRemoved(char: Char, indexOfChild: Int) {
+        if (!isScpNameCompleted) {
+            enteredName.removeAt(indexOfChild)
+        } else {
+            enteredNumber.removeAt(indexOfChild)
+        }
+    }
+
+    private fun checkEnteredScpNumber() {
+        if (quizLevelInfo.quiz.scpNumber == enteredNumber.joinToString("")) {
+            Timber.d("number is correct!")
+
+            isScpNumberCompleted = true
+
+            viewState.showChatMessage(
+                appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NUMBER),
+                quizLevelInfo.doctor
+            )
+
+            val chatActions = mutableListOf<ChatAction>()
+
+            if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
+                val nextLevelAction = ChatAction(
+                    appContext.getString(R.string.chat_action_next_level),
+                    {
+                        router.replaceScreen(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
+                    }
+                )
+                chatActions += nextLevelAction
+            }
+
+            val enterNumberAction = ChatAction(
+                appContext.getString(R.string.chat_action_levels_list),
+                {
+                    router.backTo(Constants.Screens.QUIZ_LIST)
+                }
+            )
+            chatActions += enterNumberAction
+            viewState.showChatActions(chatActions, 0)
+            viewState.showKeyboard(false)
+        } else {
+            Timber.d("number is not correct")
         }
     }
 
@@ -116,10 +165,14 @@ class GamePresenter @Inject constructor(
                 isScpNameCompleted = true
                 onLevelCompleted()
 
-                //todo show state for different cases
-//                viewState.showLevelCompleted()
-
-                viewState.showChatMessage(appContext.getString(R.string.message_suggest_scp_number), quizLevelInfo.doctor)
+                viewState.showChatMessage(
+                    appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NAME),
+                    quizLevelInfo.doctor
+                )
+                viewState.showChatMessage(
+                    appContext.getString(R.string.message_suggest_scp_number),
+                    quizLevelInfo.doctor
+                )
 
                 val chatActions = mutableListOf<ChatAction>()
 
@@ -136,8 +189,9 @@ class GamePresenter @Inject constructor(
                 val enterNumberAction = ChatAction(
                     message,
                     {
-                        //todo need to pass correct numbers, as it can have duplicated ones
-                        viewState.setKeyboardChars(listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0'))
+                        val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0').shuffled()
+                        val scpNumberChars = quizLevelInfo.quiz.scpNumber.toCharArray().toMutableList()
+                        viewState.setKeyboardChars(KeyboardView.fillCharsList(scpNumberChars, availableChars))
                         viewState.showKeyboard(true)
                         viewState.showChatMessage(message, quizLevelInfo.player)
                         viewState.removeChatAction(it)
@@ -147,9 +201,7 @@ class GamePresenter @Inject constructor(
                 viewState.showChatActions(chatActions, 0)
                 viewState.showKeyboard(false)
             } else {
-                Timber.d("check entered: ${enteredName.joinToString("").toLowerCase()}")
-                Timber.d("check translation: ${it.translation.toLowerCase()}")
-                //todo?
+                Timber.d("name is not correct")
             }
         }
     }
@@ -170,10 +222,6 @@ class GamePresenter @Inject constructor(
                         /*todo*/
                     }
                 )
-    }
-
-    fun onCharRemoved(char: Char, indexOfChild: Int) {
-        enteredName.removeAt(indexOfChild)
     }
 
     override fun onDestroy() {
