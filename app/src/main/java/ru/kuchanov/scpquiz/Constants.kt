@@ -15,6 +15,7 @@ object Constants {
         '9',
         '0'
     )
+    const val DEFAULT_LANG = "en"
 
     object Screens {
         const val ENTER = "ENTER"

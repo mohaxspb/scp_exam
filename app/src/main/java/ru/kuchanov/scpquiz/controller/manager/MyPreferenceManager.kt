@@ -2,13 +2,22 @@ package ru.kuchanov.scpquiz.controller.manager
 
 import android.content.Context
 import android.preference.PreferenceManager
+import ru.kuchanov.scpquiz.Constants
 import javax.inject.Inject
 
 class MyPreferenceManager @Inject constructor(context: Context) {
 
-    private val mPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-    fun setPushToken(pushToken: String) = mPreferences.edit().putString(Key.PUSH_TOKEN, pushToken).apply()
+    fun setLangs(langs: Set<String>) = preferences.edit().putStringSet(Key.LANGS, langs).apply()
 
-    fun getPushToken() = mPreferences.getString(Key.PUSH_TOKEN, "")
+    fun getLangs() = preferences.getStringSet(Key.LANGS, setOf())
+
+    fun setLang(lang: String) = preferences.edit().putString(Key.LANG, lang).apply()
+
+    fun getLang() = preferences.getString(Key.LANG, Constants.DEFAULT_LANG)
+
+    fun setPushToken(pushToken: String) = preferences.edit().putString(Key.PUSH_TOKEN, pushToken).apply()
+
+    fun getPushToken() = preferences.getString(Key.PUSH_TOKEN, "")
 }
