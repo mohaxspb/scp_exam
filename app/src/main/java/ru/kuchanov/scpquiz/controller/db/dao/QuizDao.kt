@@ -20,6 +20,9 @@ interface QuizDao {
     @Query("SELECT * FROM Quiz")
     fun getAll(): Flowable<List<Quiz>>
 
+    @Query("SELECT * FROM Quiz ORDER BY RANDOM() LIMIT :count")
+    fun getRandomQuizes(count: Int = 1): Flowable<List<Quiz>>
+
     @Query("SELECT * FROM Quiz WHERE id = :id")
     fun getByIdWithUpdates(id: Long): Flowable<List<Quiz>>
 
@@ -28,6 +31,9 @@ interface QuizDao {
 
     @Query("SELECT * FROM QuizTranslation WHERE quizId = :id")
     fun getQuizTranslationsByQuizId(id: Long): List<QuizTranslation>
+
+    @Query("SELECT * FROM QuizTranslation WHERE quizId = :id AND langCode = :lang")
+    fun getQuizTranslationsByQuizIdAndLang(id: Long, lang: String): List<QuizTranslation>
 
     @Query("SELECT * FROM QuizTranslationPhrase WHERE quizTranslationId = :id")
     fun getQuizTranslationPhrasesByQuizTranslationId(id: Long): List<QuizTranslationPhrase>
@@ -72,7 +78,7 @@ interface QuizDao {
     fun insertQuizesWithQuizTranslations(quizes: List<Quiz>) = quizes.map { insertQuizWithQuizTranslations(it) }
 
     @Transaction
-    fun getQuizWithQuizTranslations(id: Long): Quiz {
+    fun getQuizWithTranslationsAndPhrases(id: Long): Quiz {
         val quiz = getById(id)
         quiz.quizTranslations = getQuizTranslationsByQuizId(id)
         quiz.quizTranslations?.forEach { quizTranslation ->
@@ -80,4 +86,17 @@ interface QuizDao {
         }
         return quiz
     }
+
+    @Transaction
+    fun getQuizWithTranslationsAndPhrases(id: Long, lang: String): Quiz {
+        val quiz = getById(id)
+        quiz.quizTranslations = getQuizTranslationsByQuizIdAndLang(id, lang)
+        quiz.quizTranslations?.forEach { quizTranslation ->
+            quizTranslation.quizTranslationPhrases = getQuizTranslationPhrasesByQuizTranslationId(quizTranslation.id)
+        }
+        return quiz
+    }
+
+    @Query("SELECT id FROM quiz WHERE id > :quizId ORDER BY id ASC LIMIT 1")
+    fun getNextQuizId(quizId: Long): Single<Long>
 }

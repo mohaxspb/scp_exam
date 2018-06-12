@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "c0356ce196083cd6c0bdc367b4864fe3",
+    "identityHash": "15f0fd6757b237e2d6dd705474d0a8e9",
     "entities": [
       {
         "tableName": "Quiz",
@@ -204,13 +204,13 @@
       },
       {
         "tableName": "User",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `avatarUrl` TEXT, `score` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `name` TEXT NOT NULL, `avatarUrl` TEXT, `score` INTEGER NOT NULL, `role` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "name",
@@ -229,6 +229,12 @@
             "columnName": "score",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "role",
+            "columnName": "role",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -241,15 +247,9 @@
         "foreignKeys": []
       },
       {
-        "tableName": "FinishedLevels",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `quizId` INTEGER NOT NULL, `finished` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "tableName": "FinishedLevel",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`quizId` INTEGER NOT NULL, `scpNameFilled` INTEGER NOT NULL, `scpNumberFilled` INTEGER NOT NULL, PRIMARY KEY(`quizId`))",
         "fields": [
-          {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
           {
             "fieldPath": "quizId",
             "columnName": "quizId",
@@ -257,15 +257,21 @@
             "notNull": true
           },
           {
-            "fieldPath": "finished",
-            "columnName": "finished",
+            "fieldPath": "scpNameFilled",
+            "columnName": "scpNameFilled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scpNumberFilled",
+            "columnName": "scpNumberFilled",
             "affinity": "INTEGER",
             "notNull": true
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "id"
+            "quizId"
           ],
           "autoGenerate": false
         },
@@ -275,7 +281,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"c0356ce196083cd6c0bdc367b4864fe3\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"15f0fd6757b237e2d6dd705474d0a8e9\")"
     ]
   }
 }

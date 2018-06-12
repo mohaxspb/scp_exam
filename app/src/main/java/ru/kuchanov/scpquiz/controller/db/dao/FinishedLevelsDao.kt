@@ -2,28 +2,27 @@ package ru.kuchanov.scpquiz.controller.db.dao
 
 import android.arch.persistence.room.*
 import io.reactivex.Flowable
-import io.reactivex.Single
-import ru.kuchanov.scpquiz.model.db.FinishedLevels
+import ru.kuchanov.scpquiz.model.db.FinishedLevel
 
 
 @Dao
 interface FinishedLevelsDao {
 
-    @Query("SELECT * FROM FinishedLevels")
-    fun getAll(): Flowable<List<FinishedLevels>>
+    @Query("SELECT * FROM FinishedLevel")
+    fun getAll(): Flowable<List<FinishedLevel>>
 
-    @Query("SELECT * FROM FinishedLevels WHERE id = :id")
-    fun getByIdWithUpdates(id: Long): Flowable<List<FinishedLevels>>
+    @Query("SELECT * FROM FinishedLevel WHERE quizId = :quizId")
+    fun getByIdWithUpdates(quizId: Long): Flowable<List<FinishedLevel>>
 
-    @Query("SELECT * FROM FinishedLevels WHERE id = :id")
-    fun getByIdOrErrorOnce(id: Long): Single<FinishedLevels>
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(finishedLevels: List<FinishedLevel>): List<Long>
 
-    @Insert
-    fun insert(finishedLevels: FinishedLevels): Long
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(finishedLevel: FinishedLevel): Long
 
     @Update
-    fun update(finishedLevels: FinishedLevels): Int
+    fun update(finishedLevel: FinishedLevel): Int
 
     @Delete
-    fun delete(finishedLevels: FinishedLevels): Int
+    fun delete(finishedLevel: FinishedLevel): Int
 }

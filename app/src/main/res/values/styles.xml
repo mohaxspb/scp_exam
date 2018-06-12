@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -8,7 +8,19 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <!--statusbar under navigation view-->
+        <item name="android:statusBarColor" tools:targetApi="lollipop">@color/colorPrimaryDark</item>
         <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <style name="CharacterViewStyle" >
+        <item name="android:background">@drawable/bg_keyboard_character</item>
+        <item name="android:gravity">center</item>
+        <item name="android:foreground">?selectableItemBackgroundBorderless</item>
+        <item name="android:textColor">@color/characterBorderColor</item>
+        <item name="android:textSize">23sp</item>
+        <!--<item name="android:padding">6dp</item>-->
+        <item name="android:fontFamily">@font/trixie_cyr_plain</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
 </resources>

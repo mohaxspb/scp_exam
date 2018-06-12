@@ -1,6 +1,20 @@
 package ru.kuchanov.scpquiz
 
 object Constants {
+    const val COINS_FOR_NUMBER = 5
+    const val COINS_FOR_NAME = 10
+    val DIGITS_CHAR_LIST = listOf(
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        '0'
+    )
 
     object Screens {
         const val ENTER = "ENTER"

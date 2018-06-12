@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/flexBoxLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:flexDirection="column"
+        app:showDividerVertical="middle"
+        app:dividerDrawable="@drawable/divider"
+        app:justifyContent="space_between"
+        app:flexWrap="wrap"/>
+    <!--app:dividerDrawable="@dimen/defaultMargin"-->
+    <!--app:justifyContent="space_around"-->
+    <!--app:showDividerHorizontal="beginning|middle"-->
+    <!--app:showDividerVertical="beginning|middle"-->
+</merge>

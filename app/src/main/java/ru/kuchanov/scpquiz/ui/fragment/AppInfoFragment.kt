@@ -16,6 +16,7 @@ import toothpick.Toothpick
 import javax.inject.Inject
 
 class AppInfoFragment : BaseFragment<AppInfoView, AppInfoPresenter>(), AppInfoView {
+    override val translucent = false
 
     @Inject
     lateinit var packageInfo: PackageInfo

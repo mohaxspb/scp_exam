@@ -16,6 +16,7 @@ import toothpick.config.Module
 import java.util.*
 
 class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
+    override val translucent = true
 
     override val scopes: Array<String> = arrayOf(Di.Scope.ENTER_FRAGMENT)
 

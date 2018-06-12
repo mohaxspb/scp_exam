@@ -1,9 +1,12 @@
 package ru.kuchanov.scpquiz.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
 import com.arellomobile.mvp.MvpAppCompatFragment
 import com.arellomobile.mvp.MvpPresenter
@@ -54,8 +57,16 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
             inflater.inflate(getLayoutResId(), container, false)
+
+    abstract val translucent: Boolean
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        applyStatusBarTranslucence(translucent)
+    }
 
     override fun showMessage(message: String) = Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
 
@@ -65,6 +76,20 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
         super.onDestroyView()
         for (scope in scopes) {
             Toothpick.closeScope(scope)
+        }
+    }
+
+    private fun applyStatusBarTranslucence(translucent: Boolean) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val w = activity!!.window
+            if (translucent) {
+                activity!!.window.setFlags(
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                )
+            } else {
+                activity!!.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            }
         }
     }
 }

@@ -5,4 +5,5 @@
     <dimen name="levelItemPadding">8dp</dimen>
     <dimen name="defaultMarginSmall">8dp</dimen>
     <dimen name="defaultMarginTiny">4dp</dimen>
+    <dimen name="levelImageSizeBig">208dp</dimen>
 </resources>
