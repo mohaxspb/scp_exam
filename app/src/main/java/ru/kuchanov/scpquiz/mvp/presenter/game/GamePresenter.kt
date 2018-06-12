@@ -1,14 +1,15 @@
-package ru.kuchanov.scpquiz.mvp.presenter
+package ru.kuchanov.scpquiz.mvp.presenter.game
 
 import android.app.Application
 import com.arellomobile.mvp.InjectViewState
-import com.arellomobile.mvp.MvpPresenter
 import io.reactivex.rxkotlin.subscribeBy
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
+import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
+import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.fragment.GameFragment
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
@@ -20,10 +21,11 @@ import kotlin.properties.Delegates
 
 @InjectViewState
 class GamePresenter @Inject constructor(
-    private var appContext: Application,
-    private var gameInteractor: GameInteractor,
-    private var router: Router
-) : MvpPresenter<GameView>() {
+    override var appContext: Application,
+    override var preferences: MyPreferenceManager,
+    override var router: Router,
+    private var gameInteractor: GameInteractor
+) : BasePresenter<GameView>(appContext, preferences, router) {
 
     private var isLevelShown: Boolean = false
 
@@ -35,12 +37,7 @@ class GamePresenter @Inject constructor(
 
     private val enteredNumber = mutableListOf<Char>()
 
-    init {
-        Timber.d("constructor")
-    }
-
     override fun onFirstViewAttach() {
-        Timber.d("onFirstViewAttach")
         super.onFirstViewAttach()
 
         loadLevel()
@@ -104,6 +101,7 @@ class GamePresenter @Inject constructor(
                                             )
                                             showKeyboard(true)
                                             showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
+                                            enableNameInput(false)
                                         }
                                     }
                                     scpNumberFilled && scpNameFilled -> {
@@ -121,6 +119,8 @@ class GamePresenter @Inject constructor(
                                             )
                                             showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
                                             showNumber(quizLevelInfo.quiz.scpNumber.toList())
+                                            enableNumberInput(false)
+                                            enableNameInput(false)
                                             showChatActions(generateLevelCompletedActions())
                                         }
                                     }
@@ -188,6 +188,7 @@ class GamePresenter @Inject constructor(
             onLevelCompleted()
 
             with(viewState) {
+                enableNumberInput(false)
                 showKeyboard(false)
                 showToolbar(false)
                 setBackgroundDark(true)
@@ -215,23 +216,26 @@ class GamePresenter @Inject constructor(
     private fun checkEnteredScpName() {
         quizLevelInfo.quiz.quizTranslations?.first()?.let { quizTranslation ->
             if (enteredName.joinToString("").toLowerCase() == quizTranslation.translation.toLowerCase()) {
-                Timber.d("level completed!")
+                Timber.d("name is correct!")
+                with(viewState) {
+                    enableNameInput(false)
 
-                quizLevelInfo.finishedLevel.scpNameFilled = true
-                onLevelCompleted()
+                    quizLevelInfo.finishedLevel.scpNameFilled = true
+                    onLevelCompleted()
 
-                viewState.showChatMessage(
-                    appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NAME),
-                    quizLevelInfo.doctor
-                )
-                viewState.showChatMessage(
-                    appContext.getString(R.string.message_suggest_scp_number),
-                    quizLevelInfo.doctor
-                )
+                    showChatMessage(
+                        appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NAME),
+                        quizLevelInfo.doctor
+                    )
+                    showChatMessage(
+                        appContext.getString(R.string.message_suggest_scp_number),
+                        quizLevelInfo.doctor
+                    )
 
 
-                viewState.showChatActions(generateNameEnteredChatActions())
-                viewState.showKeyboard(false)
+                    showChatActions(generateNameEnteredChatActions())
+                    showKeyboard(false)
+                }
             } else {
                 Timber.d("name is not correct")
             }
@@ -277,10 +281,12 @@ class GamePresenter @Inject constructor(
             {
                 val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0').shuffled()
                 val scpNumberChars = quizLevelInfo.quiz.scpNumber.toCharArray().toMutableList()
-                viewState.setKeyboardChars(KeyboardView.fillCharsList(scpNumberChars, availableChars))
-                viewState.showKeyboard(true)
-                viewState.showChatMessage(message, quizLevelInfo.player)
-                viewState.removeChatAction(it)
+                with(viewState){
+                    setKeyboardChars(KeyboardView.fillCharsList(scpNumberChars, availableChars))
+                    showKeyboard(true)
+                    showChatMessage(message, quizLevelInfo.player)
+                    removeChatAction(it)
+                }
             }
         )
         chatActions += enterNumberAction
@@ -303,10 +309,5 @@ class GamePresenter @Inject constructor(
                         viewState.showError(it)
                     }
                 )
-    }
-
-    override fun onDestroy() {
-        Timber.d("onDestroy")
-        super.onDestroy()
     }
 }

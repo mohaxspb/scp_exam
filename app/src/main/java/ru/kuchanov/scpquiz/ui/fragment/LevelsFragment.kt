@@ -14,7 +14,7 @@ import ru.kuchanov.scpquiz.controller.adapter.delegate.LevelDelegate
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.LevelsModule
-import ru.kuchanov.scpquiz.mvp.presenter.LevelsPresenter
+import ru.kuchanov.scpquiz.mvp.presenter.game.LevelsPresenter
 import ru.kuchanov.scpquiz.mvp.view.LevelsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import toothpick.Toothpick

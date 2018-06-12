@@ -1,7 +1,7 @@
-package ru.kuchanov.scpquiz.mvp.presenter
+package ru.kuchanov.scpquiz.mvp.presenter.game
 
+import android.app.Application
 import com.arellomobile.mvp.InjectViewState
-import com.arellomobile.mvp.MvpPresenter
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
@@ -10,10 +10,11 @@ import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.Quiz
+import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.LevelsView
-import ru.kuchanov.scpquiz.ui.fragment.GameFragment
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import java.util.*
@@ -21,15 +22,13 @@ import javax.inject.Inject
 
 @InjectViewState
 class LevelsPresenter @Inject constructor(
-    private var appDatabase: AppDatabase,
-    private var router: Router
-) : MvpPresenter<LevelsView>() {
+    override var appContext: Application,
+    override var preferences: MyPreferenceManager,
+    override var router: Router,
+    private var appDatabase: AppDatabase
+) : BasePresenter<LevelsView>(appContext, preferences, router) {
 
-    lateinit var levels: List<Quiz>
-
-    init {
-        Timber.d("constructor")
-    }
+    private lateinit var levels: List<Quiz>
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -37,15 +36,8 @@ class LevelsPresenter @Inject constructor(
         updateLevels()
     }
 
-    override fun onDestroy() {
-        Timber.d("onDestroy")
-        super.onDestroy()
-    }
-
     fun onLevelClick(quizId: Long) {
         Timber.d("onLevelClick: %s", quizId)
-//        val clickedIndex = levels.indexOfFirst { quiz -> quiz.id == quizId }
-//        val nextQuizId = if (clickedIndex < levels.size - 1) levels[clickedIndex + 1].id else GameFragment.NO_NEXT_QUIZ_ID
         router.navigateTo(Constants.Screens.QUIZ, quizId)
     }
 
@@ -75,7 +67,6 @@ class LevelsPresenter @Inject constructor(
                 .subscribeBy(
                     onNext = {
                         Timber.d("updateLevels onNext")
-//                        Timber.d("updateLevels: $it")
                         viewState.showLevels(it)
                     }
                 )

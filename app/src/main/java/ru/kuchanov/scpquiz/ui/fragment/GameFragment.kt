@@ -24,7 +24,7 @@ import ru.kuchanov.scpquiz.di.module.GameModule
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
-import ru.kuchanov.scpquiz.mvp.presenter.GamePresenter
+import ru.kuchanov.scpquiz.mvp.presenter.game.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
@@ -141,6 +141,23 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         animator.duration = 1000
         animator.addUpdateListener { animation -> coinsValueTextView?.text = animation.animatedValue.toString() }
         animator.start()
+    }
+
+    override fun enableNameInput(enable: Boolean) {
+//        with(scpNameFlexBoxLayout) {
+//            for (i in 0..childCount) {
+//                getChildAt(i).isEnabled = enable
+//            }
+//        }
+    }
+
+    override fun enableNumberInput(enable: Boolean) {
+//        scpNumberFlexBoxLayout.isEnabled = enable
+//        with(scpNumberFlexBoxLayout) {
+//            for (i in 0..childCount) {
+//                getChildAt(i).isEnabled = enable
+//            }
+//        }
     }
 
     override fun showNumber(number: List<Char>) = number.forEach {

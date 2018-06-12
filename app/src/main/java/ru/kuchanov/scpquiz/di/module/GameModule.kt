@@ -1,7 +1,7 @@
 package ru.kuchanov.scpquiz.di.module
 
 import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
-import ru.kuchanov.scpquiz.mvp.presenter.GamePresenter
+import ru.kuchanov.scpquiz.mvp.presenter.game.GamePresenter
 import toothpick.config.Module
 
 class GameModule : Module() {

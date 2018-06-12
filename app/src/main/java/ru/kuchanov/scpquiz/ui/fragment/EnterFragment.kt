@@ -8,7 +8,7 @@ import kotlinx.android.synthetic.main.fragment_enter.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.EnterModule
-import ru.kuchanov.scpquiz.mvp.presenter.EnterPresenter
+import ru.kuchanov.scpquiz.mvp.presenter.util.EnterPresenter
 import ru.kuchanov.scpquiz.mvp.view.EnterView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import toothpick.Toothpick

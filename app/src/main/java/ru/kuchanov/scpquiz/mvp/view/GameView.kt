@@ -21,4 +21,6 @@ interface GameView : BaseView {
     fun showLevelNumber(levelNumber: Int)
     fun showName(name: List<Char>)
     fun showNumber(number: List<Char>)
+    fun enableNameInput(enable: Boolean)
+    fun enableNumberInput(enable: Boolean)
 }

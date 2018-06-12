@@ -9,7 +9,7 @@ import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.MainActivityModule
-import ru.kuchanov.scpquiz.mvp.presenter.MainPresenter
+import ru.kuchanov.scpquiz.mvp.presenter.activity.MainPresenter
 import ru.kuchanov.scpquiz.mvp.view.MainView
 import ru.kuchanov.scpquiz.ui.BaseActivity
 import ru.kuchanov.scpquiz.ui.fragment.AppInfoFragment
