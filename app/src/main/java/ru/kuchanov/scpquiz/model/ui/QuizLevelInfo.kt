@@ -8,7 +8,7 @@ import ru.kuchanov.scpquiz.model.db.User
 data class QuizLevelInfo(
     val quiz: Quiz,
     val randomTranslations: List<QuizTranslation>,
-    val finishedLevel: FinishedLevel? = null,
+    val finishedLevel: FinishedLevel,
     val player: User,
     val doctor: User,
     val nextQuizId: Long

@@ -22,7 +22,6 @@ import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.GameModule
 import ru.kuchanov.scpquiz.model.db.Quiz
-import ru.kuchanov.scpquiz.model.db.QuizTranslation
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.mvp.presenter.GamePresenter
@@ -30,7 +29,6 @@ import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.ui.view.ChatMessageView
-import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -85,7 +83,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         super.onViewCreated(view, savedInstanceState)
 
         keyboardView.keyPressListener = { char, charView ->
-            val isScpNameCompleted = presenter.isScpNameCompleted
+            val isScpNameCompleted = presenter.quizLevelInfo.finishedLevel.scpNameFilled
             val inputFlexBox = if (isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
             addCharToFlexBox(char, inputFlexBox, if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME)
             presenter.onCharClicked(char)
@@ -99,29 +97,19 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         levelNumberTextView.setOnClickListener { presenter.onLevelsClicked() }
     }
 
-    override fun showLevel(quiz: Quiz, randomTranslations: List<QuizTranslation>) {
-        Timber.d("showLevel!")
-        //todo show level number
+    override fun showLevelNumber(levelNumber: Int) {
+        levelNumberTextView.text = levelNumber.toString()
+    }
+
+    override fun showImage(quiz: Quiz) {
         GlideApp
                 .with(imageView.context)
                 .load(quiz.imageUrl)
                 .fitCenter()
                 .into(imageView)
+    }
 
-        var chars = quiz.quizTranslations?.let {
-            it[0].translation
-                    .toCharArray()
-                    .toMutableList()
-        }
-                ?: throw IllegalStateException("translations is null")
-        Timber.d("chars.size: ${chars.size}")
-        val availableChars = randomTranslations
-                .joinToString(separator = "") { it.translation }
-                .toCharArray()
-                .toList()
-        chars = KeyboardView.fillCharsList(chars, availableChars).apply { shuffle() }
-        keyboardView.setCharacters(chars)
-
+    override fun animateKeyboard() {
         keyboardScrollView.postDelayed({
             ObjectAnimator
                     .ofInt(keyboardScrollView, "scrollX", keyboardScrollView.right)
@@ -136,6 +124,11 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         }, 100)
     }
 
+    override fun setBackgroundDark(showDark: Boolean) = root.setBackgroundResource(
+        if (showDark) R.color.backgroundColorLevelCompleted
+        else R.color.backgroundColor
+    )
+
     override fun showToolbar(show: Boolean) {
         val visibility = if (show) VISIBLE else INVISIBLE
         hamburgerButton.visibility = visibility
@@ -148,6 +141,14 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         animator.duration = 1000
         animator.addUpdateListener { animation -> coinsValueTextView?.text = animation.animatedValue.toString() }
         animator.start()
+    }
+
+    override fun showNumber(number: List<Char>) = number.forEach {
+        addCharToFlexBox(it, scpNumberFlexBoxLayout, TEXT_SIZE_NUMBER)
+    }
+
+    override fun showName(name: List<Char>) = name.forEach {
+        addCharToFlexBox(it, scpNameFlexBoxLayout)
     }
 
     private fun addCharToFlexBox(char: Char, flexBoxContainer: FlexboxLayout, textSize: Float = TEXT_SIZE_NAME) {
@@ -165,9 +166,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
         flexBoxContainer.addView(characterView)
 
-        //todo create logic for words wrapping
+        //create logic for words wrapping
 //        val params = characterView.layoutParams as FlexboxLayout.LayoutParams
-//        params.isWrapBefore =
+//        params.isWrapBefore = //here we can calculate width and spaces
 //        characterView.layoutParams = params
     }
 
@@ -198,9 +199,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         keyboardScrollView.visibility = if (show) VISIBLE else GONE
     }
 
-    override fun setKeyboardChars(characters: List<Char>) {
-        keyboardView.setCharacters(characters)
-    }
+    override fun setKeyboardChars(characters: List<Char>) = keyboardView.setCharacters(characters)
 
     override fun showChatMessage(message: String, user: User) {
         val chatMessageView = ChatMessageView(
@@ -225,11 +224,6 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                 }
             }
         })
-    }
-
-    override fun showLevelCompleted() {
-        Timber.d("showLevelCompleted")
-        //todo
     }
 
     override fun showError(error: Throwable) = Snackbar.make(

@@ -29,15 +29,11 @@ class GamePresenter @Inject constructor(
 
     var quizId: Long by Delegates.notNull()
 
-    private lateinit var quizLevelInfo: QuizLevelInfo
+    lateinit var quizLevelInfo: QuizLevelInfo
 
     private val enteredName = mutableListOf<Char>()
 
     private val enteredNumber = mutableListOf<Char>()
-
-    var isScpNameCompleted = false
-
-    private var isScpNumberCompleted = false
 
     init {
         Timber.d("constructor")
@@ -58,19 +54,65 @@ class GamePresenter @Inject constructor(
         gameInteractor
                 .getLevelInfo(quizId)
                 .subscribeBy(
-                    onNext = {
-                        Timber.d("quiz:${it.quiz.scpNumber}\ntranslationTexts:${it.randomTranslations.map { it.translation }}")
+                    onNext = { levelInfo ->
+                        Timber.d("quiz:${levelInfo.quiz.scpNumber}\ntranslationTexts:${levelInfo.randomTranslations.map { it.translation }}")
 
-                        quizLevelInfo = it
+                        quizLevelInfo = levelInfo
 
                         viewState.showProgress(false)
                         if (!isLevelShown) {
                             isLevelShown = true
-                            viewState.showToolbar(true)
-                            viewState.showLevel(it.quiz, it.randomTranslations)
+                            quizLevelInfo.finishedLevel.apply {
+                                viewState.showImage(quizLevelInfo.quiz)
+                                when {
+                                    !scpNumberFilled && !scpNameFilled -> {
+                                        viewState.showToolbar(true)
+                                        //todo param for number
+                                        viewState.showLevelNumber(-1)
+
+                                        val chars = quizLevelInfo.quiz.quizTranslations?.let {
+                                            it[0].translation.toMutableList()
+                                        } ?: throw IllegalStateException("translations is null")
+                                        val availableChars = quizLevelInfo.randomTranslations
+                                                .joinToString(separator = "") { it.translation }
+                                                .toList()
+                                        viewState.setKeyboardChars(
+                                            KeyboardView.fillCharsList(
+                                                chars,
+                                                availableChars
+                                            ).apply { shuffle() }
+                                        )
+                                        viewState.animateKeyboard()
+                                    }
+                                    !scpNumberFilled && scpNameFilled -> {
+                                        //show number keyboard
+                                        val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0').shuffled()
+                                        val scpNumberChars = quizLevelInfo.quiz.scpNumber.toMutableList()
+                                        viewState.setKeyboardChars(KeyboardView.fillCharsList(scpNumberChars, availableChars))
+                                        viewState.showKeyboard(true)
+                                        viewState.showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
+                                    }
+                                    scpNumberFilled && scpNameFilled -> {
+                                        viewState.showKeyboard(false)
+                                        viewState.showToolbar(false)
+                                        viewState.setBackgroundDark(true)
+                                        viewState.showChatMessage(
+                                            quizLevelInfo.quiz.quizTranslations!!.first().description,
+                                            quizLevelInfo.player
+                                        )
+                                        viewState.showChatMessage(
+                                            appContext.getString(R.string.message_level_comleted, quizLevelInfo.player.name),
+                                            quizLevelInfo.doctor
+                                        )
+                                        viewState.showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
+                                        viewState.showNumber(quizLevelInfo.quiz.scpNumber.toList())
+                                        //todo next level/list action
+                                    }
+                                }
+                            }
                         }
 
-                        viewState.showCoins(it.player.score)
+                        viewState.showCoins(quizLevelInfo.player.score)
                     },
                     onError = {
                         Timber.e(it)
@@ -103,7 +145,7 @@ class GamePresenter @Inject constructor(
     fun onCharClicked(char: Char) {
         Timber.d("char pressed: $char")
 
-        if (!isScpNameCompleted) {
+        if (!quizLevelInfo.finishedLevel.scpNameFilled) {
             enteredName += char.toLowerCase()
             //check result
             checkEnteredScpName()
@@ -115,7 +157,7 @@ class GamePresenter @Inject constructor(
 
     fun onCharRemoved(char: Char, indexOfChild: Int) {
         Timber.d("onCharRemoved: $char, $indexOfChild")
-        if (!isScpNameCompleted) {
+        if (!quizLevelInfo.finishedLevel.scpNameFilled) {
             enteredName.removeAt(indexOfChild)
         } else {
             enteredNumber.removeAt(indexOfChild)
@@ -126,7 +168,7 @@ class GamePresenter @Inject constructor(
         if (quizLevelInfo.quiz.scpNumber == enteredNumber.joinToString("")) {
             Timber.d("number is correct!")
 
-            isScpNumberCompleted = true
+            quizLevelInfo.finishedLevel.scpNumberFilled = true
             onLevelCompleted()
 
             viewState.showChatMessage(
@@ -155,18 +197,19 @@ class GamePresenter @Inject constructor(
             chatActions += enterNumberAction
             viewState.showChatActions(chatActions, 0)
             viewState.showKeyboard(false)
+
+            //todo show completed state
         } else {
             Timber.d("number is not correct")
         }
     }
 
     private fun checkEnteredScpName() {
-        quizLevelInfo.quiz.quizTranslations?.first()?.let {
-            if (enteredName.joinToString("").toLowerCase() == it.translation.toLowerCase()) {
-//            if (enteredName.size > 0) {
-                Timber.d("level completed0!")
+        quizLevelInfo.quiz.quizTranslations?.first()?.let { quizTranslation ->
+            if (enteredName.joinToString("").toLowerCase() == quizTranslation.translation.toLowerCase()) {
+                Timber.d("level completed!")
 
-                isScpNameCompleted = true
+                quizLevelInfo.finishedLevel.scpNameFilled = true
                 onLevelCompleted()
 
                 viewState.showChatMessage(
@@ -214,8 +257,8 @@ class GamePresenter @Inject constructor(
         //mark level as completed
         gameInteractor.updateFinishedLevel(
             quizId,
-            isScpNameCompleted,
-            isScpNumberCompleted
+            quizLevelInfo.finishedLevel.scpNameFilled,
+            quizLevelInfo.finishedLevel.scpNumberFilled
         )
                 .subscribeBy(
                     onSuccess = {

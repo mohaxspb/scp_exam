@@ -12,6 +12,7 @@
     <string name="chat_action_levels_list">I want to select level</string>
     <string name="error_unknown">Unknown error occured</string>
     <string name="scp_placeholder">SCP-%s</string>
+    <string name="message_level_comleted">Very well, %s, continue.</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>
