@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/levelNumberTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,6 +33,7 @@
         android:textColor="@android:color/black"
         android:textSize="16sp"
         android:visibility="invisible"
+        app:fontFamily="@font/trixie_cyr_plain"
         app:layout_constraintBottom_toBottomOf="@+id/hamburgerButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -61,12 +62,13 @@
             android:src="@drawable/ic_coin"
             tools:ignore="ContentDescription" />
 
-        <TextView
+        <android.support.v7.widget.AppCompatTextView
             android:id="@+id/coinsValueTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/zero"
             android:textColor="@android:color/black"
+            app:fontFamily="@font/trixie_cyr_plain"
             tools:text="200" />
 
     </LinearLayout>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -74,7 +75,7 @@
                     android:background="@color/stokeColor" />
             </LinearLayout>
 
-            <TextView
+            <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/scpNumberTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -87,6 +88,7 @@
                 android:textColor="@color/stokeColor"
                 android:textSize="12sp"
                 android:visibility="gone"
+                app:fontFamily="@font/trixie_cyr_plain"
                 tools:text="SCP-1001-RU"
                 tools:visibility="visible" />
 

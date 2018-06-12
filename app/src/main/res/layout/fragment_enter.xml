@@ -4,17 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false"
-    android:background="@drawable/bg_enter_screen">
+    android:background="@drawable/bg_enter_screen"
+    android:fitsSystemWindows="false">
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/progressTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textSize="24sp"
         android:padding="@dimen/defaultMargin"
         android:textColor="@color/colorAccent"
+        android:textSize="24sp"
+        app:fontFamily="@font/trixie_cyr_plain"
         app:layout_constraintBottom_toTopOf="@+id/progressBar"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

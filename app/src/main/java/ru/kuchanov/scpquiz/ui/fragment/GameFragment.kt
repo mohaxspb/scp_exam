@@ -1,6 +1,7 @@
 package ru.kuchanov.scpquiz.ui.fragment
 
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -33,7 +34,6 @@ import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
-import android.animation.ValueAnimator
 
 
 class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
@@ -41,6 +41,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     companion object {
         const val ARG_QUIZ_ID = "ARG_QUIZ_ID"
         const val NO_NEXT_QUIZ_ID = -1L
+
+        const val TEXT_SIZE_NAME = 20f
+        const val TEXT_SIZE_NUMBER = 16f
 
         fun newInstance(quizId: Long): GameFragment {
             val fragment = GameFragment()
@@ -82,8 +85,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         super.onViewCreated(view, savedInstanceState)
 
         keyboardView.keyPressListener = { char, charView ->
-            val inputFlexBox = if (presenter.isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
-            addCharToFlexBox(char, inputFlexBox)
+            val isScpNameCompleted = presenter.isScpNameCompleted
+            val inputFlexBox = if (isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
+            addCharToFlexBox(char, inputFlexBox, if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME)
             presenter.onCharClicked(char)
             keyboardView.removeCharView(charView)
         }
@@ -146,12 +150,12 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         animator.start()
     }
 
-    private fun addCharToFlexBox(char: Char, flexBoxContainer: FlexboxLayout) {
-        val characterView = TextView(flexBoxContainer.context)
+    private fun addCharToFlexBox(char: Char, flexBoxContainer: FlexboxLayout, textSize: Float = TEXT_SIZE_NAME) {
+        val characterView = LayoutInflater
+                .from(flexBoxContainer.context)
+                .inflate(R.layout.view_entered_char, flexBoxContainer, false) as TextView
         characterView.text = char.toString()
-
-        characterView.setAllCaps(true)
-        characterView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
+        characterView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
 
         characterView.setOnClickListener {
             presenter.onCharRemoved(char, flexBoxContainer.indexOfChild(it))
@@ -168,9 +172,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showChatActions(chatActions: List<ChatAction>, containerId: Int) {
-        Timber.d("chatActions: ${chatActions.joinToString()}")
-
-        val chatActionsFlexBoxLayout = LayoutInflater.from(activity!!)
+        Timber.d("showChatActions: ${chatActions.joinToString()}")
+        val chatActionsFlexBoxLayout = LayoutInflater
+                .from(activity!!)
                 .inflate(R.layout.view_chat_actions, chatView, false) as FlexboxLayout
         chatView.addView(chatActionsFlexBoxLayout)
 
