@@ -172,7 +172,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 //        characterView.layoutParams = params
     }
 
-    override fun showChatActions(chatActions: List<ChatAction>, containerId: Int) {
+    override fun showChatActions(chatActions: List<ChatAction>) {
         Timber.d("showChatActions: ${chatActions.joinToString()}")
         val chatActionsFlexBoxLayout = LayoutInflater
                 .from(activity!!)

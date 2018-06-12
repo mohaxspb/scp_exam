@@ -10,9 +10,10 @@
     <string name="chat_action_enter_number">I\'ll try!</string>
     <string name="message_correct_give_coins">Correct! You gain %d coins</string>
     <string name="chat_action_levels_list">I want to select level</string>
-    <string name="error_unknown">Unknown error occured</string>
+    <string name="error_unknown">Unknown error occurred</string>
     <string name="scp_placeholder">SCP-%s</string>
     <string name="message_level_comleted">Very well, %s, continue.</string>
+    <string name="message_enter_number_description">Well, now you can try to remember this SCP number and get %d coins</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>

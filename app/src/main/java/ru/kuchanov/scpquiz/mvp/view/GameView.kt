@@ -11,7 +11,7 @@ interface GameView : BaseView {
     fun showChatMessage(message: String, user: User)
     fun showKeyboard(show: Boolean)
     fun removeChatAction(indexInParent: Int)
-    fun showChatActions(chatActions: List<ChatAction>, containerId: Int)
+    fun showChatActions(chatActions: List<ChatAction>)
     fun setKeyboardChars(characters: List<Char>)
     fun showCoins(coins: Int)
     fun showToolbar(show: Boolean)

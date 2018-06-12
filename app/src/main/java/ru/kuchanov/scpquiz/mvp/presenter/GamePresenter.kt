@@ -66,47 +66,63 @@ class GamePresenter @Inject constructor(
                                 viewState.showImage(quizLevelInfo.quiz)
                                 when {
                                     !scpNumberFilled && !scpNameFilled -> {
-                                        viewState.showToolbar(true)
-                                        //todo param for number
-                                        viewState.showLevelNumber(-1)
+                                        with(viewState) {
+                                            showToolbar(true)
+                                            //todo param for number
+                                            showLevelNumber(-1)
 
-                                        val chars = quizLevelInfo.quiz.quizTranslations?.let {
-                                            it[0].translation.toMutableList()
-                                        } ?: throw IllegalStateException("translations is null")
-                                        val availableChars = quizLevelInfo.randomTranslations
-                                                .joinToString(separator = "") { it.translation }
-                                                .toList()
-                                        viewState.setKeyboardChars(
-                                            KeyboardView.fillCharsList(
-                                                chars,
-                                                availableChars
-                                            ).apply { shuffle() }
-                                        )
-                                        viewState.animateKeyboard()
+                                            val chars = quizLevelInfo.quiz.quizTranslations?.let {
+                                                it[0].translation.toMutableList()
+                                            } ?: throw IllegalStateException("translations is null")
+                                            val availableChars = quizLevelInfo.randomTranslations
+                                                    .joinToString(separator = "") { it.translation }
+                                                    .toList()
+                                            setKeyboardChars(
+                                                KeyboardView.fillCharsList(
+                                                    chars,
+                                                    availableChars
+                                                ).apply { shuffle() }
+                                            )
+                                            animateKeyboard()
+                                        }
                                     }
                                     !scpNumberFilled && scpNameFilled -> {
-                                        //show number keyboard
-                                        val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0').shuffled()
-                                        val scpNumberChars = quizLevelInfo.quiz.scpNumber.toMutableList()
-                                        viewState.setKeyboardChars(KeyboardView.fillCharsList(scpNumberChars, availableChars))
-                                        viewState.showKeyboard(true)
-                                        viewState.showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
+                                        with(viewState) {
+                                            val scpNumberChars = quizLevelInfo.quiz.scpNumber.toMutableList()
+                                            setKeyboardChars(
+                                                KeyboardView.fillCharsList(
+                                                    scpNumberChars,
+                                                    Constants.DIGITS_CHAR_LIST
+                                                ).shuffled()
+                                            )
+                                            showChatMessage(
+                                                appContext.getString(
+                                                    R.string.message_enter_number_description,
+                                                    Constants.COINS_FOR_NUMBER
+                                                ),
+                                                quizLevelInfo.doctor
+                                            )
+                                            showKeyboard(true)
+                                            showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
+                                        }
                                     }
                                     scpNumberFilled && scpNameFilled -> {
-                                        viewState.showKeyboard(false)
-                                        viewState.showToolbar(false)
-                                        viewState.setBackgroundDark(true)
-                                        viewState.showChatMessage(
-                                            quizLevelInfo.quiz.quizTranslations!!.first().description,
-                                            quizLevelInfo.player
-                                        )
-                                        viewState.showChatMessage(
-                                            appContext.getString(R.string.message_level_comleted, quizLevelInfo.player.name),
-                                            quizLevelInfo.doctor
-                                        )
-                                        viewState.showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
-                                        viewState.showNumber(quizLevelInfo.quiz.scpNumber.toList())
-                                        //todo next level/list action
+                                        with(viewState) {
+                                            showKeyboard(false)
+                                            showToolbar(false)
+                                            setBackgroundDark(true)
+                                            showChatMessage(
+                                                quizLevelInfo.quiz.quizTranslations!!.first().description,
+                                                quizLevelInfo.player
+                                            )
+                                            showChatMessage(
+                                                appContext.getString(R.string.message_level_comleted, quizLevelInfo.player.name),
+                                                quizLevelInfo.doctor
+                                            )
+                                            showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
+                                            showNumber(quizLevelInfo.quiz.scpNumber.toList())
+                                            showChatActions(generateLevelCompletedActions())
+                                        }
                                     }
                                 }
                             }
@@ -165,40 +181,32 @@ class GamePresenter @Inject constructor(
     }
 
     private fun checkEnteredScpNumber() {
-        if (quizLevelInfo.quiz.scpNumber == enteredNumber.joinToString("")) {
+        if (quizLevelInfo.quiz.scpNumber.toLowerCase() == enteredNumber.joinToString("").toLowerCase()) {
             Timber.d("number is correct!")
 
             quizLevelInfo.finishedLevel.scpNumberFilled = true
             onLevelCompleted()
 
-            viewState.showChatMessage(
-                appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NUMBER),
-                quizLevelInfo.doctor
-            )
+            with(viewState) {
+                showKeyboard(false)
+                showToolbar(false)
+                setBackgroundDark(true)
 
-            val chatActions = mutableListOf<ChatAction>()
-
-            if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
-                val nextLevelAction = ChatAction(
-                    appContext.getString(R.string.chat_action_next_level),
-                    {
-                        router.replaceScreen(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
-                    }
+                showChatMessage(
+                    quizLevelInfo.quiz.quizTranslations!!.first().description,
+                    quizLevelInfo.player
                 )
-                chatActions += nextLevelAction
+                showChatMessage(
+                    appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NUMBER),
+                    quizLevelInfo.doctor
+                )
+                showChatMessage(
+                    appContext.getString(R.string.message_level_comleted, quizLevelInfo.player.name),
+                    quizLevelInfo.doctor
+                )
+
+                showChatActions(generateLevelCompletedActions())
             }
-
-            val enterNumberAction = ChatAction(
-                appContext.getString(R.string.chat_action_levels_list),
-                {
-                    router.backTo(Constants.Screens.QUIZ_LIST)
-                }
-            )
-            chatActions += enterNumberAction
-            viewState.showChatActions(chatActions, 0)
-            viewState.showKeyboard(false)
-
-            //todo show completed state
         } else {
             Timber.d("number is not correct")
         }
@@ -221,36 +229,62 @@ class GamePresenter @Inject constructor(
                     quizLevelInfo.doctor
                 )
 
-                val chatActions = mutableListOf<ChatAction>()
 
-                if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
-                    val nextLevelAction = ChatAction(
-                        appContext.getString(R.string.chat_action_next_level),
-                        {
-                            router.replaceScreen(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
-                        }
-                    )
-                    chatActions += nextLevelAction
-                }
-                val message = appContext.getString(R.string.chat_action_enter_number)
-                val enterNumberAction = ChatAction(
-                    message,
-                    {
-                        val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0').shuffled()
-                        val scpNumberChars = quizLevelInfo.quiz.scpNumber.toCharArray().toMutableList()
-                        viewState.setKeyboardChars(KeyboardView.fillCharsList(scpNumberChars, availableChars))
-                        viewState.showKeyboard(true)
-                        viewState.showChatMessage(message, quizLevelInfo.player)
-                        viewState.removeChatAction(it)
-                    }
-                )
-                chatActions += enterNumberAction
-                viewState.showChatActions(chatActions, 0)
+                viewState.showChatActions(generateNameEnteredChatActions())
                 viewState.showKeyboard(false)
             } else {
                 Timber.d("name is not correct")
             }
         }
+    }
+
+    private fun generateLevelCompletedActions(): List<ChatAction> {
+        val chatActions = mutableListOf<ChatAction>()
+        if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
+            val nextLevelAction = ChatAction(
+                appContext.getString(R.string.chat_action_next_level),
+                {
+                    router.replaceScreen(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
+                }
+            )
+            chatActions += nextLevelAction
+        }
+
+        val enterNumberAction = ChatAction(
+            appContext.getString(R.string.chat_action_levels_list),
+            {
+                router.backTo(Constants.Screens.QUIZ_LIST)
+            }
+        )
+        chatActions += enterNumberAction
+        return chatActions
+    }
+
+    private fun generateNameEnteredChatActions(): List<ChatAction> {
+        val chatActions = mutableListOf<ChatAction>()
+        if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
+            val nextLevelAction = ChatAction(
+                appContext.getString(R.string.chat_action_next_level),
+                {
+                    router.replaceScreen(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
+                }
+            )
+            chatActions += nextLevelAction
+        }
+        val message = appContext.getString(R.string.chat_action_enter_number)
+        val enterNumberAction = ChatAction(
+            message,
+            {
+                val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0').shuffled()
+                val scpNumberChars = quizLevelInfo.quiz.scpNumber.toCharArray().toMutableList()
+                viewState.setKeyboardChars(KeyboardView.fillCharsList(scpNumberChars, availableChars))
+                viewState.showKeyboard(true)
+                viewState.showChatMessage(message, quizLevelInfo.player)
+                viewState.removeChatAction(it)
+            }
+        )
+        chatActions += enterNumberAction
+        return chatActions
     }
 
     private fun onLevelCompleted() {
