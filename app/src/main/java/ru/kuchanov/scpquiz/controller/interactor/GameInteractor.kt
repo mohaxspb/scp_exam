@@ -5,6 +5,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function6
 import io.reactivex.schedulers.Schedulers
+import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
@@ -28,7 +29,7 @@ class GameInteractor @Inject constructor(
             player: User,
             doctor: User,
             finishedLevel: FinishedLevel,
-            nextQuizId:Long->
+            nextQuizId: Long ->
             QuizLevelInfo(
                 quiz = quiz,
                 randomTranslations = randomTranslations,
@@ -54,6 +55,15 @@ class GameInteractor @Inject constructor(
                 scpNumberFilled = isNumberFilled
             ))
     }
+            .flatMap {
+                val user = appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet()
+                user.score += when {
+                    isNameFilled && isNumberFilled -> Constants.COINS_FOR_NUMBER
+                    isNameFilled && !isNumberFilled -> Constants.COINS_FOR_NAME
+                    else -> 0
+                }
+                Single.fromCallable { appDatabase.userDao().update(user).toLong() }
+            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 

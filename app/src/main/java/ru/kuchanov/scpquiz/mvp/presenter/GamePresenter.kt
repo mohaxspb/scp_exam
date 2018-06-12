@@ -66,8 +66,11 @@ class GamePresenter @Inject constructor(
                         viewState.showProgress(false)
                         if (!isLevelShown) {
                             isLevelShown = true
+                            viewState.showToolbar(true)
                             viewState.showLevel(it.quiz, it.randomTranslations)
                         }
+
+                        viewState.showCoins(it.player.score)
                     },
                     onError = {
                         Timber.e(it)
@@ -111,6 +114,7 @@ class GamePresenter @Inject constructor(
     }
 
     fun onCharRemoved(char: Char, indexOfChild: Int) {
+        Timber.d("onCharRemoved: $char, $indexOfChild")
         if (!isScpNameCompleted) {
             enteredName.removeAt(indexOfChild)
         } else {
@@ -123,6 +127,7 @@ class GamePresenter @Inject constructor(
             Timber.d("number is correct!")
 
             isScpNumberCompleted = true
+            onLevelCompleted()
 
             viewState.showChatMessage(
                 appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NUMBER),
@@ -157,9 +162,8 @@ class GamePresenter @Inject constructor(
 
     private fun checkEnteredScpName() {
         quizLevelInfo.quiz.quizTranslations?.first()?.let {
-            //            if (enteredName.joinToString("").toLowerCase() == it.translation.toLowerCase()) {
-            //fixme test
-            if (enteredName.size > 0) {
+            if (enteredName.joinToString("").toLowerCase() == it.translation.toLowerCase()) {
+//            if (enteredName.size > 0) {
                 Timber.d("level completed0!")
 
                 isScpNameCompleted = true
@@ -219,7 +223,7 @@ class GamePresenter @Inject constructor(
                     },
                     onError = {
                         Timber.e(it)
-                        /*todo*/
+                        viewState.showError(it)
                     }
                 )
     }

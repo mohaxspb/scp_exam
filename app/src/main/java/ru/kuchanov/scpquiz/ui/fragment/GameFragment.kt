@@ -3,11 +3,11 @@ package ru.kuchanov.scpquiz.ui.fragment
 import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewTreeObserver
 import android.widget.TextView
 import com.arellomobile.mvp.presenter.InjectPresenter
@@ -79,7 +79,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         super.onViewCreated(view, savedInstanceState)
 
         keyboardView.keyPressListener = { char, charView ->
-            val inputFlexBox = if(presenter.isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
+            val inputFlexBox = if (presenter.isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
             addCharToFlexBox(char, inputFlexBox)
             presenter.onCharClicked(char)
             keyboardView.removeCharView(charView)
@@ -93,8 +93,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showLevel(quiz: Quiz, randomTranslations: List<QuizTranslation>) {
-        //todo show level number
         Timber.d("showLevel!")
+        //todo show level number
         GlideApp
                 .with(imageView.context)
                 .load(quiz.imageUrl)
@@ -127,6 +127,17 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             animBack.startDelay = 500
             animBack.start()
         }, 100)
+    }
+
+    override fun showToolbar(show: Boolean) {
+        val visibility = if (show) VISIBLE else INVISIBLE
+        hamburgerButton.visibility = visibility
+        levelNumberTextView.visibility = visibility
+        coinsButton.visibility = visibility
+    }
+
+    override fun showCoins(coins: Int) {
+        coinsValueTextView.text = coins.toString()
     }
 
     private fun addCharToFlexBox(char: Char, flexBoxContainer: FlexboxLayout) {
@@ -207,13 +218,15 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showLevelCompleted() {
-        //todo
         Timber.d("showLevelCompleted")
+        //todo
     }
 
-    override fun showError(error: Throwable) {
-        //todo
-    }
+    override fun showError(error: Throwable) = Snackbar.make(
+        root,
+        error.message ?: getString(R.string.error_unknown),
+        Snackbar.LENGTH_LONG
+    ).show()
 
     override fun showProgress(show: Boolean) {
         progressView.visibility = if (show) View.VISIBLE else View.GONE
