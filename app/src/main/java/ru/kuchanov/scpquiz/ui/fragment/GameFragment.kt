@@ -33,6 +33,7 @@ import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
+import android.animation.ValueAnimator
 
 
 class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
@@ -137,7 +138,10 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showCoins(coins: Int) {
-        coinsValueTextView.text = coins.toString()
+        val animator = ValueAnimator.ofInt(coinsValueTextView.text.toString().toInt(), coins)
+        animator.duration = 1000
+        animator.addUpdateListener { animation -> coinsValueTextView.text = animation.animatedValue.toString() }
+        animator.start()
     }
 
     private fun addCharToFlexBox(char: Char, flexBoxContainer: FlexboxLayout) {
