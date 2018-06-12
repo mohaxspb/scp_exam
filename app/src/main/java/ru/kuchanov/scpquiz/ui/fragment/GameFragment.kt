@@ -85,7 +85,13 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         keyboardView.keyPressListener = { char, charView ->
             val isScpNameCompleted = presenter.quizLevelInfo.finishedLevel.scpNameFilled
             val inputFlexBox = if (isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
-            addCharToFlexBox(char, inputFlexBox, if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME)
+            addCharToFlexBox(char, inputFlexBox, if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME){
+                if(isScpNameCompleted) {
+                    presenter.quizLevelInfo.finishedLevel.scpNumberFilled
+                } else{
+                    presenter.quizLevelInfo.finishedLevel.scpNameFilled
+                }
+            }
             presenter.onCharClicked(char)
             keyboardView.removeCharView(charView)
         }
@@ -143,32 +149,20 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         animator.start()
     }
 
-    override fun enableNameInput(enable: Boolean) {
-//        with(scpNameFlexBoxLayout) {
-//            for (i in 0..childCount) {
-//                getChildAt(i).isEnabled = enable
-//            }
-//        }
-    }
-
-    override fun enableNumberInput(enable: Boolean) {
-//        scpNumberFlexBoxLayout.isEnabled = enable
-//        with(scpNumberFlexBoxLayout) {
-//            for (i in 0..childCount) {
-//                getChildAt(i).isEnabled = enable
-//            }
-//        }
-    }
-
     override fun showNumber(number: List<Char>) = number.forEach {
-        addCharToFlexBox(it, scpNumberFlexBoxLayout, TEXT_SIZE_NUMBER)
+        addCharToFlexBox(it, scpNumberFlexBoxLayout, TEXT_SIZE_NUMBER) { presenter.quizLevelInfo.finishedLevel.scpNumberFilled }
     }
 
     override fun showName(name: List<Char>) = name.forEach {
-        addCharToFlexBox(it, scpNameFlexBoxLayout)
+        addCharToFlexBox(it, scpNameFlexBoxLayout) { presenter.quizLevelInfo.finishedLevel.scpNameFilled }
     }
 
-    private fun addCharToFlexBox(char: Char, flexBoxContainer: FlexboxLayout, textSize: Float = TEXT_SIZE_NAME) {
+    private fun addCharToFlexBox(
+        char: Char,
+        flexBoxContainer: FlexboxLayout,
+        textSize: Float = TEXT_SIZE_NAME,
+        shouldIgnoreClick: () -> Boolean
+    ) {
         val characterView = LayoutInflater
                 .from(flexBoxContainer.context)
                 .inflate(R.layout.view_entered_char, flexBoxContainer, false) as TextView
@@ -176,9 +170,11 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         characterView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
 
         characterView.setOnClickListener {
-            presenter.onCharRemoved(char, flexBoxContainer.indexOfChild(it))
-            flexBoxContainer.removeView(it)
-            keyboardView.addCharView((it as TextView).text[0])
+            if (!shouldIgnoreClick.invoke()) {
+                presenter.onCharRemoved(char, flexBoxContainer.indexOfChild(it))
+                flexBoxContainer.removeView(it)
+                keyboardView.addCharView((it as TextView).text[0])
+            }
         }
 
         flexBoxContainer.addView(characterView)

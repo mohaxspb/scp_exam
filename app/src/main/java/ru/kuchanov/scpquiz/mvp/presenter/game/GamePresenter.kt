@@ -101,7 +101,6 @@ class GamePresenter @Inject constructor(
                                             )
                                             showKeyboard(true)
                                             showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
-                                            enableNameInput(false)
                                         }
                                     }
                                     scpNumberFilled && scpNameFilled -> {
@@ -119,8 +118,6 @@ class GamePresenter @Inject constructor(
                                             )
                                             showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
                                             showNumber(quizLevelInfo.quiz.scpNumber.toList())
-                                            enableNumberInput(false)
-                                            enableNameInput(false)
                                             showChatActions(generateLevelCompletedActions())
                                         }
                                     }
@@ -188,7 +185,6 @@ class GamePresenter @Inject constructor(
             onLevelCompleted()
 
             with(viewState) {
-                enableNumberInput(false)
                 showKeyboard(false)
                 showToolbar(false)
                 setBackgroundDark(true)
@@ -218,8 +214,6 @@ class GamePresenter @Inject constructor(
             if (enteredName.joinToString("").toLowerCase() == quizTranslation.translation.toLowerCase()) {
                 Timber.d("name is correct!")
                 with(viewState) {
-                    enableNameInput(false)
-
                     quizLevelInfo.finishedLevel.scpNameFilled = true
                     onLevelCompleted()
 
@@ -281,7 +275,7 @@ class GamePresenter @Inject constructor(
             {
                 val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0').shuffled()
                 val scpNumberChars = quizLevelInfo.quiz.scpNumber.toCharArray().toMutableList()
-                with(viewState){
+                with(viewState) {
                     setKeyboardChars(KeyboardView.fillCharsList(scpNumberChars, availableChars))
                     showKeyboard(true)
                     showChatMessage(message, quizLevelInfo.player)
