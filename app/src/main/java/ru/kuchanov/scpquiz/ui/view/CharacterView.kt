@@ -1,12 +1,17 @@
 package ru.kuchanov.scpquiz.ui.view
 
 import android.content.Context
+import android.support.v7.widget.AppCompatTextView
 import android.util.AttributeSet
 import android.view.ContextThemeWrapper
-import android.widget.TextView
 import ru.kuchanov.scpquiz.R
 
-class CharacterView : TextView {
+/**
+ * extend AppCompatTextView for apply custom font from xml
+ *
+ * see [https://stackoverflow.com/a/48177460/3212712]
+ */
+class CharacterView : AppCompatTextView {
 
     var char: Char = ' '
         set(value) {
@@ -45,10 +50,5 @@ class CharacterView : TextView {
             val width = measuredWidth
             setMeasuredDimension(width, width)
         }
-//        if (squareByHeight) {
-//            super.onMeasure(heightMeasureSpec, heightMeasureSpec)
-//        } else{
-//            super.onMeasure(widthMeasureSpec, widthMeasureSpec)
-//        }
     }
 }

@@ -117,17 +117,6 @@
                     android:layout_gravity="center"
                     android:orientation="vertical">
 
-                    <!--<TextView-->
-                    <!--android:id="@+id/scpNumberTextView"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_gravity="center_horizontal"-->
-                    <!--android:text=""-->
-                    <!--android:textAllCaps="true"-->
-                    <!--android:textSize="16sp"-->
-                    <!--tools:text="SCP-096" />-->
-
-
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -211,21 +200,6 @@
             android:layout_height="match_parent" />
 
     </HorizontalScrollView>
-
-    <!--<com.google.android.flexbox.FlexboxLayout-->
-    <!--android:id="@+id/chatActionsFlexBoxLayout"-->
-    <!--android:layout_width="0dp"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:padding="@dimen/defaultMargin"-->
-    <!--app:dividerDrawable="@drawable/divider"-->
-    <!--app:flexDirection="row"-->
-    <!--app:flexWrap="wrap"-->
-    <!--app:justifyContent="space_around"-->
-    <!--app:layout_constraintTop_toBottomOf="@+id/gameScrollView"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--app:layout_constraintLeft_toLeftOf="parent"-->
-    <!--app:layout_constraintRight_toRightOf="parent"-->
-    <!--app:showDividerHorizontal="middle"/>-->
 
     <FrameLayout
         android:id="@+id/progressView"
