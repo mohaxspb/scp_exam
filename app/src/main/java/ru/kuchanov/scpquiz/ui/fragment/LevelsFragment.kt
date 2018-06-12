@@ -20,7 +20,9 @@ import ru.kuchanov.scpquiz.ui.BaseFragment
 import toothpick.Toothpick
 import toothpick.config.Module
 
+
 class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
+    override val translucent = false
 
     override val scopes: Array<String> = arrayOf(Di.Scope.LEVELS_FRAGMENT)
 

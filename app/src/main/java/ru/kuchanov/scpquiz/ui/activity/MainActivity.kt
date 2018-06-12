@@ -22,6 +22,7 @@ import ru.terrakok.cicerone.commands.Command
 import timber.log.Timber
 import toothpick.Toothpick
 
+
 class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
 
     override val scopes = arrayOf(Di.Scope.MAIN_ACTIVITY)

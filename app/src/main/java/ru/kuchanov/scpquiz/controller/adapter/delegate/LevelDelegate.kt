@@ -34,8 +34,8 @@ class LevelDelegate(private val clickListener: (Long) -> Unit) : AbsListItemAdap
                 if (item.scpNumberFilled && item.scpNameFilled) {
                     strokeView.visibility = View.GONE
                     scpNumberTextView.visibility = View.VISIBLE
-                    scpNumberTextView.text = item.quiz.scpNumber
-                } else{
+                    scpNumberTextView.text = context.getString(R.string.scp_placeholder, item.quiz.scpNumber)
+                } else {
                     strokeView.visibility = View.VISIBLE
                     scpNumberTextView.visibility = View.GONE
                 }

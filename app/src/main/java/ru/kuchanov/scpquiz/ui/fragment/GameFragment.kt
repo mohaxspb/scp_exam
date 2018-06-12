@@ -51,6 +51,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         }
     }
 
+    override val translucent = false
+
     override val scopes: Array<String> = arrayOf(Di.Scope.GAME_FRAGMENT)
 
     override val modules: Array<Module> = arrayOf(GameModule())
@@ -140,7 +142,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     override fun showCoins(coins: Int) {
         val animator = ValueAnimator.ofInt(coinsValueTextView.text.toString().toInt(), coins)
         animator.duration = 1000
-        animator.addUpdateListener { animation -> coinsValueTextView.text = animation.animatedValue.toString() }
+        animator.addUpdateListener { animation -> coinsValueTextView?.text = animation.animatedValue.toString() }
         animator.start()
     }
 

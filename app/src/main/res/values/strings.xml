@@ -11,6 +11,7 @@
     <string name="message_correct_give_coins">Correct! You gain %d coins</string>
     <string name="chat_action_levels_list">I want to select level</string>
     <string name="error_unknown">Unknown error occured</string>
+    <string name="scp_placeholder">SCP-%s</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>
