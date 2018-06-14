@@ -9,14 +9,20 @@ import ru.kuchanov.scpquiz.model.db.QuizTranslation
 @Dao
 interface QuizTranslationDao {
 
-    @Query("SELECT * FROM quiztranslation")
+    @Query("SELECT * FROM quizTranslation")
     fun getAll(): Flowable<List<QuizTranslation>>
 
-    @Query("SELECT * FROM quiztranslation WHERE id = :id")
+    @Query("SELECT * FROM quizTranslation WHERE id = :id")
     fun getByIdWithUpdates(id: Long): Flowable<List<QuizTranslation>>
 
-    @Query("SELECT * FROM quiztranslation WHERE id = :id")
+    @Query("SELECT * FROM quizTranslation WHERE id = :id")
     fun getByIdOrErrorOnce(id: Long): Single<QuizTranslation>
+
+    @Query("SELECT langCode FROM quizTranslation GROUP BY langCode")
+    fun getAllLangsSignle(): Single<List<String>>
+
+    @Query("SELECT langCode FROM quizTranslation GROUP BY langCode")
+    fun getAllLangs(): List<String>
 
     @Insert
     fun insert(quiz: QuizTranslation): Long

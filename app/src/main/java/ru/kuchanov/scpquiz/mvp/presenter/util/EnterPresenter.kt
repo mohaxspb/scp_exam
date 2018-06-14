@@ -84,6 +84,9 @@ class EnterPresenter @Inject constructor(
                             false
                         )
                     })
+
+                    val langs = appDatabase.quizTranslationsDao().getAllLangs()
+                    Timber.d("langs: $langs")
                     -1L
                 }
 
