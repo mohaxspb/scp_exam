@@ -85,10 +85,10 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         keyboardView.keyPressListener = { char, charView ->
             val isScpNameCompleted = presenter.quizLevelInfo.finishedLevel.scpNameFilled
             val inputFlexBox = if (isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
-            addCharToFlexBox(char, inputFlexBox, if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME){
-                if(isScpNameCompleted) {
+            addCharToFlexBox(char, inputFlexBox, if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME) {
+                if (isScpNameCompleted) {
                     presenter.quizLevelInfo.finishedLevel.scpNumberFilled
-                } else{
+                } else {
                     presenter.quizLevelInfo.finishedLevel.scpNameFilled
                 }
             }
@@ -104,7 +104,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showLevelNumber(levelNumber: Int) {
-        levelNumberTextView.text = levelNumber.toString()
+        levelNumberTextView.text = getString(R.string.level, levelNumber)
     }
 
     override fun showImage(quiz: Quiz) {

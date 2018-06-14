@@ -85,6 +85,8 @@ class GamePresenter @Inject constructor(
                                     }
                                     !scpNumberFilled && scpNameFilled -> {
                                         with(viewState) {
+                                            showToolbar(true)
+                                            showLevelNumber(-1)
                                             val scpNumberChars = quizLevelInfo.quiz.scpNumber.toMutableList()
                                             setKeyboardChars(
                                                 KeyboardView.fillCharsList(
