@@ -10,6 +10,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
+import ru.kuchanov.scpquiz.Constants.DEFAULT_LANG
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
@@ -86,7 +87,10 @@ class EnterPresenter @Inject constructor(
                     })
 
                     val langs = appDatabase.quizTranslationsDao().getAllLangs()
-                    Timber.d("langs: $langs")
+                    preferences.setLangs(langs)
+
+                    preferences.setLang(getDefaultLang(langs))
+
                     -1L
                 }
 
@@ -129,5 +133,18 @@ class EnterPresenter @Inject constructor(
                     },
                     onError = Timber::e
                 )
+    }
+
+    private fun getDefaultLang(langs: Set<String>): String {
+        var lang: String = Constants.DEFAULT_LANG
+        langs.forEach {
+            val curLangLocale = Locale(it)
+            if (curLangLocale == Locale.getDefault()) {
+                lang = it
+                return@forEach
+            }
+        }
+
+        return lang
     }
 }
