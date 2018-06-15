@@ -28,6 +28,7 @@ import ru.kuchanov.scpquiz.mvp.presenter.game.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
+import ru.kuchanov.scpquiz.ui.utils.loadBitmapFromView
 import ru.kuchanov.scpquiz.ui.view.ChatMessageView
 import timber.log.Timber
 import toothpick.Toothpick
@@ -238,6 +239,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             }
         })
     }
+
+    override fun onNeedToOpenSettings() = presenter.openSettings(loadBitmapFromView(root))
 
     override fun showError(error: Throwable) = Snackbar.make(
         root,

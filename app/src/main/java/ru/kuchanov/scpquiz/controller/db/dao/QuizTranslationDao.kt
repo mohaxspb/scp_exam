@@ -19,10 +19,10 @@ interface QuizTranslationDao {
     fun getByIdOrErrorOnce(id: Long): Single<QuizTranslation>
 
     @Query("SELECT langCode FROM quizTranslation GROUP BY langCode")
-    fun getAllLangsSignle(): Single<Set<String>>
+    fun getAllLangsSignle(): Single<List<String>>
 
     @Query("SELECT langCode FROM quizTranslation GROUP BY langCode")
-    fun getAllLangs(): Set<String>
+    fun getAllLangs(): List<String>
 
     @Insert
     fun insert(quiz: QuizTranslation): Long

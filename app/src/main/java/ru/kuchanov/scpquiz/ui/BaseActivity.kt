@@ -1,6 +1,7 @@
 package ru.kuchanov.scpquiz.ui
 
 import android.os.Bundle
+import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -15,12 +16,15 @@ import toothpick.Toothpick
 import toothpick.config.Module
 import toothpick.smoothie.module.SmoothieSupportActivityModule
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatActivity(), BaseView {
 
     abstract val scopes: Array<String>
 
     abstract val modules: Array<out Module>
+
+    abstract val containerId: Int
 
     @Inject
     lateinit var myLayoutInflater: LayoutInflater

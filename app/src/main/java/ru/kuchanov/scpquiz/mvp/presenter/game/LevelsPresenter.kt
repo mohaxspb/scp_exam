@@ -11,6 +11,7 @@ import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -24,7 +25,7 @@ import javax.inject.Inject
 class LevelsPresenter @Inject constructor(
     override var appContext: Application,
     override var preferences: MyPreferenceManager,
-    override var router: Router,
+    override var router: ScpRouter,
     private var appDatabase: AppDatabase
 ) : BasePresenter<LevelsView>(appContext, preferences, router) {
 

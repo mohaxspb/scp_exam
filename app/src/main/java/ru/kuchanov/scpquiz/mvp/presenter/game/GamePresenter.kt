@@ -1,19 +1,20 @@
 package ru.kuchanov.scpquiz.mvp.presenter.game
 
 import android.app.Application
+import android.graphics.Bitmap
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.rxkotlin.subscribeBy
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.fragment.GameFragment
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
-import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -23,7 +24,7 @@ import kotlin.properties.Delegates
 class GamePresenter @Inject constructor(
     override var appContext: Application,
     override var preferences: MyPreferenceManager,
-    override var router: Router,
+    override var router: ScpRouter,
     private var gameInteractor: GameInteractor
 ) : BasePresenter<GameView>(appContext, preferences, router) {
 
@@ -155,7 +156,11 @@ class GamePresenter @Inject constructor(
         }
 
         viewState.showChatMessage(randomMessage, quizLevelInfo.doctor)
+
+        viewState.onNeedToOpenSettings()
     }
+
+    fun openSettings(bitmap:Bitmap) = router.addScreen(Constants.Screens.SETTINGS, bitmap)
 
     fun onCharClicked(char: Char) {
         Timber.d("char pressed: $char")

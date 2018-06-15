@@ -10,10 +10,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
-import ru.kuchanov.scpquiz.Constants.DEFAULT_LANG
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.kuchanov.scpquiz.model.db.FinishedLevel
@@ -22,7 +22,6 @@ import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.EnterView
 import ru.kuchanov.scpquiz.utils.StorageUtils
-import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -32,7 +31,7 @@ import javax.inject.Inject
 class EnterPresenter @Inject constructor(
     override var appContext: Application,
     override var preferences: MyPreferenceManager,
-    override var router: Router,
+    override var router: ScpRouter,
     private var appDatabase: AppDatabase,
     private val moshi: Moshi,
     private var quizConverter: QuizConverter
@@ -86,7 +85,7 @@ class EnterPresenter @Inject constructor(
                         )
                     })
 
-                    val langs = appDatabase.quizTranslationsDao().getAllLangs()
+                    val langs = appDatabase.quizTranslationsDao().getAllLangs().toSet()
                     preferences.setLangs(langs)
 
                     preferences.setLang(getDefaultLang(langs))

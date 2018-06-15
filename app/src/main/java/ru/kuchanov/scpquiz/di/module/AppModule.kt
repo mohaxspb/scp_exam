@@ -6,6 +6,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.terrakok.cicerone.Cicerone
 import ru.terrakok.cicerone.NavigatorHolder
@@ -43,9 +44,9 @@ class AppModule(context: Context) : Module() {
         )
 
         //routing
-        val cicerone: Cicerone<Router> = Cicerone.create()
+        val cicerone: Cicerone<ScpRouter> = Cicerone.create(ScpRouter())
         bind(Cicerone::class.java).toInstance(cicerone)
-        bind(Router::class.java).toInstance(cicerone.router)
+        bind(ScpRouter::class.java).toInstance(cicerone.router)
         bind(NavigatorHolder::class.java).toInstance(cicerone.navigatorHolder)
     }
 }
