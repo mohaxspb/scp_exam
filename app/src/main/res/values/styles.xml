@@ -12,7 +12,7 @@
         <item name="android:windowTranslucentStatus">true</item>
     </style>
 
-    <style name="CharacterViewStyle" >
+    <style name="CharacterViewStyle">
         <item name="android:background">@drawable/bg_keyboard_character</item>
         <item name="android:gravity">center</item>
         <item name="android:foreground">?selectableItemBackgroundBorderless</item>
@@ -21,6 +21,17 @@
         <!--<item name="android:padding">6dp</item>-->
         <item name="android:fontFamily">@font/trixie_cyr_plain</item>
         <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="SettingsTextStyle">
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="SettingsItemStyle">
+        <item name="android:background">?selectableItemBackgroundBorderless</item>
+        <!--<item name="android:padding">10dp</item>-->
     </style>
 
 </resources>

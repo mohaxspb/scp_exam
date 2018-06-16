@@ -14,6 +14,8 @@
     <string name="scp_placeholder">SCP-%s</string>
     <string name="message_level_comleted">Very well, %s, continue.</string>
     <string name="message_enter_number_description">Well, now you can try to remember this SCP number and get %d coins</string>
+    <string name="settings_sound">Sound</string>
+    <string name="settings_language">Language</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>
