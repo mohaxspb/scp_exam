@@ -1,7 +1,6 @@
 package ru.kuchanov.scpquiz.ui.fragment
 
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
@@ -19,7 +18,21 @@ import toothpick.config.Module
 
 
 class SettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), SettingsView {
-    override val translucent = false
+
+    companion object {
+
+        const val ARG_BACKGROUND = "ARG_BACKGROUND"
+
+        fun newInstance(background: Bitmap): SettingsFragment {
+            val fragment = SettingsFragment()
+            val args = Bundle()
+            args.putParcelable(ARG_BACKGROUND, background)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
+    override val translucent = true
 
     override val scopes: Array<String> = arrayOf(Di.Scope.ENTER_FRAGMENT)
 
@@ -38,32 +51,16 @@ class SettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Settin
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Blurry.with(context)
-//                .color(Color.argb(66, 50, 50, 50))
-                .from(arguments!!["bitmap"] as Bitmap)
-                .into(imageView);
-
-//        root.post {
-//            Blurry.with(context)
-//                    .radius(25)
-//                    .sampling(6)
-//                    .async()
-//                    .animate(500)
-//                    .onto(root)
-//        }
+        backgroundImageView.post{
+            Blurry.with(context)
+                    .async()
+                    .animate(500)
+                    .from(arguments!![ARG_BACKGROUND] as Bitmap)
+                    .into(backgroundImageView);
+        }
     }
 
     override fun showLang(langString: String) {
         currentLangTextView.text = langString
-    }
-
-    companion object {
-        fun newInstance(background: Bitmap): SettingsFragment {
-            val fragment = SettingsFragment()
-            val args = Bundle()
-            args.putParcelable("bitmap", background)
-            fragment.arguments = args
-            return fragment
-        }
     }
 }

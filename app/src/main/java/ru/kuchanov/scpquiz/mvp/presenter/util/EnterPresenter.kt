@@ -138,7 +138,7 @@ class EnterPresenter @Inject constructor(
         var lang: String = Constants.DEFAULT_LANG
         langs.forEach {
             val curLangLocale = Locale(it)
-            if (curLangLocale == Locale.getDefault()) {
+            if (curLangLocale.language == Locale.getDefault().language) {
                 lang = it
                 return@forEach
             }

@@ -1,5 +1,7 @@
 package ru.kuchanov.scpquiz.mvp.view
 
+import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy
+import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
@@ -21,5 +23,6 @@ interface GameView : BaseView {
     fun showLevelNumber(levelNumber: Int)
     fun showName(name: List<Char>)
     fun showNumber(number: List<Char>)
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun onNeedToOpenSettings()
 }
