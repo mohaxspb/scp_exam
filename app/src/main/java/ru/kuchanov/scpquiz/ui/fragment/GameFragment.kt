@@ -213,7 +213,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         keyboardScrollView.visibility = if (show) VISIBLE else GONE
     }
 
-    override fun setKeyboardChars(characters: List<Char>) = keyboardView.setCharacters(characters)
+    override fun setKeyboardChars(characters: List<Char>) {
+        keyboardView.postDelayed({ keyboardView.setCharacters(characters) }, 100)
+    }
 
     override fun showChatMessage(message: String, user: User) {
         val chatMessageView = ChatMessageView(

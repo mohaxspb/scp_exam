@@ -20,7 +20,24 @@ class SettingsPresenter @Inject constructor(
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
-        //todo
         viewState.showLang(preferences.getLang())
+        viewState.showSound(preferences.isSoundEnabled())
+        viewState.showVibration(preferences.isVibrationEnabled())
+    }
+
+    fun onLangClicked() {
+        viewState.showLangsChooser(preferences.getLangs())
+    }
+
+    fun onSoundEnabled(checked: Boolean) = preferences.setSoundEnabled(checked)
+
+    fun onVibrationEnabled(checked: Boolean) = preferences.setVibrationEnabled(checked)
+
+    fun onShareClicked() {
+        //todo share intent
+    }
+
+    fun onPrivacyPolicyClicked() {
+        //todo navigate to screen
     }
 }

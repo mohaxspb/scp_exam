@@ -20,4 +20,12 @@ class MyPreferenceManager @Inject constructor(context: Context) {
     fun setPushToken(pushToken: String) = preferences.edit().putString(Key.PUSH_TOKEN, pushToken).apply()
 
     fun getPushToken() = preferences.getString(Key.PUSH_TOKEN, "")
+
+    fun isSoundEnabled() = preferences.getBoolean(Key.SOUND_ENABLED, false)
+
+    fun setSoundEnabled(enabled: Boolean) = preferences.edit().putBoolean(Key.SOUND_ENABLED, enabled).apply()
+
+    fun isVibrationEnabled() = preferences.getBoolean(Key.VIBRATION_ENABLED, false)
+
+    fun setVibrationEnabled(enabled: Boolean) = preferences.edit().putBoolean(Key.VIBRATION_ENABLED, enabled).apply()
 }
