@@ -61,6 +61,6 @@ class SettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Settin
     }
 
     override fun showLang(langString: String) {
-        currentLangTextView.text = langString
+//        currentLangTextView.text = langString
     }
 }
