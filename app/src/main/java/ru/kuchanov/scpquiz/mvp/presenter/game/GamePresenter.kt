@@ -3,7 +3,10 @@ package ru.kuchanov.scpquiz.mvp.presenter.game
 import android.app.Application
 import android.graphics.Bitmap
 import com.arellomobile.mvp.InjectViewState
+import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
@@ -15,6 +18,7 @@ import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.fragment.GameFragment
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
+import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.properties.Delegates
@@ -150,7 +154,17 @@ class GamePresenter @Inject constructor(
     }
 
     fun openSettings(bitmap: Bitmap) {
-        router.navigateTo(Constants.Screens.SETTINGS, bitmap)
+        Completable.fromAction {
+            BitmapUtils.persistImage(
+                appContext,
+                bitmap,
+                Constants.SETTINGS_BACKGROUND_FILE_NAME)
+        }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onComplete = { router.navigateTo(Constants.Screens.SETTINGS) }
+                )
     }
 
     fun onCharClicked(char: Char) {

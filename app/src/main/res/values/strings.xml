@@ -1,4 +1,9 @@
 <resources>
+
+    <string name="market_url" translatable="false">market://details?id=%s</string>
+    <string name="feedback_email" translatable="false">neva.spb.rx@gmail.com</string>
+    <string name="error_unexpected" translatable="false">Unexpected error</string>
+
     <string name="app_name">Scp Quiz</string>
     <string name="menu">Menu</string>
     <string name="level">Уровень %d</string>
@@ -20,6 +25,10 @@
     <string name="settings_vibrate">Vibration</string>
     <string name="settings_share">Share</string>
     <string name="settings_privacy_policy">Политика конфиденциальности</string>
+
+    <string name="error_start_market">Failed to start Play Market</string>
+    <string name="share_app_link_with_text">Try cool quiz app about SCPs!\nhttps://play.google.com/store/apps/details?id=%s</string>
+    <string name="share_choser_text">Share through…</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>

@@ -49,7 +49,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                 Constants.Screens.APP_INFO -> AppInfoFragment.newInstance()
                 Constants.Screens.QUIZ_LIST -> LevelsFragment.newInstance()
                 Constants.Screens.QUIZ -> GameFragment.newInstance(data as Long)
-                Constants.Screens.SETTINGS -> ScpSettingsFragment.newInstance(data as Bitmap)
+                Constants.Screens.SETTINGS -> ScpSettingsFragment.newInstance()
                 else -> null
             }
         }

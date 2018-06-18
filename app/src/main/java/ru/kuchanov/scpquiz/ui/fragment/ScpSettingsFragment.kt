@@ -1,18 +1,19 @@
 package ru.kuchanov.scpquiz.ui.fragment
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.fragment_settings.*
+import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.EnterModule
 import ru.kuchanov.scpquiz.mvp.presenter.util.SettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -22,15 +23,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
 
     companion object {
 
-        const val ARG_BACKGROUND = "ARG_BACKGROUND"
-
-        fun newInstance(background: Bitmap): ScpSettingsFragment {
-            val fragment = ScpSettingsFragment()
-            val args = Bundle()
-            args.putParcelable(ARG_BACKGROUND, background)
-            fragment.arguments = args
-            return fragment
-        }
+        fun newInstance() = ScpSettingsFragment()
     }
 
     override val translucent = true
@@ -52,11 +45,13 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val bitmap = BitmapUtils.fileToBitmap("${activity?.cacheDir}/${Constants.SETTINGS_BACKGROUND_FILE_NAME}.png")
+
         backgroundImageView.post {
             Blurry.with(context)
                     .async()
                     .animate(500)
-                    .from(arguments!![ARG_BACKGROUND] as Bitmap)
+                    .from(bitmap)
                     .into(backgroundImageView)
         }
 

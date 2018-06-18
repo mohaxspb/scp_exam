@@ -16,6 +16,9 @@ object Constants {
         '0'
     )
     const val DEFAULT_LANG = "en"
+    //todo create policy and set url
+    const val PRIVACY_POLICY_URL = "http://kuchanov.ru"
+    const val SETTINGS_BACKGROUND_FILE_NAME = "bgSettings"
 
     object Screens {
         const val ENTER = "ENTER"
