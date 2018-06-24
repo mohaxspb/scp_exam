@@ -27,9 +27,7 @@ class SettingsPresenter @Inject constructor(
         viewState.showVibration(preferences.isVibrationEnabled())
     }
 
-    fun onLangClicked() {
-        viewState.showLangsChooser(preferences.getLangs())
-    }
+    fun onLangClicked() = viewState.showLangsChooser(preferences.getLangs(), preferences.getLang())
 
     fun onSoundEnabled(checked: Boolean) = preferences.setSoundEnabled(checked)
 
@@ -38,4 +36,8 @@ class SettingsPresenter @Inject constructor(
     fun onShareClicked() = IntentUtils.tryShareApp(appContext)
 
     fun onPrivacyPolicyClicked() = IntentUtils.openUrl(appContext, Constants.PRIVACY_POLICY_URL)
+    fun onLangSelected(selectedLang: String) {
+        preferences.setLang(selectedLang)
+        viewState.showLang(preferences.getLang())
+    }
 }

@@ -49,7 +49,7 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
     private fun initRecyclerView() {
         recyclerView.layoutManager = GridLayoutManager(activity, 3)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
-        delegateManager.addDelegate(LevelDelegate({ presenter.onLevelClick(it) }))
+        delegateManager.addDelegate(LevelDelegate { presenter.onLevelClick(it) })
         adapter = ListDelegationAdapter(delegateManager)
         recyclerView.adapter = adapter
     }

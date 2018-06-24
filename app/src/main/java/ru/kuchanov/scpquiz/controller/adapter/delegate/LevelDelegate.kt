@@ -13,7 +13,9 @@ import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.utils.DimensionUtils
 
 
-class LevelDelegate(private val clickListener: (Long) -> Unit) : AbsListItemAdapterDelegate<LevelViewModel, MyListItem, LevelDelegate.LevelViewHolder>() {
+class LevelDelegate(
+    private val clickListener: (Long) -> Unit
+) : AbsListItemAdapterDelegate<LevelViewModel, MyListItem, LevelDelegate.LevelViewHolder>() {
 
     override fun isForViewType(item: MyListItem, items: MutableList<MyListItem>, position: Int) = item is LevelViewModel
 
