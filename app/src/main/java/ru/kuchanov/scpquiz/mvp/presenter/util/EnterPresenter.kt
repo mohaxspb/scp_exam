@@ -1,8 +1,7 @@
-package ru.kuchanov.scpquiz.mvp.presenter
+package ru.kuchanov.scpquiz.mvp.presenter.util
 
 import android.app.Application
 import com.arellomobile.mvp.InjectViewState
-import com.arellomobile.mvp.MvpPresenter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.reactivex.Flowable
@@ -13,14 +12,16 @@ import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.db.UserRole
+import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.EnterView
 import ru.kuchanov.scpquiz.utils.StorageUtils
-import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -28,18 +29,16 @@ import javax.inject.Inject
 
 @InjectViewState
 class EnterPresenter @Inject constructor(
+    override var appContext: Application,
+    override var preferences: MyPreferenceManager,
+    override var router: ScpRouter,
     private var appDatabase: AppDatabase,
-    private var router: Router,
     private val moshi: Moshi,
-    private var quizConverter: QuizConverter,
-    private val appContext: Application
-) : MvpPresenter<EnterView>() {
-
-    init {
-        Timber.d("constructor")
-    }
+    private var quizConverter: QuizConverter
+) : BasePresenter<EnterView>(appContext, preferences, router) {
 
     private var dbFilled: Boolean = false
+
     private var secondsPast: Long = 0
 
     override fun onFirstViewAttach() {
@@ -85,6 +84,12 @@ class EnterPresenter @Inject constructor(
                             false
                         )
                     })
+
+                    val langs = appDatabase.quizTranslationsDao().getAllLangs().toSet()
+                    preferences.setLangs(langs)
+
+                    preferences.setLang(getDefaultLang(langs))
+
                     -1L
                 }
 
@@ -129,8 +134,16 @@ class EnterPresenter @Inject constructor(
                 )
     }
 
-    override fun onDestroy() {
-        Timber.d("onDestroy")
-        super.onDestroy()
+    private fun getDefaultLang(langs: Set<String>): String {
+        var lang: String = Constants.DEFAULT_LANG
+        langs.forEach {
+            val curLangLocale = Locale(it)
+            if (curLangLocale.language == Locale.getDefault().language) {
+                lang = it
+                return@forEach
+            }
+        }
+
+        return lang
     }
 }

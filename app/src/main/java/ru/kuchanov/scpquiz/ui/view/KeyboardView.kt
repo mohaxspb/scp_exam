@@ -19,7 +19,7 @@ class KeyboardView @JvmOverloads constructor(
     companion object {
         val PADDING_TOP_BOTTOM = DimensionUtils.dpToPx(16)
         val PADDING_LEFT = DimensionUtils.dpToPx(16)
-        const val MIN_KEY_COUNT = 21
+        private const val MIN_KEY_COUNT = 21
 
         fun fillCharsList(chars: MutableList<Char>, availableChars: List<Char>): MutableList<Char> {
             if (chars.size < KeyboardView.MIN_KEY_COUNT) {

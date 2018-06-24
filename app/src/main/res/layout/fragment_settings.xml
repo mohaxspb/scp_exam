@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout android:id="@+id/root"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/backgroundImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:foreground="@color/bg_grey_transparent"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/leftGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/rightGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
+
+    <TextView
+        android:id="@+id/coinsLabelTextView"
+        style="@style/SettingsTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:background="?selectableItemBackground"
+        android:padding="@dimen/defaultMarginSmall"
+        android:text="@string/settings_coins"
+        app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+        app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/coinsImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_coin"
+        android:tint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@id/coinsLabelTextView"
+        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/coinsLabelTextView"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/soundLabelTextView"
+        style="@style/SettingsTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:padding="@dimen/defaultMarginSmall"
+        android:text="@string/settings_sound"
+        app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+        app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintTop_toBottomOf="@+id/coinsLabelTextView" />
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/soundSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/soundLabelTextView"
+        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/soundLabelTextView" />
+
+    <TextView
+        android:id="@+id/languageLabelTextView"
+        style="@style/SettingsTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/defaultMarginSmall"
+        android:padding="@dimen/defaultMarginSmall"
+        android:text="@string/settings_language"
+        app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+        app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintTop_toBottomOf="@id/soundLabelTextView" />
+
+    <ImageView
+        android:id="@+id/languageImageView"
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:layout_gravity="center_vertical"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_en"
+        app:layout_constraintBottom_toBottomOf="@id/languageLabelTextView"
+        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/languageLabelTextView"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/vibrateLabelTextView"
+        style="@style/SettingsTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/defaultMarginSmall"
+        android:padding="@dimen/defaultMarginSmall"
+        android:text="@string/settings_vibrate"
+        app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+        app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintTop_toBottomOf="@+id/languageLabelTextView" />
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/vibrateSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/vibrateLabelTextView"
+        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/vibrateLabelTextView" />
+
+    <TextView
+        android:id="@+id/shareLabelTextView"
+        style="@style/SettingsTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/defaultMarginSmall"
+        android:background="?selectableItemBackground"
+        android:padding="@dimen/defaultMarginSmall"
+        android:text="@string/settings_share"
+        app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+        app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintTop_toBottomOf="@id/vibrateLabelTextView" />
+
+    <ImageView
+        android:id="@+id/shareImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="?selectableItemBackground"
+        android:src="@drawable/ic_share_white_24dp"
+        app:layout_constraintBottom_toBottomOf="@id/shareLabelTextView"
+        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/shareLabelTextView"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/privacyPolicyLabelTextView"
+        style="@style/SettingsTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/defaultMarginSmall"
+        android:background="?selectableItemBackground"
+        android:padding="@dimen/defaultMargin"
+        android:text="@string/settings_privacy_policy"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

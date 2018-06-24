@@ -9,7 +9,7 @@ import kotlinx.android.synthetic.main.fragment_app_info.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.AppInfoModule
-import ru.kuchanov.scpquiz.mvp.presenter.AppInfoPresenter
+import ru.kuchanov.scpquiz.mvp.presenter.util.AppInfoPresenter
 import ru.kuchanov.scpquiz.mvp.view.AppInfoView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import toothpick.Toothpick

@@ -14,7 +14,7 @@ import ru.kuchanov.scpquiz.controller.adapter.delegate.LevelDelegate
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.LevelsModule
-import ru.kuchanov.scpquiz.mvp.presenter.LevelsPresenter
+import ru.kuchanov.scpquiz.mvp.presenter.game.LevelsPresenter
 import ru.kuchanov.scpquiz.mvp.view.LevelsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import toothpick.Toothpick
@@ -49,7 +49,7 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
     private fun initRecyclerView() {
         recyclerView.layoutManager = GridLayoutManager(activity, 3)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
-        delegateManager.addDelegate(LevelDelegate({ presenter.onLevelClick(it) }))
+        delegateManager.addDelegate(LevelDelegate { presenter.onLevelClick(it) })
         adapter = ListDelegationAdapter(delegateManager)
         recyclerView.adapter = adapter
     }

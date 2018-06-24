@@ -24,11 +24,12 @@ import ru.kuchanov.scpquiz.di.module.GameModule
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
-import ru.kuchanov.scpquiz.mvp.presenter.GamePresenter
+import ru.kuchanov.scpquiz.mvp.presenter.game.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.ui.view.ChatMessageView
+import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -85,7 +86,13 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         keyboardView.keyPressListener = { char, charView ->
             val isScpNameCompleted = presenter.quizLevelInfo.finishedLevel.scpNameFilled
             val inputFlexBox = if (isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
-            addCharToFlexBox(char, inputFlexBox, if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME)
+            addCharToFlexBox(char, inputFlexBox, if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME) {
+                if (isScpNameCompleted) {
+                    presenter.quizLevelInfo.finishedLevel.scpNumberFilled
+                } else {
+                    presenter.quizLevelInfo.finishedLevel.scpNameFilled
+                }
+            }
             presenter.onCharClicked(char)
             keyboardView.removeCharView(charView)
         }
@@ -98,7 +105,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showLevelNumber(levelNumber: Int) {
-        levelNumberTextView.text = levelNumber.toString()
+        levelNumberTextView.text = getString(R.string.level, levelNumber)
     }
 
     override fun showImage(quiz: Quiz) {
@@ -143,15 +150,31 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         animator.start()
     }
 
-    override fun showNumber(number: List<Char>) = number.forEach {
-        addCharToFlexBox(it, scpNumberFlexBoxLayout, TEXT_SIZE_NUMBER)
+    override fun showNumber(number: List<Char>) = with(scpNumberFlexBoxLayout) {
+        removeAllViews()
+        number.forEach {
+            addCharToFlexBox(it, this, TEXT_SIZE_NUMBER) { presenter.quizLevelInfo.finishedLevel.scpNumberFilled }
+        }
     }
 
-    override fun showName(name: List<Char>) = name.forEach {
-        addCharToFlexBox(it, scpNameFlexBoxLayout)
+    override fun showName(name: List<Char>) = with(scpNameFlexBoxLayout) {
+        removeAllViews()
+        name.forEach { char ->
+            addCharToFlexBox(char, this) { presenter.quizLevelInfo.finishedLevel.scpNameFilled }
+        }
     }
 
-    private fun addCharToFlexBox(char: Char, flexBoxContainer: FlexboxLayout, textSize: Float = TEXT_SIZE_NAME) {
+    override fun onResume() {
+        super.onResume()
+        presenter.checkLang()
+    }
+
+    private fun addCharToFlexBox(
+        char: Char,
+        flexBoxContainer: FlexboxLayout,
+        textSize: Float = TEXT_SIZE_NAME,
+        shouldIgnoreClick: () -> Boolean
+    ) {
         val characterView = LayoutInflater
                 .from(flexBoxContainer.context)
                 .inflate(R.layout.view_entered_char, flexBoxContainer, false) as TextView
@@ -159,9 +182,11 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         characterView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
 
         characterView.setOnClickListener {
-            presenter.onCharRemoved(char, flexBoxContainer.indexOfChild(it))
-            flexBoxContainer.removeView(it)
-            keyboardView.addCharView((it as TextView).text[0])
+            if (!shouldIgnoreClick.invoke()) {
+                presenter.onCharRemoved(char, flexBoxContainer.indexOfChild(it))
+                flexBoxContainer.removeView(it)
+                keyboardView.addCharView((it as TextView).text[0])
+            }
         }
 
         flexBoxContainer.addView(characterView)
@@ -176,8 +201,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         Timber.d("showChatActions: ${chatActions.joinToString()}")
         val chatActionsFlexBoxLayout = LayoutInflater
                 .from(activity!!)
-                .inflate(R.layout.view_chat_actions, chatView, false) as FlexboxLayout
-        chatView.addView(chatActionsFlexBoxLayout)
+                .inflate(R.layout.view_chat_actions, chatMessagesView, false) as FlexboxLayout
+        chatMessagesView.addView(chatActionsFlexBoxLayout)
 
         chatActions.forEach { chatAction ->
             //todo correct design
@@ -187,19 +212,21 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             chatActionView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
             chatActionView.setBackgroundColor(Color.YELLOW)
             chatActionView.setPadding(20, 20, 20, 20)
-            chatActionView.setOnClickListener { chatAction.action.invoke(chatView.indexOfChild(chatActionsFlexBoxLayout)) }
+            chatActionView.setOnClickListener { chatAction.action.invoke(chatMessagesView.indexOfChild(chatActionsFlexBoxLayout)) }
         }
     }
 
     override fun removeChatAction(indexInParent: Int) {
-        chatView.removeViewAt(indexInParent)
+        chatMessagesView.removeViewAt(indexInParent)
     }
 
     override fun showKeyboard(show: Boolean) {
         keyboardScrollView.visibility = if (show) VISIBLE else GONE
     }
 
-    override fun setKeyboardChars(characters: List<Char>) = keyboardView.setCharacters(characters)
+    override fun setKeyboardChars(characters: List<Char>) {
+        keyboardView.postDelayed({ keyboardView.setCharacters(characters) }, 100)
+    }
 
     override fun showChatMessage(message: String, user: User) {
         val chatMessageView = ChatMessageView(
@@ -208,7 +235,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             message = message
         )
 
-        chatView.addView(chatMessageView)
+        chatMessagesView.addView(chatMessageView)
 
         chatMessageView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -225,6 +252,10 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             }
         })
     }
+
+    override fun clearChatMessages() = chatMessagesView.removeAllViews()
+
+    override fun onNeedToOpenSettings() = presenter.openSettings(BitmapUtils.loadBitmapFromView(root))
 
     override fun showError(error: Throwable) = Snackbar.make(
         root,
