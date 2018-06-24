@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.controller.adapter.delegate
 
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -30,7 +31,14 @@ class DelegateLang(
         payloads: MutableList<Any>
     ) = with(viewHolder.itemView) {
         languageImageView.setImageResource(ScpSettingsFragment.getIconForLang(item.lang))
+
         languageLabelTextView.text = item.lang
+        languageLabelTextView.setTextColor(
+            ContextCompat.getColor(
+                context,
+                if (!item.selected) android.R.color.white else android.R.color.black)
+        )
+
         setBackgroundResource(if (item.selected) android.R.color.white else R.color.bg_grey_transparent)
         setOnClickListener { clickListener(item.lang) }
     }

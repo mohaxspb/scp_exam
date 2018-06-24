@@ -1,10 +1,8 @@
 package ru.kuchanov.scpquiz.ui.fragment
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +24,6 @@ import ru.kuchanov.scpquiz.mvp.presenter.util.SettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.utils.BitmapUtils
-import ru.kuchanov.scpquiz.utils.DimensionUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -94,24 +91,32 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
 
     override fun showLangsChooser(langs: Set<String>, lang: String) {
         Timber.d("showLangsChooser: $langs")
-        val wrapContent = ViewGroup.LayoutParams.WRAP_CONTENT
+
+        val popupView =  LayoutInflater.from(activity).inflate(R.layout.popup_window_middle, root, false)
 
         //закрывать при таче за пределами окна
         val focusable = true
+        val wrapContent = ViewGroup.LayoutParams.WRAP_CONTENT
         val popupWindow = PopupWindow(
-            createPopupView(langs.toList(), lang),
+            popupView,
             wrapContent,
             wrapContent,
-            focusable)
-
-        val screenHeight = DimensionUtils.getScreenHeight()
-
-        popupWindow.showAtLocation(
-            languageImageView,
-            Gravity.START or Gravity.BOTTOM,
-            0,
-            (screenHeight - getPopupMenuLocation()) / 2
+            focusable
         )
+
+        val recyclerView = popupView.findViewById(R.id.recyclerView) as RecyclerView
+
+        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        val manager = AdapterDelegatesManager<List<MyListItem>>()
+        manager.addDelegate(DelegateLang {
+            presenter.onLangSelected(it)
+            popupWindow.dismiss()
+        })
+        val adapter = ListDelegationAdapter(manager)
+        recyclerView.adapter = adapter
+        adapter.items = langs.map { LangViewModel(it, it == lang) }
+
+        popupWindow.showAsDropDown(languageImageView)
     }
 
     override fun showSound(enabled: Boolean) {
@@ -124,35 +129,5 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
         vibrateSwitch.setOnCheckedChangeListener(null)
         vibrateSwitch.isChecked = enabled
         vibrateSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onVibrationEnabled(isChecked) }
-    }
-
-    @SuppressLint("InflateParams")
-    private fun createPopupView(langs: List<String>, lang: String): View {
-        val context = activity
-        val inflater = LayoutInflater.from(context)
-        val popupView = inflater.inflate(R.layout.popup_window_middle, null, false)
-        val recyclerView = popupView.findViewById(R.id.recyclerView) as RecyclerView
-//        val cardView = popupView.findViewById(R.id.cardView) as CardView
-
-        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        val manager = AdapterDelegatesManager<List<MyListItem>>()
-        manager.addDelegate(DelegateLang{ presenter.onLangSelected(it) })
-        val adapter = ListDelegationAdapter(manager)
-        recyclerView.adapter = adapter
-        adapter.items = langs.map { LangViewModel(it, it == lang) }
-
-//        //make window smaller for less then 3 items
-//        when (recyclerView.adapter.itemCount) {
-//            1 -> cardView.layoutParams.height /= 3
-//            2 -> cardView.layoutParams.height = cardView.layoutParams.height / 3 * 2
-//        }
-
-        return popupView
-    }
-
-    private fun getPopupMenuLocation(): Int {
-        val originalPos = IntArray(2)
-        languageImageView.getLocationOnScreen(originalPos)
-        return originalPos[1]
     }
 }
