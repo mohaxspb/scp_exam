@@ -150,12 +150,23 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         animator.start()
     }
 
-    override fun showNumber(number: List<Char>) = number.forEach {
-        addCharToFlexBox(it, scpNumberFlexBoxLayout, TEXT_SIZE_NUMBER) { presenter.quizLevelInfo.finishedLevel.scpNumberFilled }
+    override fun showNumber(number: List<Char>) = with(scpNumberFlexBoxLayout) {
+        removeAllViews()
+        number.forEach {
+            addCharToFlexBox(it, this, TEXT_SIZE_NUMBER) { presenter.quizLevelInfo.finishedLevel.scpNumberFilled }
+        }
     }
 
-    override fun showName(name: List<Char>) = name.forEach {
-        addCharToFlexBox(it, scpNameFlexBoxLayout) { presenter.quizLevelInfo.finishedLevel.scpNameFilled }
+    override fun showName(name: List<Char>) = with(scpNameFlexBoxLayout) {
+        removeAllViews()
+        name.forEach { char ->
+            addCharToFlexBox(char, this) { presenter.quizLevelInfo.finishedLevel.scpNameFilled }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        presenter.checkLang()
     }
 
     private fun addCharToFlexBox(
@@ -190,8 +201,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         Timber.d("showChatActions: ${chatActions.joinToString()}")
         val chatActionsFlexBoxLayout = LayoutInflater
                 .from(activity!!)
-                .inflate(R.layout.view_chat_actions, chatView, false) as FlexboxLayout
-        chatView.addView(chatActionsFlexBoxLayout)
+                .inflate(R.layout.view_chat_actions, chatMessagesView, false) as FlexboxLayout
+        chatMessagesView.addView(chatActionsFlexBoxLayout)
 
         chatActions.forEach { chatAction ->
             //todo correct design
@@ -201,12 +212,12 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             chatActionView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
             chatActionView.setBackgroundColor(Color.YELLOW)
             chatActionView.setPadding(20, 20, 20, 20)
-            chatActionView.setOnClickListener { chatAction.action.invoke(chatView.indexOfChild(chatActionsFlexBoxLayout)) }
+            chatActionView.setOnClickListener { chatAction.action.invoke(chatMessagesView.indexOfChild(chatActionsFlexBoxLayout)) }
         }
     }
 
     override fun removeChatAction(indexInParent: Int) {
-        chatView.removeViewAt(indexInParent)
+        chatMessagesView.removeViewAt(indexInParent)
     }
 
     override fun showKeyboard(show: Boolean) {
@@ -224,7 +235,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             message = message
         )
 
-        chatView.addView(chatMessageView)
+        chatMessagesView.addView(chatMessageView)
 
         chatMessageView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
@@ -241,6 +252,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             }
         })
     }
+
+    override fun clearChatMessages() = chatMessagesView.removeAllViews()
 
     override fun onNeedToOpenSettings() = presenter.openSettings(BitmapUtils.loadBitmapFromView(root))
 

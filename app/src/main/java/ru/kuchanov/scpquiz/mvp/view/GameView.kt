@@ -10,6 +10,7 @@ import ru.kuchanov.scpquiz.mvp.BaseView
 interface GameView : BaseView {
     fun showProgress(show: Boolean)
     fun showError(error: Throwable)
+//    @StateStrategyType(OneExecutionStateStrategy::class)
     fun showChatMessage(message: String, user: User)
     fun showKeyboard(show: Boolean)
     fun removeChatAction(indexInParent: Int)
@@ -25,4 +26,6 @@ interface GameView : BaseView {
     fun showNumber(number: List<Char>)
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onNeedToOpenSettings()
+
+    fun clearChatMessages()
 }

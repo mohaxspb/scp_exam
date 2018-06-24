@@ -31,6 +31,17 @@ class GamePresenter @Inject constructor(
     private var gameInteractor: GameInteractor
 ) : BasePresenter<GameView>(appContext, preferences, router) {
 
+    var currentLang = preferences.getLang()
+//        set(value) {
+//            if (value != field) {
+//                if (!quizLevelInfo.finishedLevel.scpNameFilled) {
+//                    viewState.showName(listOf())
+//                }
+//                loadLevel()
+//            }
+//            field = value
+//        }
+
     private var isLevelShown: Boolean = false
 
     var quizId: Long by Delegates.notNull()
@@ -304,5 +315,14 @@ class GamePresenter @Inject constructor(
                         viewState.showError(it)
                     }
                 )
+    }
+
+    fun checkLang() {
+        val langInPrefs = preferences.getLang()
+        if (currentLang != langInPrefs) {
+            isLevelShown = false
+            viewState.clearChatMessages()
+            loadLevel()
+        }
     }
 }

@@ -7,6 +7,7 @@ import io.reactivex.functions.Function6
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
 import ru.kuchanov.scpquiz.ui.fragment.GameFragment
@@ -14,7 +15,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class GameInteractor @Inject constructor(
-    private var appDatabase: AppDatabase
+    private val appDatabase: AppDatabase,
+    private val preferenceManager: MyPreferenceManager
 ) {
 
     fun getLevelInfo(quizId: Long): Flowable<QuizLevelInfo> = Flowable.combineLatest(
@@ -71,16 +73,14 @@ class GameInteractor @Inject constructor(
     private fun getRandomTranslations() = appDatabase.quizDao().getRandomQuizes(2)
             .flatMap { Flowable.fromIterable(it) }
             .map {
-                //todo create prefs for lang and use it
-                appDatabase.quizDao().getQuizTranslationsByQuizIdAndLang(it.id, "ru").first()
+                appDatabase.quizDao().getQuizTranslationsByQuizIdAndLang(it.id, preferenceManager.getLang()).first()
             }
             .limit(2)
             .toList()
             .toFlowable()
 
     private fun getQuiz(quizId: Long) = Single.fromCallable {
-        //todo create prefs for lang and use it
-        val quiz = appDatabase.quizDao().getQuizWithTranslationsAndPhrases(quizId, "ru")
+        val quiz = appDatabase.quizDao().getQuizWithTranslationsAndPhrases(quizId, preferenceManager.getLang())
         Timber.d("quiz:$quiz")
         quiz
     }
