@@ -13,23 +13,43 @@
         tools:ignore="ContentDescription"
         tools:src="@drawable/ic_doctor" />
 
-    <TextView
-        android:id="@+id/messageTextView"
+    <LinearLayout
+        android:id="@+id/messageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:layout_marginTop="@dimen/defaultMargin"
         android:background="@drawable/bg_chat_message_player"
-        android:gravity="end"
-        android:padding="@dimen/defaultMargin"
+        android:orientation="horizontal"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/space"
         app:layout_constraintRight_toLeftOf="@+id/avatarImageView"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Очень хорошо D-3087,\nпродолжайте.Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо " />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <!--tools:text="Очень хорошо D-3087,\nпродолжайте."/>-->
+        <TextView
+            android:id="@+id/messageTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:paddingBottom="@dimen/defaultMargin"
+            android:paddingStart="@dimen/defaultMargin"
+            android:paddingTop="@dimen/defaultMargin"
+            tools:ignore="RtlSymmetry"
+            tools:text="Очень хорошо D-3087,\nпродолжайте.Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо Очень хорошо " />
+
+        <ImageView
+            android:layout_width="@dimen/defaultMargin"
+            android:layout_height="@dimen/defaultMargin"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/defaultMarginSmall"
+            android:layout_marginEnd="@dimen/defaultMarginSmall"
+            android:layout_marginStart="@dimen/defaultMarginSmall"
+            android:src="@drawable/ic_check"
+            tools:ignore="ContentDescription" />
+
+    </LinearLayout>
 
     <View
         android:id="@+id/space"
@@ -37,7 +57,7 @@
         android:layout_height="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/messageTextView"
+        app:layout_constraintRight_toLeftOf="@+id/messageView"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_min="63dp"
         tools:background="#80FF0000" />
