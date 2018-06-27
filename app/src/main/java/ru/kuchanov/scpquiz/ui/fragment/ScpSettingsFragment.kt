@@ -24,6 +24,7 @@ import ru.kuchanov.scpquiz.mvp.presenter.util.SettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.utils.BitmapUtils
+import ru.kuchanov.scpquiz.utils.SystemUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -92,7 +93,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
     override fun showLangsChooser(langs: Set<String>, lang: String) {
         Timber.d("showLangsChooser: $langs")
 
-        val popupView =  LayoutInflater.from(activity).inflate(R.layout.popup_window_middle, root, false)
+        val popupView = LayoutInflater.from(activity).inflate(R.layout.popup_window_middle, root, false)
 
         //закрывать при таче за пределами окна
         val focusable = true
@@ -128,6 +129,13 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
     override fun showVibration(enabled: Boolean) {
         vibrateSwitch.setOnCheckedChangeListener(null)
         vibrateSwitch.isChecked = enabled
-        vibrateSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onVibrationEnabled(isChecked) }
+        vibrateSwitch.setOnCheckedChangeListener { _, isChecked ->
+            run {
+                if (isChecked) {
+                    SystemUtils.vibrate()
+                }
+                presenter.onVibrationEnabled(isChecked)
+            }
+        }
     }
 }
