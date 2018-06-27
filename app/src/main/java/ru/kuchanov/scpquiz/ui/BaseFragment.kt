@@ -23,7 +23,7 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
     abstract val modules: Array<out Module>
 
     /**
-     * your activity scope, which constructs from [scopes]
+     * your fragment scope, which constructs from [scopes]
      *
      * and contains installed [modules]
      */

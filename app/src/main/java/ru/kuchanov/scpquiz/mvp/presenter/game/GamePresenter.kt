@@ -4,7 +4,9 @@ import android.app.Application
 import android.graphics.Bitmap
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
@@ -20,6 +22,8 @@ import ru.kuchanov.scpquiz.ui.fragment.GameFragment
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
+import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -31,16 +35,12 @@ class GamePresenter @Inject constructor(
     private var gameInteractor: GameInteractor
 ) : BasePresenter<GameView>(appContext, preferences, router) {
 
-    var currentLang = preferences.getLang()
-//        set(value) {
-//            if (value != field) {
-//                if (!quizLevelInfo.finishedLevel.scpNameFilled) {
-//                    viewState.showName(listOf())
-//                }
-//                loadLevel()
-//            }
-//            field = value
-//        }
+    companion object {
+        const val PERIODIC_MESSAGES_INITIAL_DELAY = 30L
+        const val PERIODIC_MESSAGES_PERIOD = 30L
+    }
+
+    private var currentLang: String = preferences.getLang()
 
     private var isLevelShown: Boolean = false
 
@@ -52,10 +52,32 @@ class GamePresenter @Inject constructor(
 
     private val enteredNumber = mutableListOf<Char>()
 
+    private var levelDataDisposable: Disposable? = null
+
+    private var periodicMessagesDisposable: Disposable? = null
+
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
         loadLevel()
+    }
+
+    private fun sendPeriodicMessages() {
+        periodicMessagesDisposable = Flowable.interval(
+            PERIODIC_MESSAGES_INITIAL_DELAY,
+            PERIODIC_MESSAGES_PERIOD,
+            TimeUnit.SECONDS
+        )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy {
+                    val phrases = quizLevelInfo.quiz.quizTranslations?.first()?.quizTranslationPhrases
+                    if (phrases?.isNotEmpty() == true) {
+                        phrases[Random().nextInt(phrases.size)].translation.let {
+                            viewState.showChatMessage(it, quizLevelInfo.doctor)
+                        }
+                    }
+                }
     }
 
     private fun loadLevel() {
@@ -63,7 +85,7 @@ class GamePresenter @Inject constructor(
 
         viewState.showProgress(true)
 
-        gameInteractor
+        levelDataDisposable = gameInteractor
                 .getLevelInfo(quizId)
                 .subscribeBy(
                     onNext = { levelInfo ->
@@ -97,6 +119,8 @@ class GamePresenter @Inject constructor(
                                             )
                                             animateKeyboard()
                                         }
+
+                                        sendPeriodicMessages()
                                     }
                                     !scpNumberFilled && scpNameFilled -> {
                                         with(viewState) {
@@ -119,6 +143,8 @@ class GamePresenter @Inject constructor(
                                             showKeyboard(true)
                                             showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
                                         }
+
+                                        sendPeriodicMessages()
                                     }
                                     scpNumberFilled && scpNameFilled -> {
                                         with(viewState) {
@@ -130,7 +156,9 @@ class GamePresenter @Inject constructor(
                                                 quizLevelInfo.player
                                             )
                                             showChatMessage(
-                                                appContext.getString(R.string.message_level_comleted, quizLevelInfo.player.name),
+                                                appContext.getString(
+                                                    R.string.message_level_comleted,
+                                                    quizLevelInfo.player.name),
                                                 quizLevelInfo.doctor
                                             )
                                             showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
@@ -227,6 +255,8 @@ class GamePresenter @Inject constructor(
 
                 showChatActions(generateLevelCompletedActions())
             }
+
+            periodicMessagesDisposable?.dispose()
         } else {
             Timber.d("number is not correct")
         }
@@ -324,5 +354,13 @@ class GamePresenter @Inject constructor(
             viewState.clearChatMessages()
             loadLevel()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (periodicMessagesDisposable?.isDisposed == false) {
+            periodicMessagesDisposable?.dispose()
+        }
+        levelDataDisposable?.dispose()
     }
 }

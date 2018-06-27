@@ -6,8 +6,13 @@ import android.widget.LinearLayout
 import com.google.android.flexbox.FlexboxLayout
 import kotlinx.android.synthetic.main.view_keyboard.view.*
 import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.utils.DimensionUtils
+import ru.kuchanov.scpquiz.utils.SystemUtils
 import timber.log.Timber
+import toothpick.Toothpick
+import javax.inject.Inject
 
 
 class KeyboardView @JvmOverloads constructor(
@@ -38,11 +43,16 @@ class KeyboardView @JvmOverloads constructor(
         }
     }
 
+    @Inject
+    lateinit var myPreferenceManager: MyPreferenceManager
+
     private var characters = mutableListOf<Char>()
 
     var keyPressListener: (Char, CharacterView) -> Unit = { _, _ -> }
 
     init {
+        Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
+
         orientation = VERTICAL
         inflate(context, R.layout.view_keyboard, this)
         setPadding(PADDING_LEFT, PADDING_TOP_BOTTOM, PADDING_LEFT, PADDING_TOP_BOTTOM)
@@ -57,7 +67,12 @@ class KeyboardView @JvmOverloads constructor(
         val characterView = CharacterView(context)
         characterView.char = char
 
-        characterView.setOnClickListener { keyPressListener((it as CharacterView).char, it) }
+        characterView.setOnClickListener {
+            if (myPreferenceManager.isVibrationEnabled()) {
+                SystemUtils.vibrate()
+            }
+            keyPressListener((it as CharacterView).char, it)
+        }
 
         flexBoxLayout.addView(characterView)
 

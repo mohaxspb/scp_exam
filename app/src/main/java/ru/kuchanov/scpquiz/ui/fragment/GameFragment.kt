@@ -19,6 +19,7 @@ import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import kotlinx.android.synthetic.main.fragment_game.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
+import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.GameModule
 import ru.kuchanov.scpquiz.model.db.Quiz
@@ -30,9 +31,11 @@ import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.ui.view.ChatMessageView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
+import ru.kuchanov.scpquiz.utils.SystemUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
+import javax.inject.Inject
 
 
 class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
@@ -52,6 +55,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             return fragment
         }
     }
+
+    @Inject
+    lateinit var myPreferenceManager: MyPreferenceManager
 
     override val translucent = false
 
@@ -183,6 +189,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
         characterView.setOnClickListener {
             if (!shouldIgnoreClick.invoke()) {
+                if (myPreferenceManager.isVibrationEnabled()) {
+                    SystemUtils.vibrate()
+                }
                 presenter.onCharRemoved(char, flexBoxContainer.indexOfChild(it))
                 flexBoxContainer.removeView(it)
                 keyboardView.addCharView((it as TextView).text[0])
@@ -212,7 +221,31 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             chatActionView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
             chatActionView.setBackgroundColor(Color.YELLOW)
             chatActionView.setPadding(20, 20, 20, 20)
-            chatActionView.setOnClickListener { chatAction.action.invoke(chatMessagesView.indexOfChild(chatActionsFlexBoxLayout)) }
+            chatActionView.setOnClickListener {
+                if (myPreferenceManager.isVibrationEnabled()) {
+                    SystemUtils.vibrate()
+                }
+                chatAction.action.invoke(chatMessagesView.indexOfChild(chatActionsFlexBoxLayout))
+            }
+
+            chatActionView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    val width = chatActionView.width
+                    val height = chatActionView.height
+                    if (width > 0 && height > 0) {
+                        chatActionView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                        ObjectAnimator
+                                .ofInt(gameScrollView, "scrollY", chatActionView.top)
+                                .setDuration(500)
+                                .start()
+
+                        if (myPreferenceManager.isVibrationEnabled()) {
+                            SystemUtils.vibrate()
+                        }
+                    }
+                }
+            })
         }
     }
 
@@ -248,6 +281,10 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                             .ofInt(gameScrollView, "scrollY", chatMessageView.top)
                             .setDuration(500)
                             .start()
+
+                    if (myPreferenceManager.isVibrationEnabled()) {
+                        SystemUtils.vibrate()
+                    }
                 }
             }
         })
