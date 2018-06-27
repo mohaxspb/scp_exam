@@ -35,6 +35,11 @@ class GamePresenter @Inject constructor(
     private var gameInteractor: GameInteractor
 ) : BasePresenter<GameView>(appContext, preferences, router) {
 
+    companion object {
+        const val PERIODIC_MESSAGES_INITIAL_DELAY = 30L
+        const val PERIODIC_MESSAGES_PERIOD = 30L
+    }
+
     private var currentLang: String = preferences.getLang()
 
     private var isLevelShown: Boolean = false
@@ -58,7 +63,11 @@ class GamePresenter @Inject constructor(
     }
 
     private fun sendPeriodicMessages() {
-        periodicMessagesDisposable = Flowable.interval(5, 5, TimeUnit.SECONDS)
+        periodicMessagesDisposable = Flowable.interval(
+            PERIODIC_MESSAGES_INITIAL_DELAY,
+            PERIODIC_MESSAGES_PERIOD,
+            TimeUnit.SECONDS
+        )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy {
