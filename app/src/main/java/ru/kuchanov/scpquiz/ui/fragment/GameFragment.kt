@@ -227,6 +227,25 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                 }
                 chatAction.action.invoke(chatMessagesView.indexOfChild(chatActionsFlexBoxLayout))
             }
+
+            chatActionView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    val width = chatActionView.width
+                    val height = chatActionView.height
+                    if (width > 0 && height > 0) {
+                        chatActionView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                        ObjectAnimator
+                                .ofInt(gameScrollView, "scrollY", chatActionView.top)
+                                .setDuration(500)
+                                .start()
+
+                        if (myPreferenceManager.isVibrationEnabled()) {
+                            SystemUtils.vibrate()
+                        }
+                    }
+                }
+            })
         }
     }
 
@@ -262,6 +281,10 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                             .ofInt(gameScrollView, "scrollY", chatMessageView.top)
                             .setDuration(500)
                             .start()
+
+                    if (myPreferenceManager.isVibrationEnabled()) {
+                        SystemUtils.vibrate()
+                    }
                 }
             }
         })
