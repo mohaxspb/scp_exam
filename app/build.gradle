@@ -140,6 +140,9 @@ dependencies {
     implementation 'com.yandex.android:mobmetricalib:3.1.0'
     // Optional. Play Install Referrer library for better attribution.
     implementation 'com.android.installreferrer:installreferrer:1.0'
+
+    //rate app
+    implementation('ru.kuchanov.utils:rate:1.2.1@aar') { transitive = true }
 }
 
 apply plugin: 'com.google.gms.google-services'
