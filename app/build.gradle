@@ -29,6 +29,19 @@ android {
                 arg("room.schemaLocation", "$projectDir/schemas".toString())
             }
         }
+
+        if (rootProject.file("config/config.properties").exists()) {
+            def properties = new Properties()
+            properties.load(new FileInputStream(rootProject.file("config/config.properties")))
+
+            buildConfigField('String', 'YANDEX_METRICA_API_KEY', '"' + properties.get("yandexMetricaApiKey") + '"')
+        } else {
+            throw new GradleException(
+                    "You need to have projectRoot/config/config.properties file with "
+                            + "yandexMetricaApiKey,"
+                            + " to build project"
+            )
+        }
     }
     buildTypes {
         release {
@@ -124,7 +137,9 @@ dependencies {
 
     // AppMetrica
     //we add it here and delete jar from appodeal
-    implementation 'com.yandex.android:mobmetricalib:2.77'
+    implementation 'com.yandex.android:mobmetricalib:3.1.0'
+    // Optional. Play Install Referrer library for better attribution.
+    implementation 'com.android.installreferrer:installreferrer:1.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

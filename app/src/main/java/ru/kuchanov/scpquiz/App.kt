@@ -7,6 +7,10 @@ import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
 import toothpick.smoothie.module.SmoothieApplicationModule
+import com.yandex.metrica.YandexMetrica
+import com.yandex.metrica.YandexMetricaConfig
+
+
 
 
 @SuppressWarnings("unused")
@@ -19,6 +23,13 @@ class App : MultiDexApplication() {
 
         initTimber()
         initDi()
+        initYandexMetrica()
+    }
+
+    private fun initYandexMetrica() {
+        val configBuilder = YandexMetricaConfig.newConfigBuilder(BuildConfig.YANDEX_METRICA_API_KEY)
+        YandexMetrica.activate(applicationContext, configBuilder.build())
+        YandexMetrica.enableActivityAutoTracking(this)
     }
 
     private fun initTimber() {
