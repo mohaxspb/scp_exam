@@ -1,12 +1,13 @@
 package ru.kuchanov.scpquiz.ui
 
 import android.os.Bundle
-import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.widget.Toast
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.MvpPresenter
+import ru.kuchanov.rate.PreRate
+import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.mvp.BaseView
 import ru.terrakok.cicerone.Navigator
@@ -16,7 +17,6 @@ import toothpick.Toothpick
 import toothpick.config.Module
 import toothpick.smoothie.module.SmoothieSupportActivityModule
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatActivity(), BaseView {
 
@@ -45,6 +45,12 @@ abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatAct
     override fun onPause() {
         super.onPause()
         navigationHolder.removeNavigator()
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        PreRate.init(this, getString(R.string.feedback_email), getString(R.string.feedback_title)).showIfNeed()
     }
 
     /**
@@ -93,5 +99,7 @@ abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatAct
         for (scope in scopes) {
             Toothpick.closeScope(scope)
         }
+
+        PreRate.clearDialogIfOpen()
     }
 }
