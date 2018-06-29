@@ -336,9 +336,13 @@ class GamePresenter @Inject constructor(
             quizLevelInfo.finishedLevel.scpNameFilled,
             quizLevelInfo.finishedLevel.scpNumberFilled
         )
+                .flatMap { gameInteractor.getNumberOfFinishedLevels() }
                 .subscribeBy(
                     onSuccess = {
                         Timber.d("updated!")
+                        if (it == Constants.FINISHED_LEVEL_BEFORE_ASK_RATE_APP) {
+                            viewState.askForRateApp()
+                        }
                     },
                     onError = {
                         Timber.e(it)

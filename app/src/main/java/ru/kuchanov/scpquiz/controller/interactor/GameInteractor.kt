@@ -69,6 +69,9 @@ class GameInteractor @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
+    fun getNumberOfFinishedLevels(): Single<Long> = Single.fromCallable { appDatabase.finishedLevelsDao().getCountOfPartiallyFinishedLevels() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
 
     private fun getRandomTranslations() = appDatabase.quizDao().getRandomQuizes(2)
             .flatMap { Flowable.fromIterable(it) }

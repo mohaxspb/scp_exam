@@ -17,6 +17,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenterTag
 import com.google.android.flexbox.FlexboxLayout
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import kotlinx.android.synthetic.main.fragment_game.*
+import ru.kuchanov.rate.PreRate
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
@@ -289,6 +290,12 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             }
         })
     }
+
+    override fun askForRateApp() = PreRate.init(
+        activity,
+        getString(R.string.feedback_email),
+        getString(R.string.feedback_title)
+    ).showRateDialog()
 
     override fun clearChatMessages() = chatMessagesView.removeAllViews()
 

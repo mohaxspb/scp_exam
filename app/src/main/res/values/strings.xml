@@ -29,6 +29,7 @@
     <string name="error_start_market">Failed to start Play Market</string>
     <string name="share_app_link_with_text">Try cool quiz app about SCPs!\nhttps://play.google.com/store/apps/details?id=%s</string>
     <string name="share_choser_text">Share through…</string>
+    <string name="feedback_title">Review SCP Quiz</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>
