@@ -19,6 +19,7 @@ object Constants {
     //todo create policy and set url
     const val PRIVACY_POLICY_URL = "http://kuchanov.ru"
     const val SETTINGS_BACKGROUND_FILE_NAME = "bgSettings"
+    const val FINISHED_LEVEL_BEFORE_ASK_RATE_APP = 5L
 
     object Screens {
         const val ENTER = "ENTER"

@@ -28,4 +28,5 @@ interface GameView : BaseView {
     fun onNeedToOpenSettings()
 
     fun clearChatMessages()
+    fun askForRateApp()
 }
