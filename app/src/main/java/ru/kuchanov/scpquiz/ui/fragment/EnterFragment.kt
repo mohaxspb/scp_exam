@@ -11,6 +11,7 @@ import ru.kuchanov.scpquiz.di.module.EnterModule
 import ru.kuchanov.scpquiz.mvp.presenter.intro.EnterPresenter
 import ru.kuchanov.scpquiz.mvp.view.EnterView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -69,6 +70,8 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
         progressAnimator.interpolator = AccelerateDecelerateInterpolator()
         progressAnimator.start()
     }
+
+    override fun onNeedToOpenIntroDialogFragment() = presenter.openIntroDialogScreen(BitmapUtils.loadBitmapFromView(root))
 
     companion object {
         fun newInstance() = EnterFragment()

@@ -6,4 +6,5 @@ interface EnterView : BaseView {
     fun showProgressAnimation()
     fun showProgressText()
     fun showImage(imageNumber: Int)
+    fun onNeedToOpenIntroDialogFragment()
 }

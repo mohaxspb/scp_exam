@@ -2,7 +2,6 @@ package ru.kuchanov.scpquiz.ui.activity
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
 import com.arellomobile.mvp.presenter.InjectPresenter
@@ -50,6 +49,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                 Constants.Screens.QUIZ_LIST -> LevelsFragment.newInstance()
                 Constants.Screens.QUIZ -> GameFragment.newInstance(data as Long)
                 Constants.Screens.SETTINGS -> ScpSettingsFragment.newInstance()
+                Constants.Screens.INTRO_DIALOG -> IntroDialogFragment.newInstance()
                 else -> null
             }
         }

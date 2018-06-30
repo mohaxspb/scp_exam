@@ -1,9 +1,11 @@
 package ru.kuchanov.scpquiz.mvp.presenter.intro
 
 import android.app.Application
+import android.graphics.Bitmap
 import com.arellomobile.mvp.InjectViewState
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -21,6 +23,7 @@ import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.EnterView
+import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.StorageUtils
 import timber.log.Timber
 import java.util.*
@@ -135,9 +138,24 @@ class EnterPresenter @Inject constructor(
                     },
                     onComplete = {
                         Timber.d("onComplete")
-                        router.newRootScreen(Constants.Screens.QUIZ_LIST)
+//                        router.newRootScreen(Constants.Screens.QUIZ_LIST)
+                        viewState.onNeedToOpenIntroDialogFragment()
                     },
                     onError = Timber::e
+                )
+    }
+
+    fun openIntroDialogScreen(bitmap: Bitmap) {
+        Completable.fromAction {
+            BitmapUtils.persistImage(
+                appContext,
+                bitmap,
+                Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME)
+        }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onComplete = { router.newRootScreen(Constants.Screens.INTRO_DIALOG) }
                 )
     }
 

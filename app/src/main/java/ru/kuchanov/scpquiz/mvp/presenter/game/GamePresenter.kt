@@ -180,7 +180,7 @@ class GamePresenter @Inject constructor(
                 )
     }
 
-    fun onLevelsClicked() = router.backTo(Constants.Screens.QUIZ_LIST)
+    fun onLevelsClicked() = router.navigateTo(Constants.Screens.QUIZ_LIST)
 
     fun onCoinsClicked() {
         //todo
