@@ -4,6 +4,7 @@ import android.app.Application
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Function3
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
@@ -11,6 +12,7 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
+import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.model.ui.ChatAction
@@ -27,6 +29,12 @@ class IntroDialogPresenter @Inject constructor(
     private var appDatabase: AppDatabase
 ) : BasePresenter<IntroDialogView>(appContext, preferences, router) {
 
+    private lateinit var doctor: User
+
+    private lateinit var player: User
+
+    private lateinit var quiz: Quiz
+
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
@@ -38,23 +46,33 @@ class IntroDialogPresenter @Inject constructor(
             ))
 
 //        Flowable.interval(1, 2, TimeUnit.SECONDS)
-        Flowable.intervalRange(
-            0,
-            2,
-            1,
-            2,
-            TimeUnit.SECONDS
+        Flowable.zip(
+            appDatabase.userDao().getOneByRole(UserRole.DOCTOR).toFlowable(),
+            appDatabase.userDao().getOneByRole(UserRole.PLAYER).toFlowable(),
+            appDatabase.quizDao().getFirst().toFlowable(),
+            Function3 { doctor: User, player: User, firstLevel: Quiz -> Triple(doctor, player, firstLevel) }
         )
+                .doOnNext {
+                    doctor = it.first
+                    player = it.second
+                    quiz = it.third
+                }
+                .flatMap { _ ->
+                    Flowable.intervalRange(
+                        0,
+                        2,
+                        1,
+                        2,
+                        TimeUnit.SECONDS
+                    )
+                }
+
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onNext = {
-                        //todo correct user from DB
                         viewState.showChatMessage(
-                            "test", User(
-                                name = appContext.getString(R.string.doctor_name),
-                                role = UserRole.DOCTOR
-                            ))
+                            "test", doctor)
                     },
                     onComplete = {
                         viewState.showChatActions(generateStartGameActions())
@@ -65,14 +83,14 @@ class IntroDialogPresenter @Inject constructor(
     private fun generateStartGameActions(): List<ChatAction> {
         val chatActions = mutableListOf<ChatAction>()
 
-        chatActions += ChatAction(appContext.getString(R.string.chat_action_sure)) {
-            //todo correct id from DB
-            router.newRootScreen(Constants.Screens.QUIZ, 2L)
+        val action: (Int) -> Unit = { order ->
+            viewState.removeChatAction(order)
+            //todo show user message and navigate to next screen with delay
+            router.newRootScreen(Constants.Screens.QUIZ, quiz.id)
         }
-        chatActions += ChatAction(appContext.getString(R.string.chat_action_yes)) {
-            //todo correct id from DB
-            router.newRootScreen(Constants.Screens.QUIZ, 2L)
-        }
+
+        chatActions += ChatAction(appContext.getString(R.string.chat_action_sure), action)
+        chatActions += ChatAction(appContext.getString(R.string.chat_action_yes), action)
 
         return chatActions
     }
