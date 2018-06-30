@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.mvp.presenter.util
+package ru.kuchanov.scpquiz.mvp.presenter.intro
 
 import android.app.Application
 import com.arellomobile.mvp.InjectViewState
