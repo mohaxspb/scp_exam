@@ -44,7 +44,13 @@ class EnterPresenter @Inject constructor(
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
-        val timerObservable = Flowable.intervalRange(0, 10, 0, 1050, TimeUnit.MILLISECONDS)
+        val timerObservable = Flowable.intervalRange(
+            0,
+            10,
+            0,
+            1050,
+            TimeUnit.MILLISECONDS
+        )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
 
@@ -124,6 +130,7 @@ class EnterPresenter @Inject constructor(
                         } else {
                             viewState.showProgressText()
                             viewState.showProgressAnimation()
+                            viewState.showImage(it.toInt())
                         }
                     },
                     onComplete = {

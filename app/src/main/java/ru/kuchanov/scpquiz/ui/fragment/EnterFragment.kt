@@ -11,6 +11,7 @@ import ru.kuchanov.scpquiz.di.module.EnterModule
 import ru.kuchanov.scpquiz.mvp.presenter.util.EnterPresenter
 import ru.kuchanov.scpquiz.mvp.view.EnterView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
 import java.util.*
@@ -45,6 +46,26 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
             1000
         )
         progressAnimator.duration = 1000
+        progressAnimator.interpolator = AccelerateDecelerateInterpolator()
+        progressAnimator.start()
+    }
+
+    override fun showImage(imageNumber: Int) {
+        Timber.d("showImage: $imageNumber")
+        val imageView = when (imageNumber) {
+            0 -> bottomImageView
+            1 -> middleImageView
+            2 -> topImageView
+            else -> throw IllegalStateException("unexpected image")
+        }
+
+        val progressAnimator = ObjectAnimator.ofFloat(
+            imageView,
+            "alpha",
+            0f,
+            1f
+        )
+        progressAnimator.duration = 800
         progressAnimator.interpolator = AccelerateDecelerateInterpolator()
         progressAnimator.start()
     }
