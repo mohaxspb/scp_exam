@@ -3,6 +3,7 @@ package ru.kuchanov.scpquiz.mvp.presenter.intro
 import android.app.Application
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function3
 import io.reactivex.rxkotlin.subscribeBy
@@ -38,14 +39,6 @@ class IntroDialogPresenter @Inject constructor(
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
-        //todo test
-        viewState.showChatMessage(
-            "test", User(
-                name = appContext.getString(R.string.doctor_name),
-                role = UserRole.DOCTOR
-            ))
-
-//        Flowable.interval(1, 2, TimeUnit.SECONDS)
         Flowable.zip(
             appDatabase.userDao().getOneByRole(UserRole.DOCTOR).toFlowable(),
             appDatabase.userDao().getOneByRole(UserRole.PLAYER).toFlowable(),
@@ -60,7 +53,7 @@ class IntroDialogPresenter @Inject constructor(
                 .flatMap { _ ->
                     Flowable.intervalRange(
                         0,
-                        2,
+                        3,
                         1,
                         2,
                         TimeUnit.SECONDS
@@ -71,8 +64,15 @@ class IntroDialogPresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onNext = {
+                        val array = appContext.resources.getStringArray(R.array.intro_dialog_texts)
+                        var message = array[it.toInt()]
+                        if (message.contains("%s")) {
+                            message = message.replace("%s", player.name)
+                        }
                         viewState.showChatMessage(
-                            "test", doctor)
+                            message,
+                            doctor
+                        )
                     },
                     onComplete = {
                         viewState.showChatActions(generateStartGameActions())
@@ -83,15 +83,32 @@ class IntroDialogPresenter @Inject constructor(
     private fun generateStartGameActions(): List<ChatAction> {
         val chatActions = mutableListOf<ChatAction>()
 
-        val action: (Int) -> Unit = { order ->
-            viewState.removeChatAction(order)
-            //todo show user message and navigate to next screen with delay
-            router.newRootScreen(Constants.Screens.QUIZ, quiz.id)
-        }
-
-        chatActions += ChatAction(appContext.getString(R.string.chat_action_sure), action)
-        chatActions += ChatAction(appContext.getString(R.string.chat_action_yes), action)
+        val messageOk = appContext.getString(R.string.chat_action_sure)
+        chatActions += ChatAction(
+            messageOk,
+            getOkActionForText(messageOk),
+            R.drawable.selector_chat_action_accent
+        )
+        val messageSure = appContext.getString(R.string.chat_action_yes)
+        chatActions += ChatAction(
+            messageSure,
+            getOkActionForText(messageSure),
+            R.drawable.selector_chat_action_green
+        )
 
         return chatActions
+    }
+
+    private fun getOkActionForText(text: String): (Int) -> Unit = {
+        viewState.removeChatAction(it)
+        viewState.showChatMessage(text, player)
+        Single.timer(1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onSuccess = {
+                        router.newRootScreen(Constants.Screens.QUIZ, quiz.id)
+                    }
+                )
     }
 }

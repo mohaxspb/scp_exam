@@ -1,9 +1,7 @@
 package ru.kuchanov.scpquiz.ui.utils
 
 import android.animation.ObjectAnimator
-import android.graphics.Color
 import android.support.v4.widget.NestedScrollView
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
@@ -54,19 +52,24 @@ class ChatDelegate(
 
     fun showChatActions(chatActions: List<ChatAction>) {
         Timber.d("showChatActions: ${chatActions.joinToString()}")
-        val chatActionsFlexBoxLayout = LayoutInflater
-                .from(chatView.context)
-                .inflate(R.layout.view_chat_actions, chatView, false) as FlexboxLayout
+        val inflater = LayoutInflater.from(chatView.context)
+
+        val chatActionsFlexBoxLayout = inflater.inflate(
+            R.layout.view_chat_actions,
+            chatView,
+            false
+        ) as FlexboxLayout
         chatView.addView(chatActionsFlexBoxLayout)
 
         chatActions.forEach { chatAction ->
-            //todo correct design
-            val chatActionView = TextView(chatActionsFlexBoxLayout.context)
+            val chatActionView = inflater.inflate(
+                R.layout.view_chat_action,
+                chatView,
+                false
+            ) as TextView
             chatActionsFlexBoxLayout.addView(chatActionView)
             chatActionView.text = chatAction.actionName
-            chatActionView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
-            chatActionView.setBackgroundColor(Color.YELLOW)
-            chatActionView.setPadding(20, 20, 20, 20)
+            chatActionView.setBackgroundResource(chatAction.bgResource)
             chatActionView.setOnClickListener {
                 if (myPreferenceManager.isVibrationEnabled()) {
                     SystemUtils.vibrate()

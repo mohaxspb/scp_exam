@@ -45,4 +45,10 @@
         <item>Текст прогресса 9</item>
         <item>Текст прогресса 10</item>
     </string-array>
+
+    <string-array name="intro_dialog_texts">
+        <item>Здравствуйте, %s</item>
+        <item>Мы получили ваш запрос на повышение квалификации.</item>
+        <item>Вы готовы приступить к тестированию?</item>
+    </string-array>
 </resources>
