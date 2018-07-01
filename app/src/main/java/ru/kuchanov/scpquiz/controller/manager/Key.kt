@@ -7,4 +7,5 @@ object Key {
     const val LANG = "LANG"
     const val SOUND_ENABLED = "SOUND_ENABLED"
     const val VIBRATION_ENABLED = "VIBRATION_ENABLED"
+    const val INTRO_DIALOG_SHOWN = "INTRO_DIALOG_SHOWN"
 }

@@ -138,8 +138,11 @@ class EnterPresenter @Inject constructor(
                     },
                     onComplete = {
                         Timber.d("onComplete")
-//                        router.newRootScreen(Constants.Screens.QUIZ_LIST)
-                        viewState.onNeedToOpenIntroDialogFragment()
+                        if(preferences.isIntroDialogShown()){
+                            router.newRootScreen(Constants.Screens.QUIZ_LIST)
+                        } else{
+                            viewState.onNeedToOpenIntroDialogFragment()
+                        }
                     },
                     onError = Timber::e
                 )

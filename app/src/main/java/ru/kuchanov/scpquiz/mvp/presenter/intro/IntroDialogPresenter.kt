@@ -100,6 +100,7 @@ class IntroDialogPresenter @Inject constructor(
     }
 
     private fun getOkActionForText(text: String): (Int) -> Unit = {
+        preferences.setIntroDialogShown(true)
         viewState.removeChatAction(it)
         viewState.showChatMessage(text, player)
         Single.timer(1, TimeUnit.SECONDS)

@@ -28,4 +28,8 @@ class MyPreferenceManager @Inject constructor(context: Context) {
     fun isVibrationEnabled() = preferences.getBoolean(Key.VIBRATION_ENABLED, false)
 
     fun setVibrationEnabled(enabled: Boolean) = preferences.edit().putBoolean(Key.VIBRATION_ENABLED, enabled).apply()
+
+    fun isIntroDialogShown() = preferences.getBoolean(Key.INTRO_DIALOG_SHOWN, false)
+
+    fun setIntroDialogShown(shown: Boolean) = preferences.edit().putBoolean(Key.INTRO_DIALOG_SHOWN, shown).apply()
 }
