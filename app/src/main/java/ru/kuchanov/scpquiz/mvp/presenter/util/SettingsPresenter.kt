@@ -40,4 +40,6 @@ class SettingsPresenter @Inject constructor(
         preferences.setLang(selectedLang)
         viewState.showLang(preferences.getLang())
     }
+
+    fun onCoinsClicked() = router.navigateTo(Constants.Screens.MONETIZATION)
 }

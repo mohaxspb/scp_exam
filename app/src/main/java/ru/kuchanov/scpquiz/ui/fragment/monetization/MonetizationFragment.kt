@@ -1,13 +1,19 @@
 package ru.kuchanov.scpquiz.ui.fragment.monetization
 
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
+import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
+import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.fragment_monetization.*
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.adapter.MyListItem
+import ru.kuchanov.scpquiz.controller.adapter.delegate.MonetizationDelegate
+import ru.kuchanov.scpquiz.controller.adapter.viewmodel.MonetizationViewModel
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.MonetizationModule
 import ru.kuchanov.scpquiz.mvp.presenter.monetization.MonetizationPresenter
@@ -41,6 +47,8 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
 
     override fun getLayoutResId() = R.layout.fragment_monetization
 
+    lateinit var adapter: ListDelegationAdapter<List<MyListItem>>
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -54,5 +62,20 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
                     .from(bitmap)
                     .into(backgroundImageView)
         }
+
+        initRecyclerView()
+    }
+
+    override fun showMonetizationActions(actions: MutableList<MonetizationViewModel>) {
+        adapter.items = actions
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun initRecyclerView() {
+        recyclerView.layoutManager = LinearLayoutManager(activity)
+        val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
+        delegateManager.addDelegate(MonetizationDelegate())
+        adapter = ListDelegationAdapter(delegateManager)
+        recyclerView.adapter = adapter
     }
 }

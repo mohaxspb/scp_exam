@@ -2,6 +2,8 @@ package ru.kuchanov.scpquiz.mvp.presenter.monetization
 
 import android.app.Application
 import com.arellomobile.mvp.InjectViewState
+import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.adapter.viewmodel.MonetizationViewModel
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
@@ -20,6 +22,18 @@ class MonetizationPresenter @Inject constructor(
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
+        //todo
+        val actions = mutableListOf<MonetizationViewModel>()
+        actions += MonetizationViewModel(
+            R.drawable.ic_no_money,
+            appContext.getString(R.string.monetization_action_appodeal_title),
+            appContext.getString(R.string.monetization_action_appodeal_description)
+        ) { showAppodealAds() }
+
+        viewState.showMonetizationActions(actions)
+    }
+
+    private fun showAppodealAds() {
         //todo
     }
 }

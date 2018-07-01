@@ -32,6 +32,8 @@
     <string name="feedback_title">Review SCP Quiz</string>
     <string name="chat_action_yes">Yes</string>
     <string name="chat_action_sure">Sure</string>
+    <string name="monetization_action_appodeal_title">Поддержи нас</string>
+    <string name="monetization_action_appodeal_description">Посмотри рекламу и тебе начислят  30 рептикойнов</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>

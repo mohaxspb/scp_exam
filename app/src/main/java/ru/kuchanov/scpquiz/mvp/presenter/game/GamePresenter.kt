@@ -190,10 +190,8 @@ class GamePresenter @Inject constructor(
 
     fun onLevelsClicked() = router.navigateTo(Constants.Screens.QUIZ_LIST)
 
-    fun onCoinsClicked() {
-        //todo
-        Timber.d("coins button clicked!")
-    }
+    //todo create bg as for settings
+    fun onCoinsClicked() = router.navigateTo(Constants.Screens.MONETIZATION)
 
     fun onHamburgerMenuClicked() = viewState.onNeedToOpenSettings()
 

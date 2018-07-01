@@ -72,6 +72,9 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
                     .into(backgroundImageView)
         }
 
+        coinsLabelTextView.setOnClickListener { presenter.onCoinsClicked() }
+        coinsImageView.setOnClickListener { presenter.onCoinsClicked() }
+
         val onLangClickListener: (View) -> Unit = { presenter.onLangClicked() }
         languageLabelTextView.setOnClickListener(onLangClickListener)
         languageImageView.setOnClickListener(onLangClickListener)
