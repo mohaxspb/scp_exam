@@ -6,6 +6,7 @@ import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import jp.wasabeef.blurry.Blurry
+import kotlinx.android.synthetic.main.fragment_intro_dialog.*
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
@@ -60,6 +61,7 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
             myPreferenceManager
         )
 
+        //todo move to delegate
         val bitmap = BitmapUtils.fileToBitmap("${activity?.cacheDir}/${Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME}.png")
 
         backgroundImageView.post {

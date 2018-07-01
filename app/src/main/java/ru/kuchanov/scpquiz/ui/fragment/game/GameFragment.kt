@@ -14,6 +14,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.arellomobile.mvp.presenter.ProvidePresenterTag
 import com.google.android.flexbox.FlexboxLayout
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
+import kotlinx.android.synthetic.main.fragment_game.*
 import ru.kuchanov.rate.PreRate
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem

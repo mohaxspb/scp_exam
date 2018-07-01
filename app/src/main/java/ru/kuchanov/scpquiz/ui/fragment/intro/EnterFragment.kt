@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
+import kotlinx.android.synthetic.main.fragment_enter.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.EnterModule
