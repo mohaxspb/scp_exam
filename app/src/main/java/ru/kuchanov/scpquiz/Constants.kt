@@ -29,5 +29,6 @@ object Constants {
         const val QUIZ = "QUIZ"
         const val APP_INFO = "APP_INFO"
         const val INTRO_DIALOG = "INTRO_DIALOG"
+        const val MONETIZATION = "MONETIZATION"
     }
 }

@@ -15,8 +15,7 @@ import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
-import ru.kuchanov.scpquiz.mvp.view.LevelsView
-import ru.terrakok.cicerone.Router
+import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject

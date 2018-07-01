@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.ui.fragment
+package ru.kuchanov.scpquiz.ui.fragment.game
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
@@ -25,7 +25,7 @@ import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.mvp.presenter.game.GamePresenter
-import ru.kuchanov.scpquiz.mvp.view.GameView
+import ru.kuchanov.scpquiz.mvp.view.game.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.ChatDelegate
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
@@ -239,6 +239,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     override fun clearChatMessages() = chatMessagesView.removeAllViews()
 
     override fun onNeedToOpenSettings() = presenter.openSettings(BitmapUtils.loadBitmapFromView(root))
+
+    override fun onNeedToOpenCoins() = presenter.openCoins(BitmapUtils.loadBitmapFromView(root))
 
     override fun showError(error: Throwable) = Snackbar.make(
         root,

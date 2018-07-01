@@ -17,8 +17,8 @@ import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
-import ru.kuchanov.scpquiz.mvp.view.GameView
-import ru.kuchanov.scpquiz.ui.fragment.GameFragment
+import ru.kuchanov.scpquiz.mvp.view.game.GameView
+import ru.kuchanov.scpquiz.ui.fragment.game.GameFragment
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
@@ -190,9 +190,20 @@ class GamePresenter @Inject constructor(
 
     fun onLevelsClicked() = router.navigateTo(Constants.Screens.QUIZ_LIST)
 
-    fun onCoinsClicked() {
-        //todo
-        Timber.d("coins button clicked!")
+    fun onCoinsClicked() = viewState.onNeedToOpenCoins()
+
+    fun openCoins(bitmap: Bitmap) {
+        Completable.fromAction {
+            BitmapUtils.persistImage(
+                appContext,
+                bitmap,
+                Constants.SETTINGS_BACKGROUND_FILE_NAME)
+        }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onComplete = { router.navigateTo(Constants.Screens.MONETIZATION) }
+                )
     }
 
     fun onHamburgerMenuClicked() = viewState.onNeedToOpenSettings()
@@ -258,6 +269,8 @@ class GamePresenter @Inject constructor(
                     quizLevelInfo.doctor
                 )
 
+                showNumber(quizLevelInfo.quiz.scpNumber.toList())
+
                 showChatActions(generateLevelCompletedActions())
             }
 
@@ -289,6 +302,7 @@ class GamePresenter @Inject constructor(
                         quizLevelInfo.doctor
                     )
 
+                    showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
 
                     showChatActions(generateNameEnteredChatActions())
                     showKeyboard(false)

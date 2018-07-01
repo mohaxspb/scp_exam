@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.ui.fragment
+package ru.kuchanov.scpquiz.ui.fragment.intro
 
 import android.animation.ObjectAnimator
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -9,7 +9,7 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.EnterModule
 import ru.kuchanov.scpquiz.mvp.presenter.intro.EnterPresenter
-import ru.kuchanov.scpquiz.mvp.view.EnterView
+import ru.kuchanov.scpquiz.mvp.view.intro.EnterView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber

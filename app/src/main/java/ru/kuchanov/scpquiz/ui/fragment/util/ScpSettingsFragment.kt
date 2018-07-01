@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.ui.fragment
+package ru.kuchanov.scpquiz.ui.fragment.util
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -21,7 +21,7 @@ import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LangViewModel
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.SettingsModule
 import ru.kuchanov.scpquiz.mvp.presenter.util.SettingsPresenter
-import ru.kuchanov.scpquiz.mvp.view.SettingsView
+import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
@@ -61,6 +61,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //todo move to delegate
         val bitmap = BitmapUtils.fileToBitmap("${activity?.cacheDir}/${Constants.SETTINGS_BACKGROUND_FILE_NAME}.png")
 
         backgroundImageView.post {
@@ -70,6 +71,9 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
                     .from(bitmap)
                     .into(backgroundImageView)
         }
+
+        coinsLabelTextView.setOnClickListener { presenter.onCoinsClicked() }
+        coinsImageView.setOnClickListener { presenter.onCoinsClicked() }
 
         val onLangClickListener: (View) -> Unit = { presenter.onLangClicked() }
         languageLabelTextView.setOnClickListener(onLangClickListener)

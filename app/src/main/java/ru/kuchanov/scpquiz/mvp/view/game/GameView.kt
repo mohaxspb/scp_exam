@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.mvp.view
+package ru.kuchanov.scpquiz.mvp.view.game
 
 import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
@@ -10,7 +10,6 @@ import ru.kuchanov.scpquiz.mvp.BaseView
 interface GameView : BaseView {
     fun showProgress(show: Boolean)
     fun showError(error: Throwable)
-//    @StateStrategyType(OneExecutionStateStrategy::class)
     fun showChatMessage(message: String, user: User)
     fun showKeyboard(show: Boolean)
     fun removeChatAction(indexInParent: Int)
@@ -26,7 +25,8 @@ interface GameView : BaseView {
     fun showNumber(number: List<Char>)
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onNeedToOpenSettings()
-
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onNeedToOpenCoins()
     fun clearChatMessages()
     fun askForRateApp()
 }

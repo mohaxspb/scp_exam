@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.ui.fragment
+package ru.kuchanov.scpquiz.ui.fragment.intro
 
 import android.animation.LayoutTransition
 import android.os.Bundle
@@ -15,7 +15,7 @@ import ru.kuchanov.scpquiz.di.module.IntroDialogModule
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.mvp.presenter.intro.IntroDialogPresenter
-import ru.kuchanov.scpquiz.mvp.view.IntroDialogView
+import ru.kuchanov.scpquiz.mvp.view.intro.IntroDialogView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.ChatDelegate
 import ru.kuchanov.scpquiz.utils.BitmapUtils
@@ -61,6 +61,7 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
             myPreferenceManager
         )
 
+        //todo move to delegate
         val bitmap = BitmapUtils.fileToBitmap("${activity?.cacheDir}/${Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME}.png")
 
         backgroundImageView.post {
