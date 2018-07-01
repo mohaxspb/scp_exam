@@ -105,6 +105,14 @@ class GamePresenter @Inject constructor(
                                             //todo param for number
                                             showLevelNumber(-1)
 
+                                            val startLevelMessages = appContext
+                                                    .resources
+                                                    .getStringArray(R.array.messages_level_start)
+                                            showChatMessage(
+                                                startLevelMessages[Random().nextInt(startLevelMessages.size)],
+                                                quizLevelInfo.doctor
+                                            )
+
                                             val chars = quizLevelInfo.quiz.quizTranslations?.let {
                                                 it[0].translation.toMutableList()
                                             } ?: throw IllegalStateException("translations is null")
@@ -180,17 +188,14 @@ class GamePresenter @Inject constructor(
                 )
     }
 
-    fun onLevelsClicked() = router.backTo(Constants.Screens.QUIZ_LIST)
+    fun onLevelsClicked() = router.navigateTo(Constants.Screens.QUIZ_LIST)
 
     fun onCoinsClicked() {
         //todo
         Timber.d("coins button clicked!")
     }
 
-    fun onHamburgerMenuClicked() {
-        Timber.d("hamburgerButton button clicked!")
-        viewState.onNeedToOpenSettings()
-    }
+    fun onHamburgerMenuClicked() = viewState.onNeedToOpenSettings()
 
     fun openSettings(bitmap: Bitmap) {
         Completable.fromAction {
@@ -271,6 +276,11 @@ class GamePresenter @Inject constructor(
                     onLevelCompleted()
 
                     showChatMessage(
+                        quizTranslation.translation,
+                        quizLevelInfo.player
+                    )
+
+                    showChatMessage(
                         appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NAME),
                         quizLevelInfo.doctor
                     )
@@ -292,16 +302,23 @@ class GamePresenter @Inject constructor(
     private fun generateLevelCompletedActions(): List<ChatAction> {
         val chatActions = mutableListOf<ChatAction>()
         if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
-            val nextLevelAction = ChatAction(appContext.getString(R.string.chat_action_next_level)) {
-                router.replaceScreen(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
-            }
+            val nextLevelAction = ChatAction(
+                appContext.getString(R.string.chat_action_next_level),
+                {
+                    router.replaceScreen(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
+                },
+                R.drawable.selector_chat_action_green
+            )
             chatActions += nextLevelAction
         }
 
         val enterNumberAction = ChatAction(
-            appContext.getString(R.string.chat_action_levels_list)) {
-            router.backTo(Constants.Screens.QUIZ_LIST)
-        }
+            appContext.getString(R.string.chat_action_levels_list),
+            {
+                router.backTo(Constants.Screens.QUIZ_LIST)
+            },
+            R.drawable.selector_chat_action_accent
+        )
         chatActions += enterNumberAction
         return chatActions
     }
@@ -309,22 +326,30 @@ class GamePresenter @Inject constructor(
     private fun generateNameEnteredChatActions(): List<ChatAction> {
         val chatActions = mutableListOf<ChatAction>()
         if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
-            val nextLevelAction = ChatAction(appContext.getString(R.string.chat_action_next_level)) {
-                router.replaceScreen(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
-            }
+            val nextLevelAction = ChatAction(
+                appContext.getString(R.string.chat_action_next_level),
+                {
+                    router.replaceScreen(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
+                },
+                R.drawable.selector_chat_action_accent
+            )
             chatActions += nextLevelAction
         }
         val message = appContext.getString(R.string.chat_action_enter_number)
-        val enterNumberAction = ChatAction(message) {
-            val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0').shuffled()
-            val scpNumberChars = quizLevelInfo.quiz.scpNumber.toCharArray().toMutableList()
-            with(viewState) {
-                setKeyboardChars(KeyboardView.fillCharsList(scpNumberChars, availableChars))
-                showKeyboard(true)
-                showChatMessage(message, quizLevelInfo.player)
-                removeChatAction(it)
-            }
-        }
+        val enterNumberAction = ChatAction(
+            message,
+            {
+                val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0').shuffled()
+                val scpNumberChars = quizLevelInfo.quiz.scpNumber.toCharArray().toMutableList()
+                with(viewState) {
+                    setKeyboardChars(KeyboardView.fillCharsList(scpNumberChars, availableChars))
+                    showKeyboard(true)
+                    showChatMessage(message, quizLevelInfo.player)
+                    removeChatAction(it)
+                }
+            },
+            R.drawable.selector_chat_action_green
+        )
         chatActions += enterNumberAction
         return chatActions
     }

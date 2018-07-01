@@ -9,5 +9,7 @@
     <color name="controlColor">#797979</color>
     <color name="whiteHalfTransparent">#80ffffff</color>
     <color name="characterBorderColor">#707070</color>
+    <color name="textColorGrey">#696969</color>
     <color name="bg_grey_transparent">#cc000000</color>
+    <color name="colorGreen">#6FCF97</color>
 </resources>

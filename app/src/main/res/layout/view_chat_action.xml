@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.AppCompatTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/selector_chat_action_accent"
+    android:paddingBottom="5dp"
+    android:paddingEnd="@dimen/defaultMargin"
+    android:paddingStart="@dimen/defaultMargin"
+    android:paddingTop="5dp"
+    android:textColor="@android:color/black"
+    android:textSize="14sp"
+    tools:layout_gravity="center"
+    tools:text="OK">
+
+</android.support.v7.widget.AppCompatTextView>

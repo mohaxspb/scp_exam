@@ -19,6 +19,7 @@ object Constants {
     //todo create policy and set url
     const val PRIVACY_POLICY_URL = "http://kuchanov.ru"
     const val SETTINGS_BACKGROUND_FILE_NAME = "bgSettings"
+    const val INTRO_DIALOG_BACKGROUND_FILE_NAME = "bgIntoDialog"
     const val FINISHED_LEVEL_BEFORE_ASK_RATE_APP = 5L
 
     object Screens {
@@ -27,5 +28,6 @@ object Constants {
         const val QUIZ_LIST = "QUIZ_LIST"
         const val QUIZ = "QUIZ"
         const val APP_INFO = "APP_INFO"
+        const val INTRO_DIALOG = "INTRO_DIALOG"
     }
 }

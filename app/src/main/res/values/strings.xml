@@ -30,6 +30,8 @@
     <string name="share_app_link_with_text">Try cool quiz app about SCPs!\nhttps://play.google.com/store/apps/details?id=%s</string>
     <string name="share_choser_text">Share through…</string>
     <string name="feedback_title">Review SCP Quiz</string>
+    <string name="chat_action_yes">Yes</string>
+    <string name="chat_action_sure">Sure</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>
@@ -42,5 +44,17 @@
         <item>Текст прогресса 8</item>
         <item>Текст прогресса 9</item>
         <item>Текст прогресса 10</item>
+    </string-array>
+
+    <string-array name="intro_dialog_texts">
+        <item>Здравствуйте, %s</item>
+        <item>Мы получили ваш запрос на повышение квалификации.</item>
+        <item>Вы готовы приступить к тестированию?</item>
+    </string-array>
+
+    <string-array name="messages_level_start">
+        <item>Try to remember this SCP name</item>
+        <item>Tell me its name</item>
+        <item>Could you tell us this SCP name?</item>
     </string-array>
 </resources>

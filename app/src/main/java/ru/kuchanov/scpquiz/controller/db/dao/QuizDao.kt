@@ -41,6 +41,9 @@ interface QuizDao {
     @Query("SELECT * FROM quiz WHERE id = :id")
     fun getByIdOrErrorOnce(id: Long): Single<Quiz>
 
+    @Query("SELECT * FROM quiz ORDER BY id ASC LIMIT 1")
+    fun getFirst(): Single<Quiz>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(quiz: Quiz): Long
 

@@ -19,7 +19,7 @@ import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.DelegateLang
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LangViewModel
 import ru.kuchanov.scpquiz.di.Di
-import ru.kuchanov.scpquiz.di.module.EnterModule
+import ru.kuchanov.scpquiz.di.module.SettingsModule
 import ru.kuchanov.scpquiz.mvp.presenter.util.SettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
@@ -44,9 +44,9 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
 
     override val translucent = true
 
-    override val scopes: Array<String> = arrayOf(Di.Scope.ENTER_FRAGMENT)
+    override val scopes: Array<String> = arrayOf(Di.Scope.SETTINGS_FRAGMENT)
 
-    override val modules: Array<Module> = arrayOf(EnterModule())
+    override val modules: Array<Module> = arrayOf(SettingsModule())
 
     @InjectPresenter
     override lateinit var presenter: SettingsPresenter

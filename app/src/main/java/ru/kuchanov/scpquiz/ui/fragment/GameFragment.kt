@@ -2,14 +2,12 @@ package ru.kuchanov.scpquiz.ui.fragment
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
-import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
-import android.view.ViewTreeObserver
 import android.widget.TextView
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
@@ -29,11 +27,10 @@ import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.mvp.presenter.game.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.ui.utils.ChatDelegate
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
-import ru.kuchanov.scpquiz.ui.view.ChatMessageView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
-import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
 import javax.inject.Inject
@@ -87,8 +84,16 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     lateinit var adapter: ListDelegationAdapter<List<MyListItem>>
 
+    private lateinit var chatDelegate: ChatDelegate
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        chatDelegate = ChatDelegate(
+            chatMessagesView,
+            gameScrollView,
+            myPreferenceManager
+        )
 
         keyboardView.keyPressListener = { char, charView ->
             val isScpNameCompleted = presenter.quizLevelInfo.finishedLevel.scpNameFilled
@@ -207,52 +212,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 //        characterView.layoutParams = params
     }
 
-    override fun showChatActions(chatActions: List<ChatAction>) {
-        Timber.d("showChatActions: ${chatActions.joinToString()}")
-        val chatActionsFlexBoxLayout = LayoutInflater
-                .from(activity!!)
-                .inflate(R.layout.view_chat_actions, chatMessagesView, false) as FlexboxLayout
-        chatMessagesView.addView(chatActionsFlexBoxLayout)
+    override fun showChatActions(chatActions: List<ChatAction>) = chatDelegate.showChatActions(chatActions)
 
-        chatActions.forEach { chatAction ->
-            //todo correct design
-            val chatActionView = TextView(chatActionsFlexBoxLayout.context)
-            chatActionsFlexBoxLayout.addView(chatActionView)
-            chatActionView.text = chatAction.actionName
-            chatActionView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
-            chatActionView.setBackgroundColor(Color.YELLOW)
-            chatActionView.setPadding(20, 20, 20, 20)
-            chatActionView.setOnClickListener {
-                if (myPreferenceManager.isVibrationEnabled()) {
-                    SystemUtils.vibrate()
-                }
-                chatAction.action.invoke(chatMessagesView.indexOfChild(chatActionsFlexBoxLayout))
-            }
-
-            chatActionView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    val width = chatActionView.width
-                    val height = chatActionView.height
-                    if (width > 0 && height > 0) {
-                        chatActionView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-
-                        ObjectAnimator
-                                .ofInt(gameScrollView, "scrollY", chatActionView.top)
-                                .setDuration(500)
-                                .start()
-
-                        if (myPreferenceManager.isVibrationEnabled()) {
-                            SystemUtils.vibrate()
-                        }
-                    }
-                }
-            })
-        }
-    }
-
-    override fun removeChatAction(indexInParent: Int) {
-        chatMessagesView.removeViewAt(indexInParent)
-    }
+    override fun removeChatAction(indexInParent: Int) = chatDelegate.removeChatAction(indexInParent)
 
     override fun showKeyboard(show: Boolean) {
         keyboardScrollView.visibility = if (show) VISIBLE else GONE
@@ -262,34 +224,11 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         keyboardView.postDelayed({ keyboardView.setCharacters(characters) }, 100)
     }
 
-    override fun showChatMessage(message: String, user: User) {
-        val chatMessageView = ChatMessageView(
-            context = activity!!,
-            user = user,
-            message = message
-        )
-
-        chatMessagesView.addView(chatMessageView)
-
-        chatMessageView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                val width = chatMessageView.width
-                val height = chatMessageView.height
-                if (width > 0 && height > 0) {
-                    chatMessageView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-
-                    ObjectAnimator
-                            .ofInt(gameScrollView, "scrollY", chatMessageView.top)
-                            .setDuration(500)
-                            .start()
-
-                    if (myPreferenceManager.isVibrationEnabled()) {
-                        SystemUtils.vibrate()
-                    }
-                }
-            }
-        })
-    }
+    override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(
+        message,
+        user,
+        R.color.textColorGrey
+    )
 
     override fun askForRateApp() = PreRate.init(
         activity,
