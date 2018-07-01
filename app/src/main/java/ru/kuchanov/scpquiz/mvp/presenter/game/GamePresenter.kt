@@ -6,6 +6,7 @@ import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -38,6 +39,9 @@ class GamePresenter @Inject constructor(
     companion object {
         const val PERIODIC_MESSAGES_INITIAL_DELAY = 30L
         const val PERIODIC_MESSAGES_PERIOD = 30L
+        //fixme 90 not 20
+        const val PERIODIC_SUGGESTIONS_INITIAL_DELAY = 20L
+        const val PERIODIC_SUGGESTIONS_PERIOD = 180L
     }
 
     private var currentLang: String = preferences.getLang()
@@ -54,7 +58,7 @@ class GamePresenter @Inject constructor(
 
     private var levelDataDisposable: Disposable? = null
 
-    private var periodicMessagesDisposable: Disposable? = null
+    private var periodicMessagesDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -63,7 +67,10 @@ class GamePresenter @Inject constructor(
     }
 
     private fun sendPeriodicMessages() {
-        periodicMessagesDisposable = Flowable.interval(
+        if (periodicMessagesDisposable.isDisposed) {
+            periodicMessagesDisposable = CompositeDisposable()
+        }
+        periodicMessagesDisposable.add(Flowable.interval(
             PERIODIC_MESSAGES_INITIAL_DELAY,
             PERIODIC_MESSAGES_PERIOD,
             TimeUnit.SECONDS
@@ -78,6 +85,78 @@ class GamePresenter @Inject constructor(
                         }
                     }
                 }
+        )
+        periodicMessagesDisposable.add(Flowable.interval(
+            PERIODIC_SUGGESTIONS_INITIAL_DELAY,
+            PERIODIC_SUGGESTIONS_PERIOD,
+            TimeUnit.SECONDS
+        )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy {
+                    val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestions)
+                    viewState.showChatMessage(
+                        suggestionsMessages[Random().nextInt(suggestionsMessages.size)],
+                        quizLevelInfo.doctor
+                    )
+                    viewState.showChatActions(generateSuggestions())
+                }
+        )
+    }
+
+    private fun generateSuggestions(): List<ChatAction> {
+        val actions = mutableListOf<ChatAction>()
+
+        val checkCoins: (Int, Int) -> Boolean = { price, indexOfChatAction ->
+            val hasEnoughCoins = price < quizLevelInfo.player.score
+            if (!hasEnoughCoins) {
+                viewState.removeChatAction(indexOfChatAction)
+                //todo show message and actions for gain coins
+            }
+            hasEnoughCoins
+        }
+
+        val removeCharsActionText = appContext.getString(R.string.suggestion_remove_redundant_chars)
+        actions += ChatAction(
+            removeCharsActionText,
+            {
+                viewState.removeChatAction(it)
+                viewState.showChatMessage(removeCharsActionText, quizLevelInfo.player)
+                val price = Constants.SUGGESTION_PRICE_REMOVE_CHARS
+                if (checkCoins.invoke(price, it)) {
+                    val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_remove_chars)
+                    viewState.showChatMessage(
+                        suggestionsMessages[Random().nextInt(suggestionsMessages.size)],
+                        quizLevelInfo.doctor
+                    )
+                    //todo remove numbers if name is entered
+                    val chars = quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toList()?.shuffled()
+                            ?: throw IllegalStateException("no chars for keyboard")
+                    viewState.setKeyboardChars(chars)
+
+                    gameInteractor.decreaseScore(price)
+                            .subscribeOn(Schedulers.io())
+                            .subscribe()
+                }
+            },
+            R.drawable.selector_chat_action_green
+        )
+
+        val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_no)
+        val noActionText = suggestionsMessages[Random().nextInt(suggestionsMessages.size)]
+        actions += ChatAction(
+            noActionText,
+            {
+                viewState.removeChatAction(it)
+                viewState.showChatMessage(
+                    noActionText,
+                    quizLevelInfo.player
+                )
+            },
+            R.drawable.selector_chat_action_red
+        )
+
+        return actions
     }
 
     private fun loadLevel() {
@@ -209,17 +288,21 @@ class GamePresenter @Inject constructor(
     fun onHamburgerMenuClicked() = viewState.onNeedToOpenSettings()
 
     fun openSettings(bitmap: Bitmap) {
-        Completable.fromAction {
-            BitmapUtils.persistImage(
-                appContext,
-                bitmap,
-                Constants.SETTINGS_BACKGROUND_FILE_NAME)
-        }
+        //fixme test
+        gameInteractor.decreaseScore(-1000)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                    onComplete = { router.navigateTo(Constants.Screens.SETTINGS) }
-                )
+                .subscribe()
+//        Completable.fromAction {
+//            BitmapUtils.persistImage(
+//                appContext,
+//                bitmap,
+//                Constants.SETTINGS_BACKGROUND_FILE_NAME)
+//        }
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeBy(
+//                    onComplete = { router.navigateTo(Constants.Screens.SETTINGS) }
+//                )
     }
 
     fun onCharClicked(char: Char) {
@@ -274,7 +357,7 @@ class GamePresenter @Inject constructor(
                 showChatActions(generateLevelCompletedActions())
             }
 
-            periodicMessagesDisposable?.dispose()
+            periodicMessagesDisposable.dispose()
         } else {
             Timber.d("number is not correct")
         }
@@ -401,9 +484,7 @@ class GamePresenter @Inject constructor(
 
     override fun onDestroy() {
         super.onDestroy()
-        if (periodicMessagesDisposable?.isDisposed == false) {
-            periodicMessagesDisposable?.dispose()
-        }
+        periodicMessagesDisposable.dispose()
         levelDataDisposable?.dispose()
     }
 }

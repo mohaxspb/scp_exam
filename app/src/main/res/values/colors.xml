@@ -13,4 +13,5 @@
     <color name="bg_grey_transparent">#cc000000</color>
     <color name="colorGreen">#6FCF97</color>
     <color name="orange">#F2994A</color>
+    <color name="colorRed">#BB4646</color>
 </resources>

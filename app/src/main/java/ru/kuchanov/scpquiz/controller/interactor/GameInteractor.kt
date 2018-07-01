@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.controller.interactor
 
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -101,4 +102,11 @@ class GameInteractor @Inject constructor(
             .getNextQuizId(quizId)
             .onErrorReturn { GameFragment.NO_NEXT_QUIZ_ID }
             .toFlowable()
+
+    fun decreaseScore(scoreToDecrease: Int): Completable = Completable.fromAction {
+        with(appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet()) {
+            score -= scoreToDecrease
+            appDatabase.userDao().update(this).toLong()
+        }
+    }
 }
