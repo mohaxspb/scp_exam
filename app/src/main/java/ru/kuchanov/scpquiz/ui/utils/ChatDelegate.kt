@@ -1,6 +1,7 @@
 package ru.kuchanov.scpquiz.ui.utils
 
 import android.animation.ObjectAnimator
+import android.support.annotation.ColorRes
 import android.support.v4.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.ViewTreeObserver
@@ -21,11 +22,12 @@ class ChatDelegate(
     private val myPreferenceManager: MyPreferenceManager
 ) {
 
-    fun showChatMessage(message: String, user: User) {
+    fun showChatMessage(message: String, user: User, @ColorRes nameTextColorRes: Int) {
         val chatMessageView = ChatMessageView(
             context = chatView.context,
             user = user,
-            message = message
+            message = message,
+            nameTextColorRes = nameTextColorRes
         )
 
         chatView.addView(chatMessageView)

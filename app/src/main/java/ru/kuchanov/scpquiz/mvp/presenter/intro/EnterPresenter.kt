@@ -138,9 +138,9 @@ class EnterPresenter @Inject constructor(
                     },
                     onComplete = {
                         Timber.d("onComplete")
-                        if(preferences.isIntroDialogShown()){
+                        if (preferences.isIntroDialogShown()) {
                             router.newRootScreen(Constants.Screens.QUIZ_LIST)
-                        } else{
+                        } else {
                             viewState.onNeedToOpenIntroDialogFragment()
                         }
                     },

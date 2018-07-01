@@ -224,7 +224,11 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         keyboardView.postDelayed({ keyboardView.setCharacters(characters) }, 100)
     }
 
-    override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(message, user)
+    override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(
+        message,
+        user,
+        R.color.textColorGrey
+    )
 
     override fun askForRateApp() = PreRate.init(
         activity,

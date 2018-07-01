@@ -74,7 +74,11 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
         chatView.layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
     }
 
-    override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(message, user)
+    override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(
+        message,
+        user,
+        android.R.color.white
+    )
 
     override fun showChatActions(chatActions: List<ChatAction>) = chatDelegate.showChatActions(chatActions)
 

@@ -105,6 +105,14 @@ class GamePresenter @Inject constructor(
                                             //todo param for number
                                             showLevelNumber(-1)
 
+                                            val startLevelMessages = appContext
+                                                    .resources
+                                                    .getStringArray(R.array.messages_level_start)
+                                            showChatMessage(
+                                                startLevelMessages[Random().nextInt(startLevelMessages.size)],
+                                                quizLevelInfo.doctor
+                                            )
+
                                             val chars = quizLevelInfo.quiz.quizTranslations?.let {
                                                 it[0].translation.toMutableList()
                                             } ?: throw IllegalStateException("translations is null")
@@ -187,10 +195,7 @@ class GamePresenter @Inject constructor(
         Timber.d("coins button clicked!")
     }
 
-    fun onHamburgerMenuClicked() {
-        Timber.d("hamburgerButton button clicked!")
-        viewState.onNeedToOpenSettings()
-    }
+    fun onHamburgerMenuClicked() = viewState.onNeedToOpenSettings()
 
     fun openSettings(bitmap: Bitmap) {
         Completable.fromAction {
@@ -269,6 +274,11 @@ class GamePresenter @Inject constructor(
                 with(viewState) {
                     quizLevelInfo.finishedLevel.scpNameFilled = true
                     onLevelCompleted()
+
+                    showChatMessage(
+                        quizTranslation.translation,
+                        quizLevelInfo.player
+                    )
 
                     showChatMessage(
                         appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NAME),

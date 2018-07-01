@@ -51,4 +51,10 @@
         <item>Мы получили ваш запрос на повышение квалификации.</item>
         <item>Вы готовы приступить к тестированию?</item>
     </string-array>
+
+    <string-array name="messages_level_start">
+        <item>Try to remember this SCP name</item>
+        <item>Tell me its name</item>
+        <item>Could you tell us this SCP name?</item>
+    </string-array>
 </resources>

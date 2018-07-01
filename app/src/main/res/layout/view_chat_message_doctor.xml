@@ -20,20 +20,30 @@
         tools:ignore="ContentDescription"
         tools:src="@drawable/ic_doctor" />
 
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/userNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/defaultMargin"
+        android:textColor="@color/textColorGrey"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toLeftOf="@+id/messageView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Др. Ф ████" />
 
     <LinearLayout
         android:id="@+id/messageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="@dimen/defaultMargin"
+        android:layout_marginTop="5dp"
         android:background="@drawable/bg_chat_message_doctor"
         android:orientation="horizontal"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toRightOf="@+id/avatarImageView"
         app:layout_constraintRight_toLeftOf="@id/space"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/userNameTextView">
 
         <ImageView
             android:layout_width="@dimen/defaultMargin"
