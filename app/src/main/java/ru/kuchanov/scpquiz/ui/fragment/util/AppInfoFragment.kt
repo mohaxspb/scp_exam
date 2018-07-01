@@ -1,16 +1,15 @@
-package ru.kuchanov.scpquiz.ui.fragment
+package ru.kuchanov.scpquiz.ui.fragment.util
 
 import android.content.pm.PackageInfo
 import android.os.Bundle
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
-import kotlinx.android.synthetic.main.fragment_app_info.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.AppInfoModule
 import ru.kuchanov.scpquiz.mvp.presenter.util.AppInfoPresenter
-import ru.kuchanov.scpquiz.mvp.view.AppInfoView
+import ru.kuchanov.scpquiz.mvp.view.util.AppInfoView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import toothpick.Toothpick
 import javax.inject.Inject

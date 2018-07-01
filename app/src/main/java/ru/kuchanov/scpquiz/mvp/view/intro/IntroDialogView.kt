@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.mvp.view
+package ru.kuchanov.scpquiz.mvp.view.intro
 
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction

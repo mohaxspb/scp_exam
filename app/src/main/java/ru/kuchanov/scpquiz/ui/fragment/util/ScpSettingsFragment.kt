@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.ui.fragment
+package ru.kuchanov.scpquiz.ui.fragment.util
 
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -12,7 +12,6 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import jp.wasabeef.blurry.Blurry
-import kotlinx.android.synthetic.main.fragment_settings.*
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
@@ -21,7 +20,7 @@ import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LangViewModel
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.SettingsModule
 import ru.kuchanov.scpquiz.mvp.presenter.util.SettingsPresenter
-import ru.kuchanov.scpquiz.mvp.view.SettingsView
+import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils

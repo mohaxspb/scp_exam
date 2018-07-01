@@ -22,7 +22,7 @@ import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
-import ru.kuchanov.scpquiz.mvp.view.EnterView
+import ru.kuchanov.scpquiz.mvp.view.intro.EnterView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.StorageUtils
 import timber.log.Timber

@@ -6,8 +6,7 @@ import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
-import ru.kuchanov.scpquiz.mvp.view.MainView
-import ru.terrakok.cicerone.Router
+import ru.kuchanov.scpquiz.mvp.view.activity.MainView
 import javax.inject.Inject
 
 @InjectViewState

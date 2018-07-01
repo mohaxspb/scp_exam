@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.mvp.view
+package ru.kuchanov.scpquiz.mvp.view.intro
 
 import ru.kuchanov.scpquiz.mvp.BaseView
 

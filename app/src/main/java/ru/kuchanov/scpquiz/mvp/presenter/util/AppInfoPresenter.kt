@@ -5,8 +5,7 @@ import com.arellomobile.mvp.InjectViewState
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
-import ru.kuchanov.scpquiz.mvp.view.AppInfoView
-import ru.terrakok.cicerone.Router
+import ru.kuchanov.scpquiz.mvp.view.util.AppInfoView
 import javax.inject.Inject
 
 @InjectViewState

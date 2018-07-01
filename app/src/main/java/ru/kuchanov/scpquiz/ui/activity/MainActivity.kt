@@ -12,9 +12,14 @@ import ru.kuchanov.scpquiz.controller.navigation.ShowCommand
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.MainActivityModule
 import ru.kuchanov.scpquiz.mvp.presenter.activity.MainPresenter
-import ru.kuchanov.scpquiz.mvp.view.MainView
+import ru.kuchanov.scpquiz.mvp.view.activity.MainView
 import ru.kuchanov.scpquiz.ui.BaseActivity
-import ru.kuchanov.scpquiz.ui.fragment.*
+import ru.kuchanov.scpquiz.ui.fragment.game.GameFragment
+import ru.kuchanov.scpquiz.ui.fragment.game.LevelsFragment
+import ru.kuchanov.scpquiz.ui.fragment.intro.EnterFragment
+import ru.kuchanov.scpquiz.ui.fragment.intro.IntroDialogFragment
+import ru.kuchanov.scpquiz.ui.fragment.util.AppInfoFragment
+import ru.kuchanov.scpquiz.ui.fragment.util.ScpSettingsFragment
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.android.SupportAppNavigator
 import ru.terrakok.cicerone.commands.Command

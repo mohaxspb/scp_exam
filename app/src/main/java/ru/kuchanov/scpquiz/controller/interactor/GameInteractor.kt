@@ -10,7 +10,7 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
-import ru.kuchanov.scpquiz.ui.fragment.GameFragment
+import ru.kuchanov.scpquiz.ui.fragment.game.GameFragment
 import timber.log.Timber
 import javax.inject.Inject
 

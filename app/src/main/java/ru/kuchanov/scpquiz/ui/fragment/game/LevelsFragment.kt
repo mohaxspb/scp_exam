@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.ui.fragment
+package ru.kuchanov.scpquiz.ui.fragment.game
 
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
@@ -7,7 +7,6 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
-import kotlinx.android.synthetic.main.fragment_levels.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.LevelDelegate
@@ -15,7 +14,7 @@ import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.LevelsModule
 import ru.kuchanov.scpquiz.mvp.presenter.game.LevelsPresenter
-import ru.kuchanov.scpquiz.mvp.view.LevelsView
+import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import toothpick.Toothpick
 import toothpick.config.Module

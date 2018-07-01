@@ -18,7 +18,7 @@ import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
-import ru.kuchanov.scpquiz.mvp.view.IntroDialogView
+import ru.kuchanov.scpquiz.mvp.view.intro.IntroDialogView
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 

@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.mvp.view
+package ru.kuchanov.scpquiz.mvp.view.game
 
 import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy
 import com.arellomobile.mvp.viewstate.strategy.StateStrategyType

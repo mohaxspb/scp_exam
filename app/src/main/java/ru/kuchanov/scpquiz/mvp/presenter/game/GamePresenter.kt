@@ -17,8 +17,8 @@ import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
-import ru.kuchanov.scpquiz.mvp.view.GameView
-import ru.kuchanov.scpquiz.ui.fragment.GameFragment
+import ru.kuchanov.scpquiz.mvp.view.game.GameView
+import ru.kuchanov.scpquiz.ui.fragment.game.GameFragment
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber

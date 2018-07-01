@@ -6,11 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate
-import kotlinx.android.synthetic.main.list_item_lang.view.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LangViewModel
-import ru.kuchanov.scpquiz.ui.fragment.ScpSettingsFragment
+import ru.kuchanov.scpquiz.ui.fragment.util.ScpSettingsFragment
 
 class DelegateLang(
     private val clickListener: (String) -> Unit

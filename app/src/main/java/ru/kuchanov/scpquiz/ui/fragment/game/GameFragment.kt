@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.ui.fragment
+package ru.kuchanov.scpquiz.ui.fragment.game
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
@@ -14,7 +14,6 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.arellomobile.mvp.presenter.ProvidePresenterTag
 import com.google.android.flexbox.FlexboxLayout
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
-import kotlinx.android.synthetic.main.fragment_game.*
 import ru.kuchanov.rate.PreRate
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
@@ -25,7 +24,7 @@ import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.mvp.presenter.game.GamePresenter
-import ru.kuchanov.scpquiz.mvp.view.GameView
+import ru.kuchanov.scpquiz.mvp.view.game.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.ChatDelegate
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
