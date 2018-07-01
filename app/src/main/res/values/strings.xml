@@ -34,6 +34,9 @@
     <string name="chat_action_sure">Sure</string>
     <string name="monetization_action_appodeal_title">Поддержи нас</string>
     <string name="monetization_action_appodeal_description">Посмотри рекламу и тебе начислят  30 рептикойнов</string>
+    <string name="monetization_action_noads_title">Протокол \"Молчание\"</string>
+    <string name="monetization_action_noads_description">Запуск мем-агента блокирующего любое проявление рекламного агента в приложении</string>
+    <string name="coins_amount">Repticoins: %d</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>

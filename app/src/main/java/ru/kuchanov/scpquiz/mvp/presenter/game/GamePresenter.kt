@@ -190,8 +190,21 @@ class GamePresenter @Inject constructor(
 
     fun onLevelsClicked() = router.navigateTo(Constants.Screens.QUIZ_LIST)
 
-    //todo create bg as for settings
-    fun onCoinsClicked() = router.navigateTo(Constants.Screens.MONETIZATION)
+    fun onCoinsClicked() = viewState.onNeedToOpenCoins()
+
+    fun openCoins(bitmap: Bitmap) {
+        Completable.fromAction {
+            BitmapUtils.persistImage(
+                appContext,
+                bitmap,
+                Constants.SETTINGS_BACKGROUND_FILE_NAME)
+        }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onComplete = { router.navigateTo(Constants.Screens.MONETIZATION) }
+                )
+    }
 
     fun onHamburgerMenuClicked() = viewState.onNeedToOpenSettings()
 
@@ -256,6 +269,8 @@ class GamePresenter @Inject constructor(
                     quizLevelInfo.doctor
                 )
 
+                showNumber(quizLevelInfo.quiz.scpNumber.toList())
+
                 showChatActions(generateLevelCompletedActions())
             }
 
@@ -287,6 +302,7 @@ class GamePresenter @Inject constructor(
                         quizLevelInfo.doctor
                     )
 
+                    showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
 
                     showChatActions(generateNameEnteredChatActions())
                     showKeyboard(false)

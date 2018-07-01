@@ -13,7 +13,7 @@ import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.MonetizationDelegate
-import ru.kuchanov.scpquiz.controller.adapter.viewmodel.MonetizationViewModel
+import ru.kuchanov.scpquiz.controller.adapter.delegate.MonetizationHeaderDelegate
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.MonetizationModule
 import ru.kuchanov.scpquiz.mvp.presenter.monetization.MonetizationPresenter
@@ -66,7 +66,7 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         initRecyclerView()
     }
 
-    override fun showMonetizationActions(actions: MutableList<MonetizationViewModel>) {
+    override fun showMonetizationActions(actions: MutableList<MyListItem>) {
         adapter.items = actions
         adapter.notifyDataSetChanged()
     }
@@ -75,6 +75,7 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         recyclerView.layoutManager = LinearLayoutManager(activity)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
         delegateManager.addDelegate(MonetizationDelegate())
+        delegateManager.addDelegate(MonetizationHeaderDelegate())
         adapter = ListDelegationAdapter(delegateManager)
         recyclerView.adapter = adapter
     }

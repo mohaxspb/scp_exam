@@ -240,6 +240,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     override fun onNeedToOpenSettings() = presenter.openSettings(BitmapUtils.loadBitmapFromView(root))
 
+    override fun onNeedToOpenCoins() = presenter.openCoins(BitmapUtils.loadBitmapFromView(root))
+
     override fun showError(error: Throwable) = Snackbar.make(
         root,
         error.message ?: getString(R.string.error_unknown),
