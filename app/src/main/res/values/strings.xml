@@ -38,6 +38,8 @@
     <string name="monetization_action_noads_description">Запуск мем-агента блокирующего любое проявление рекламного агента в приложении</string>
     <string name="coins_amount">Repticoins: %d</string>
     <string name="suggestion_remove_redundant_chars">Remove redundant characters</string>
+    <string name="message_not_enough_coins">You don\'t have enough coins. But you could get it! Try these options:</string>
+    <string name="chat_action_watch_video">Watch video ads to gain %d repticoins</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>

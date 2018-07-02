@@ -111,7 +111,11 @@ class GamePresenter @Inject constructor(
             val hasEnoughCoins = price < quizLevelInfo.player.score
             if (!hasEnoughCoins) {
                 viewState.removeChatAction(indexOfChatAction)
-                //todo show message and actions for gain coins
+                viewState.showChatMessage(
+                    appContext.getString(R.string.message_not_enough_coins),
+                    quizLevelInfo.doctor
+                )
+                viewState.showChatActions(generateGainCoinsActions())
             }
             hasEnoughCoins
         }
@@ -129,9 +133,12 @@ class GamePresenter @Inject constructor(
                         suggestionsMessages[Random().nextInt(suggestionsMessages.size)],
                         quizLevelInfo.doctor
                     )
-                    //todo remove numbers if name is entered
-                    val chars = quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toList()?.shuffled()
-                            ?: throw IllegalStateException("no chars for keyboard")
+                    val chars = if (!quizLevelInfo.finishedLevel.scpNameFilled) {
+                        quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toList()?.shuffled()
+                                ?: throw IllegalStateException("no chars for keyboard")
+                    } else {
+                        quizLevelInfo.quiz.scpNumber.toList().shuffled()
+                    }
                     viewState.setKeyboardChars(chars)
 
                     gameInteractor.decreaseScore(price)
@@ -141,6 +148,9 @@ class GamePresenter @Inject constructor(
             },
             R.drawable.selector_chat_action_green
         )
+
+        //todo enter name action
+        //todo enter number action
 
         val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_no)
         val noActionText = suggestionsMessages[Random().nextInt(suggestionsMessages.size)]
@@ -157,6 +167,46 @@ class GamePresenter @Inject constructor(
         )
 
         return actions
+    }
+
+    private fun generateGainCoinsActions(): List<ChatAction> {
+        val actions = mutableListOf<ChatAction>()
+
+        val watchVideoActionText = appContext.getString(R.string.chat_action_watch_video, Constants.REWARD_VIDEO_ADS)
+        actions += ChatAction(
+            watchVideoActionText,
+            {
+                viewState.removeChatAction(it)
+                viewState.showChatMessage(
+                    watchVideoActionText,
+                    quizLevelInfo.player
+                )
+                onNeedToShowVideoAds()
+            },
+            R.drawable.selector_chat_action_red
+        )
+        //todo add other options
+
+        val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_no)
+        val noActionText = suggestionsMessages[Random().nextInt(suggestionsMessages.size)]
+        actions += ChatAction(
+            noActionText,
+            {
+                viewState.removeChatAction(it)
+                viewState.showChatMessage(
+                    noActionText,
+                    quizLevelInfo.player
+                )
+            },
+            R.drawable.selector_chat_action_red
+        )
+
+        return actions
+    }
+
+    private fun onNeedToShowVideoAds() {
+        Timber.d("onNeedToShowVideoAds")
+        //todo show video ads
     }
 
     private fun loadLevel() {
