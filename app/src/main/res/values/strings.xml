@@ -40,6 +40,10 @@
     <string name="suggestion_remove_redundant_chars">Remove redundant characters</string>
     <string name="message_not_enough_coins">You don\'t have enough coins. But you could get it! Try these options:</string>
     <string name="chat_action_watch_video">Watch video ads to gain %d repticoins</string>
+    <string name="suggestion_enter_name">Enter SCP name</string>
+    <string name="message_after_suggestion_of_name">Yes! Now I remember…</string>
+    <string name="message_correct">Correct!</string>
+    <string name="suggestion_enter_number">Enter SCP number</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>
@@ -74,6 +78,18 @@
 
     <string-array name="messages_suggestion_remove_chars">
         <item>OK, we remove redundant chars. Can you remember now?</item>
+        <item>Done!</item>
+        <item>As you wish.</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_enter_name">
+        <item>OK, here it is!</item>
+        <item>Done!</item>
+        <item>As you wish.</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_enter_number">
+        <item>OK, here it is!</item>
         <item>Done!</item>
         <item>As you wish.</item>
     </string-array>

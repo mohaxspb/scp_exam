@@ -6,7 +6,6 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function6
 import io.reactivex.schedulers.Schedulers
-import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.*
@@ -58,15 +57,6 @@ class GameInteractor @Inject constructor(
                 scpNumberFilled = isNumberFilled
             ))
     }
-            .flatMap {
-                val user = appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet()
-                user.score += when {
-                    isNameFilled && isNumberFilled -> Constants.COINS_FOR_NUMBER
-                    isNameFilled && !isNumberFilled -> Constants.COINS_FOR_NAME
-                    else -> 0
-                }
-                Single.fromCallable { appDatabase.userDao().update(user).toLong() }
-            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
@@ -103,9 +93,9 @@ class GameInteractor @Inject constructor(
             .onErrorReturn { GameFragment.NO_NEXT_QUIZ_ID }
             .toFlowable()
 
-    fun decreaseScore(scoreToDecrease: Int): Completable = Completable.fromAction {
+    fun increaseScore(scoreToDecrease: Int): Completable = Completable.fromAction {
         with(appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet()) {
-            score -= scoreToDecrease
+            score += scoreToDecrease
             appDatabase.userDao().update(this).toLong()
         }
     }

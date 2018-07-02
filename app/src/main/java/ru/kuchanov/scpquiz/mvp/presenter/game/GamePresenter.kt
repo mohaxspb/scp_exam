@@ -141,7 +141,7 @@ class GamePresenter @Inject constructor(
                     }
                     viewState.setKeyboardChars(chars)
 
-                    gameInteractor.decreaseScore(price)
+                    gameInteractor.increaseScore(-price)
                             .subscribeOn(Schedulers.io())
                             .subscribe()
                 }
@@ -149,8 +149,103 @@ class GamePresenter @Inject constructor(
             R.drawable.selector_chat_action_green
         )
 
-        //todo enter name action
-        //todo enter number action
+        if (!quizLevelInfo.finishedLevel.scpNameFilled) {
+            val enterNameActionText = appContext.getString(R.string.suggestion_enter_name)
+            actions += ChatAction(
+                enterNameActionText,
+                {
+                    with(viewState) {
+                        removeChatAction(it)
+                        showChatMessage(enterNameActionText, quizLevelInfo.player)
+                        val price = Constants.SUGGESTION_PRICE_NAME
+                        if (checkCoins.invoke(price, it)) {
+                            val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_enter_name)
+                            showChatMessage(
+                                suggestionsMessages[Random().nextInt(suggestionsMessages.size)],
+                                quizLevelInfo.doctor
+                            )
+                            quizLevelInfo.finishedLevel.scpNameFilled = true
+                            onLevelCompleted()
+
+                            //todo check if level is completelly filled
+
+                            showChatMessage(
+                                appContext.getString(R.string.message_after_suggestion_of_name),
+                                quizLevelInfo.player
+                            )
+
+                            showChatMessage(
+                                appContext.getString(R.string.message_correct),
+                                quizLevelInfo.doctor
+                            )
+                            showChatMessage(
+                                appContext.getString(R.string.message_suggest_scp_number),
+                                quizLevelInfo.doctor
+                            )
+
+                            showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
+
+                            showChatActions(generateNameEnteredChatActions())
+                            showKeyboard(false)
+
+                            gameInteractor.increaseScore(-price)
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribe()
+                        }
+                    }
+                },
+                R.drawable.selector_chat_action_green
+            )
+        }
+
+        val enterNumberActionText = appContext.getString(R.string.suggestion_enter_number)
+        actions += ChatAction(
+            enterNumberActionText,
+            {
+                with(viewState) {
+                    removeChatAction(it)
+                    showChatMessage(enterNumberActionText, quizLevelInfo.player)
+                    val price = Constants.SUGGESTION_PRICE_NUMBER
+                    if (checkCoins.invoke(price, it)) {
+                        val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_enter_number)
+                        showChatMessage(
+                            suggestionsMessages[Random().nextInt(suggestionsMessages.size)],
+                            quizLevelInfo.doctor
+                        )
+                        quizLevelInfo.finishedLevel.scpNumberFilled = true
+                        onLevelCompleted()
+
+                        //todo check if level is completelly filled
+
+                        showKeyboard(false)
+                        showToolbar(false)
+                        setBackgroundDark(true)
+
+                        showChatMessage(
+                            quizLevelInfo.quiz.quizTranslations!!.first().description,
+                            quizLevelInfo.player
+                        )
+                        showChatMessage(
+                            appContext.getString(R.string.message_correct),
+                            quizLevelInfo.doctor
+                        )
+                        showChatMessage(
+                            appContext.getString(R.string.message_level_comleted, quizLevelInfo.player.name),
+                            quizLevelInfo.doctor
+                        )
+
+                        showNumber(quizLevelInfo.quiz.scpNumber.toList())
+
+                        showChatActions(generateLevelCompletedActions())
+
+                        gameInteractor.increaseScore(-price)
+                                .subscribeOn(Schedulers.io())
+                                .subscribe()
+                    }
+                }
+            },
+            R.drawable.selector_chat_action_green
+        )
 
         val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_no)
         val noActionText = suggestionsMessages[Random().nextInt(suggestionsMessages.size)]
@@ -339,7 +434,7 @@ class GamePresenter @Inject constructor(
 
     fun openSettings(bitmap: Bitmap) {
         //fixme test
-        gameInteractor.decreaseScore(-1000)
+        gameInteractor.increaseScore(1000)
                 .subscribeOn(Schedulers.io())
                 .subscribe()
 //        Completable.fromAction {
@@ -384,6 +479,8 @@ class GamePresenter @Inject constructor(
             quizLevelInfo.finishedLevel.scpNumberFilled = true
             onLevelCompleted()
 
+            //todo check if level is completelly filled
+
             with(viewState) {
                 showKeyboard(false)
                 showToolbar(false)
@@ -405,6 +502,10 @@ class GamePresenter @Inject constructor(
                 showNumber(quizLevelInfo.quiz.scpNumber.toList())
 
                 showChatActions(generateLevelCompletedActions())
+
+                gameInteractor.increaseScore(Constants.COINS_FOR_NUMBER)
+                        .subscribeOn(Schedulers.io())
+                        .subscribe()
             }
 
             periodicMessagesDisposable.dispose()
@@ -420,6 +521,8 @@ class GamePresenter @Inject constructor(
                 with(viewState) {
                     quizLevelInfo.finishedLevel.scpNameFilled = true
                     onLevelCompleted()
+
+                    //todo check if level is completelly filled
 
                     showChatMessage(
                         quizTranslation.translation,
@@ -439,6 +542,10 @@ class GamePresenter @Inject constructor(
 
                     showChatActions(generateNameEnteredChatActions())
                     showKeyboard(false)
+
+                    gameInteractor.increaseScore(Constants.COINS_FOR_NAME)
+                            .subscribeOn(Schedulers.io())
+                            .subscribe()
                 }
             } else {
                 Timber.d("name is not correct")
