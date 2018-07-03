@@ -84,6 +84,7 @@ class ChatDelegate(
                     val width = chatActionView.width
                     val height = chatActionView.height
                     if (width > 0 && height > 0) {
+                        Timber.d("onGlobalLayout with not 0 sizes, so start scroll animation")
                         chatActionView.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
                         ObjectAnimator

@@ -174,4 +174,18 @@ class EnterPresenter @Inject constructor(
 
         return lang
     }
+
+    fun onProgressTextClicked() {
+        //fixme test
+        val scoreToDecrease = 1000
+        Completable.fromAction {
+            with(appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet()) {
+                score += scoreToDecrease
+                appDatabase.userDao().update(this).toLong()
+            }
+        }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe()
+    }
 }

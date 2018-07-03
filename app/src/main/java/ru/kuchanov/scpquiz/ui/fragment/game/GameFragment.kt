@@ -206,7 +206,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
         flexBoxContainer.addView(characterView)
 
-        //create logic for words wrapping
+        //todo create logic for words wrapping
 //        val params = characterView.layoutParams as FlexboxLayout.LayoutParams
 //        params.isWrapBefore = //here we can calculate width and spaces
 //        characterView.layoutParams = params

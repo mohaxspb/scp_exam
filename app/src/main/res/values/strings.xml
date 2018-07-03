@@ -42,6 +42,7 @@
     <string name="chat_action_watch_video">Watch video ads to gain %d repticoins</string>
     <string name="suggestion_enter_name">Enter SCP name</string>
     <string name="message_after_suggestion_of_name">Yes! Now I remember…</string>
+    <string name="message_after_suggestion_of_number">How can I forgot it…</string>
     <string name="message_correct">Correct!</string>
     <string name="suggestion_enter_number">Enter SCP number</string>
 

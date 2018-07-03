@@ -37,6 +37,7 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
     override fun showProgressText() {
         val progressTexts = resources.getStringArray(R.array.progress_texts)
         progressTextView.text = progressTexts[Random().nextInt(progressTexts.size)]
+        progressTextView.setOnClickListener { presenter.onProgressTextClicked() }
     }
 
     override fun showProgressAnimation() {
