@@ -22,6 +22,11 @@ import toothpick.config.Module
 
 
 class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
+
+    companion object {
+        fun newInstance() = LevelsFragment()
+    }
+
     override val translucent = false
 
     override val scopes: Array<String> = arrayOf(Di.Scope.LEVELS_FRAGMENT)
@@ -61,9 +66,5 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
     override fun showLevels(quizes: List<LevelViewModel>) {
         adapter.items = quizes
         adapter.notifyDataSetChanged()
-    }
-
-    companion object {
-        fun newInstance() = LevelsFragment()
     }
 }

@@ -39,8 +39,7 @@ class GamePresenter @Inject constructor(
     companion object {
         const val PERIODIC_MESSAGES_INITIAL_DELAY = 30L
         const val PERIODIC_MESSAGES_PERIOD = 30L
-        //fixme 90 not 20
-        const val PERIODIC_SUGGESTIONS_INITIAL_DELAY = 20L
+        const val PERIODIC_SUGGESTIONS_INITIAL_DELAY = 90L
         const val PERIODIC_SUGGESTIONS_PERIOD = 180L
     }
 

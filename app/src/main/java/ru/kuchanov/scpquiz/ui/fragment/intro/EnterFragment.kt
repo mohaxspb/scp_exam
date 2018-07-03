@@ -18,6 +18,11 @@ import toothpick.config.Module
 import java.util.*
 
 class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
+
+    companion object {
+        fun newInstance() = EnterFragment()
+    }
+
     override val translucent = true
 
     override val scopes: Array<String> = arrayOf(Di.Scope.ENTER_FRAGMENT)
@@ -73,8 +78,4 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
     }
 
     override fun onNeedToOpenIntroDialogFragment() = presenter.openIntroDialogScreen(BitmapUtils.loadBitmapFromView(root))
-
-    companion object {
-        fun newInstance() = EnterFragment()
-    }
 }

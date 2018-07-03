@@ -16,6 +16,11 @@ import toothpick.Toothpick
 import javax.inject.Inject
 
 class AppInfoFragment : BaseFragment<AppInfoView, AppInfoPresenter>(), AppInfoView {
+
+    companion object {
+        fun newInstance() = AppInfoFragment()
+    }
+
     override val translucent = false
 
     @Inject
@@ -40,9 +45,5 @@ class AppInfoFragment : BaseFragment<AppInfoView, AppInfoPresenter>(), AppInfoVi
 
         appVersionTextView.text = packageInfo.versionName
         appVersionTextView.setOnClickListener { presenter.onSomethingClick() }
-    }
-
-    companion object {
-        fun newInstance() = AppInfoFragment()
     }
 }
