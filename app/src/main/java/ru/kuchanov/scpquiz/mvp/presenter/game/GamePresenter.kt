@@ -274,9 +274,8 @@ class GamePresenter @Inject constructor(
                                                 quizLevelInfo.doctor
                                             )
 
-                                            val chars = quizLevelInfo.quiz.quizTranslations?.let {
-                                                it[0].translation.toMutableList()
-                                            } ?: throw IllegalStateException("translations is null")
+                                            val chars = quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toMutableList()
+                                                    ?: throw IllegalStateException("translations is null")
                                             val availableChars = quizLevelInfo.randomTranslations
                                                     .joinToString(separator = "") { it.translation }
                                                     .toList()
@@ -608,6 +607,46 @@ class GamePresenter @Inject constructor(
                 showKeyboard(false)
             }
         }
+    }
+
+    private fun generateNumberEnteredChatActions(): List<ChatAction> {
+        val chatActions = mutableListOf<ChatAction>()
+
+        if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
+            chatActions += ChatAction(
+                appContext.getString(R.string.chat_action_next_level),
+                {
+                    router.replaceScreen(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
+                },
+                R.drawable.selector_chat_action_accent
+            )
+        }
+        val message = appContext.getString(R.string.chat_action_enter_name)
+        chatActions += ChatAction(
+            message,
+            {
+                with(viewState) {
+                    val chars = quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toMutableList()
+                            ?: throw IllegalStateException("translations is null")
+                    val availableChars = quizLevelInfo.randomTranslations
+                            .joinToString(separator = "") { it.translation }
+                            .toList()
+                    setKeyboardChars(
+                        KeyboardView.fillCharsList(
+                            chars,
+                            availableChars
+                        ).apply { shuffle() }
+                    )
+                    showKeyboard(true)
+                    animateKeyboard()
+                    showChatMessage(message, quizLevelInfo.player)
+                    removeChatAction(it)
+                }
+            },
+            R.drawable.selector_chat_action_green
+        )
+
+        return chatActions
     }
 
     private fun onLevelCompletelyFinished() {

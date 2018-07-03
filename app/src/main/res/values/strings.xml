@@ -11,8 +11,10 @@
     <string name="doctor_name" translatable="false">Dr. Bright</string>
     <string name="player_name" translatable="false">D-%d</string>
     <string name="message_suggest_scp_number">Wanna try to remember this scp number?</string>
+    <string name="message_suggest_scp_name">Wanna try to remember this scp name?</string>
     <string name="chat_action_next_level">Next scp</string>
     <string name="chat_action_enter_number">I\'ll try!</string>
+    <string name="chat_action_enter_name">I\'ll try!</string>
     <string name="message_correct_give_coins">Correct! You gain %d coins</string>
     <string name="chat_action_levels_list">I want to select level</string>
     <string name="error_unknown">Unknown error occurred</string>
