@@ -34,11 +34,26 @@ android {
             def properties = new Properties()
             properties.load(new FileInputStream(rootProject.file("config/config.properties")))
 
+            //analitics
             buildConfigField('String', 'YANDEX_METRICA_API_KEY', '"' + properties.get("yandexMetricaApiKey") + '"')
+            //analitics END
+
+            //ads
+            //admob
+            resValue('string', 'ads_app_id', properties.get("adMobAppId"))
+            resValue('string', 'ad_unit_id_interstitial', properties.get("adsBannerIdInterstitial"))
+            resValue('string', 'ad_unit_id_game_screen_banner', properties.get("adsBannerIdGameScreen"))
+            //appodeal
+            resValue('string', 'appodeal_app_key', properties.get("appodealAppKey"))
+            //ads END
         } else {
             throw new GradleException(
                     "You need to have projectRoot/config/config.properties file with "
                             + "yandexMetricaApiKey,"
+                            + "adMobAppId,"
+                            + "adsBannerIdInterstitial,"
+                            + "adsBannerIdGameScreen,"
+                            + "appodealAppKey,"
                             + " to build project"
             )
         }
