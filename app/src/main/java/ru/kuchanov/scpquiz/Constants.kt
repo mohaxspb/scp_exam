@@ -22,6 +22,12 @@ object Constants {
     const val INTRO_DIALOG_BACKGROUND_FILE_NAME = "bgIntoDialog"
     const val FINISHED_LEVEL_BEFORE_ASK_RATE_APP = 5L
 
+    //monetization
+    const val SUGGESTION_PRICE_REMOVE_CHARS = 10
+    const val SUGGESTION_PRICE_NAME = 40
+    const val SUGGESTION_PRICE_NUMBER = 20
+    const val REWARD_VIDEO_ADS = 5
+
     object Screens {
         const val ENTER = "ENTER"
         const val SETTINGS = "SETTINGS"

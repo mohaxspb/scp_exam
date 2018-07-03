@@ -11,8 +11,10 @@
     <string name="doctor_name" translatable="false">Dr. Bright</string>
     <string name="player_name" translatable="false">D-%d</string>
     <string name="message_suggest_scp_number">Wanna try to remember this scp number?</string>
+    <string name="message_suggest_scp_name">Wanna try to remember this scp name?</string>
     <string name="chat_action_next_level">Next scp</string>
     <string name="chat_action_enter_number">I\'ll try!</string>
+    <string name="chat_action_enter_name">I\'ll try!</string>
     <string name="message_correct_give_coins">Correct! You gain %d coins</string>
     <string name="chat_action_levels_list">I want to select level</string>
     <string name="error_unknown">Unknown error occurred</string>
@@ -37,6 +39,14 @@
     <string name="monetization_action_noads_title">Протокол \"Молчание\"</string>
     <string name="monetization_action_noads_description">Запуск мем-агента блокирующего любое проявление рекламного агента в приложении</string>
     <string name="coins_amount">Repticoins: %d</string>
+    <string name="suggestion_remove_redundant_chars">Remove redundant characters</string>
+    <string name="message_not_enough_coins">You don\'t have enough coins. But you could get it! Try these options:</string>
+    <string name="chat_action_watch_video">Watch video ads to gain %d repticoins</string>
+    <string name="suggestion_enter_name">Enter SCP name</string>
+    <string name="message_after_suggestion_of_name">Yes! Now I remember…</string>
+    <string name="message_after_suggestion_of_number">How can I forgot it…</string>
+    <string name="message_correct">Correct!</string>
+    <string name="suggestion_enter_number">Enter SCP number</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>
@@ -61,5 +71,35 @@
         <item>Try to remember this SCP name</item>
         <item>Tell me its name</item>
         <item>Could you tell us this SCP name?</item>
+    </string-array>
+
+    <string-array name="messages_suggestions">
+        <item>Want some help? You can spend some repticoins for suggestion.</item>
+        <item>Too hard? Try these options:</item>
+        <item>Maybe you need suggestion?</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_remove_chars">
+        <item>OK, we remove redundant chars. Can you remember now?</item>
+        <item>Done!</item>
+        <item>As you wish.</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_enter_name">
+        <item>OK, here it is!</item>
+        <item>Done!</item>
+        <item>As you wish.</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_enter_number">
+        <item>OK, here it is!</item>
+        <item>Done!</item>
+        <item>As you wish.</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_no">
+        <item>No, thanks.</item>
+        <item>I don\'t need help!</item>
+        <item>Maybe later…</item>
     </string-array>
 </resources>

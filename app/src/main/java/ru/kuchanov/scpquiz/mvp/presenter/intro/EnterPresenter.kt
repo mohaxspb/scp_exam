@@ -174,4 +174,8 @@ class EnterPresenter @Inject constructor(
 
         return lang
     }
+
+    fun onProgressTextClicked() {
+        //later there will be an easter egg
+    }
 }
