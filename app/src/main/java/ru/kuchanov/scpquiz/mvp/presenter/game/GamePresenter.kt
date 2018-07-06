@@ -472,12 +472,14 @@ class GamePresenter @Inject constructor(
             quizLevelInfo.finishedLevel.scpNameFilled,
             quizLevelInfo.finishedLevel.scpNumberFilled
         )
-                .flatMap { gameInteractor.getNumberOfFinishedLevels() }
+                .flatMap { gameInteractor.getNumberOfPartiallyAndFullyFinishedLevels() }
                 .subscribeBy(
                     onSuccess = {
                         Timber.d("updated!")
-                        if (it == Constants.FINISHED_LEVEL_BEFORE_ASK_RATE_APP) {
+                        if (it.first == Constants.FINISHED_LEVEL_BEFORE_ASK_RATE_APP) {
                             viewState.askForRateApp()
+                        } else if (it.second > 0 && it.second % Constants.NUM_OF_FULLY_FINISHED_LEVEL_BEFORE_SHOW_ADS == 0L) {
+                            preferences.setNeedToShowInterstitial(true)
                         }
                     },
                     onError = {

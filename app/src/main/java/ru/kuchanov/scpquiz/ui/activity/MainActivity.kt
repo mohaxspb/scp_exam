@@ -4,10 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
+import com.afollestad.materialdialogs.MaterialDialog
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ShowCommand
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.MainActivityModule
@@ -24,11 +26,16 @@ import ru.kuchanov.scpquiz.ui.fragment.util.ScpSettingsFragment
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.android.SupportAppNavigator
 import ru.terrakok.cicerone.commands.Command
+import ru.terrakok.cicerone.commands.Forward
 import timber.log.Timber
 import toothpick.Toothpick
+import javax.inject.Inject
 
 
 class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
+
+    @Inject
+    lateinit var preferenceManager: MyPreferenceManager
 
     @IdRes
     override val containerId = R.id.container
@@ -68,6 +75,13 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                         .add(containerId, createFragment(command.screenKey, command.transitionData))
                         .addToBackStack(null)
                         .commit()
+            } else if (command is Forward) {
+                Timber.d("forward: ${command.screenKey}")
+                if (command.screenKey == Constants.Screens.QUIZ && preferenceManager.isNeedToShowInterstitial()) {
+                    showAdsDialog()
+                } else {
+                    super.applyCommand(command)
+                }
             } else {
                 super.applyCommand(command)
             }
@@ -83,4 +97,42 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
     override fun getLayoutResId() = R.layout.activity_main
 
     override fun inject() = Toothpick.inject(this, scope)
+
+    override fun showAdsDialog() {
+        Timber.d("showAdsDialog")
+        MaterialDialog.Builder(this)
+                .title(R.string.will_show_ads_title)
+                .content(R.string.will_show_ads_content)
+                .positiveText(android.R.string.ok)
+                .onPositive { _, _ -> showInterstitial() }
+                .negativeText(R.string.remove_ads)
+                .onNegative { _, _ -> startPurchase() }
+                .neutralText(R.string.why_ads)
+                .onNeutral { _, _ -> showWhyAdsDialog() }
+                .build()
+                .show()
+    }
+
+    override fun showWhyAdsDialog() {
+        Timber.d("showWhyAdsDialog")
+        MaterialDialog.Builder(this)
+                .title(R.string.why_ads_title)
+                .content(R.string.why_ads_content)
+                .positiveText(R.string.watch_ads)
+                .onPositive { _, _ -> showInterstitial() }
+                .negativeText(R.string.remove_ads)
+                .onNegative { _, _ -> startPurchase() }
+                .build()
+                .show()
+    }
+
+    override fun showInterstitial() {
+        Timber.d("showInterstitial")
+        //todo
+    }
+
+    override fun startPurchase() {
+        Timber.d("startPurchase")
+        //todo
+    }
 }
