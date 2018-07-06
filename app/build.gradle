@@ -63,6 +63,13 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            debuggable true
+
+            //test adUnit IDs from https://developers.google.com/admob/android/test-ads#enable_test_devices
+            resValue('string', 'ad_unit_id_interstitial', 'ca-app-pub-3940256099942544/1033173712')
+            resValue('string', 'ad_unit_id_game_screen_banner', 'ca-app-pub-3940256099942544/6300978111')
+        }
     }
 }
 

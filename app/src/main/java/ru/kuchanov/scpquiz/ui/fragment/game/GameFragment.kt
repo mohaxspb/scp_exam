@@ -29,6 +29,7 @@ import ru.kuchanov.scpquiz.mvp.view.game.GameView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.ChatDelegate
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
+import ru.kuchanov.scpquiz.utils.AdsUtils
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
 import toothpick.Toothpick
@@ -114,6 +115,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         hamburgerButton.setOnClickListener { presenter.onHamburgerMenuClicked() }
 
         levelNumberTextView.setOnClickListener { presenter.onLevelsClicked() }
+
+        adView.loadAd(AdsUtils.buildAdRequest())
     }
 
     override fun showLevelNumber(levelNumber: Int) {
