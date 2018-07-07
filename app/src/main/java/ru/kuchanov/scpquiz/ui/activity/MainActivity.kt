@@ -9,7 +9,6 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
-import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ShowCommand
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.MainActivityModule
@@ -29,13 +28,9 @@ import ru.terrakok.cicerone.commands.Command
 import ru.terrakok.cicerone.commands.Forward
 import timber.log.Timber
 import toothpick.Toothpick
-import javax.inject.Inject
 
 
 class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
-
-    @Inject
-    lateinit var preferenceManager: MyPreferenceManager
 
     @IdRes
     override val containerId = R.id.container
@@ -124,11 +119,6 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                 .onNegative { _, _ -> startPurchase() }
                 .build()
                 .show()
-    }
-
-    override fun showInterstitial() {
-        Timber.d("showInterstitial")
-        //todo
     }
 
     override fun startPurchase() {

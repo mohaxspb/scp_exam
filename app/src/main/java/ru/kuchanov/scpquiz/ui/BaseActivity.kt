@@ -6,12 +6,18 @@ import android.view.LayoutInflater
 import android.widget.Toast
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.arellomobile.mvp.MvpPresenter
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import ru.kuchanov.rate.PreRate
 import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.mvp.BaseView
+import ru.kuchanov.scpquiz.utils.AdsUtils
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.NavigatorHolder
+import timber.log.Timber
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -20,22 +26,27 @@ import javax.inject.Inject
 
 abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatActivity(), BaseView {
 
-    abstract val scopes: Array<String>
-
-    abstract val modules: Array<out Module>
-
-    abstract val containerId: Int
-
     @Inject
     lateinit var myLayoutInflater: LayoutInflater
 
     @Inject
     lateinit var navigationHolder: NavigatorHolder
 
+    @Inject
+    lateinit var preferenceManager: MyPreferenceManager
+
+    abstract val scopes: Array<String>
+
+    abstract val modules: Array<out Module>
+
+    abstract val containerId: Int
+
     /**
      * initialize it to provide navigation for concrete activity
      */
     abstract var navigator: Navigator
+
+    private lateinit var mInterstitialAd: InterstitialAd
 
     override fun onResumeFragments() {
         super.onResumeFragments()
@@ -51,6 +62,7 @@ abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatAct
     override fun onResume() {
         super.onResume()
         PreRate.init(this, getString(R.string.feedback_email), getString(R.string.feedback_title)).showIfNeed()
+        requestNewInterstitial()
     }
 
     /**
@@ -87,6 +99,36 @@ abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatAct
         inject()
         super.onCreate(savedInstanceState)
         setContentView(getLayoutResId())
+
+        initAds()
+    }
+
+    private fun initAds() {
+        MobileAds.initialize(applicationContext, getString(R.string.ads_app_id))
+
+        mInterstitialAd = InterstitialAd(this)
+        mInterstitialAd.adUnitId = getString(R.string.ad_unit_id_interstitial)
+        mInterstitialAd.adListener = object : AdListener() {
+            override fun onAdClosed() {
+                super.onAdClosed()
+                preferenceManager.setNeedToShowInterstitial(false)
+            }
+        }
+
+        if (!mInterstitialAd.isLoaded) {
+            requestNewInterstitial()
+        }
+    }
+
+    fun showInterstitial() = mInterstitialAd.show()
+
+    private fun requestNewInterstitial() {
+        Timber.d("requestNewInterstitial loading/loaded: %s/%s", mInterstitialAd.isLoading, mInterstitialAd.isLoaded)
+        if (mInterstitialAd.isLoading || mInterstitialAd.isLoaded) {
+            Timber.d("loading already in progress or already done")
+        } else {
+            mInterstitialAd.loadAd(AdsUtils.buildAdRequest())
+        }
     }
 
     override fun showMessage(message: String) = Toast.makeText(this, message, Toast.LENGTH_LONG).show()
