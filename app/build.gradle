@@ -34,11 +34,26 @@ android {
             def properties = new Properties()
             properties.load(new FileInputStream(rootProject.file("config/config.properties")))
 
+            //analitics
             buildConfigField('String', 'YANDEX_METRICA_API_KEY', '"' + properties.get("yandexMetricaApiKey") + '"')
+            //analitics END
+
+            //ads
+            //admob
+            resValue('string', 'ads_app_id', properties.get("adMobAppId"))
+            resValue('string', 'ad_unit_id_interstitial', properties.get("adsBannerIdInterstitial"))
+            resValue('string', 'ad_unit_id_game_screen_banner', properties.get("adsBannerIdGameScreen"))
+            //appodeal
+            resValue('string', 'appodeal_app_key', properties.get("appodealAppKey"))
+            //ads END
         } else {
             throw new GradleException(
                     "You need to have projectRoot/config/config.properties file with "
                             + "yandexMetricaApiKey,"
+                            + "adMobAppId,"
+                            + "adsBannerIdInterstitial,"
+                            + "adsBannerIdGameScreen,"
+                            + "appodealAppKey,"
                             + " to build project"
             )
         }
@@ -47,6 +62,13 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
+
+            //test adUnit IDs from https://developers.google.com/admob/android/test-ads#enable_test_devices
+            resValue('string', 'ad_unit_id_interstitial', 'ca-app-pub-3940256099942544/1033173712')
+            resValue('string', 'ad_unit_id_game_screen_banner', 'ca-app-pub-3940256099942544/6300978111')
         }
     }
 }

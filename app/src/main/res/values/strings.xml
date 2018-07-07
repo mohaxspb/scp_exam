@@ -47,6 +47,13 @@
     <string name="message_after_suggestion_of_number">How can I forgot it…</string>
     <string name="message_correct">Correct!</string>
     <string name="suggestion_enter_number">Enter SCP number</string>
+    <string name="will_show_ads_content">Now ads will be shown content</string>
+    <string name="will_show_ads_title">Now ads will be shown title</string>
+    <string name="remove_ads">Remove ads</string>
+    <string name="why_ads">Why ads</string>
+    <string name="watch_ads">Watch ads</string>
+    <string name="why_ads_content">why_ads_content</string>
+    <string name="why_ads_title">will_show_ads_title</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>

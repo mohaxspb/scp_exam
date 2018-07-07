@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
+import com.afollestad.materialdialogs.MaterialDialog
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import ru.kuchanov.scpquiz.Constants
@@ -24,6 +25,8 @@ import ru.kuchanov.scpquiz.ui.fragment.util.ScpSettingsFragment
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.android.SupportAppNavigator
 import ru.terrakok.cicerone.commands.Command
+import ru.terrakok.cicerone.commands.Forward
+import ru.terrakok.cicerone.commands.Replace
 import timber.log.Timber
 import toothpick.Toothpick
 
@@ -69,7 +72,20 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                         .addToBackStack(null)
                         .commit()
             } else {
-                super.applyCommand(command)
+                var screenKey: String? = null
+                var data:Any? = null
+                if (command is Forward) {
+                    screenKey = command.screenKey
+                    data = command.transitionData
+                } else if (command is Replace) {
+                    screenKey = command.screenKey
+                    data = command.transitionData
+                }
+                if (screenKey != null && screenKey == Constants.Screens.QUIZ && preferenceManager.isNeedToShowInterstitial()) {
+                    showAdsDialog(data as Long)
+                } else {
+                    super.applyCommand(command)
+                }
             }
         }
     }
@@ -83,4 +99,37 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
     override fun getLayoutResId() = R.layout.activity_main
 
     override fun inject() = Toothpick.inject(this, scope)
+
+    override fun showAdsDialog(quizId: Long) {
+        Timber.d("showAdsDialog")
+        MaterialDialog.Builder(this)
+                .title(R.string.will_show_ads_title)
+                .content(R.string.will_show_ads_content)
+                .positiveText(android.R.string.ok)
+                .onPositive { _, _ -> showInterstitial(quizId) }
+                .negativeText(R.string.remove_ads)
+                .onNegative { _, _ -> startPurchase() }
+                .neutralText(R.string.why_ads)
+                .onNeutral { _, _ -> showWhyAdsDialog(quizId) }
+                .build()
+                .show()
+    }
+
+    override fun showWhyAdsDialog(quizId: Long) {
+        Timber.d("showWhyAdsDialog")
+        MaterialDialog.Builder(this)
+                .title(R.string.why_ads_title)
+                .content(R.string.why_ads_content)
+                .positiveText(R.string.watch_ads)
+                .onPositive { _, _ -> showInterstitial(quizId) }
+                .negativeText(R.string.remove_ads)
+                .onNegative { _, _ -> startPurchase() }
+                .build()
+                .show()
+    }
+
+    override fun startPurchase() {
+        Timber.d("startPurchase")
+        //todo
+    }
 }

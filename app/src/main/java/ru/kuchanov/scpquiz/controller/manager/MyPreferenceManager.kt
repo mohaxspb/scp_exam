@@ -32,4 +32,9 @@ class MyPreferenceManager @Inject constructor(context: Context) {
     fun isIntroDialogShown() = preferences.getBoolean(Key.INTRO_DIALOG_SHOWN, false)
 
     fun setIntroDialogShown(shown: Boolean) = preferences.edit().putBoolean(Key.INTRO_DIALOG_SHOWN, shown).apply()
+
+    //ads
+    fun setNeedToShowInterstitial(show: Boolean) = preferences.edit().putBoolean(Key.NEED_TO_SHOW_INTERSTITIAL, show).apply()
+
+    fun isNeedToShowInterstitial() = preferences.getBoolean(Key.NEED_TO_SHOW_INTERSTITIAL, false)
 }

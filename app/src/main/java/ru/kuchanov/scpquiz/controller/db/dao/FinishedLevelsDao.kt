@@ -14,6 +14,9 @@ interface FinishedLevelsDao {
     @Query("SELECT COUNT(*) FROM FinishedLevel WHERE scpNameFilled = 1")
     fun getCountOfPartiallyFinishedLevels(): Long
 
+    @Query("SELECT COUNT(*) FROM FinishedLevel WHERE scpNameFilled = 1 AND scpNumberFilled = 1")
+    fun getCountOfFullyFinishedLevels(): Long
+
     @Query("SELECT * FROM FinishedLevel WHERE quizId = :quizId")
     fun getByIdWithUpdates(quizId: Long): Flowable<List<FinishedLevel>>
 

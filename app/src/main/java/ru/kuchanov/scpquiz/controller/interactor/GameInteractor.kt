@@ -4,6 +4,7 @@ import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function6
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
@@ -60,7 +61,12 @@ class GameInteractor @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
-    fun getNumberOfFinishedLevels(): Single<Long> = Single.fromCallable { appDatabase.finishedLevelsDao().getCountOfPartiallyFinishedLevels() }
+    fun getNumberOfPartiallyAndFullyFinishedLevels(): Single<Pair<Long, Long>> = Single
+            .zip(
+                Single.fromCallable { appDatabase.finishedLevelsDao().getCountOfPartiallyFinishedLevels() },
+                Single.fromCallable { appDatabase.finishedLevelsDao().getCountOfFullyFinishedLevels() },
+                BiFunction { partiallyFinished: Long, fullyFinished: Long -> Pair(partiallyFinished, fullyFinished) }
+            )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 

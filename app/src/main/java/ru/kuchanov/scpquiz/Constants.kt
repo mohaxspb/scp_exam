@@ -27,6 +27,9 @@ object Constants {
     const val SUGGESTION_PRICE_NAME = 40
     const val SUGGESTION_PRICE_NUMBER = 20
     const val REWARD_VIDEO_ADS = 5
+//    const val NUM_OF_FULLY_FINISHED_LEVEL_BEFORE_SHOW_ADS = 3
+    //fixme test value
+    const val NUM_OF_FULLY_FINISHED_LEVEL_BEFORE_SHOW_ADS = 1
 
     object Screens {
         const val ENTER = "ENTER"
