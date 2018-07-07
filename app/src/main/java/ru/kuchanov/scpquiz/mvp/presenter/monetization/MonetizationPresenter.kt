@@ -5,6 +5,7 @@ import com.arellomobile.mvp.InjectViewState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.MonetizationHeaderViewModel
@@ -23,8 +24,8 @@ class MonetizationPresenter @Inject constructor(
     override var appContext: Application,
     override var preferences: MyPreferenceManager,
     override var router: ScpRouter,
-    private var appDatabase: AppDatabase
-) : BasePresenter<MonetizationView>(appContext, preferences, router) {
+    override var appDatabase: AppDatabase
+) : BasePresenter<MonetizationView>(appContext, preferences, router, appDatabase) {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -38,7 +39,7 @@ class MonetizationPresenter @Inject constructor(
                     actions += MonetizationViewModel(
                         R.drawable.ic_no_money,
                         appContext.getString(R.string.monetization_action_appodeal_title),
-                        appContext.getString(R.string.monetization_action_appodeal_description)
+                        appContext.getString(R.string.monetization_action_appodeal_description, Constants.REWARD_VIDEO_ADS)
                     ) { showAppodealAds() }
                     actions += MonetizationViewModel(
                         R.drawable.ic_adblock,
@@ -56,7 +57,7 @@ class MonetizationPresenter @Inject constructor(
     }
 
     private fun showAppodealAds() {
-        //todo
         Timber.d("showAppodealAds")
+        viewState.onNeedToShowRewardedVideo()
     }
 }

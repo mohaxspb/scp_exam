@@ -4,18 +4,21 @@ import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.widget.Toast
+import com.appodeal.ads.Appodeal
 import com.arellomobile.mvp.MvpAppCompatActivity
-import com.arellomobile.mvp.MvpPresenter
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import ru.kuchanov.rate.PreRate
+import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.mvp.BaseView
+import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
+import ru.kuchanov.scpquiz.ui.utils.MyRewardedVideoCallbacks
 import ru.kuchanov.scpquiz.utils.AdsUtils
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.NavigatorHolder
@@ -26,7 +29,7 @@ import toothpick.config.Module
 import toothpick.smoothie.module.SmoothieSupportActivityModule
 import javax.inject.Inject
 
-abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatActivity(), BaseView {
+abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatActivity(), BaseView {
 
     @Inject
     lateinit var myLayoutInflater: LayoutInflater
@@ -117,6 +120,29 @@ abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatAct
         if (!mInterstitialAd.isLoaded) {
             requestNewInterstitial()
         }
+
+        //appodeal
+        Appodeal.disableLocationPermissionCheck()
+        if (BuildConfig.DEBUG) {
+            Appodeal.setTesting(true)
+            //            Appodeal.setLogLevel(Log.LogLevel.debug);
+        }
+//        Appodeal.disableNetwork(this, "vungle")
+//        Appodeal.disableNetwork(this, "facebook");
+        Appodeal.initialize(
+            this,
+            getString(R.string.appodeal_app_key),
+            Appodeal.REWARDED_VIDEO
+        )
+
+        Appodeal.muteVideosIfCallsMuted(true)
+        Appodeal.setRewardedVideoCallbacks(object : MyRewardedVideoCallbacks() {
+            override fun onRewardedVideoFinished(i: Int, s: String?) {
+                super.onRewardedVideoFinished(i, s)
+                Timber.d("onRewardedVideoFinished: $i, $s")
+                presenter.onRewardedVideoFinished()
+            }
+        })
     }
 
     fun showInterstitial(quizId: Long) {
@@ -151,5 +177,13 @@ abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatAct
         }
 
         PreRate.clearDialogIfOpen()
+    }
+
+    fun showRewardedVideo() {
+        if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
+            Appodeal.show(this, Appodeal.REWARDED_VIDEO)
+        } else {
+            showMessage(R.string.reward_not_loaded_yet)
+        }
     }
 }

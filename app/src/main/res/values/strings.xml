@@ -35,7 +35,7 @@
     <string name="chat_action_yes">Yes</string>
     <string name="chat_action_sure">Sure</string>
     <string name="monetization_action_appodeal_title">Поддержи нас</string>
-    <string name="monetization_action_appodeal_description">Посмотри рекламу и тебе начислят  30 рептикойнов</string>
+    <string name="monetization_action_appodeal_description">Посмотри рекламу и тебе начислят %d рептикойнов</string>
     <string name="monetization_action_noads_title">Протокол \"Молчание\"</string>
     <string name="monetization_action_noads_description">Запуск мем-агента блокирующего любое проявление рекламного агента в приложении</string>
     <string name="coins_amount">Repticoins: %d</string>
@@ -55,6 +55,8 @@
     <string name="why_ads_content">why_ads_content</string>
     <string name="why_ads_title">will_show_ads_title</string>
     <string name="levels">Levels</string>
+    <string name="reward_not_loaded_yet">Video not loaded yet</string>
+    <string name="coins_received">You get %d repticoins</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>
