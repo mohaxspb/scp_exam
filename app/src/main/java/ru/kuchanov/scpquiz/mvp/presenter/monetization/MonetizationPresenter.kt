@@ -30,7 +30,8 @@ class MonetizationPresenter @Inject constructor(
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
-        appDatabase.userDao().getOneByRole(UserRole.PLAYER)
+        appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER)
+                .map { it.first() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy {

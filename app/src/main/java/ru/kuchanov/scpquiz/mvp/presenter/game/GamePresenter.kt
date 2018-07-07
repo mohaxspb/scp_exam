@@ -238,7 +238,7 @@ class GamePresenter @Inject constructor(
 
     private fun onNeedToShowVideoAds() {
         Timber.d("onNeedToShowVideoAds")
-        //todo show video ads
+        viewState.onNeedToShowRewardedVideo()
     }
 
     private fun loadLevel() {
