@@ -1,5 +1,43 @@
 [
   {
+    "id": 19,
+    "scpNumber": "1499",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-1499/small.png",
+    "quizTranslations": [
+      {
+        "id": 37,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "The Gas Mask",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T10:56:10.009+0000",
+        "updated": "2018-07-07T10:56:10.012+0000"
+      },
+      {
+        "id": 36,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Противогаз",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:51:02.698+0000",
+        "updated": "2018-07-07T10:51:02.702+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T10:50:43.834+0000",
+    "updated": "2018-07-07T10:56:10.011+0000"
+  },
+  {
     "id": 2,
     "scpNumber": "173",
     "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-173/scp-173_th.jpg",
@@ -9,7 +47,7 @@
         "quiz": null,
         "langCode": "en",
         "translation": "The Sculpture",
-        "description": "",
+        "description": "Moved to Site-19 1993. Origin is as of yet unknown. It is constructed from concrete and rebar with traces of Krylon brand spray paint. SCP-173 is animate and extremely hostile. The object cannot move while within a direct line of sight. Line of sight must not be broken at any time with SCP-173. Personnel assigned to enter container are instructed to alert one another before blinking. Object is reported to attack by snapping the neck at the base of the skull, or by strangulation. In the event of an attack, personnel are to observe Class 4 hazardous object containment procedures.",
         "quizTranslationPhrases": [
           {
             "id": 5,
@@ -33,24 +71,54 @@
         "quiz": null,
         "langCode": "ru",
         "translation": "Скульптура",
-        "description": "Описание",
+        "description": "Привезен в Зону 19 в 1993. Происхождение все еще неизвестно. Изготовлен из бетона и арматуры со следами аэрозольной краски марки Krylon. Объект одушевлен и крайне враждебен. Объект не может двигаться в то время, когда находится в пределах прямой видимости. При работе с Объектом никогда не должен быть нарушен зрительный контакт. Персонал, предназначенный для входа в контейнер, проинструктирован предупреждать друг друга перед тем, как моргнуть. Объект, как сообщается, нападает, ломая шею у основания черепа, или с помощью удушения. В случае нападения персонал должен применять действия по сдерживанию опасных объектов класса 4.",
         "quizTranslationPhrases": [
           {
-            "id": 3,
+            "id": 8,
             "quizTranslation": null,
-            "translation": "русский текст",
+            "translation": "Ух! Жуткая штука",
             "approved": false,
             "authorId": 1,
             "approverId": null,
-            "created": "2018-05-24T20:45:30.849+0000",
-            "updated": "2018-05-24T20:45:30.849+0000"
+            "created": "2018-07-07T12:05:04.443+0000",
+            "updated": "2018-07-07T12:05:04.443+0000"
+          },
+          {
+            "id": 11,
+            "quizTranslation": null,
+            "translation": "А ты слышал? На прошлой неделе она сломала парочку шей. Парни даже моргнуть не успели. Хотя…Нет! Успели! Уловил? Моргнуть – успели! Ладно, ладно я понял, плохая шутка.",
+            "approved": false,
+            "authorId": 1,
+            "approverId": null,
+            "created": "2018-07-07T12:05:41.791+0000",
+            "updated": "2018-07-07T12:05:41.791+0000"
+          },
+          {
+            "id": 10,
+            "quizTranslation": null,
+            "translation": "У меня от нее мурашки по коже",
+            "approved": false,
+            "authorId": 1,
+            "approverId": null,
+            "created": "2018-07-07T12:05:29.353+0000",
+            "updated": "2018-07-07T12:05:29.353+0000"
+          },
+          {
+            "id": 9,
+            "quizTranslation": null,
+            "translation": "Не хотел бы я рядом с ней оказаться",
+            "approved": false,
+            "authorId": 1,
+            "approverId": null,
+            "created": "2018-07-07T12:05:16.958+0000",
+            "updated": "2018-07-07T12:05:16.958+0000"
           }
         ],
         "approved": false,
         "authorId": 2,
         "approverId": null,
         "created": "2018-05-20T14:55:39.154+0000",
-        "updated": "2018-05-24T20:45:30.860+0000"
+        "updated": "2018-07-07T12:05:41.794+0000"
       }
     ],
     "authorId": 2,
@@ -69,7 +137,7 @@
         "quiz": null,
         "langCode": "ru",
         "translation": "Лестница",
-        "description": "",
+        "description": "Неосвещённая лестница. Пролёты спускаются под углом 38 градусов, в одном пролёте 13 ступенек, между пролётами - полукруглые площадки примерно 3 метров в диаметре. Направление спуска меняется на 180 градусов на каждом пролёте. Конструктивные свойства объекта таковы, что прямая видимость составляет примерно полтора пролёта. Для спуска необходим источник освещения, так как на объекте нет ни ламп, ни патронов для них, ни окон. Светильники ярче 75 ватт оказались неэффективны. Судя по всему, Объект поглощает излишний свет.",
         "quizTranslationPhrases": [
           {
             "id": 4,
@@ -94,12 +162,23 @@
         "langCode": "en",
         "translation": "The Stairwell",
         "description": "",
-        "quizTranslationPhrases": [],
+        "quizTranslationPhrases": [
+          {
+            "id": 6,
+            "quizTranslation": null,
+            "translation": "test1",
+            "approved": false,
+            "authorId": 1,
+            "approverId": null,
+            "created": "2018-05-31T16:37:45.855+0000",
+            "updated": "2018-05-31T16:37:45.855+0000"
+          }
+        ],
         "approved": false,
         "authorId": 2,
         "approverId": null,
         "created": "2018-05-20T15:02:47.844+0000",
-        "updated": "2018-05-20T15:02:47.848+0000"
+        "updated": "2018-05-31T16:37:45.944+0000"
       }
     ],
     "authorId": 2,
@@ -107,6 +186,44 @@
     "approverId": null,
     "created": "2018-05-20T15:01:37.221+0000",
     "updated": "2018-05-20T15:02:47.847+0000"
+  },
+  {
+    "id": 31,
+    "scpNumber": "191",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-191/SCP-191.jpg",
+    "quizTranslations": [
+      {
+        "id": 61,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Cyborg Child",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:39:15.033+0000",
+        "updated": "2018-07-07T11:39:15.036+0000"
+      },
+      {
+        "id": 60,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Ребёнок-киборг",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:38:38.853+0000",
+        "updated": "2018-07-07T11:38:38.855+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T11:38:12.722+0000",
+    "updated": "2018-07-07T11:39:15.035+0000"
   },
   {
     "id": 4,
@@ -145,6 +262,44 @@
     "approverId": null,
     "created": "2018-05-20T15:11:45.720+0000",
     "updated": "2018-05-20T15:14:07.702+0000"
+  },
+  {
+    "id": 20,
+    "scpNumber": "184",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-184/scp-184.jpg",
+    "quizTranslations": [
+      {
+        "id": 39,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "The Architect",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T10:58:24.160+0000",
+        "updated": "2018-07-07T10:58:24.162+0000"
+      },
+      {
+        "id": 38,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Архитектор",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T10:57:42.015+0000",
+        "updated": "2018-07-07T10:57:42.018+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T10:57:18.806+0000",
+    "updated": "2018-07-07T10:58:24.162+0000"
   },
   {
     "id": 5,
@@ -221,5 +376,852 @@
     "approverId": null,
     "created": "2018-05-20T15:18:55.176+0000",
     "updated": "2018-05-20T15:19:41.340+0000"
+  },
+  {
+    "id": 7,
+    "scpNumber": "610",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-610/610.jpg",
+    "quizTranslations": [
+      {
+        "id": 13,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "The Flesh that Hates",
+        "description": "null",
+        "quizTranslationPhrases": [
+          {
+            "id": 7,
+            "quizTranslation": null,
+            "translation": "undefined",
+            "approved": false,
+            "authorId": 2,
+            "approverId": null,
+            "created": "2018-07-06T18:58:51.654+0000",
+            "updated": "2018-07-06T18:58:51.654+0000"
+          }
+        ],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-06T18:57:02.576+0000",
+        "updated": "2018-07-06T18:58:51.657+0000"
+      },
+      {
+        "id": 12,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Ненавидящая плоть",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-06T18:56:50.131+0000",
+        "updated": "2018-07-06T18:56:50.193+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-06T18:52:50.937+0000",
+    "updated": "2018-07-06T18:57:02.585+0000"
+  },
+  {
+    "id": 21,
+    "scpNumber": "902",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-902/902.jpg",
+    "quizTranslations": [
+      {
+        "id": 40,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Финальный отсчёт",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T10:59:34.432+0000",
+        "updated": "2018-07-07T10:59:34.435+0000"
+      },
+      {
+        "id": 41,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "The Final Countdown",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:00:21.461+0000",
+        "updated": "2018-07-07T11:00:21.466+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T10:59:14.344+0000",
+    "updated": "2018-07-07T11:00:21.464+0000"
+  },
+  {
+    "id": 8,
+    "scpNumber": "354",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-354/354_preview.jpg",
+    "quizTranslations": [
+      {
+        "id": 15,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "The Red Pool",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-06T19:00:33.275+0000",
+        "updated": "2018-07-06T19:00:33.281+0000"
+      },
+      {
+        "id": 14,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Алое Озеро",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-06T18:59:52.153+0000",
+        "updated": "2018-07-06T18:59:52.159+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-06T18:59:31.049+0000",
+    "updated": "2018-07-06T19:00:33.279+0000"
+  },
+  {
+    "id": 9,
+    "scpNumber": "105",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-105/2014-07-18%2022.41.47.jpg",
+    "quizTranslations": [
+      {
+        "id": 17,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Iris",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-06T19:03:23.728+0000",
+        "updated": "2018-07-06T19:03:23.735+0000"
+      },
+      {
+        "id": 16,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Айрис",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-06T19:02:53.238+0000",
+        "updated": "2018-07-06T19:02:53.242+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-06T19:02:31.621+0000",
+    "updated": "2018-07-06T19:03:23.733+0000"
+  },
+  {
+    "id": 10,
+    "scpNumber": "1959",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-1959/1959.jpeg",
+    "quizTranslations": [
+      {
+        "id": 18,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Пропавший космонавт",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-06T19:05:32.206+0000",
+        "updated": "2018-07-06T19:05:32.213+0000"
+      },
+      {
+        "id": 19,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "The Lost Cosmonaut",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-06T19:06:44.472+0000",
+        "updated": "2018-07-06T19:06:44.475+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-06T19:04:56.800+0000",
+    "updated": "2018-07-06T19:06:44.474+0000"
+  },
+  {
+    "id": 22,
+    "scpNumber": "035",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-035/scp--035--002.gif",
+    "quizTranslations": [
+      {
+        "id": 42,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Маска одержимости",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:02:02.650+0000",
+        "updated": "2018-07-07T11:02:02.653+0000"
+      },
+      {
+        "id": 43,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Possessive Mask",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:02:26.409+0000",
+        "updated": "2018-07-07T11:02:26.413+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T11:01:40.571+0000",
+    "updated": "2018-07-07T11:02:26.411+0000"
+  },
+  {
+    "id": 11,
+    "scpNumber": "370",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-370/Glowing.gif",
+    "quizTranslations": [
+      {
+        "id": 20,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Ключ",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:13:14.220+0000",
+        "updated": "2018-07-07T10:13:14.225+0000"
+      },
+      {
+        "id": 21,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "A Key",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:14:06.881+0000",
+        "updated": "2018-07-07T10:14:06.892+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T10:12:39.451+0000",
+    "updated": "2018-07-07T10:14:06.884+0000"
+  },
+  {
+    "id": 12,
+    "scpNumber": "008",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-008/Scp008.jpg",
+    "quizTranslations": [
+      {
+        "id": 22,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Чума зомби",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:15:49.873+0000",
+        "updated": "2018-07-07T10:15:49.877+0000"
+      },
+      {
+        "id": 23,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Zombie Plague",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:16:14.853+0000",
+        "updated": "2018-07-07T10:16:14.856+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T10:15:16.478+0000",
+    "updated": "2018-07-07T10:16:14.855+0000"
+  },
+  {
+    "id": 13,
+    "scpNumber": "1000",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-1000/bigfoot_patterson01.jpg",
+    "quizTranslations": [
+      {
+        "id": 25,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Bigfoot",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:18:42.797+0000",
+        "updated": "2018-07-07T10:18:42.802+0000"
+      },
+      {
+        "id": 24,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Снежный человек",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:18:01.167+0000",
+        "updated": "2018-07-07T10:18:01.174+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T10:17:37.613+0000",
+    "updated": "2018-07-07T10:18:42.800+0000"
+  },
+  {
+    "id": 23,
+    "scpNumber": "131",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-131/131.jpg",
+    "quizTranslations": [
+      {
+        "id": 44,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Каплеглазики",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:04:34.728+0000",
+        "updated": "2018-07-07T11:04:34.731+0000"
+      },
+      {
+        "id": 45,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "The Eye Pods",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:05:18.550+0000",
+        "updated": "2018-07-07T11:05:18.552+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T11:04:04.568+0000",
+    "updated": "2018-07-07T11:05:18.551+0000"
+  },
+  {
+    "id": 14,
+    "scpNumber": "1867",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-1867/scp-1867.jpg",
+    "quizTranslations": [
+      {
+        "id": 26,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Джентльмен",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:23:22.782+0000",
+        "updated": "2018-07-07T10:23:22.787+0000"
+      },
+      {
+        "id": 27,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "A Gentleman",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:23:30.651+0000",
+        "updated": "2018-07-07T10:23:30.654+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T10:20:16.861+0000",
+    "updated": "2018-07-07T10:23:30.653+0000"
+  },
+  {
+    "id": 15,
+    "scpNumber": "049",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-049/SCP-049.jpg",
+    "quizTranslations": [
+      {
+        "id": 28,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Чумной доктор",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:25:37.038+0000",
+        "updated": "2018-07-07T10:25:37.041+0000"
+      },
+      {
+        "id": 29,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Plague Doctor",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:25:46.095+0000",
+        "updated": "2018-07-07T10:25:46.099+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T10:24:47.997+0000",
+    "updated": "2018-07-07T10:25:46.098+0000"
+  },
+  {
+    "id": 16,
+    "scpNumber": "001",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/dr-clef-s-proposal/Angel.jpg",
+    "quizTranslations": [
+      {
+        "id": 30,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Страж Врат",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:29:04.224+0000",
+        "updated": "2018-07-07T10:29:04.229+0000"
+      },
+      {
+        "id": 31,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Dr Clef's Proposal",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:30:17.874+0000",
+        "updated": "2018-07-07T10:30:17.882+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T10:28:27.230+0000",
+    "updated": "2018-07-07T10:30:17.877+0000"
+  },
+  {
+    "id": 24,
+    "scpNumber": "231",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-231/scp-blank.png",
+    "quizTranslations": [
+      {
+        "id": 46,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Особые требования к персоналу",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:07:50.397+0000",
+        "updated": "2018-07-07T11:07:50.401+0000"
+      },
+      {
+        "id": 47,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Special Personnel Requirements",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:08:11.203+0000",
+        "updated": "2018-07-07T11:08:11.205+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T11:07:22.645+0000",
+    "updated": "2018-07-07T11:08:11.204+0000"
+  },
+  {
+    "id": 17,
+    "scpNumber": "084",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-084/scp-084-1.jpg",
+    "quizTranslations": [
+      {
+        "id": 32,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Статичная радиомачта",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:34:57.813+0000",
+        "updated": "2018-07-07T10:34:57.817+0000"
+      },
+      {
+        "id": 33,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Static Tower",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:35:12.334+0000",
+        "updated": "2018-07-07T10:35:12.338+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T10:32:27.649+0000",
+    "updated": "2018-07-07T10:35:12.337+0000"
+  },
+  {
+    "id": 18,
+    "scpNumber": "1048",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-1048/1048.jpg",
+    "quizTranslations": [
+      {
+        "id": 34,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Мишка-строитель",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:41:01.593+0000",
+        "updated": "2018-07-07T10:41:01.598+0000"
+      },
+      {
+        "id": 35,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Builder Bear",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 2,
+        "approverId": null,
+        "created": "2018-07-07T10:41:49.208+0000",
+        "updated": "2018-07-07T10:41:49.212+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T10:40:36.565+0000",
+    "updated": "2018-07-07T10:41:49.210+0000"
+  },
+  {
+    "id": 25,
+    "scpNumber": "028",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-028/scp-028.jpg",
+    "quizTranslations": [
+      {
+        "id": 48,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Знание",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:09:28.010+0000",
+        "updated": "2018-07-07T11:09:28.012+0000"
+      },
+      {
+        "id": 49,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Knowledge",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:09:51.526+0000",
+        "updated": "2018-07-07T11:09:51.529+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T11:09:04.282+0000",
+    "updated": "2018-07-07T11:09:51.528+0000"
+  },
+  {
+    "id": 26,
+    "scpNumber": "2006",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-2006/SCP-Ro-Man.jpg",
+    "quizTranslations": [
+      {
+        "id": 50,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Слишком страшный",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:11:26.249+0000",
+        "updated": "2018-07-07T11:11:26.256+0000"
+      },
+      {
+        "id": 51,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Too Spooky",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:11:57.151+0000",
+        "updated": "2018-07-07T11:11:57.155+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T11:10:49.064+0000",
+    "updated": "2018-07-07T11:11:57.154+0000"
+  },
+  {
+    "id": 27,
+    "scpNumber": "990",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-990/990.jpg",
+    "quizTranslations": [
+      {
+        "id": 53,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Dream Man",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:14:02.340+0000",
+        "updated": "2018-07-07T11:14:02.344+0000"
+      },
+      {
+        "id": 52,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Человек из снов",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:13:22.243+0000",
+        "updated": "2018-07-07T11:13:22.246+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T11:12:56.439+0000",
+    "updated": "2018-07-07T11:14:02.343+0000"
+  },
+  {
+    "id": 28,
+    "scpNumber": "1715",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-1715/imnotthere04__article.jpg",
+    "quizTranslations": [
+      {
+        "id": 55,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Online Friend",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:15:41.408+0000",
+        "updated": "2018-07-07T11:15:41.411+0000"
+      },
+      {
+        "id": 54,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Интернет-друг",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:15:05.655+0000",
+        "updated": "2018-07-07T11:15:05.657+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T11:14:42.690+0000",
+    "updated": "2018-07-07T11:15:41.410+0000"
+  },
+  {
+    "id": 29,
+    "scpNumber": "169",
+    "imageUrl": "http://scp-wiki.wdfiles.com/local--files/scp-169/scp169spectograph.jpg",
+    "quizTranslations": [
+      {
+        "id": 57,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "The Leviathan",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:22:55.509+0000",
+        "updated": "2018-07-07T11:22:55.512+0000"
+      },
+      {
+        "id": 56,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Левиафан",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:22:07.281+0000",
+        "updated": "2018-07-07T11:22:07.284+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T11:21:39.812+0000",
+    "updated": "2018-07-07T11:22:55.511+0000"
+  },
+  {
+    "id": 30,
+    "scpNumber": "1903",
+    "imageUrl": "http://scp-ru.wdfiles.com/local--files/scp-1903/scp-1903.jpg",
+    "quizTranslations": [
+      {
+        "id": 58,
+        "quiz": null,
+        "langCode": "ru",
+        "translation": "Секрет Джеки",
+        "description": "undefined",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:27:39.975+0000",
+        "updated": "2018-07-07T11:27:39.978+0000"
+      },
+      {
+        "id": 59,
+        "quiz": null,
+        "langCode": "en",
+        "translation": "Jackie's Secret",
+        "description": "null",
+        "quizTranslationPhrases": [],
+        "approved": false,
+        "authorId": 1,
+        "approverId": null,
+        "created": "2018-07-07T11:27:51.682+0000",
+        "updated": "2018-07-07T11:27:51.685+0000"
+      }
+    ],
+    "authorId": 2,
+    "approved": false,
+    "approverId": null,
+    "created": "2018-07-07T11:26:56.737+0000",
+    "updated": "2018-07-07T11:27:51.684+0000"
   }
 ]

@@ -257,14 +257,50 @@ class GamePresenter @Inject constructor(
                             isLevelShown = true
 
                             //todo param for number
-                            viewState.showLevelNumber(-1)
+//                            viewState.showLevelNumber(-1)
 
                             quizLevelInfo.finishedLevel.apply {
                                 viewState.showImage(quizLevelInfo.quiz)
                                 when {
-                                    !scpNumberFilled && !scpNameFilled -> {
+                                    scpNumberFilled && scpNameFilled -> {
+                                        with(viewState) {
+                                            showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
+                                            showNumber(quizLevelInfo.quiz.scpNumber.toList())
+                                        }
+                                        onLevelCompletelyFinished()
+                                    }
+                                    !scpNumberFilled && scpNameFilled -> {
+                                        Timber.d("!scpNumberFilled && scpNameFilled")
                                         with(viewState) {
                                             showToolbar(true)
+
+                                            val scpNumberChars = quizLevelInfo.quiz.scpNumber.toMutableList()
+                                            setKeyboardChars(
+                                                KeyboardView.fillCharsList(
+                                                    scpNumberChars,
+                                                    Constants.DIGITS_CHAR_LIST
+                                                ).shuffled()
+                                            )
+                                            showChatMessage(
+                                                appContext.getString(
+                                                    R.string.message_enter_number_description,
+                                                    Constants.COINS_FOR_NUMBER
+                                                ),
+                                                quizLevelInfo.doctor
+                                            )
+                                            showKeyboard(true)
+                                            showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
+                                        }
+
+                                        sendPeriodicMessages()
+                                    }
+                                    else -> {
+                                        with(viewState) {
+                                            showToolbar(true)
+
+                                            if(scpNumberFilled && !scpNameFilled){
+                                                showNumber(quizLevelInfo.quiz.scpNumber.toList())
+                                            }
 
                                             val startLevelMessages = appContext
                                                     .resources
@@ -289,37 +325,6 @@ class GamePresenter @Inject constructor(
                                         }
 
                                         sendPeriodicMessages()
-                                    }
-                                    !scpNumberFilled && scpNameFilled -> {
-                                        with(viewState) {
-                                            showToolbar(true)
-                                            showLevelNumber(-1)
-                                            val scpNumberChars = quizLevelInfo.quiz.scpNumber.toMutableList()
-                                            setKeyboardChars(
-                                                KeyboardView.fillCharsList(
-                                                    scpNumberChars,
-                                                    Constants.DIGITS_CHAR_LIST
-                                                ).shuffled()
-                                            )
-                                            showChatMessage(
-                                                appContext.getString(
-                                                    R.string.message_enter_number_description,
-                                                    Constants.COINS_FOR_NUMBER
-                                                ),
-                                                quizLevelInfo.doctor
-                                            )
-                                            showKeyboard(true)
-                                            showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
-                                        }
-
-                                        sendPeriodicMessages()
-                                    }
-                                    scpNumberFilled && scpNameFilled -> {
-                                        with(viewState) {
-                                            showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
-                                            showNumber(quizLevelInfo.quiz.scpNumber.toList())
-                                        }
-                                        onLevelCompletelyFinished()
                                     }
                                 }
                             }

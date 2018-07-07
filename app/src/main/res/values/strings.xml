@@ -54,6 +54,7 @@
     <string name="watch_ads">Watch ads</string>
     <string name="why_ads_content">why_ads_content</string>
     <string name="why_ads_title">will_show_ads_title</string>
+    <string name="levels">Levels</string>
 
     <string-array name="progress_texts">
         <item>Текст прогресса 1</item>
