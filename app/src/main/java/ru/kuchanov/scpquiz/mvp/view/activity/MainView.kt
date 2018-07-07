@@ -4,11 +4,11 @@ import ru.kuchanov.scpquiz.mvp.BaseView
 
 interface MainView : BaseView {
 
-    fun showAdsDialog()
+    fun showAdsDialog(quizId: Long)
 
-    fun showWhyAdsDialog()
+    fun showWhyAdsDialog(quizId: Long)
 
-    fun showInterstitial()
+    fun showInterstitial(quizId: Long)
 
     fun startPurchase()
 }

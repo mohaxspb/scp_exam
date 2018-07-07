@@ -10,8 +10,10 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import ru.kuchanov.rate.PreRate
+import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.mvp.BaseView
 import ru.kuchanov.scpquiz.utils.AdsUtils
@@ -34,6 +36,9 @@ abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatAct
 
     @Inject
     lateinit var preferenceManager: MyPreferenceManager
+
+    @Inject
+    lateinit var router: ScpRouter
 
     abstract val scopes: Array<String>
 
@@ -108,19 +113,22 @@ abstract class BaseActivity<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatAct
 
         mInterstitialAd = InterstitialAd(this)
         mInterstitialAd.adUnitId = getString(R.string.ad_unit_id_interstitial)
-        mInterstitialAd.adListener = object : AdListener() {
-            override fun onAdClosed() {
-                super.onAdClosed()
-                preferenceManager.setNeedToShowInterstitial(false)
-            }
-        }
 
         if (!mInterstitialAd.isLoaded) {
             requestNewInterstitial()
         }
     }
 
-    fun showInterstitial() = mInterstitialAd.show()
+    fun showInterstitial(quizId: Long) {
+        mInterstitialAd.adListener = object : AdListener() {
+            override fun onAdClosed() {
+                super.onAdClosed()
+                preferenceManager.setNeedToShowInterstitial(false)
+                router.replaceScreen(Constants.Screens.QUIZ, quizId)
+            }
+        }
+        mInterstitialAd.show()
+    }
 
     private fun requestNewInterstitial() {
         Timber.d("requestNewInterstitial loading/loaded: %s/%s", mInterstitialAd.isLoading, mInterstitialAd.isLoaded)
