@@ -27,8 +27,8 @@ class IntroDialogPresenter @Inject constructor(
     override var appContext: Application,
     override var preferences: MyPreferenceManager,
     override var router: ScpRouter,
-    private var appDatabase: AppDatabase
-) : BasePresenter<IntroDialogView>(appContext, preferences, router) {
+    override var appDatabase: AppDatabase
+) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase) {
 
     private lateinit var doctor: User
 

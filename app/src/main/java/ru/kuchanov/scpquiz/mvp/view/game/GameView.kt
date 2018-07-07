@@ -29,4 +29,5 @@ interface GameView : BaseView {
     fun onNeedToOpenCoins()
     fun clearChatMessages()
     fun askForRateApp()
+    fun onNeedToShowRewardedVideo()
 }

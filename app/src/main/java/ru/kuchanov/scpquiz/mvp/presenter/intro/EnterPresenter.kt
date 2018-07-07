@@ -35,10 +35,10 @@ class EnterPresenter @Inject constructor(
     override var appContext: Application,
     override var preferences: MyPreferenceManager,
     override var router: ScpRouter,
-    private var appDatabase: AppDatabase,
+    override var appDatabase: AppDatabase,
     private val moshi: Moshi,
     private var quizConverter: QuizConverter
-) : BasePresenter<EnterView>(appContext, preferences, router) {
+) : BasePresenter<EnterView>(appContext, preferences, router, appDatabase) {
 
     private var dbFilled: Boolean = false
 

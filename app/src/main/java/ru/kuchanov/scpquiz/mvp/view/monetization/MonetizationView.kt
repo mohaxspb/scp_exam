@@ -5,4 +5,5 @@ import ru.kuchanov.scpquiz.mvp.BaseView
 
 interface MonetizationView : BaseView {
     fun showMonetizationActions(actions: MutableList<MyListItem>)
+    fun onNeedToShowRewardedVideo()
 }

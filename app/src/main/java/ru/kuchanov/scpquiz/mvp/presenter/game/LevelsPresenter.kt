@@ -25,8 +25,8 @@ class LevelsPresenter @Inject constructor(
     override var appContext: Application,
     override var preferences: MyPreferenceManager,
     override var router: ScpRouter,
-    private var appDatabase: AppDatabase
-) : BasePresenter<LevelsView>(appContext, preferences, router) {
+    override var appDatabase: AppDatabase
+) : BasePresenter<LevelsView>(appContext, preferences, router, appDatabase) {
 
     private lateinit var levels: List<Quiz>
 

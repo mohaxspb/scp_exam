@@ -12,6 +12,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
@@ -33,12 +34,13 @@ class GamePresenter @Inject constructor(
     override var appContext: Application,
     override var preferences: MyPreferenceManager,
     override var router: ScpRouter,
+    override var appDatabase: AppDatabase,
     private var gameInteractor: GameInteractor
-) : BasePresenter<GameView>(appContext, preferences, router) {
+) : BasePresenter<GameView>(appContext, preferences, router, appDatabase) {
 
     companion object {
         const val PERIODIC_MESSAGES_INITIAL_DELAY = 30L
-        const val PERIODIC_MESSAGES_PERIOD = 30L
+        const val PERIODIC_MESSAGES_PERIOD = 60L
         //fixme test values
         const val PERIODIC_SUGGESTIONS_INITIAL_DELAY = 5L
         const val PERIODIC_SUGGESTIONS_PERIOD = 180L
@@ -236,7 +238,7 @@ class GamePresenter @Inject constructor(
 
     private fun onNeedToShowVideoAds() {
         Timber.d("onNeedToShowVideoAds")
-        //todo show video ads
+        viewState.onNeedToShowRewardedVideo()
     }
 
     private fun loadLevel() {

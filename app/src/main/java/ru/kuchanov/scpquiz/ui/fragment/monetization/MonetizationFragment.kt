@@ -18,6 +18,7 @@ import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.MonetizationModule
 import ru.kuchanov.scpquiz.mvp.presenter.monetization.MonetizationPresenter
 import ru.kuchanov.scpquiz.mvp.view.monetization.MonetizationView
+import ru.kuchanov.scpquiz.ui.BaseActivity
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import toothpick.Toothpick
@@ -78,5 +79,9 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         delegateManager.addDelegate(MonetizationHeaderDelegate())
         adapter = ListDelegationAdapter(delegateManager)
         recyclerView.adapter = adapter
+    }
+
+    override fun onNeedToShowRewardedVideo() {
+        (activity as BaseActivity<*,*>).showRewardedVideo()
     }
 }

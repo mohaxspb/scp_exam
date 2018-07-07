@@ -16,8 +16,8 @@ class SettingsPresenter @Inject constructor(
     override var appContext: Application,
     override var preferences: MyPreferenceManager,
     override var router: ScpRouter,
-    private var appDatabase: AppDatabase
-) : BasePresenter<SettingsView>(appContext, preferences, router) {
+    override var appDatabase: AppDatabase
+) : BasePresenter<SettingsView>(appContext, preferences, router, appDatabase) {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
