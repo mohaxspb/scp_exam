@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:background="?selectableItemBackgroundBorderless"
         android:padding="@dimen/defaultMargin"
-        android:text="@string/level"
+        android:text="@string/levels"
         android:textColor="@android:color/black"
         android:textSize="16sp"
         android:visibility="invisible"
@@ -39,7 +39,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/hamburgerButton"
-        tools:text="Уроверь 1"
         tools:visibility="visible" />
 
     <LinearLayout
