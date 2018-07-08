@@ -21,6 +21,8 @@ import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.db.UserRole
+import ru.kuchanov.scpquiz.model.ui.ProgressPhrase
+import ru.kuchanov.scpquiz.model.ui.ProgressPhrasesJson
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.EnterView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
@@ -44,8 +46,12 @@ class EnterPresenter @Inject constructor(
 
     private var secondsPast: Long = 0
 
+    private lateinit var progressPhrases: List<ProgressPhrase>
+
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
+
+        readProgressPhrases()
 
         val timerObservable = Flowable.intervalRange(
             0,
@@ -131,7 +137,7 @@ class EnterPresenter @Inject constructor(
                         if (it == -1L) {
                             dbFilled = true
                         } else {
-                            viewState.showProgressText()
+                            viewState.showProgressText(progressPhrases[Random().nextInt(progressPhrases.size)].translation)
                             viewState.showProgressAnimation()
                             viewState.showImage(it.toInt())
                         }
@@ -146,6 +152,16 @@ class EnterPresenter @Inject constructor(
                     },
                     onError = Timber::e
                 )
+    }
+
+    private fun readProgressPhrases() {
+        val json = StorageUtils.readFromAssets(appContext, "progressPhrases.json")
+        val adapter = moshi.adapter(ProgressPhrasesJson::class.java)
+        val parsedJson = adapter.fromJson(json)!!
+        progressPhrases = when (preferences.getLang()) {
+            "ru" -> parsedJson.ru
+            else -> parsedJson.en
+        }
     }
 
     fun openIntroDialogScreen(bitmap: Bitmap) {
