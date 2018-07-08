@@ -300,7 +300,7 @@ class GamePresenter @Inject constructor(
                                         with(viewState) {
                                             showToolbar(true)
 
-                                            if(scpNumberFilled && !scpNameFilled){
+                                            if (scpNumberFilled && !scpNameFilled) {
                                                 showNumber(quizLevelInfo.quiz.scpNumber.toList())
                                             }
 
