@@ -123,6 +123,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 
         //appodeal
         Appodeal.disableLocationPermissionCheck()
+        Appodeal.disableWriteExternalStoragePermissionCheck();
         if (BuildConfig.DEBUG) {
             Appodeal.setTesting(true)
             //            Appodeal.setLogLevel(Log.LogLevel.debug);

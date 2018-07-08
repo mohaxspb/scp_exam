@@ -15,7 +15,6 @@ import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
-import java.util.*
 
 class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
 
@@ -39,9 +38,8 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
 
     override fun getLayoutResId() = R.layout.fragment_enter
 
-    override fun showProgressText() {
-        val progressTexts = resources.getStringArray(R.array.progress_texts)
-        progressTextView.text = progressTexts[Random().nextInt(progressTexts.size)]
+    override fun showProgressText(text: String) {
+        progressTextView.text = text
         progressTextView.setOnClickListener { presenter.onProgressTextClicked() }
     }
 

@@ -58,19 +58,6 @@
     <string name="reward_not_loaded_yet">Video not loaded yet</string>
     <string name="coins_received">You get %d repticoins</string>
 
-    <string-array name="progress_texts">
-        <item>Текст прогресса 1</item>
-        <item>Текст прогресса 2</item>
-        <item>Текст прогресса 3</item>
-        <item>Текст прогресса 4</item>
-        <item>Текст прогресса 5</item>
-        <item>Текст прогресса 6</item>
-        <item>Текст прогресса 7</item>
-        <item>Текст прогресса 8</item>
-        <item>Текст прогресса 9</item>
-        <item>Текст прогресса 10</item>
-    </string-array>
-
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>
         <item>Мы получили ваш запрос на повышение квалификации.</item>
