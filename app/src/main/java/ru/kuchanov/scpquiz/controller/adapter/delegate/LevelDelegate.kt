@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.controller.adapter.delegate
 
+import android.net.Uri
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
+import ru.kuchanov.scpquiz.ui.utils.getImageUrl
 import ru.kuchanov.scpquiz.utils.DimensionUtils
 
 
@@ -29,7 +31,7 @@ class LevelDelegate(
         with(viewHolder.itemView) {
             if (item.scpNameFilled || item.scpNumberFilled) {
                 GlideApp.with(imageView.context)
-                        .load(item.quiz.imageUrl)
+                        .load(Uri.parse("file:///android_asset/quizImages/${item.quiz.getImageUrl()}"))
                         .dontAnimate()
                         .centerCrop()
                         .into(imageView)

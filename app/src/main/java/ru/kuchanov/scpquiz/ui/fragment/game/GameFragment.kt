@@ -2,6 +2,7 @@ package ru.kuchanov.scpquiz.ui.fragment.game
 
 import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.util.TypedValue
@@ -30,6 +31,7 @@ import ru.kuchanov.scpquiz.ui.BaseActivity
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.ChatDelegate
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
+import ru.kuchanov.scpquiz.ui.utils.getImageUrl
 import ru.kuchanov.scpquiz.utils.AdsUtils
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
@@ -127,7 +129,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     override fun showImage(quiz: Quiz) {
         GlideApp
                 .with(imageView.context)
-                .load(quiz.imageUrl)
+                .load(Uri.parse("file:///android_asset/quizImages/${quiz.getImageUrl()}"))
                 .fitCenter()
                 .into(imageView)
     }
