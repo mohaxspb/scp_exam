@@ -16,6 +16,7 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
 import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
+import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -58,6 +59,8 @@ class GamePresenter @Inject constructor(
 
     private val enteredNumber = mutableListOf<Char>()
 
+    private val usedPhrases = mutableListOf<QuizTranslationPhrase>()
+
     private var levelDataDisposable: Disposable? = null
 
     private var periodicMessagesDisposable: CompositeDisposable = CompositeDisposable()
@@ -82,8 +85,12 @@ class GamePresenter @Inject constructor(
                 .subscribeBy {
                     val phrases = quizLevelInfo.quiz.quizTranslations?.first()?.quizTranslationPhrases
                     if (phrases?.isNotEmpty() == true) {
-                        phrases[Random().nextInt(phrases.size)].translation.let {
-                            viewState.showChatMessage(it, quizLevelInfo.doctor)
+                        val notUsedPhrases = phrases.toMutableList()
+                        notUsedPhrases.removeAll(usedPhrases)
+                        if (notUsedPhrases.isNotEmpty()) {
+                            val randomPhrase = phrases[Random().nextInt(phrases.size)]
+                            usedPhrases += randomPhrase
+                            viewState.showChatMessage(randomPhrase.translation, quizLevelInfo.doctor)
                         }
                     }
                 }
@@ -300,7 +307,7 @@ class GamePresenter @Inject constructor(
                                         with(viewState) {
                                             showToolbar(true)
 
-                                            if(scpNumberFilled && !scpNameFilled){
+                                            if (scpNumberFilled && !scpNameFilled) {
                                                 showNumber(quizLevelInfo.quiz.scpNumber.toList())
                                             }
 

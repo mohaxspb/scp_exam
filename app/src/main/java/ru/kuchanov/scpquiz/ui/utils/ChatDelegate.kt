@@ -23,6 +23,7 @@ class ChatDelegate(
 ) {
 
     fun showChatMessage(message: String, user: User, @ColorRes nameTextColorRes: Int) {
+        Timber.d("showChatMessage from ${user.name}")
         val chatMessageView = ChatMessageView(
             context = chatView.context,
             user = user,
@@ -40,7 +41,7 @@ class ChatDelegate(
                     chatMessageView.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
                     ObjectAnimator
-                            .ofInt(scrollView, "scrollY", chatMessageView.top)
+                            .ofInt(scrollView, "scrollY", chatMessageView.bottom)
                             .setDuration(500)
                             .start()
 
@@ -78,27 +79,27 @@ class ChatDelegate(
                 }
                 chatAction.action.invoke(chatView.indexOfChild(chatActionsFlexBoxLayout))
             }
+        }
 
-            chatActionView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    val width = chatActionView.width
-                    val height = chatActionView.height
-                    if (width > 0 && height > 0) {
-                        Timber.d("onGlobalLayout with not 0 sizes, so start scroll animation")
-                        chatActionView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+        chatActionsFlexBoxLayout.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val width = chatActionsFlexBoxLayout.width
+                val height = chatActionsFlexBoxLayout.height
+                if (width > 0 && height > 0) {
+                    Timber.d("onGlobalLayout with not 0 sizes, so start scroll animation")
+                    chatActionsFlexBoxLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
-                        ObjectAnimator
-                                .ofInt(scrollView, "scrollY", chatActionView.top)
-                                .setDuration(500)
-                                .start()
+                    ObjectAnimator
+                            .ofInt(scrollView, "scrollY", chatActionsFlexBoxLayout.bottom)
+                            .setDuration(500)
+                            .start()
 
-                        if (myPreferenceManager.isVibrationEnabled()) {
-                            SystemUtils.vibrate()
-                        }
+                    if (myPreferenceManager.isVibrationEnabled()) {
+                        SystemUtils.vibrate()
                     }
                 }
-            })
-        }
+            }
+        })
     }
 
     fun removeChatAction(indexInParent: Int) {
