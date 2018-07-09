@@ -42,4 +42,6 @@ class SettingsPresenter @Inject constructor(
     }
 
     fun onCoinsClicked() = router.navigateTo(Constants.Screens.MONETIZATION)
+
+    fun onNavigationIconClicked() = router.exit()
 }

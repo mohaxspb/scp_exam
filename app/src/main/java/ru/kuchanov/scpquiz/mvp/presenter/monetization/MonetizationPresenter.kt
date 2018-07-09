@@ -61,4 +61,6 @@ class MonetizationPresenter @Inject constructor(
         Timber.d("showAppodealAds")
         viewState.onNeedToShowRewardedVideo()
     }
+
+    fun onNavigationIconClicked() = router.exit()
 }

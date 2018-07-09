@@ -16,6 +16,10 @@ import com.yandex.metrica.YandexMetricaConfig
 @SuppressWarnings("unused")
 class App : MultiDexApplication() {
 
+    companion object {
+        lateinit var INSTANCE: App
+    }
+
     override fun onCreate() {
         super.onCreate()
 
@@ -32,9 +36,7 @@ class App : MultiDexApplication() {
         YandexMetrica.enableActivityAutoTracking(this)
     }
 
-    private fun initTimber() {
-        Timber.plant(Timber.DebugTree())
-    }
+    private fun initTimber() = Timber.plant(Timber.DebugTree())
 
     private fun initDi() {
         Toothpick
@@ -47,9 +49,5 @@ class App : MultiDexApplication() {
         if (BuildConfig.DEBUG) {
             Toothpick.setConfiguration(Configuration.forDevelopment())
         }
-    }
-
-    companion object {
-        lateinit var INSTANCE: App
     }
 }
