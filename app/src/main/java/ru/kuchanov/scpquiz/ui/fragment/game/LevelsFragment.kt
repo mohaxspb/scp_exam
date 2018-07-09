@@ -3,6 +3,8 @@ package ru.kuchanov.scpquiz.ui.fragment.game
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
@@ -66,5 +68,9 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
     override fun showLevels(quizes: List<LevelViewModel>) {
         adapter.items = quizes
         adapter.notifyDataSetChanged()
+    }
+
+    override fun showAllLevelsFinishedPanel(show: Boolean) {
+        nextLevelsTextView.visibility = if (show) VISIBLE else GONE
     }
 }

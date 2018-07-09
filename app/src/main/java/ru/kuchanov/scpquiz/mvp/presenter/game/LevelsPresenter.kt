@@ -45,8 +45,16 @@ class LevelsPresenter @Inject constructor(
         Flowable.combineLatest(
             appDatabase.quizDao().getAll(),
             appDatabase.finishedLevelsDao().getAll(),
-            BiFunction { t1: List<Quiz>, t2: List<FinishedLevel> -> t1 to t2 }
+            BiFunction { quizes: List<Quiz>, finishedLevels: List<FinishedLevel> -> quizes to finishedLevels }
         )
+
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext { pair ->
+                    val isAllLevelsFinished = pair.second.any { !it.scpNumberFilled || !it.scpNameFilled }
+                    viewState.showAllLevelsFinishedPanel(isAllLevelsFinished)
+                }
+                .observeOn(Schedulers.io())
                 .map { pair ->
                     Timber.d("pair.second: ${pair.second}")
 
@@ -62,8 +70,6 @@ class LevelsPresenter @Inject constructor(
                         )
                     }
                 }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onNext = {
                         Timber.d("updateLevels onNext")
