@@ -65,6 +65,8 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         }
 
         initRecyclerView()
+
+        toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
     }
 
     override fun showMonetizationActions(actions: MutableList<MyListItem>) {
@@ -82,6 +84,6 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
     }
 
     override fun onNeedToShowRewardedVideo() {
-        (activity as BaseActivity<*,*>).showRewardedVideo()
+        (activity as BaseActivity<*, *>).showRewardedVideo()
     }
 }

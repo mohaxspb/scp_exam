@@ -87,6 +87,8 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
         shareLabelTextView.setOnClickListener(onShareClickListener)
 
         privacyPolicyLabelTextView.setOnClickListener { presenter.onPrivacyPolicyClicked() }
+
+        toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
     }
 
     override fun showLang(langString: String) {

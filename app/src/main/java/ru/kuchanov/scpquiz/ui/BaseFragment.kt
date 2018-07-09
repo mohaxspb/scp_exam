@@ -57,12 +57,16 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(getLayoutResId(), container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+//        applyStatusBarTranslucence(translucent)
+
+        return inflater.inflate(getLayoutResId(), container, false)
+    }
 
     abstract val translucent: Boolean
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
 
         applyStatusBarTranslucence(translucent)
@@ -74,21 +78,21 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
 
     override fun onDestroyView() {
         super.onDestroyView()
-        for (scope in scopes) {
-            Toothpick.closeScope(scope)
-        }
+        scopes.forEach { Toothpick.closeScope(it) }
     }
 
     private fun applyStatusBarTranslucence(translucent: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val w = activity!!.window
             if (translucent) {
-                activity!!.window.setFlags(
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-                )
+//                if ((w.attributes.flags and WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION) == 0) {
+                    w.setFlags(
+                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                    )
+//                }
             } else {
-                activity!!.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+                w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             }
         }
     }
