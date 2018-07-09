@@ -43,7 +43,7 @@
         android:layout_marginTop="36dp"
         android:alpha="0"
         android:rotation="0"
-        android:src="@drawable/ic_doctor"
+        android:src="@drawable/ic_question_big"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
