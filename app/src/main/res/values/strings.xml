@@ -57,6 +57,7 @@
     <string name="levels">Levels</string>
     <string name="reward_not_loaded_yet">Video not loaded yet</string>
     <string name="coins_received">You get %d repticoins</string>
+    <string name="next_levels_will_be_soon">Поздравляем, вы прошли все уровни! Но не спешите удалять приложение - скоро будут новые!</string>
 
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>

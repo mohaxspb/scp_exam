@@ -6,4 +6,5 @@ import ru.kuchanov.scpquiz.mvp.BaseView
 interface LevelsView : BaseView {
     fun showProgress(show: Boolean)
     fun showLevels(quizes: List<LevelViewModel>)
+    fun showAllLevelsFinishedPanel(show: Boolean)
 }
