@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.controller.manager
+package ru.kuchanov.scpquiz.controller.manager.preference
 
 object Key {
 

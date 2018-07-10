@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.controller.manager
+package ru.kuchanov.scpquiz.controller.manager.preference
 
 import android.content.Context
 import android.preference.PreferenceManager

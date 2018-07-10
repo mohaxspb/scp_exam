@@ -9,7 +9,7 @@ import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.fragment_intro_dialog.*
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
-import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.IntroDialogModule
 import ru.kuchanov.scpquiz.model.db.User

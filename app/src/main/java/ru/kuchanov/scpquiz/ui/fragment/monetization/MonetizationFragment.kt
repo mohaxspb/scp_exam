@@ -1,8 +1,10 @@
 package ru.kuchanov.scpquiz.ui.fragment.monetization
 
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import com.android.billingclient.api.SkuDetails
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
@@ -14,6 +16,7 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.MonetizationDelegate
 import ru.kuchanov.scpquiz.controller.adapter.delegate.MonetizationHeaderDelegate
+import ru.kuchanov.scpquiz.controller.manager.monetization.BillingDelegate
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.MonetizationModule
 import ru.kuchanov.scpquiz.mvp.presenter.monetization.MonetizationPresenter
@@ -50,6 +53,8 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
 
     lateinit var adapter: ListDelegationAdapter<List<MyListItem>>
 
+    lateinit var billingDelegate: BillingDelegate
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -67,6 +72,10 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         initRecyclerView()
 
         toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
+
+        billingDelegate = BillingDelegate(activity as AppCompatActivity, this)
+
+        billingDelegate.startConnection()
     }
 
     override fun showMonetizationActions(actions: MutableList<MyListItem>) {
@@ -83,7 +92,9 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         recyclerView.adapter = adapter
     }
 
-    override fun onNeedToShowRewardedVideo() {
-        (activity as BaseActivity<*, *>).showRewardedVideo()
+    override fun onNeedToShowRewardedVideo() = (activity as BaseActivity<*, *>).showRewardedVideo()
+
+    override fun enableBuyButton(disableAdsInApp: SkuDetails) {
+        //todo
     }
 }

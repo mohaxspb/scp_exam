@@ -11,7 +11,7 @@ import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.MonetizationHeaderViewModel
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.MonetizationViewModel
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
-import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -50,6 +50,8 @@ class MonetizationPresenter @Inject constructor(
 
                     viewState.showMonetizationActions(actions)
                 }
+
+
     }
 
     private fun buyNoAdsInApp() {
