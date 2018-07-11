@@ -73,7 +73,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                         .commit()
             } else {
                 var screenKey: String? = null
-                var data:Any? = null
+                var data: Any? = null
                 if (command is Forward) {
                     screenKey = command.screenKey
                     data = command.transitionData
@@ -130,6 +130,6 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
 
     override fun startPurchase() {
         Timber.d("startPurchase")
-        //todo
+        billingDelegate.startPurchaseFlow(Constants.SKU_INAPP_DISABLE_ADS)
     }
 }

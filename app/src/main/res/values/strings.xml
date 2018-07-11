@@ -65,6 +65,7 @@
     <string name="ads_disabled">Ads disabled! Hurray!</string>
     <string name="error_billing_client_connection">Error while start billing client. Error code: %d</string>
     <string name="already_owned">Приобретено</string>
+    <string name="error_billing_client_not_ready">Billing client not ready</string>
 
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>

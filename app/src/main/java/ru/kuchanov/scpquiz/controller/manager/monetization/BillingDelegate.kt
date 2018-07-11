@@ -23,8 +23,8 @@ import javax.inject.Inject
 
 class BillingDelegate(
     val activity: AppCompatActivity,
-    val view: MonetizationView,
-    val presenter: MonetizationPresenter
+    val view: MonetizationView?,
+    val presenter: MonetizationPresenter?
 ) : PurchasesUpdatedListener {
 
     @Inject
@@ -42,8 +42,8 @@ class BillingDelegate(
     }
 
     fun startConnection() {
-        view.showProgress(true)
-        view.showRefreshFab(false)
+        view?.showProgress(true)
+        view?.showRefreshFab(false)
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(@BillingClient.BillingResponse billingResponseCode: Int) {
                 Timber.d("billingClient onBillingSetupFinished: $billingResponseCode")
@@ -51,10 +51,10 @@ class BillingDelegate(
                     clientReady = true
                     // The billing client is ready. You can query purchases here.
 
-                    presenter.onBillingClientReady()
+                    presenter?.onBillingClientReady()
                 } else {
                     clientReady = false
-                    presenter.onBillingClientFailedToStart(billingResponseCode)
+                    presenter?.onBillingClientFailedToStart(billingResponseCode)
                 }
             }
 
@@ -63,7 +63,7 @@ class BillingDelegate(
                 // Try to restart the connection on the next request to
                 // Google Play by calling the startConnection() method.
                 clientReady = false
-                presenter.onBillingClientFailedToStart(BillingClient.BillingResponse.ERROR)
+                presenter?.onBillingClientFailedToStart(BillingClient.BillingResponse.ERROR)
             }
         })
     }
@@ -83,19 +83,19 @@ class BillingDelegate(
                                 when (it) {
                                     VALID -> {
                                         preferencesManager.disableAds(true)
-                                        view.showMessage(R.string.ads_disabled)
+                                        view?.showMessage(R.string.ads_disabled)
                                     }
                                     INVALID -> {
-                                        view.showMessage(R.string.purchase_not_valid)
+                                        view?.showMessage(R.string.purchase_not_valid)
                                     }
                                     GOOGLE_SERVER_ERROR -> {
-                                        view.showMessage(R.string.purchase_validation_google_error)
+                                        view?.showMessage(R.string.purchase_validation_google_error)
                                     }
                                 }
                             },
                             onError = {
                                 Timber.e(it)
-                                view.showMessage(R.string.error_buy)
+                                view?.showMessage(R.string.error_buy)
                             }
                         )
 
@@ -105,7 +105,7 @@ class BillingDelegate(
             //nothing to do
         } else {
             // Handle any other error codes.
-            view.showMessage(activity.getString(R.string.error_purchase, responseCode.toString()))
+            view?.showMessage(activity.getString(R.string.error_purchase, responseCode.toString()))
         }
     }
 
@@ -130,14 +130,18 @@ class BillingDelegate(
     }, BackpressureStrategy.BUFFER)
 
     fun startPurchaseFlow(sku: String): Boolean {
-        val flowParams = BillingFlowParams.newBuilder()
-                .setSku(sku)
-                .setType(BillingClient.SkuType.INAPP)
-                .build()
-        val responseCode = billingClient.launchBillingFlow(activity, flowParams)
-        Timber.d("startPurchaseFlow responseCode $responseCode")
+        if (clientReady) {
+            val flowParams = BillingFlowParams.newBuilder()
+                    .setSku(sku)
+                    .setType(BillingClient.SkuType.INAPP)
+                    .build()
+            val responseCode = billingClient.launchBillingFlow(activity, flowParams)
+            Timber.d("startPurchaseFlow responseCode $responseCode")
 
-        return responseCode == BillingClient.BillingResponse.OK
+            return responseCode == BillingClient.BillingResponse.OK
+        } else {
+            view?.showMessage(R.string.error_billing_client_not_ready)
+        }
     }
 
     fun isHasDisableAdsInApp(): Flowable<Boolean> = Flowable.fromCallable { billingClient.queryPurchases(BillingClient.SkuType.INAPP) }
