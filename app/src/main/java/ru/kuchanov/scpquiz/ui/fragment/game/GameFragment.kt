@@ -119,7 +119,16 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
         levelNumberTextView.setOnClickListener { presenter.onLevelsClicked() }
 
-        adView.loadAd(AdsUtils.buildAdRequest())
+        //ads
+        if (myPreferenceManager.isAdsDisabled()) {
+            adView.visibility = GONE
+            adView.isEnabled = false
+        } else {
+            adView.visibility = VISIBLE
+            adView.isEnabled = true
+
+            adView.loadAd(AdsUtils.buildAdRequest())
+        }
     }
 
     override fun showLevelNumber(levelNumber: Int) {

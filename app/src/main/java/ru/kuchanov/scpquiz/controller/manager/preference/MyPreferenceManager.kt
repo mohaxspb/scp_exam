@@ -37,4 +37,8 @@ class MyPreferenceManager @Inject constructor(context: Context) {
     fun setNeedToShowInterstitial(show: Boolean) = preferences.edit().putBoolean(Key.NEED_TO_SHOW_INTERSTITIAL, show).apply()
 
     fun isNeedToShowInterstitial() = preferences.getBoolean(Key.NEED_TO_SHOW_INTERSTITIAL, false)
+
+    fun disableAds(disable: Boolean) = preferences.edit().putBoolean(Key.ADS_DISABLED, disable).apply()
+
+    fun isAdsDisabled() = preferences.getBoolean(Key.ADS_DISABLED, false)
 }

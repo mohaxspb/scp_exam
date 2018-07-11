@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
-import com.android.billingclient.api.SkuDetails
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
@@ -53,8 +54,6 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
 
     lateinit var adapter: ListDelegationAdapter<List<MyListItem>>
 
-    lateinit var billingDelegate: BillingDelegate
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -73,9 +72,16 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
 
         toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
 
-        billingDelegate = BillingDelegate(activity as AppCompatActivity, this)
+        renewFab.setOnClickListener { presenter.loadInAppsToBuy() }
 
-        billingDelegate.startConnection()
+        presenter.billingDelegate = BillingDelegate(activity as AppCompatActivity, this, presenter)
+
+        presenter.loadInAppsToBuy()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        presenter.billingDelegate = null
     }
 
     override fun showMonetizationActions(actions: MutableList<MyListItem>) {
@@ -86,15 +92,19 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
     private fun initRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
-        delegateManager.addDelegate(MonetizationDelegate())
         delegateManager.addDelegate(MonetizationHeaderDelegate())
+        delegateManager.addDelegate(MonetizationDelegate())
         adapter = ListDelegationAdapter(delegateManager)
         recyclerView.adapter = adapter
     }
 
     override fun onNeedToShowRewardedVideo() = (activity as BaseActivity<*, *>).showRewardedVideo()
 
-    override fun enableBuyButton(disableAdsInApp: SkuDetails) {
-        //todo
+    override fun showProgress(show: Boolean) {
+        progressView.visibility = if (show) VISIBLE else GONE
+    }
+
+    override fun showRefreshFab(show: Boolean) {
+        renewFab.visibility = if (show) VISIBLE else GONE
     }
 }

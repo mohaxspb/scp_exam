@@ -62,6 +62,9 @@
     <string name="purchase_not_valid">Не удалось валидировать покупку</string>
     <string name="purchase_validation_google_error">Google servers cannot validate purchase. Please, try again later.</string>
     <string name="error_purchase">Purchase error: %s</string>
+    <string name="ads_disabled">Ads disabled! Hurray!</string>
+    <string name="error_billing_client_connection">Error while start billing client. Error code: %d</string>
+    <string name="already_owned">Приобретено</string>
 
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>
