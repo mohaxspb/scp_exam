@@ -16,8 +16,7 @@ object Constants {
         '0'
     )
     const val DEFAULT_LANG = "en"
-    //todo create policy and set url
-    const val PRIVACY_POLICY_URL = "http://kuchanov.ru"
+    const val PRIVACY_POLICY_URL = "http://37.143.14.68/scpQuiz/privacyPolicy.html"
     const val SETTINGS_BACKGROUND_FILE_NAME = "bgSettings"
     const val INTRO_DIALOG_BACKGROUND_FILE_NAME = "bgIntoDialog"
     const val FINISHED_LEVEL_BEFORE_ASK_RATE_APP = 5L
@@ -27,9 +26,7 @@ object Constants {
     const val SUGGESTION_PRICE_NAME = 40
     const val SUGGESTION_PRICE_NUMBER = 20
     const val REWARD_VIDEO_ADS = 5
-    //    const val NUM_OF_FULLY_FINISHED_LEVEL_BEFORE_SHOW_ADS = 3
-    //fixme test value
-    const val NUM_OF_FULLY_FINISHED_LEVEL_BEFORE_SHOW_ADS = 1
+    const val NUM_OF_FULLY_FINISHED_LEVEL_BEFORE_SHOW_ADS = 3
     const val SKU_INAPP_DISABLE_ADS = "disable_ads_0718"
 
     object Screens {
