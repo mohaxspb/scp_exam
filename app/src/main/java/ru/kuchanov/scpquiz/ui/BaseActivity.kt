@@ -13,6 +13,7 @@ import ru.kuchanov.rate.PreRate
 import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.manager.monetization.BillingDelegate
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.di.Di
@@ -103,12 +104,17 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
      */
     abstract fun inject()
 
+    lateinit var billingDelegate: BillingDelegate
+
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
         super.onCreate(savedInstanceState)
         setContentView(getLayoutResId())
 
         initAds()
+
+        billingDelegate = BillingDelegate(this, null, null)
+        billingDelegate.startConnection()
     }
 
     private fun initAds() {
