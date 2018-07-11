@@ -87,7 +87,7 @@ class GamePresenter @Inject constructor(
                         val notUsedPhrases = phrases.toMutableList()
                         notUsedPhrases.removeAll(usedPhrases)
                         if (notUsedPhrases.isNotEmpty()) {
-                            val randomPhrase = phrases[Random().nextInt(phrases.size)]
+                            val randomPhrase = notUsedPhrases[Random().nextInt(notUsedPhrases.size)]
                             usedPhrases += randomPhrase
                             viewState.showChatMessage(randomPhrase.translation, quizLevelInfo.doctor)
                         }
