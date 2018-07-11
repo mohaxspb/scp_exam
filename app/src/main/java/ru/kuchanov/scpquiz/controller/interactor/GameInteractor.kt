@@ -8,7 +8,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function6
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
-import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
 import ru.kuchanov.scpquiz.ui.fragment.game.GameFragment

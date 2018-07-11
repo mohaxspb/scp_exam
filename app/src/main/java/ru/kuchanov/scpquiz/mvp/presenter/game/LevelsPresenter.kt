@@ -10,7 +10,7 @@ import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
-import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.Quiz
@@ -51,7 +51,7 @@ class LevelsPresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { pair ->
-                    val isAllLevelsFinished = pair.second.any { !it.scpNumberFilled || !it.scpNameFilled }
+                    val isAllLevelsFinished = !pair.second.any { !it.scpNumberFilled || !it.scpNameFilled }
                     viewState.showAllLevelsFinishedPanel(isAllLevelsFinished)
                 }
                 .observeOn(Schedulers.io())
@@ -70,6 +70,7 @@ class LevelsPresenter @Inject constructor(
                         )
                     }
                 }
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onNext = {
                         Timber.d("updateLevels onNext")

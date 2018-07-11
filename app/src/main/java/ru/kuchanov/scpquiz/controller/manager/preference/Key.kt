@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.controller.manager
+package ru.kuchanov.scpquiz.controller.manager.preference
 
 object Key {
 
@@ -9,4 +9,5 @@ object Key {
     const val VIBRATION_ENABLED = "VIBRATION_ENABLED"
     const val INTRO_DIALOG_SHOWN = "INTRO_DIALOG_SHOWN"
     const val NEED_TO_SHOW_INTERSTITIAL = "NEED_TO_SHOW_INTERSTITIAL"
+    const val ADS_DISABLED = "ADS_DISABLED"
 }

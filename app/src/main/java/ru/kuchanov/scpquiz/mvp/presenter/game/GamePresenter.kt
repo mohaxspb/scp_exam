@@ -14,7 +14,7 @@ import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
-import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase
 import ru.kuchanov.scpquiz.model.ui.ChatAction
@@ -42,8 +42,7 @@ class GamePresenter @Inject constructor(
     companion object {
         const val PERIODIC_MESSAGES_INITIAL_DELAY = 30L
         const val PERIODIC_MESSAGES_PERIOD = 60L
-        //fixme test values
-        const val PERIODIC_SUGGESTIONS_INITIAL_DELAY = 5L
+        const val PERIODIC_SUGGESTIONS_INITIAL_DELAY = 90L
         const val PERIODIC_SUGGESTIONS_PERIOD = 180L
     }
 
@@ -88,7 +87,7 @@ class GamePresenter @Inject constructor(
                         val notUsedPhrases = phrases.toMutableList()
                         notUsedPhrases.removeAll(usedPhrases)
                         if (notUsedPhrases.isNotEmpty()) {
-                            val randomPhrase = phrases[Random().nextInt(phrases.size)]
+                            val randomPhrase = notUsedPhrases[Random().nextInt(notUsedPhrases.size)]
                             usedPhrases += randomPhrase
                             viewState.showChatMessage(randomPhrase.translation, quizLevelInfo.doctor)
                         }

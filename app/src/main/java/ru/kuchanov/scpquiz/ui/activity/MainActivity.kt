@@ -81,7 +81,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                     screenKey = command.screenKey
                     data = command.transitionData
                 }
-                if (screenKey != null && screenKey == Constants.Screens.QUIZ && preferenceManager.isNeedToShowInterstitial()) {
+                if (!preferenceManager.isAdsDisabled() && screenKey != null && screenKey == Constants.Screens.QUIZ && preferenceManager.isNeedToShowInterstitial()) {
                     showAdsDialog(data as Long)
                 } else {
                     super.applyCommand(command)

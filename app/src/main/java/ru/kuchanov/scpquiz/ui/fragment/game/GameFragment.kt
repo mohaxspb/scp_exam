@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.fragment_game.*
 import ru.kuchanov.rate.PreRate
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
-import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.GameModule
 import ru.kuchanov.scpquiz.model.db.Quiz
@@ -119,7 +119,16 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
         levelNumberTextView.setOnClickListener { presenter.onLevelsClicked() }
 
-        adView.loadAd(AdsUtils.buildAdRequest())
+        //ads
+        if (myPreferenceManager.isAdsDisabled()) {
+            adView.visibility = GONE
+            adView.isEnabled = false
+        } else {
+            adView.visibility = VISIBLE
+            adView.isEnabled = true
+
+            adView.loadAd(AdsUtils.buildAdRequest())
+        }
     }
 
     override fun showLevelNumber(levelNumber: Int) {

@@ -7,5 +7,7 @@ data class MonetizationViewModel(
     @DrawableRes val icon: Int,
     val title: String,
     val description: String,
+    val price: String,
+    val isAlreadyOwned: Boolean,
     val action: (Unit) -> Unit
 ) : MyListItem

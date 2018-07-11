@@ -9,7 +9,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.google.android.flexbox.FlexboxLayout
 import ru.kuchanov.scpquiz.R
-import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.ui.view.ChatMessageView

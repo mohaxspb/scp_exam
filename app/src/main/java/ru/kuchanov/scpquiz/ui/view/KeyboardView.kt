@@ -6,7 +6,7 @@ import android.widget.LinearLayout
 import com.google.android.flexbox.FlexboxLayout
 import kotlinx.android.synthetic.main.view_keyboard.view.*
 import ru.kuchanov.scpquiz.R
-import ru.kuchanov.scpquiz.controller.manager.MyPreferenceManager
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.utils.DimensionUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils

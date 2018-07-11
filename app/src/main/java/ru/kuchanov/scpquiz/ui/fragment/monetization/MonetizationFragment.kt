@@ -1,8 +1,11 @@
 package ru.kuchanov.scpquiz.ui.fragment.monetization
 
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
@@ -14,6 +17,7 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.MonetizationDelegate
 import ru.kuchanov.scpquiz.controller.adapter.delegate.MonetizationHeaderDelegate
+import ru.kuchanov.scpquiz.controller.manager.monetization.BillingDelegate
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.MonetizationModule
 import ru.kuchanov.scpquiz.mvp.presenter.monetization.MonetizationPresenter
@@ -67,6 +71,17 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         initRecyclerView()
 
         toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
+
+        renewFab.setOnClickListener { presenter.loadInAppsToBuy() }
+
+        presenter.billingDelegate = BillingDelegate(activity as AppCompatActivity, this, presenter)
+
+        presenter.loadInAppsToBuy()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        presenter.billingDelegate = null
     }
 
     override fun showMonetizationActions(actions: MutableList<MyListItem>) {
@@ -77,13 +92,19 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
     private fun initRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(activity)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
-        delegateManager.addDelegate(MonetizationDelegate())
         delegateManager.addDelegate(MonetizationHeaderDelegate())
+        delegateManager.addDelegate(MonetizationDelegate())
         adapter = ListDelegationAdapter(delegateManager)
         recyclerView.adapter = adapter
     }
 
-    override fun onNeedToShowRewardedVideo() {
-        (activity as BaseActivity<*, *>).showRewardedVideo()
+    override fun onNeedToShowRewardedVideo() = (activity as BaseActivity<*, *>).showRewardedVideo()
+
+    override fun showProgress(show: Boolean) {
+        progressView.visibility = if (show) VISIBLE else GONE
+    }
+
+    override fun showRefreshFab(show: Boolean) {
+        renewFab.visibility = if (show) VISIBLE else GONE
     }
 }

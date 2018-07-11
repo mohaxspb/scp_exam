@@ -3,6 +3,8 @@ package ru.kuchanov.scpquiz.controller.adapter.delegate
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import com.hannesdorfmann.adapterdelegates3.AbsListItemAdapterDelegate
 import kotlinx.android.synthetic.main.list_item_monetization.view.*
@@ -33,6 +35,7 @@ class MonetizationDelegate : AbsListItemAdapterDelegate<
             iconImageView.setImageResource(item.icon)
             titleTextView.text = item.title
             descriptionTextView.text = item.description
+            alreadyOwnedTextView.visibility = if (item.isAlreadyOwned) VISIBLE else GONE
             setOnClickListener { item.action.invoke(Unit) }
         }
     }
