@@ -121,8 +121,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
         //ads
         if (myPreferenceManager.isAdsDisabled()) {
-            adView.visibility = GONE
             adView.isEnabled = false
+            adView.pause()
+            adView.visibility = GONE
         } else {
             adView.visibility = VISIBLE
             adView.isEnabled = true

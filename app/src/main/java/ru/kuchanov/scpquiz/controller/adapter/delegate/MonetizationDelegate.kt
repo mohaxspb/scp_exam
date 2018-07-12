@@ -36,6 +36,7 @@ class MonetizationDelegate : AbsListItemAdapterDelegate<
             titleTextView.text = item.title
             descriptionTextView.text = item.description
             alreadyOwnedTextView.visibility = if (item.isAlreadyOwned) VISIBLE else GONE
+            priceTextView.text = item.price
             setOnClickListener { item.action.invoke(Unit) }
         }
     }
