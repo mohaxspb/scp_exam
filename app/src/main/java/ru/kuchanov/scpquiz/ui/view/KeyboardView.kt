@@ -15,6 +15,7 @@ import toothpick.Toothpick
 import javax.inject.Inject
 
 
+@SuppressWarnings("Injectable")
 class KeyboardView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,

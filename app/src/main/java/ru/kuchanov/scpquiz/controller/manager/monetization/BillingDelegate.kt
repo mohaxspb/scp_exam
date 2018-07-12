@@ -21,6 +21,7 @@ import timber.log.Timber
 import toothpick.Toothpick
 import javax.inject.Inject
 
+@SuppressWarnings("Injectable")
 class BillingDelegate(
     val activity: AppCompatActivity,
     val view: MonetizationView?,
@@ -141,6 +142,7 @@ class BillingDelegate(
             return responseCode == BillingClient.BillingResponse.OK
         } else {
             view?.showMessage(R.string.error_billing_client_not_ready)
+            return false
         }
     }
 
