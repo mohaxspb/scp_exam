@@ -105,4 +105,16 @@ class GameInteractor @Inject constructor(
             appDatabase.userDao().update(this).toLong()
         }
     }
+
+    fun saveCharsRemovedState(
+        quizId: Long,
+        nameRedundantCharsRemoved: Boolean?,
+        numberRedundantCharsRemoved: Boolean?
+    ): Single<Long> = Single.fromCallable {
+        with(appDatabase.finishedLevelsDao().getByIdWithUpdates(quizId).blockingFirst().first()) {
+            nameRedundantCharsRemoved?.let { this.nameRedundantCharsRemoved = nameRedundantCharsRemoved }
+            numberRedundantCharsRemoved?.let { this.numberRedundantCharsRemoved = numberRedundantCharsRemoved }
+            appDatabase.finishedLevelsDao().insert(this)
+        }
+    }
 }

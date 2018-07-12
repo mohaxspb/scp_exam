@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "15f0fd6757b237e2d6dd705474d0a8e9",
+    "identityHash": "27465faf134effb66b13021ff4b9bba1",
     "entities": [
       {
         "tableName": "Quiz",
@@ -248,7 +248,7 @@
       },
       {
         "tableName": "FinishedLevel",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`quizId` INTEGER NOT NULL, `scpNameFilled` INTEGER NOT NULL, `scpNumberFilled` INTEGER NOT NULL, PRIMARY KEY(`quizId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`quizId` INTEGER NOT NULL, `scpNameFilled` INTEGER NOT NULL, `scpNumberFilled` INTEGER NOT NULL, `nameRedundantCharsRemoved` INTEGER NOT NULL, `numberRedundantCharsRemoved` INTEGER NOT NULL, PRIMARY KEY(`quizId`))",
         "fields": [
           {
             "fieldPath": "quizId",
@@ -267,6 +267,18 @@
             "columnName": "scpNumberFilled",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "nameRedundantCharsRemoved",
+            "columnName": "nameRedundantCharsRemoved",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "numberRedundantCharsRemoved",
+            "columnName": "numberRedundantCharsRemoved",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -281,7 +293,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"15f0fd6757b237e2d6dd705474d0a8e9\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"27465faf134effb66b13021ff4b9bba1\")"
     ]
   }
 }

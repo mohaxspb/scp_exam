@@ -136,21 +136,29 @@ class GamePresenter @Inject constructor(
                 viewState.showChatMessage(removeCharsActionText, quizLevelInfo.player)
                 val price = Constants.SUGGESTION_PRICE_REMOVE_CHARS
                 if (checkCoins.invoke(price, it)) {
-                    //todo save removed chars state in DB
                     val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_remove_chars)
                     viewState.showChatMessage(
                         suggestionsMessages[Random().nextInt(suggestionsMessages.size)],
                         quizLevelInfo.doctor
                     )
+                    var nameRedundantCharsRemoved: Boolean? = null
+                    var numberRedundantCharsRemoved: Boolean? = null
                     val chars = if (!quizLevelInfo.finishedLevel.scpNameFilled) {
+                        nameRedundantCharsRemoved = true
                         quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toList()?.shuffled()
                                 ?: throw IllegalStateException("no chars for keyboard")
                     } else {
+                        numberRedundantCharsRemoved = true
                         quizLevelInfo.quiz.scpNumber.toList().shuffled()
                     }
                     viewState.setKeyboardChars(chars)
 
-                    gameInteractor.increaseScore(-price)
+                    gameInteractor.saveCharsRemovedState(
+                        quizLevelInfo.quiz.id,
+                        nameRedundantCharsRemoved,
+                        numberRedundantCharsRemoved
+                    )
+                            .flatMap { gameInteractor.increaseScore(-price).toSingleDefault(-price) }
                             .subscribeOn(Schedulers.io())
                             .subscribe()
                 }
@@ -282,12 +290,16 @@ class GamePresenter @Inject constructor(
                                         with(viewState) {
                                             showToolbar(true)
 
-                                            val scpNumberChars = quizLevelInfo.quiz.scpNumber.toMutableList()
+                                            val scpNumberChars = quizLevelInfo.quiz.scpNumber.toList().shuffled().toMutableList()
                                             setKeyboardChars(
-                                                KeyboardView.fillCharsList(
-                                                    scpNumberChars,
-                                                    Constants.DIGITS_CHAR_LIST
-                                                ).shuffled()
+                                                if (numberRedundantCharsRemoved) {
+                                                    scpNumberChars
+                                                } else {
+                                                    KeyboardView.fillCharsList(
+                                                        scpNumberChars,
+                                                        Constants.DIGITS_CHAR_LIST
+                                                    ).shuffled()
+                                                }
                                             )
                                             showChatMessage(
                                                 appContext.getString(
@@ -318,16 +330,20 @@ class GamePresenter @Inject constructor(
                                                 quizLevelInfo.doctor
                                             )
 
-                                            val chars = quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toMutableList()
+                                            val chars = quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toList()?.shuffled()?.toMutableList()
                                                     ?: throw IllegalStateException("translations is null")
                                             val availableChars = quizLevelInfo.randomTranslations
                                                     .joinToString(separator = "") { it.translation }
                                                     .toList()
                                             setKeyboardChars(
-                                                KeyboardView.fillCharsList(
-                                                    chars,
-                                                    availableChars
-                                                ).apply { shuffle() }
+                                                if (nameRedundantCharsRemoved) {
+                                                    chars
+                                                } else {
+                                                    KeyboardView.fillCharsList(
+                                                        chars,
+                                                        availableChars
+                                                    ).apply { shuffle() }
+                                                }
                                             )
                                             animateKeyboard()
                                         }
@@ -465,9 +481,15 @@ class GamePresenter @Inject constructor(
             message,
             {
                 val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0').shuffled()
-                val scpNumberChars = quizLevelInfo.quiz.scpNumber.toCharArray().toMutableList()
+                val scpNumberChars = quizLevelInfo.quiz.scpNumber.toList().shuffled().toMutableList()
                 with(viewState) {
-                    setKeyboardChars(KeyboardView.fillCharsList(scpNumberChars, availableChars))
+                    setKeyboardChars(
+                        if (quizLevelInfo.finishedLevel.scpNumberFilled) {
+                            scpNumberChars
+                        } else {
+                            KeyboardView.fillCharsList(scpNumberChars, availableChars)
+                        }
+                    )
                     showKeyboard(true)
                     showChatMessage(message, quizLevelInfo.player)
                     removeChatAction(it)
@@ -647,10 +669,14 @@ class GamePresenter @Inject constructor(
                             .joinToString(separator = "") { it.translation }
                             .toList()
                     setKeyboardChars(
-                        KeyboardView.fillCharsList(
-                            chars,
-                            availableChars
-                        ).apply { shuffle() }
+                        if (quizLevelInfo.finishedLevel.nameRedundantCharsRemoved) {
+                            chars
+                        } else {
+                            KeyboardView.fillCharsList(
+                                chars,
+                                availableChars
+                            ).shuffled()
+                        }
                     )
                     showKeyboard(true)
                     animateKeyboard()

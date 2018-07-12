@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 @SuppressWarnings("Injectable")
 class BillingDelegate(
-    val activity: AppCompatActivity,
+    val activity: AppCompatActivity?,
     val view: MonetizationView?,
     val presenter: MonetizationPresenter?
 ) : PurchasesUpdatedListener {
@@ -34,7 +34,7 @@ class BillingDelegate(
     @Inject
     lateinit var apiClient: ApiClient
 
-    private var billingClient: BillingClient = BillingClient.newBuilder(activity).setListener(this).build()
+    private var billingClient: BillingClient = BillingClient.newBuilder(activity!!).setListener(this).build()
 
     private var clientReady = false
 
@@ -53,6 +53,13 @@ class BillingDelegate(
                     // The billing client is ready. You can query purchases here.
 
                     presenter?.onBillingClientReady()
+
+                    if (!preferencesManager.isAdsDisabled()) {
+                        isHasDisableAdsInApp()
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeBy { preferencesManager.disableAds(it) }
+                    }
                 } else {
                     clientReady = false
                     presenter?.onBillingClientFailedToStart(billingResponseCode)
@@ -106,7 +113,7 @@ class BillingDelegate(
             //nothing to do
         } else {
             // Handle any other error codes.
-            view?.showMessage(activity.getString(R.string.error_purchase, responseCode.toString()))
+            view?.showMessage(activity?.getString(R.string.error_purchase, responseCode.toString()) ?: "Error")
         }
     }
 
@@ -131,7 +138,7 @@ class BillingDelegate(
     }, BackpressureStrategy.BUFFER)
 
     fun startPurchaseFlow(sku: String): Boolean {
-        if (clientReady) {
+        return if (clientReady) {
             val flowParams = BillingFlowParams.newBuilder()
                     .setSku(sku)
                     .setType(BillingClient.SkuType.INAPP)
@@ -139,10 +146,10 @@ class BillingDelegate(
             val responseCode = billingClient.launchBillingFlow(activity, flowParams)
             Timber.d("startPurchaseFlow responseCode $responseCode")
 
-            return responseCode == BillingClient.BillingResponse.OK
+            responseCode == BillingClient.BillingResponse.OK
         } else {
             view?.showMessage(R.string.error_billing_client_not_ready)
-            return false
+            false
         }
     }
 

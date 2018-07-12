@@ -8,5 +8,7 @@ data class FinishedLevel(
     @PrimaryKey
     val quizId: Long,
     var scpNameFilled: Boolean = false,
-    var scpNumberFilled: Boolean = false
+    var scpNumberFilled: Boolean = false,
+    var nameRedundantCharsRemoved: Boolean = false,
+    var numberRedundantCharsRemoved: Boolean = false
 )
