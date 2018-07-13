@@ -86,7 +86,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                           |  screenKey != null: ${screenKey != null}\n
                           |  screenKey == Constants.Screens.QUIZ: ${screenKey == Constants.Screens.QUIZ}\n
                           |  preferenceManager.isNeedToShowInterstitial(): ${preferenceManager.isNeedToShowInterstitial()}"""
-                            .trimIndent()
+                            .trimMargin()
                 )
                 if (!preferenceManager.isAdsDisabled()
                         && screenKey != null
