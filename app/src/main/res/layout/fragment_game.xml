@@ -8,7 +8,8 @@
     android:layout_height="match_parent"
     android:background="@color/backgroundColor"
     android:fitsSystemWindows="true"
-    tools:context=".ui.activity.MainActivity">
+    tools:context=".ui.activity.MainActivity"
+    >
 
     <ImageView
         android:id="@+id/hamburgerButton"
@@ -22,7 +23,8 @@
         android:visibility="invisible"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/levelNumberTextView"
@@ -39,7 +41,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/hamburgerButton"
-        tools:visibility="visible" />
+        tools:visibility="visible"
+        />
 
     <LinearLayout
         android:id="@+id/coinsButton"
@@ -53,14 +56,16 @@
         app:layout_constraintBottom_toBottomOf="@+id/hamburgerButton"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/hamburgerButton"
-        tools:visibility="visible">
+        tools:visibility="visible"
+        >
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/defaultMarginSmall"
             android:src="@drawable/ic_coin"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            />
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/coinsValueTextView"
@@ -69,7 +74,8 @@
             android:text="@string/zero"
             android:textColor="@android:color/black"
             app:fontFamily="@font/trixie_cyr_plain"
-            tools:text="200" />
+            tools:text="200"
+            />
 
     </LinearLayout>
 
@@ -79,17 +85,19 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         android:paddingBottom="@dimen/defaultMargin"
-        app:layout_constraintBottom_toTopOf="@+id/bottomPanelView"
+        app:layout_constraintBottom_toTopOf="@+id/keyboardScrollView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/levelNumberTextView"
-        app:layout_constraintVertical_weight="2">
+        app:layout_constraintVertical_weight="2"
+        >
 
         <LinearLayout
             android:id="@+id/chatView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <LinearLayout
                 android:id="@+id/scpView"
@@ -103,26 +111,30 @@
                 android:orientation="vertical"
                 android:padding="@dimen/defaultMargin"
                 tools:ignore="UselessParent"
-                tools:targetApi="lollipop">
+                tools:targetApi="lollipop"
+                >
 
                 <ImageView
                     android:id="@+id/imageView"
                     android:layout_width="@dimen/levelImageSizeBig"
                     android:layout_height="@dimen/levelImageSizeBig"
                     android:background="@android:color/black"
-                    tools:ignore="ContentDescription" />
+                    tools:ignore="ContentDescription"
+                    />
 
                 <LinearLayout
                     android:id="@+id/strokeView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    >
 
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="24dp">
+                        android:minHeight="24dp"
+                        >
 
                         <com.google.android.flexbox.FlexboxLayout
                             android:id="@+id/scpNumberFlexBoxLayout"
@@ -130,36 +142,42 @@
                             android:layout_height="wrap_content"
                             app:flexDirection="row"
                             app:flexWrap="wrap"
-                            app:justifyContent="center" />
+                            app:justifyContent="center"
+                            />
                     </FrameLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        >
 
                         <Space
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1" />
+                            android:layout_weight="1"
+                            />
 
                         <View
                             android:layout_width="0dp"
                             android:layout_height="1dp"
                             android:layout_weight="2"
-                            android:background="@color/stokeColor" />
+                            android:background="@color/stokeColor"
+                            />
 
                         <Space
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1" />
+                            android:layout_weight="1"
+                            />
 
                     </LinearLayout>
 
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="24dp">
+                        android:minHeight="24dp"
+                        >
 
                         <com.google.android.flexbox.FlexboxLayout
                             android:id="@+id/scpNameFlexBoxLayout"
@@ -167,7 +185,8 @@
                             android:layout_height="wrap_content"
                             app:flexDirection="row"
                             app:flexWrap="wrap"
-                            app:justifyContent="center" />
+                            app:justifyContent="center"
+                            />
                     </FrameLayout>
 
                     <View
@@ -175,7 +194,8 @@
                         android:layout_height="1dp"
                         android:layout_marginEnd="@dimen/defaultMarginSmall"
                         android:layout_marginStart="@dimen/defaultMarginSmall"
-                        android:background="@color/stokeColor" />
+                        android:background="@color/stokeColor"
+                        />
                 </LinearLayout>
 
             </LinearLayout>
@@ -184,48 +204,60 @@
                 android:id="@+id/chatMessagesView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                android:orientation="vertical"
+                />
 
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
 
-    <LinearLayout
-        android:id="@+id/bottomPanelView"
-        android:layout_width="match_parent"
+    <!--<LinearLayout-->
+    <!--android:id="@+id/bottomPanelView"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="0dp"-->
+    <!--android:orientation="vertical"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--app:layout_constraintRight_toRightOf="parent"-->
+    <!--app:layout_constraintTop_toBottomOf="@id/gameScrollView"-->
+    <!--app:layout_constraintVertical_weight="1">-->
+
+
+    <HorizontalScrollView
+        android:id="@+id/keyboardScrollView"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/adView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gameScrollView"
+        app:layout_constraintVertical_weight="1"
+        tools:background="#80ff0000"
+        >
+
+        <ru.kuchanov.scpquiz.ui.view.KeyboardView
+            android:id="@+id/keyboardView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            />
+
+    </HorizontalScrollView>
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        ads:adSize="SMART_BANNER"
+        ads:adUnitId="@string/ad_unit_id_game_screen_banner"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/gameScrollView"
-        app:layout_constraintVertical_weight="1">
+        app:layout_constraintTop_toBottomOf="@+id/keyboardScrollView"
+        tools:visibility="visible"
+        />
 
-
-        <HorizontalScrollView
-            android:id="@+id/keyboardScrollView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:fillViewport="true"
-            tools:background="#80ff0000">
-
-            <ru.kuchanov.scpquiz.ui.view.KeyboardView
-                android:id="@+id/keyboardView"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-
-        </HorizontalScrollView>
-
-        <com.google.android.gms.ads.AdView
-            android:id="@+id/adView"
-            tools:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            ads:adSize="SMART_BANNER"
-            ads:adUnitId="@string/ad_unit_id_game_screen_banner" />
-
-    </LinearLayout>
+    <!--</LinearLayout>-->
 
     <FrameLayout
         android:id="@+id/progressView"
@@ -239,13 +271,15 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        tools:visibility="visible">
+        tools:visibility="gone"
+        >
 
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:indeterminate="true" />
+            android:indeterminate="true"
+            />
 
     </FrameLayout>
 

@@ -94,9 +94,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         super.onViewCreated(view, savedInstanceState)
 
         chatDelegate = ChatDelegate(
-            chatMessagesView,
-            gameScrollView,
-            myPreferenceManager
+                chatMessagesView,
+                gameScrollView,
+                myPreferenceManager
         )
 
         keyboardView.keyPressListener = { char, charView ->
@@ -138,30 +138,35 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     override fun showImage(quiz: Quiz) {
         GlideApp
-                .with(imageView.context)
-                .load(Uri.parse("file:///android_asset/quizImages/${quiz.getImageUrl()}"))
-                .fitCenter()
-                .into(imageView)
+            .with(imageView.context)
+            .load(Uri.parse("file:///android_asset/quizImages/${quiz.getImageUrl()}"))
+            .fitCenter()
+            .into(imageView)
     }
 
     override fun animateKeyboard() {
-        keyboardScrollView.postDelayed({
-            ObjectAnimator
-                    .ofInt(keyboardScrollView, "scrollX", keyboardScrollView.right)
-                    .setDuration(500)
-                    .start()
-            val animBack = ObjectAnimator
-                    .ofInt(keyboardScrollView, "scrollX", 0)
-                    .setDuration(500)
+        keyboardScrollView?.postDelayed(
+                {
+                    keyboardScrollView?.apply {
+                        ObjectAnimator
+                            .ofInt(this, "scrollX", this.right)
+                            .setDuration(500)
+                            .start()
+                        val animBack = ObjectAnimator
+                            .ofInt(this, "scrollX", 0)
+                            .setDuration(500)
 
-            animBack.startDelay = 500
-            animBack.start()
-        }, 100)
+                        animBack.startDelay = 500
+                        animBack.start()
+                    }
+                },
+                100
+        )
     }
 
     override fun setBackgroundDark(showDark: Boolean) = root.setBackgroundResource(
-        if (showDark) R.color.backgroundColorLevelCompleted
-        else R.color.backgroundColor
+            if (showDark) R.color.backgroundColorLevelCompleted
+            else R.color.backgroundColor
     )
 
     override fun showToolbar(show: Boolean) {
@@ -204,8 +209,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         shouldIgnoreClick: () -> Boolean
     ) {
         val characterView = LayoutInflater
-                .from(flexBoxContainer.context)
-                .inflate(R.layout.view_entered_char, flexBoxContainer, false) as TextView
+            .from(flexBoxContainer.context)
+            .inflate(R.layout.view_entered_char, flexBoxContainer, false) as TextView
         characterView.text = char.toString()
         characterView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
 
@@ -237,19 +242,19 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun setKeyboardChars(characters: List<Char>) {
-        keyboardView?.postDelayed({ keyboardView.setCharacters(characters) }, 100)
+        keyboardView?.postDelayed({ keyboardView?.setCharacters(characters) }, 100)
     }
 
     override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(
-        message,
-        user,
-        R.color.textColorGrey
+            message,
+            user,
+            R.color.textColorGrey
     )
 
     override fun askForRateApp() = PreRate.init(
-        activity,
-        getString(R.string.feedback_email),
-        getString(R.string.feedback_title)
+            activity,
+            getString(R.string.feedback_email),
+            getString(R.string.feedback_title)
     ).showRateDialog()
 
     override fun clearChatMessages() = chatMessagesView.removeAllViews()
@@ -259,9 +264,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     override fun onNeedToOpenCoins() = presenter.openCoins(BitmapUtils.loadBitmapFromView(root))
 
     override fun showError(error: Throwable) = Snackbar.make(
-        root,
-        error.message ?: getString(R.string.error_unknown),
-        Snackbar.LENGTH_LONG
+            root,
+            error.message ?: getString(R.string.error_unknown),
+            Snackbar.LENGTH_LONG
     ).show()
 
     override fun showProgress(show: Boolean) {

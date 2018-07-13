@@ -1,0 +1,111 @@
+<resources>
+
+    <string name="market_url" translatable="false">market://details?id=%s</string>
+    <string name="feedback_email" translatable="false">neva.spb.rx@gmail.com</string>
+    <string name="error_unexpected" translatable="false">Unexpected error</string>
+
+    <string name="app_name">Scp Exam</string>
+    <string name="menu">Меню</string>
+    <string name="level">уровень %d</string>
+    <string name="zero" translatable="false">0</string>
+    <string name="doctor_name" translatable="false">Др. Д██ К██</string>
+    <string name="player_name" translatable="false">D-%d</string>
+    <string name="message_suggest_scp_number">Хочешь попытаться вспомнить номер этого SCP?</string>
+    <string name="message_suggest_scp_name">Хочешь попытаться вспомнить номер этого SCP?</string>
+    <string name="chat_action_next_level">Следующий SCP</string>
+    <string name="chat_action_enter_number">Я попробую</string>
+    <string name="chat_action_enter_name">Я попробую</string>
+    <string name="message_correct_give_coins">Правильно! Ты заработал %d монет</string>
+    <string name="chat_action_levels_list">Я хочу выбрать уровень</string>
+    <string name="error_unknown">Произошла неизвестная ошибка</string>
+    <string name="scp_placeholder">SCP-%s</string>
+    <string name="message_level_comleted">Очень хорошо, %s, продолжаем.</string>
+    <string name="message_enter_number_description">Чтож теперь можешь попробовать вспомнить номер этого SCP и получить %d монет.</string>
+    <string name="settings_sound">Звук</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_coins">Рептикойны</string>
+    <string name="settings_vibrate">Вибрация</string>
+    <string name="settings_share">Поделиться</string>
+    <string name="settings_privacy_policy">Политика конфиденциальности</string>
+
+    <string name="error_start_market">Не удалось запустить Play Market</string>
+    <string name="share_app_link_with_text">Попробуй классное приложение-викторину про SCP !\nhttps://play.google.com/store/apps/details?id=%s</string>
+    <string name="share_choser_text">Поделиться с помощью…</string>
+    <string name="feedback_title">Отзыв о SCP Exam</string>
+    <string name="chat_action_yes">Да</string>
+    <string name="chat_action_sure">Конечно</string>
+    <string name="monetization_action_appodeal_title">Поддержи нас </string>
+    <string name="monetization_action_appodeal_description">Посмотри рекламу и тебе начислят %d рептикойнов</string>
+    <string name="monetization_action_noads_title">Протокол \"Молчание\"</string>
+    <string name="monetization_action_noads_description">Запуск мем-агента блокирующего любое проявление рекламного агента в приложении</string>
+    <string name="coins_amount">Рептикойны: %d</string>
+    <string name="suggestion_remove_redundant_chars">Удалить лишние буквы</string>
+    <string name="message_not_enough_coins">У вас недостаточно монет. Но вы можете их заработать! Попробуйте следующие варианты:</string>
+    <string name="chat_action_watch_video">Просмотрите видеорекламу, чтобы получить %d рептикойнов</string>
+    <string name="suggestion_enter_name">Введите название SCP</string>
+    <string name="message_after_suggestion_of_name">Да! Теперь вспомнил</string>
+    <string name="message_after_suggestion_of_number">Как я мог это зыбыть</string>
+    <string name="message_correct">Правильно!</string>
+    <string name="suggestion_enter_number">Введите номер SCP</string>
+    <string name="will_show_ads_content">Сейчас будет показана реклама</string>
+    <string name="will_show_ads_title">Немного рекламы</string>
+    <string name="remove_ads">Убрать рекламу</string>
+    <string name="why_ads">Зачем реклама</string>
+    <string name="watch_ads">Посмотреть рекламу</string>
+    <string name="why_ads_content">Друзья-агенты! Мы показываем вам рекламу, чтобы  дополнительно финансировать проект. Болея за фонд так же рьяно как и вы, мы постоянно работаем над качеством. Просмотрев рекламу, вы поддерживаете проект и мотивируете нас на дальнейшую работу.</string>
+    <string name="why_ads_title">Внимание!</string>
+    <string name="levels">Уровни</string>
+    <string name="reward_not_loaded_yet">Видео еще не загрузилось</string>
+    <string name="coins_received">Вы заработали %d рептикойнов</string>
+    <string name="next_levels_will_be_soon">Поздравляем, вы прошли все уровни! Но не спешите удалять приложение - скоро будут новые!</string>
+    <string name="error_buy">Ошибка покупки. Попробуйте ещё раз</string>
+    <string name="purchase_not_valid">Не удалось валидировать покупку </string>
+    <string name="purchase_validation_google_error">Серверы Google не могут подтвердить покупку. Пожалуйста, повторите попытку позже.</string>
+    <string name="error_purchase">Ошибка покупки: %s</string>
+    <string name="ads_disabled">Реклама отключена! Ура!</string>
+    <string name="error_billing_client_connection">Ошибка при запуске клиента выставления счетов. Код ошибки: %d</string>
+    <string name="already_owned">Приобретено</string>
+    <string name="error_billing_client_not_ready">Клиент выставления счетов не готов</string>
+
+    <string-array name="intro_dialog_texts">
+        <item>Здравствуйте, %s</item>
+        <item>Мы получили ваш запрос на повышение квалификации.</item>
+        <item>Вы готовы приступить к тестированию?</item>
+    </string-array>
+
+    <string-array name="messages_level_start">
+        <item>Попытайтесь вспомнить название SCP</item>
+        <item>Скажи мне название</item>
+        <item>Можете подсказать мне название?</item>
+    </string-array>
+
+    <string-array name="messages_suggestions">
+        <item>Нужна подсказка? Можешь потратить немного рептикойнов на подсказку.</item>
+        <item>Слишком сложно? Попробуй эти опции:</item>
+        <item>Может тебе нужна подсказка?</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_remove_chars">
+        <item>– Хорошо мы убрали ненужные буквы. Попробуй теперь вспомнить</item>
+        <item>Готово!</item>
+        <item>Как пожелаешь.</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_enter_name">
+        <item>Хорошо, держи!</item>
+        <item>Готово!</item>
+        <item>Как пожелаешь.</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_enter_number">
+        <item>Хорошо, держи!</item>
+        <item>Готово!</item>
+        <item>Как пожелаешь.</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_no">
+        <item>Нет, спасибо.</item>
+        <item>Мне не нужна помощь</item>
+        <item>Может позже…</item>
+    </string-array>
+</resources>
