@@ -8,7 +8,7 @@
     <string name="menu">Menu</string>
     <string name="level">Level %d</string>
     <string name="zero" translatable="false">0</string>
-    <string name="doctor_name" translatable="false">Dr. D??? K???   </string>
+    <string name="doctor_name" translatable="false">Dr. D██ K██</string>
     <string name="player_name" translatable="false">D-%d</string>
     <string name="message_suggest_scp_number">Wanna try to remember this scp number?</string>
     <string name="message_suggest_scp_name">Wanna try to remember this scp name?</string>
@@ -30,7 +30,7 @@
 
     <string name="error_start_market">Failed to start Play Market</string>
     <string name="share_app_link_with_text">Try cool quiz app about SCPs!\nhttps://play.google.com/store/apps/details?id=%s</string>
-    <string name="share_choser_text">Share through...</string>
+    <string name="share_choser_text">Share through…</string>
     <string name="feedback_title">Review SCP Quiz</string>
     <string name="chat_action_yes">Yes</string>
     <string name="chat_action_sure">Sure</string>

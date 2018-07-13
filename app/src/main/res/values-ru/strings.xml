@@ -8,7 +8,7 @@
     <string name="menu">Меню</string>
     <string name="level">уровень %d</string>
     <string name="zero" translatable="false">0</string>
-    <string name="doctor_name" translatable="false">Др. Д??? К???</string>
+    <string name="doctor_name" translatable="false">Др. Д██ К██</string>
     <string name="player_name" translatable="false">D-%d</string>
     <string name="message_suggest_scp_number">Хочешь попытаться вспомнить номер этого SCP?</string>
     <string name="message_suggest_scp_name">Хочешь попытаться вспомнить номер этого SCP?</string>
@@ -30,7 +30,7 @@
 
     <string name="error_start_market">Не удалось запустить Play Market</string>
     <string name="share_app_link_with_text">Попробуй классное приложение-викторину про SCP !\nhttps://play.google.com/store/apps/details?id=%s</string>
-    <string name="share_choser_text">Поделиться с помощью...</string>
+    <string name="share_choser_text">Поделиться с помощью…</string>
     <string name="feedback_title">Отзыв о SCP Exam</string>
     <string name="chat_action_yes">Да</string>
     <string name="chat_action_sure">Конечно</string>

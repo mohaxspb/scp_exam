@@ -237,7 +237,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun setKeyboardChars(characters: List<Char>) {
-        keyboardView?.postDelayed({ keyboardView.setCharacters(characters) }, 100)
+        keyboardView?.postDelayed({ keyboardView?.setCharacters(characters) }, 100)
     }
 
     override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(

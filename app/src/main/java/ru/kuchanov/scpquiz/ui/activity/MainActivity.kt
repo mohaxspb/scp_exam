@@ -81,7 +81,18 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                     screenKey = command.screenKey
                     data = command.transitionData
                 }
-                if (!preferenceManager.isAdsDisabled() && screenKey != null && screenKey == Constants.Screens.QUIZ && preferenceManager.isNeedToShowInterstitial()) {
+                Timber.d(
+                        """attemptToOpenQuiz !preferenceManager.isAdsDisabled(): ${!preferenceManager.isAdsDisabled()}
+                          |  screenKey != null: ${screenKey != null}\n
+                          |  screenKey == Constants.Screens.QUIZ: ${screenKey == Constants.Screens.QUIZ}\n
+                          |  preferenceManager.isNeedToShowInterstitial(): ${preferenceManager.isNeedToShowInterstitial()}"""
+                            .trimIndent()
+                )
+                if (!preferenceManager.isAdsDisabled()
+                        && screenKey != null
+                        && screenKey == Constants.Screens.QUIZ
+                        && preferenceManager.isNeedToShowInterstitial()
+                ) {
                     showAdsDialog(data as Long)
                 } else {
                     super.applyCommand(command)
