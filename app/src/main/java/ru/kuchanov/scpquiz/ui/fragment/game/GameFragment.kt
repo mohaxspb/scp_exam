@@ -35,6 +35,7 @@ import ru.kuchanov.scpquiz.ui.view.CharacterView
 import ru.kuchanov.scpquiz.utils.AdsUtils
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
+import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
 import javax.inject.Inject
@@ -99,23 +100,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             myPreferenceManager
         )
 
-        keyboardView.keyPressListener = { charView ->
-            val isScpNameCompleted = presenter.quizLevelInfo.finishedLevel.scpNameFilled
-            val inputFlexBox = if (isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
-            addCharToFlexBox(
-                charView.char,
-                charId = charView.charId,
-                flexBoxContainer = inputFlexBox,
-                textSize = if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME) {
-                if (isScpNameCompleted) {
-                    presenter.quizLevelInfo.finishedLevel.scpNumberFilled
-                } else {
-                    presenter.quizLevelInfo.finishedLevel.scpNameFilled
-                }
-            }
-            presenter.onCharClicked(charView.char)
-            keyboardView.removeCharView(charView)
-        }
+        keyboardView.keyPressListener = { char, charId -> presenter.onCharClicked(char, charId) }
 
         coinsButton.setOnClickListener { presenter.onCoinsClicked() }
 
@@ -134,6 +119,24 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
             adView.loadAd(AdsUtils.buildAdRequest())
         }
+    }
+
+    override fun addCharToInput(char: Char, charId: Int) {
+        Timber.d("addCharToInput: $char, $charId")
+        val isScpNameCompleted = presenter.quizLevelInfo.finishedLevel.scpNameFilled
+        val inputFlexBox = if (isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
+        addCharToFlexBox(
+            char,
+            charId,
+            inputFlexBox,
+            if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME) {
+            if (isScpNameCompleted) {
+                presenter.quizLevelInfo.finishedLevel.scpNumberFilled
+            } else {
+                presenter.quizLevelInfo.finishedLevel.scpNameFilled
+            }
+        }
+        keyboardView.removeCharView(charId)
     }
 
     override fun showLevelNumber(levelNumber: Int) {
@@ -228,9 +231,14 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                 if (myPreferenceManager.isVibrationEnabled()) {
                     SystemUtils.vibrate()
                 }
+                Timber.d(
+                    """
+                    char:  $char,
+                    flexBoxContainer.indexOfChild(it): ${flexBoxContainer.indexOfChild(it)}
+                    flexBoxContainer.childCount: ${flexBoxContainer.childCount}
+                """.trimIndent())
+                //todo pass correct params
                 presenter.onCharRemoved(char, flexBoxContainer.indexOfChild(it))
-                flexBoxContainer.removeView(it)
-                keyboardView.restoreChar(charId)
             }
         }
 
@@ -242,6 +250,12 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 //        characterView.layoutParams = params
     }
 
+    override fun removeCharFromInput(char: Char, indexOfChild: Int) {
+        //todo correctly remove and add chars from input and to keyboard
+        flexBoxContainer.removeView(it)
+        keyboardView.restoreChar(charId)
+    }
+
     override fun showChatActions(chatActions: List<ChatAction>) = chatDelegate.showChatActions(chatActions)
 
     override fun removeChatAction(indexInParent: Int) = chatDelegate.removeChatAction(indexInParent)
@@ -251,7 +265,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun setKeyboardChars(characters: List<Char>) {
-        keyboardView?.postDelayed({ keyboardView?.setCharacters(characters) }, 100)
+//        keyboardView?.postDelayed({
+        keyboardView?.setCharacters(characters)
+//        }, 100)
     }
 
     override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(

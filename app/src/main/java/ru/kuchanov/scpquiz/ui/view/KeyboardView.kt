@@ -52,7 +52,7 @@ class KeyboardView @JvmOverloads constructor(
 
     private val characterViewsMap = mutableMapOf<Int, CharacterView>()
 
-    var keyPressListener: (CharacterView) -> Unit = { _ -> }
+    var keyPressListener: (Char, Int) -> Unit = { _, _ -> }
 
     init {
         Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
@@ -62,25 +62,29 @@ class KeyboardView @JvmOverloads constructor(
         setPadding(PADDING_LEFT, PADDING_TOP_BOTTOM, PADDING_LEFT, PADDING_TOP_BOTTOM)
     }
 
-    fun removeCharView(view: CharacterView) = view.apply {
-        visibility = View.INVISIBLE
-        isEnabled = false
+    fun removeCharView(charId: Int) = characterViewsMap[charId]?.let {
+        Timber.d("removeCharView: $charId")
+        it.visibility = View.INVISIBLE
+        it.isEnabled = false
     }
 
     fun addCharView(char: Char) {
         val characterView = CharacterView(context)
         characterView.char = char
 
+        flexBoxLayout.addView(characterView)
+        characterView.charId = flexBoxLayout.childCount - 1
+        characterViewsMap[characterView.charId] = characterView
+
         characterView.setOnClickListener {
             if (myPreferenceManager.isVibrationEnabled()) {
                 SystemUtils.vibrate()
             }
-            keyPressListener(it as CharacterView)
+            with(it as CharacterView) {
+                Timber.d("keyPressListener: $char/$charId")
+                keyPressListener(it.char, it.charId)
+            }
         }
-
-        flexBoxLayout.addView(characterView)
-        characterView.charId = flexBoxLayout.childCount - 1
-        characterViewsMap[characterView.charId] = characterView
 
         val params = characterView.layoutParams as FlexboxLayout.LayoutParams
         params.flexBasisPercent = .3f

@@ -398,8 +398,10 @@ class GamePresenter @Inject constructor(
                 )
     }
 
-    fun onCharClicked(char: Char) {
+    fun onCharClicked(char: Char, charId: Int) {
         Timber.d("char pressed: $char")
+
+        viewState.addCharToInput(char, charId)
 
         if (!quizLevelInfo.finishedLevel.scpNameFilled) {
             enteredName += char.toLowerCase()
@@ -413,6 +415,8 @@ class GamePresenter @Inject constructor(
 
     fun onCharRemoved(char: Char, indexOfChild: Int) {
         Timber.d("onCharRemoved: $char, $indexOfChild")
+        Timber.d("enteredName: $enteredName, enteredNumber: $enteredNumber")
+        viewState.removeCharFromInput(char, indexOfChild)
         if (!quizLevelInfo.finishedLevel.scpNameFilled) {
             enteredName.removeAt(indexOfChild)
         } else {

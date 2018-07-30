@@ -30,4 +30,6 @@ interface GameView : BaseView {
     fun clearChatMessages()
     fun askForRateApp()
     fun onNeedToShowRewardedVideo()
+    fun addCharToInput(char: Char, charId: Int)
+    fun removeCharFromInput(char: Char, indexOfChild: Int)
 }
