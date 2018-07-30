@@ -65,6 +65,7 @@ class GamePresenter @Inject constructor(
     private var periodicMessagesDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onFirstViewAttach() {
+        Timber.d("onFirstViewAttach")
         super.onFirstViewAttach()
 
         loadLevel()
@@ -398,26 +399,44 @@ class GamePresenter @Inject constructor(
                 )
     }
 
-    fun onCharClicked(char: Char) {
+    fun onCharClicked(char: Char, charId: Int) {
         Timber.d("char pressed: $char")
 
         if (!quizLevelInfo.finishedLevel.scpNameFilled) {
             enteredName += char.toLowerCase()
-            //check result
+
+            viewState.addCharToNameInput(char, charId)
+
             checkEnteredScpName()
         } else {
             enteredNumber += char.toLowerCase()
+
+            viewState.addCharToNumberInput(char, charId)
+
             checkEnteredScpNumber()
         }
     }
 
-    fun onCharRemoved(char: Char, indexOfChild: Int) {
-        Timber.d("onCharRemoved: $char, $indexOfChild")
+    fun onCharRemovedFromName(charId: Int, indexOfChild: Int) {
+        Timber.d("onCharRemoved: $charId, $indexOfChild")
+        Timber.d("enteredName: $enteredName, enteredNumber: $enteredNumber")
         if (!quizLevelInfo.finishedLevel.scpNameFilled) {
             enteredName.removeAt(indexOfChild)
         } else {
             enteredNumber.removeAt(indexOfChild)
         }
+        viewState.removeCharFromNameInput(charId, indexOfChild)
+    }
+
+    fun onCharRemovedFromNumber(charId: Int, indexOfChild: Int) {
+        Timber.d("onCharRemoved: $charId, $indexOfChild")
+        Timber.d("enteredName: $enteredName, enteredNumber: $enteredNumber")
+        if (!quizLevelInfo.finishedLevel.scpNameFilled) {
+            enteredName.removeAt(indexOfChild)
+        } else {
+            enteredNumber.removeAt(indexOfChild)
+        }
+        viewState.removeCharFromNumberInput(charId, indexOfChild)
     }
 
     private fun checkEnteredScpNumber() {

@@ -35,6 +35,7 @@ import ru.kuchanov.scpquiz.ui.view.CharacterView
 import ru.kuchanov.scpquiz.utils.AdsUtils
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
+import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
 import javax.inject.Inject
@@ -99,23 +100,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             myPreferenceManager
         )
 
-        keyboardView.keyPressListener = { charView ->
-            val isScpNameCompleted = presenter.quizLevelInfo.finishedLevel.scpNameFilled
-            val inputFlexBox = if (isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
-            addCharToFlexBox(
-                charView.char,
-                charId = charView.charId,
-                flexBoxContainer = inputFlexBox,
-                textSize = if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME) {
-                if (isScpNameCompleted) {
-                    presenter.quizLevelInfo.finishedLevel.scpNumberFilled
-                } else {
-                    presenter.quizLevelInfo.finishedLevel.scpNameFilled
-                }
-            }
-            presenter.onCharClicked(charView.char)
-            keyboardView.removeCharView(charView)
-        }
+        keyboardView.keyPressListener = { char, charId -> presenter.onCharClicked(char, charId) }
 
         coinsButton.setOnClickListener { presenter.onCoinsClicked() }
 
@@ -134,6 +119,34 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
             adView.loadAd(AdsUtils.buildAdRequest())
         }
+    }
+
+    override fun addCharToNameInput(char: Char, charId: Int) {
+        Timber.d("addCharToNameInput: $char, $charId")
+        val inputFlexBox = scpNameFlexBoxLayout
+        addCharToFlexBox(
+            char,
+            charId,
+            inputFlexBox,
+            TEXT_SIZE_NAME
+        ) {
+            presenter.quizLevelInfo.finishedLevel.scpNameFilled
+        }
+        keyboardView.removeCharView(charId)
+    }
+
+    override fun addCharToNumberInput(char: Char, charId: Int) {
+        Timber.d("addCharToNumberInput: $char, $charId")
+        val inputFlexBox = scpNumberFlexBoxLayout
+        addCharToFlexBox(
+            char,
+            charId,
+            inputFlexBox,
+            TEXT_SIZE_NUMBER
+        ) {
+            presenter.quizLevelInfo.finishedLevel.scpNumberFilled
+        }
+        keyboardView.removeCharView(charId)
     }
 
     override fun showLevelNumber(levelNumber: Int) {
@@ -228,9 +241,17 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                 if (myPreferenceManager.isVibrationEnabled()) {
                     SystemUtils.vibrate()
                 }
-                presenter.onCharRemoved(char, flexBoxContainer.indexOfChild(it))
-                flexBoxContainer.removeView(it)
-                keyboardView.restoreChar(charId)
+                Timber.d(
+                    """
+                    char: $char,
+                    flexBoxContainer.indexOfChild(it): ${flexBoxContainer.indexOfChild(it)}
+                    flexBoxContainer.childCount: ${flexBoxContainer.childCount}
+                """.trimIndent())
+                if (flexBoxContainer == scpNameFlexBoxLayout) {
+                    presenter.onCharRemovedFromName(charId, flexBoxContainer.indexOfChild(it))
+                } else {
+                    presenter.onCharRemovedFromNumber(charId, flexBoxContainer.indexOfChild(it))
+                }
             }
         }
 
@@ -242,6 +263,30 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 //        characterView.layoutParams = params
     }
 
+    override fun removeCharFromNameInput(charId: Int, indexOfChild: Int) {
+        Timber.d("removeCharFromNameInput: $charId, $indexOfChild")
+        val inputFlexBox = scpNameFlexBoxLayout
+        Timber.d("inputFlexBox: ${inputFlexBox == null}")
+        Timber.d("inputFlexBox childs: ${inputFlexBox.childCount}")
+        Timber.d("inputFlexBox childs: ${inputFlexBox.childCount}")
+        if (inputFlexBox.getChildAt(indexOfChild) != null) {
+            inputFlexBox.removeViewAt(indexOfChild)
+            keyboardView.restoreChar(charId)
+        }
+    }
+
+    override fun removeCharFromNumberInput(charId: Int, indexOfChild: Int) {
+        Timber.d("removeCharFromNameInput: $charId, $indexOfChild")
+        val inputFlexBox = scpNumberFlexBoxLayout
+        Timber.d("inputFlexBox: ${inputFlexBox == null}")
+        Timber.d("inputFlexBox childs: ${inputFlexBox.childCount}")
+        Timber.d("inputFlexBox childs: ${inputFlexBox.childCount}")
+        if (inputFlexBox.getChildAt(indexOfChild) != null) {
+            inputFlexBox.removeViewAt(indexOfChild)
+            keyboardView.restoreChar(charId)
+        }
+    }
+
     override fun showChatActions(chatActions: List<ChatAction>) = chatDelegate.showChatActions(chatActions)
 
     override fun removeChatAction(indexInParent: Int) = chatDelegate.removeChatAction(indexInParent)
@@ -251,7 +296,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun setKeyboardChars(characters: List<Char>) {
-        keyboardView?.postDelayed({ keyboardView?.setCharacters(characters) }, 100)
+        keyboardView?.setCharacters(characters)
     }
 
     override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(

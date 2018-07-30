@@ -25,9 +25,16 @@ interface GameView : BaseView {
     fun showNumber(number: List<Char>)
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onNeedToOpenSettings()
+
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onNeedToOpenCoins()
+
     fun clearChatMessages()
     fun askForRateApp()
     fun onNeedToShowRewardedVideo()
+    fun addCharToNameInput(char: Char, charId: Int)
+    fun addCharToNumberInput(char: Char, charId: Int)
+    //    fun removeCharFromInput(charId: Int, indexOfChild: Int, isScpNameCompleted:Boolean)
+    fun removeCharFromNameInput(charId: Int, indexOfChild: Int)
+    fun removeCharFromNumberInput(charId: Int, indexOfChild: Int)
 }
