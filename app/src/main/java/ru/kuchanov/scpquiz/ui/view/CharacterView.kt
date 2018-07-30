@@ -19,7 +19,11 @@ class CharacterView : AppCompatTextView {
             text = field.toString()
         }
 
+    var charId: Int = NO_ID
+
     var squareByHeight = true
+
+    var isSquare = true
 
     constructor(context: Context) : this(context, null, R.style.CharacterViewStyle)
 
@@ -43,12 +47,14 @@ class CharacterView : AppCompatTextView {
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
-        if (squareByHeight) {
-            val height = measuredHeight
-            setMeasuredDimension(height, height)
-        } else {
-            val width = measuredWidth
-            setMeasuredDimension(width, width)
+        if (isSquare) {
+            if (squareByHeight) {
+                val height = measuredHeight
+                setMeasuredDimension(height, height)
+            } else {
+                val width = measuredWidth
+                setMeasuredDimension(width, width)
+            }
         }
     }
 }
