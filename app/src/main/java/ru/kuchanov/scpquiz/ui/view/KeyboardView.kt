@@ -68,7 +68,7 @@ class KeyboardView @JvmOverloads constructor(
         it.isEnabled = false
     }
 
-    fun addCharView(char: Char) {
+    private fun addCharView(char: Char) {
         val characterView = CharacterView(context)
         characterView.char = char
 

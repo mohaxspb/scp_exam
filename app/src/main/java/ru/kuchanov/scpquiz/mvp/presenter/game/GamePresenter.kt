@@ -530,7 +530,7 @@ class GamePresenter @Inject constructor(
                 .flatMap { gameInteractor.getNumberOfPartiallyAndFullyFinishedLevels() }
                 .subscribeBy(
                     onSuccess = {
-                        Timber.d("updated!")
+                        Timber.d("finished levels updated!")
                         if (it.first == Constants.FINISHED_LEVEL_BEFORE_ASK_RATE_APP && preferences.isAlreadySuggestRateUs()) {
                             preferences.setAlreadySuggestRateUs(true)
                             viewState.askForRateApp()

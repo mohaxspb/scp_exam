@@ -56,7 +56,7 @@ class LevelsPresenter @Inject constructor(
                 }
                 .observeOn(Schedulers.io())
                 .map { pair ->
-                    Timber.d("pair.second: ${pair.second}")
+                    Timber.d("pair.second: ${pair.second.size}")
 
                     levels = LinkedList(pair.first)
 
