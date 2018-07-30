@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v7.widget.AppCompatTextView
 import android.util.AttributeSet
 import android.view.ContextThemeWrapper
+import android.view.View
 import ru.kuchanov.scpquiz.R
 
 /**
@@ -20,8 +21,6 @@ class CharacterView : AppCompatTextView {
         }
 
     var charId: Int = NO_ID
-
-    var squareByHeight = true
 
     var isSquare = true
 
@@ -44,17 +43,18 @@ class CharacterView : AppCompatTextView {
         text = char.toString()
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+    public override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
         if (isSquare) {
-            if (squareByHeight) {
-                val height = measuredHeight
-                setMeasuredDimension(height, height)
-            } else {
-                val width = measuredWidth
-                setMeasuredDimension(width, width)
-            }
+            val height = measuredHeight
+            val width = measuredWidth
+            val size = Math.max(height, width)
+
+            //from https://stackoverflow.com/a/39727439/3212712
+            val widthSpec = View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY)
+            val heightSpec = View.MeasureSpec.makeMeasureSpec(size, View.MeasureSpec.EXACTLY)
+            super.onMeasure(widthSpec, heightSpec)
         }
     }
 }
