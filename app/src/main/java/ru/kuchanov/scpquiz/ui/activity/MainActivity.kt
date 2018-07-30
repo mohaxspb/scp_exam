@@ -82,7 +82,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                     data = command.transitionData
                 }
                 Timber.d(
-                        """attemptToOpenQuiz !preferenceManager.isAdsDisabled(): ${!preferenceManager.isAdsDisabled()}
+                    """attemptToOpenQuiz !preferenceManager.isAdsDisabled(): ${!preferenceManager.isAdsDisabled()}
                           |  screenKey != null: ${screenKey != null}\n
                           |  screenKey == Constants.Screens.QUIZ: ${screenKey == Constants.Screens.QUIZ}\n
                           |  preferenceManager.isNeedToShowInterstitial(): ${preferenceManager.isNeedToShowInterstitial()}"""
@@ -92,9 +92,11 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                         && screenKey != null
                         && screenKey == Constants.Screens.QUIZ
                         && preferenceManager.isNeedToShowInterstitial()
+                        && isInterstitialLoaded()
                 ) {
                     showAdsDialog(data as Long)
                 } else {
+                    requestNewInterstitial()
                     super.applyCommand(command)
                 }
             }
