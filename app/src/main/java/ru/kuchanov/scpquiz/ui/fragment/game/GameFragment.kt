@@ -51,6 +51,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         const val TEXT_SIZE_NUMBER = 16f
 
         fun newInstance(quizId: Long): GameFragment {
+            Timber.d("newInstance: $quizId")
             val fragment = GameFragment()
             val args = Bundle()
             args.putLong(ARG_QUIZ_ID, quizId)
@@ -73,6 +74,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     @ProvidePresenter
     override fun providePresenter(): GamePresenter {
+        Timber.d("providePresenter: ${arguments?.getLong(ARG_QUIZ_ID)}")
         val presenter = scope.getInstance(GamePresenter::class.java)
         presenter.quizId = arguments?.getLong(ARG_QUIZ_ID)
                 ?: throw IllegalStateException("cant create presenter without quizId in fragment args!")
@@ -92,6 +94,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     private lateinit var chatDelegate: ChatDelegate
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Timber.d("onViewCreated")
         super.onViewCreated(view, savedInstanceState)
 
         chatDelegate = ChatDelegate(

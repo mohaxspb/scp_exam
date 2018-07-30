@@ -7,6 +7,7 @@ import toothpick.config.Module
 class GameModule : Module() {
     init {
         bind(GameInteractor::class.java).singletonInScope()
-        bind(GamePresenter::class.java).singletonInScope()
+//        bind(GamePresenter::class.java).singletonInScope()
+        bind(GamePresenter::class.java)
     }
 }
