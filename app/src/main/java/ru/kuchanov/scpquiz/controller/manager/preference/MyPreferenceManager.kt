@@ -42,7 +42,17 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun isAdsDisabled() = preferences.getBoolean(Key.ADS_DISABLED, false)
 
-    fun isAlreadySuggestRateUs()  = preferences.getBoolean(Key.SUGGEST_RATE_US, false)
+    fun isAlreadySuggestRateUs() = preferences.getBoolean(Key.SUGGEST_RATE_US, false)
 
-    fun setAlreadySuggestRateUs(alreadySuggestRateUs: Boolean) = preferences.edit().putBoolean(Key.SUGGEST_RATE_US, alreadySuggestRateUs).apply()
+    fun setAlreadySuggestRateUs(alreadySuggestRateUs: Boolean) = preferences.edit().putBoolean(
+        Key.SUGGEST_RATE_US,
+        alreadySuggestRateUs
+    ).apply()
+
+    fun getLastFinishedLevelsNum() = preferences.getLong(Key.LAST_FINISHED_LEVELS_NUM, 0)
+
+    fun setLastFinishedLevelsNum(lastFinishedLevelsNum: Long) = preferences.edit().putLong(
+        Key.LAST_FINISHED_LEVELS_NUM,
+        lastFinishedLevelsNum
+    ).apply()
 }

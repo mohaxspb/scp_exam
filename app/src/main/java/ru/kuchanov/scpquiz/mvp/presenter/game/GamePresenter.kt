@@ -535,7 +535,11 @@ class GamePresenter @Inject constructor(
                             preferences.setAlreadySuggestRateUs(true)
                             viewState.askForRateApp()
                         }
-                        if (it.first > 0 && it.first % Constants.NUM_OF_FULLY_FINISHED_LEVEL_BEFORE_SHOW_ADS == 0L) {
+                        if (it.first > 0
+                                && it.first % Constants.NUM_OF_FINISHED_LEVEL_BEFORE_SHOW_ADS == 0L
+                                && it.first != preferences.getLastFinishedLevelsNum()
+                        ) {
+                            preferences.setLastFinishedLevelsNum(it.first)
                             preferences.setNeedToShowInterstitial(true)
                         }
                     },
