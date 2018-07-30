@@ -121,20 +121,30 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         }
     }
 
-    override fun addCharToInput(char: Char, charId: Int) {
-        Timber.d("addCharToInput: $char, $charId")
-        val isScpNameCompleted = presenter.quizLevelInfo.finishedLevel.scpNameFilled
-        val inputFlexBox = if (isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
+    override fun addCharToNameInput(char: Char, charId: Int) {
+        Timber.d("addCharToNameInput: $char, $charId")
+        val inputFlexBox = scpNameFlexBoxLayout
         addCharToFlexBox(
             char,
             charId,
             inputFlexBox,
-            if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME) {
-            if (isScpNameCompleted) {
-                presenter.quizLevelInfo.finishedLevel.scpNumberFilled
-            } else {
-                presenter.quizLevelInfo.finishedLevel.scpNameFilled
-            }
+            TEXT_SIZE_NAME
+        ) {
+            presenter.quizLevelInfo.finishedLevel.scpNameFilled
+        }
+        keyboardView.removeCharView(charId)
+    }
+
+    override fun addCharToNumberInput(char: Char, charId: Int) {
+        Timber.d("addCharToNumberInput: $char, $charId")
+        val inputFlexBox = scpNumberFlexBoxLayout
+        addCharToFlexBox(
+            char,
+            charId,
+            inputFlexBox,
+            TEXT_SIZE_NUMBER
+        ) {
+            presenter.quizLevelInfo.finishedLevel.scpNumberFilled
         }
         keyboardView.removeCharView(charId)
     }
@@ -233,12 +243,15 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                 }
                 Timber.d(
                     """
-                    char:  $char,
+                    char: $char,
                     flexBoxContainer.indexOfChild(it): ${flexBoxContainer.indexOfChild(it)}
                     flexBoxContainer.childCount: ${flexBoxContainer.childCount}
                 """.trimIndent())
-                //todo pass correct params
-                presenter.onCharRemoved(char, flexBoxContainer.indexOfChild(it))
+                if (flexBoxContainer == scpNameFlexBoxLayout) {
+                    presenter.onCharRemovedFromName(charId, flexBoxContainer.indexOfChild(it))
+                } else {
+                    presenter.onCharRemovedFromNumber(charId, flexBoxContainer.indexOfChild(it))
+                }
             }
         }
 
@@ -250,10 +263,28 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 //        characterView.layoutParams = params
     }
 
-    override fun removeCharFromInput(char: Char, indexOfChild: Int) {
-        //todo correctly remove and add chars from input and to keyboard
-        flexBoxContainer.removeView(it)
-        keyboardView.restoreChar(charId)
+    override fun removeCharFromNameInput(charId: Int, indexOfChild: Int) {
+        Timber.d("removeCharFromNameInput: $charId, $indexOfChild")
+        val inputFlexBox = scpNameFlexBoxLayout
+        Timber.d("inputFlexBox: ${inputFlexBox == null}")
+        Timber.d("inputFlexBox childs: ${inputFlexBox.childCount}")
+        Timber.d("inputFlexBox childs: ${inputFlexBox.childCount}")
+        if (inputFlexBox.getChildAt(indexOfChild) != null) {
+            inputFlexBox.removeViewAt(indexOfChild)
+            keyboardView.restoreChar(charId)
+        }
+    }
+
+    override fun removeCharFromNumberInput(charId: Int, indexOfChild: Int) {
+        Timber.d("removeCharFromNameInput: $charId, $indexOfChild")
+        val inputFlexBox = scpNumberFlexBoxLayout
+        Timber.d("inputFlexBox: ${inputFlexBox == null}")
+        Timber.d("inputFlexBox childs: ${inputFlexBox.childCount}")
+        Timber.d("inputFlexBox childs: ${inputFlexBox.childCount}")
+        if (inputFlexBox.getChildAt(indexOfChild) != null) {
+            inputFlexBox.removeViewAt(indexOfChild)
+            keyboardView.restoreChar(charId)
+        }
     }
 
     override fun showChatActions(chatActions: List<ChatAction>) = chatDelegate.showChatActions(chatActions)
@@ -265,9 +296,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun setKeyboardChars(characters: List<Char>) {
-//        keyboardView?.postDelayed({
         keyboardView?.setCharacters(characters)
-//        }, 100)
     }
 
     override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(
