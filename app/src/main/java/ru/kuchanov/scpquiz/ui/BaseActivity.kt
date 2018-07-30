@@ -5,6 +5,7 @@ import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.widget.Toast
 import com.appodeal.ads.Appodeal
+import com.appodeal.ads.utils.Log
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.InterstitialAd
@@ -55,7 +56,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
      */
     abstract var navigator: Navigator
 
-    private lateinit var mInterstitialAd: InterstitialAd
+    private lateinit var interstitialAd: InterstitialAd
 
     override fun onResumeFragments() {
         super.onResumeFragments()
@@ -120,20 +121,18 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     private fun initAds() {
         MobileAds.initialize(applicationContext, getString(R.string.ads_app_id))
 
-        mInterstitialAd = InterstitialAd(this)
-        mInterstitialAd.adUnitId = getString(R.string.ad_unit_id_interstitial)
+        interstitialAd = InterstitialAd(this)
+        interstitialAd.adUnitId = getString(R.string.ad_unit_id_interstitial)
 
-        if (!mInterstitialAd.isLoaded) {
+        if (!interstitialAd.isLoaded) {
             requestNewInterstitial()
         }
 
         //appodeal
         Appodeal.disableLocationPermissionCheck()
-        Appodeal.disableWriteExternalStoragePermissionCheck();
-        if (BuildConfig.DEBUG) {
-            Appodeal.setTesting(true)
-            //            Appodeal.setLogLevel(Log.LogLevel.debug);
-        }
+        Appodeal.disableWriteExternalStoragePermissionCheck()
+        Appodeal.setTesting(BuildConfig.DEBUG)
+        Appodeal.setLogLevel(if (BuildConfig.DEBUG) Log.LogLevel.debug else Log.LogLevel.none);
 //        Appodeal.disableNetwork(this, "vungle")
 //        Appodeal.disableNetwork(this, "facebook");
         Appodeal.initialize(
@@ -144,33 +143,40 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 
         Appodeal.muteVideosIfCallsMuted(true)
         Appodeal.setRewardedVideoCallbacks(object : MyRewardedVideoCallbacks() {
-            override fun onRewardedVideoFinished(i: Int, s: String?) {
-                super.onRewardedVideoFinished(i, s)
-                Timber.d("onRewardedVideoFinished: $i, $s")
+            override fun onRewardedVideoFinished(p0: Int, p1: String?) {
+                super.onRewardedVideoFinished(p0, p1)
+                Timber.d("onRewardedVideoFinished: $p0, $p1")
                 presenter.onRewardedVideoFinished()
             }
         })
     }
 
     fun showInterstitial(quizId: Long) {
-        mInterstitialAd.adListener = object : AdListener() {
+        interstitialAd.adListener = object : AdListener() {
             override fun onAdClosed() {
                 super.onAdClosed()
                 preferenceManager.setNeedToShowInterstitial(false)
                 router.replaceScreen(Constants.Screens.QUIZ, quizId)
             }
         }
-        mInterstitialAd.show()
+        interstitialAd.show()
     }
 
-    private fun requestNewInterstitial() {
-        Timber.d("requestNewInterstitial loading/loaded: %s/%s", mInterstitialAd.isLoading, mInterstitialAd.isLoaded)
-        if (mInterstitialAd.isLoading || mInterstitialAd.isLoaded) {
-            Timber.d("loading already in progress or already done")
+    protected fun requestNewInterstitial() {
+        Timber.d(
+            "requestNewInterstitial loading/loaded/disabled: %s/%s/%s",
+            interstitialAd.isLoading,
+            interstitialAd.isLoaded,
+            preferenceManager.isAdsDisabled()
+        )
+        if (interstitialAd.isLoading || interstitialAd.isLoaded || preferenceManager.isAdsDisabled()) {
+            Timber.d("loading already in progress or already done or disabled")
         } else {
-            mInterstitialAd.loadAd(AdsUtils.buildAdRequest())
+            interstitialAd.loadAd(AdsUtils.buildAdRequest())
         }
     }
+
+    protected fun isInterstitialLoaded() = interstitialAd.isLoaded
 
     override fun showMessage(message: String) = Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 
