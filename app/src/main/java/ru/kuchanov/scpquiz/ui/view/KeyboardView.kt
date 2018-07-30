@@ -2,6 +2,7 @@ package ru.kuchanov.scpquiz.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import android.widget.LinearLayout
 import com.google.android.flexbox.FlexboxLayout
 import kotlinx.android.synthetic.main.view_keyboard.view.*
@@ -49,7 +50,9 @@ class KeyboardView @JvmOverloads constructor(
 
     private var characters = mutableListOf<Char>()
 
-    var keyPressListener: (Char, CharacterView) -> Unit = { _, _ -> }
+    private val characterViewsMap = mutableMapOf<Int, CharacterView>()
+
+    var keyPressListener: (CharacterView) -> Unit = { _ -> }
 
     init {
         Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
@@ -59,9 +62,9 @@ class KeyboardView @JvmOverloads constructor(
         setPadding(PADDING_LEFT, PADDING_TOP_BOTTOM, PADDING_LEFT, PADDING_TOP_BOTTOM)
     }
 
-    fun removeCharView(view: CharacterView) {
-        flexBoxLayout.removeView(view)
-        characters
+    fun removeCharView(view: CharacterView) = view.apply {
+        visibility = View.INVISIBLE
+        isEnabled = false
     }
 
     fun addCharView(char: Char) {
@@ -72,10 +75,12 @@ class KeyboardView @JvmOverloads constructor(
             if (myPreferenceManager.isVibrationEnabled()) {
                 SystemUtils.vibrate()
             }
-            keyPressListener((it as CharacterView).char, it)
+            keyPressListener(it as CharacterView)
         }
 
         flexBoxLayout.addView(characterView)
+        characterView.charId = flexBoxLayout.childCount - 1
+        characterViewsMap[characterView.charId] = characterView
 
         val params = characterView.layoutParams as FlexboxLayout.LayoutParams
         params.flexBasisPercent = .3f
@@ -87,6 +92,12 @@ class KeyboardView @JvmOverloads constructor(
         this.characters.clear()
         this.characters.addAll(characters)
         flexBoxLayout.removeAllViews()
+        characterViewsMap.clear()
         this.characters.forEach { addCharView(it) }
+    }
+
+    fun restoreChar(charId: Int) = characterViewsMap[charId]?.apply {
+        visibility = View.VISIBLE
+        isEnabled = true
     }
 }

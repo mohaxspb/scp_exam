@@ -5,11 +5,10 @@ import android.animation.ValueAnimator
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.v4.content.ContextCompat
 import android.util.TypedValue
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
-import android.widget.TextView
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.arellomobile.mvp.presenter.ProvidePresenterTag
@@ -32,6 +31,7 @@ import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.ChatDelegate
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.ui.utils.getImageUrl
+import ru.kuchanov.scpquiz.ui.view.CharacterView
 import ru.kuchanov.scpquiz.utils.AdsUtils
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
@@ -94,22 +94,26 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         super.onViewCreated(view, savedInstanceState)
 
         chatDelegate = ChatDelegate(
-                chatMessagesView,
-                gameScrollView,
-                myPreferenceManager
+            chatMessagesView,
+            gameScrollView,
+            myPreferenceManager
         )
 
-        keyboardView.keyPressListener = { char, charView ->
+        keyboardView.keyPressListener = { charView ->
             val isScpNameCompleted = presenter.quizLevelInfo.finishedLevel.scpNameFilled
             val inputFlexBox = if (isScpNameCompleted) scpNumberFlexBoxLayout else scpNameFlexBoxLayout
-            addCharToFlexBox(char, inputFlexBox, if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME) {
+            addCharToFlexBox(
+                charView.char,
+                charId = charView.charId,
+                flexBoxContainer = inputFlexBox,
+                textSize = if (isScpNameCompleted) TEXT_SIZE_NUMBER else TEXT_SIZE_NAME) {
                 if (isScpNameCompleted) {
                     presenter.quizLevelInfo.finishedLevel.scpNumberFilled
                 } else {
                     presenter.quizLevelInfo.finishedLevel.scpNameFilled
                 }
             }
-            presenter.onCharClicked(char)
+            presenter.onCharClicked(charView.char)
             keyboardView.removeCharView(charView)
         }
 
@@ -138,35 +142,35 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     override fun showImage(quiz: Quiz) {
         GlideApp
-            .with(imageView.context)
-            .load(Uri.parse("file:///android_asset/quizImages/${quiz.getImageUrl()}"))
-            .fitCenter()
-            .into(imageView)
+                .with(imageView.context)
+                .load(Uri.parse("file:///android_asset/quizImages/${quiz.getImageUrl()}"))
+                .fitCenter()
+                .into(imageView)
     }
 
     override fun animateKeyboard() {
         keyboardScrollView?.postDelayed(
-                {
-                    keyboardScrollView?.apply {
-                        ObjectAnimator
+            {
+                keyboardScrollView?.apply {
+                    ObjectAnimator
                             .ofInt(this, "scrollX", this.right)
                             .setDuration(500)
                             .start()
-                        val animBack = ObjectAnimator
+                    val animBack = ObjectAnimator
                             .ofInt(this, "scrollX", 0)
                             .setDuration(500)
 
-                        animBack.startDelay = 500
-                        animBack.start()
-                    }
-                },
-                100
+                    animBack.startDelay = 500
+                    animBack.start()
+                }
+            },
+            100
         )
     }
 
     override fun setBackgroundDark(showDark: Boolean) = root.setBackgroundResource(
-            if (showDark) R.color.backgroundColorLevelCompleted
-            else R.color.backgroundColor
+        if (showDark) R.color.backgroundColorLevelCompleted
+        else R.color.backgroundColor
     )
 
     override fun showToolbar(show: Boolean) {
@@ -186,14 +190,17 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     override fun showNumber(number: List<Char>) = with(scpNumberFlexBoxLayout) {
         removeAllViews()
         number.forEach {
-            addCharToFlexBox(it, this, TEXT_SIZE_NUMBER) { presenter.quizLevelInfo.finishedLevel.scpNumberFilled }
+            addCharToFlexBox(
+                char = it,
+                flexBoxContainer = this,
+                textSize = TEXT_SIZE_NUMBER) { presenter.quizLevelInfo.finishedLevel.scpNumberFilled }
         }
     }
 
     override fun showName(name: List<Char>) = with(scpNameFlexBoxLayout) {
         removeAllViews()
         name.forEach { char ->
-            addCharToFlexBox(char, this) { presenter.quizLevelInfo.finishedLevel.scpNameFilled }
+            addCharToFlexBox(char, flexBoxContainer = this) { presenter.quizLevelInfo.finishedLevel.scpNameFilled }
         }
     }
 
@@ -204,15 +211,17 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     private fun addCharToFlexBox(
         char: Char,
+        charId: Int = View.NO_ID,
         flexBoxContainer: FlexboxLayout,
         textSize: Float = TEXT_SIZE_NAME,
         shouldIgnoreClick: () -> Boolean
     ) {
-        val characterView = LayoutInflater
-            .from(flexBoxContainer.context)
-            .inflate(R.layout.view_entered_char, flexBoxContainer, false) as TextView
+        val characterView = CharacterView(flexBoxContainer.context)
+        characterView.isSquare = false
         characterView.text = char.toString()
         characterView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
+        characterView.background = ContextCompat.getDrawable(flexBoxContainer.context, android.R.color.transparent)
+        characterView.charId = charId
 
         characterView.setOnClickListener {
             if (!shouldIgnoreClick.invoke()) {
@@ -221,7 +230,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                 }
                 presenter.onCharRemoved(char, flexBoxContainer.indexOfChild(it))
                 flexBoxContainer.removeView(it)
-                keyboardView.addCharView((it as TextView).text[0])
+                keyboardView.restoreChar(charId)
             }
         }
 
@@ -246,15 +255,15 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(
-            message,
-            user,
-            R.color.textColorGrey
+        message,
+        user,
+        R.color.textColorGrey
     )
 
     override fun askForRateApp() = PreRate.init(
-            activity,
-            getString(R.string.feedback_email),
-            getString(R.string.feedback_title)
+        activity,
+        getString(R.string.feedback_email),
+        getString(R.string.feedback_title)
     ).showRateDialog()
 
     override fun clearChatMessages() = chatMessagesView.removeAllViews()
@@ -264,9 +273,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     override fun onNeedToOpenCoins() = presenter.openCoins(BitmapUtils.loadBitmapFromView(root))
 
     override fun showError(error: Throwable) = Snackbar.make(
-            root,
-            error.message ?: getString(R.string.error_unknown),
-            Snackbar.LENGTH_LONG
+        root,
+        error.message ?: getString(R.string.error_unknown),
+        Snackbar.LENGTH_LONG
     ).show()
 
     override fun showProgress(show: Boolean) {
