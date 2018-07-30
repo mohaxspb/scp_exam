@@ -61,7 +61,7 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
             0 -> bottomImageView
             1 -> middleImageView
             2 -> topImageView
-            else -> throw IllegalStateException("unexpected image")
+            else -> return
         }
 
         val progressAnimator = ObjectAnimator.ofFloat(

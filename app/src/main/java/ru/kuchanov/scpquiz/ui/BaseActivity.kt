@@ -153,8 +153,8 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 
     fun showInterstitial(quizId: Long) {
         interstitialAd.adListener = object : AdListener() {
-            override fun onAdClosed() {
-                super.onAdClosed()
+            override fun onAdOpened() {
+                super.onAdOpened()
                 preferenceManager.setNeedToShowInterstitial(false)
                 router.replaceScreen(Constants.Screens.QUIZ, quizId)
             }

@@ -531,9 +531,11 @@ class GamePresenter @Inject constructor(
                 .subscribeBy(
                     onSuccess = {
                         Timber.d("updated!")
-                        if (it.first == Constants.FINISHED_LEVEL_BEFORE_ASK_RATE_APP) {
+                        if (it.first == Constants.FINISHED_LEVEL_BEFORE_ASK_RATE_APP && preferences.isAlreadySuggestRateUs()) {
+                            preferences.setAlreadySuggestRateUs(true)
                             viewState.askForRateApp()
-                        } else if (it.second > 0 && it.second % Constants.NUM_OF_FULLY_FINISHED_LEVEL_BEFORE_SHOW_ADS == 0L) {
+                        }
+                        if (it.first > 0 && it.first % Constants.NUM_OF_FULLY_FINISHED_LEVEL_BEFORE_SHOW_ADS == 0L) {
                             preferences.setNeedToShowInterstitial(true)
                         }
                     },
