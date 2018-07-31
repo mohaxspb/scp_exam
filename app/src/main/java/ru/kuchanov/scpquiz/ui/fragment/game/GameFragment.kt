@@ -109,6 +109,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
         hamburgerButton.setOnClickListener { presenter.onHamburgerMenuClicked() }
 
+        helpButton.setOnClickListener { presenter.onHelpClicked() }
+
         levelNumberTextView.setOnClickListener { presenter.onLevelsClicked() }
 
         //ads
@@ -194,6 +196,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         hamburgerButton.visibility = visibility
         levelNumberTextView.visibility = visibility
         coinsButton.visibility = visibility
+        helpButton.visibility = visibility
     }
 
     override fun showCoins(coins: Int) {

@@ -809,4 +809,13 @@ class GamePresenter @Inject constructor(
 
         periodicMessagesDisposable.dispose()
     }
+
+    fun onHelpClicked() {
+        val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestions)
+        viewState.showChatMessage(
+            suggestionsMessages[Random().nextInt(suggestionsMessages.size)],
+            quizLevelInfo.doctor
+        )
+        viewState.showChatActions(generateSuggestions())
+    }
 }
