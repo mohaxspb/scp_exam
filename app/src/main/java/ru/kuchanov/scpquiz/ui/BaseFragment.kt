@@ -58,8 +58,6 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-//        applyStatusBarTranslucence(translucent)
-
         return inflater.inflate(getLayoutResId(), container, false)
     }
 
@@ -71,9 +69,17 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
         applyStatusBarTranslucence(translucent)
     }
 
-    override fun showMessage(message: String) = Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
+    override fun showMessage(message: String) {
+        if (isAdded) {
+            activity?.let { Toast.makeText(it, message, Toast.LENGTH_LONG).show() }
+        }
+    }
 
-    override fun showMessage(message: Int) = showMessage(getString(message))
+    override fun showMessage(message: Int) {
+        if (isAdded) {
+            showMessage(getString(message))
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -84,12 +90,10 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             val w = activity!!.window
             if (translucent) {
-//                if ((w.attributes.flags and WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION) == 0) {
-                    w.setFlags(
-                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-                    )
-//                }
+                w.setFlags(
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                )
             } else {
                 w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
             }
