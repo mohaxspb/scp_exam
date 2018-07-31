@@ -11,7 +11,7 @@
     <string name="doctor_name" translatable="false">Др. Д██ К██</string>
     <string name="player_name" translatable="false">D-%d</string>
     <string name="message_suggest_scp_number">Хочешь попытаться вспомнить номер этого SCP?</string>
-    <string name="message_suggest_scp_name">Хочешь попытаться вспомнить номер этого SCP?</string>
+    <string name="message_suggest_scp_name">Хочешь попытаться вспомнить название этого SCP?</string>
     <string name="chat_action_next_level">Следующий SCP</string>
     <string name="chat_action_enter_number">Я попробую</string>
     <string name="chat_action_enter_name">Я попробую</string>
