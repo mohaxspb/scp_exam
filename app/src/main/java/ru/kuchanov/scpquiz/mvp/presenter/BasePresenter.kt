@@ -37,6 +37,7 @@ abstract class BasePresenter<V : BaseView>(
     }
 
     fun onRewardedVideoFinished() {
+        Timber.d("onRewardedVideoFinished")
         Completable.fromAction {
             with(appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet()) {
                 score += Constants.REWARD_VIDEO_ADS

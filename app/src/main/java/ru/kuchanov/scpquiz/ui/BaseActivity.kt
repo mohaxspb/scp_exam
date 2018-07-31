@@ -131,21 +131,28 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         //appodeal
         Appodeal.disableLocationPermissionCheck()
         Appodeal.disableWriteExternalStoragePermissionCheck()
-        Appodeal.setTesting(BuildConfig.DEBUG)
-        Appodeal.setLogLevel(if (BuildConfig.DEBUG) Log.LogLevel.debug else Log.LogLevel.none);
+//        Appodeal.setTesting(BuildConfig.DEBUG)
+//        Appodeal.setLogLevel(if (BuildConfig.DEBUG) Log.LogLevel.debug else Log.LogLevel.none);
 //        Appodeal.disableNetwork(this, "vungle")
 //        Appodeal.disableNetwork(this, "facebook");
         Appodeal.initialize(
             this,
             getString(R.string.appodeal_app_key),
-            Appodeal.REWARDED_VIDEO
+            Appodeal.REWARDED_VIDEO,
+            true
         )
 
         Appodeal.muteVideosIfCallsMuted(true)
         Appodeal.setRewardedVideoCallbacks(object : MyRewardedVideoCallbacks() {
-            override fun onRewardedVideoFinished(p0: Int, p1: String?) {
-                super.onRewardedVideoFinished(p0, p1)
-                Timber.d("onRewardedVideoFinished: $p0, $p1")
+//            override fun onRewardedVideoFinished(p0: Double, p1: String?) {
+//                super.onRewardedVideoFinished(p0, p1)
+//                Timber.d("onRewardedVideoFinished: $p0, $p1")
+//                presenter.onRewardedVideoFinished()
+//            }
+
+            override fun onRewardedVideoClosed(p0: Boolean) {
+                super.onRewardedVideoClosed(p0)
+                Timber.d("onRewardedVideoClosed: $p0")
                 presenter.onRewardedVideoFinished()
             }
         })

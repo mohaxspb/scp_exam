@@ -50,7 +50,7 @@ class MonetizationPresenter @Inject constructor(
     fun loadInAppsToBuy() = billingDelegate?.startConnection()
 
     fun onBillingClientReady() = billingDelegate?.apply {
-        Flowable.zip(
+        Flowable.combineLatest(
             appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
             this.loadInAppsToBuy(),
             isHasDisableAdsInApp(),
