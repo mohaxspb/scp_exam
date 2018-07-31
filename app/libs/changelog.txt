@@ -1,15 +1,105 @@
-2.1.11 (March 15, 2018)
+2.4.4 (Jun 28, 2018)
+    Facebook updated to 4.28.2
+    IronSource updated to 6.7.9.1
 
-    Ogury became mandatory
+2.4.3 (Jun 7, 2018)
+    Mopub updated to 5.0.0
+    myTarget updated to 5.1.0
+    Adcolony updated to 3.3.4
+    Tapjoy updated to 11.12.2
+    Add getPredictedEcpm method
+    Remove LoaderActivity
 
+2.4.2 (May 22, 2018)
+    Fixed Banner ads showing on load
 
-2.1.10 (February 28, 2018)
+2.4.1 (May 19, 2018)
+    Support General Data Protection Regulation (GDPR) compliant
+    Mobvista updated to 8.11.0
+    Startapp updated to 3.8.4
+    Inmobi updated to 7.1.0
+    Applovin update to 8.0.0
+    Chartboost updated to 7.2.0
+    Vungle updated to 6.2.5
+    Flurry updated to 10.1.0
+    Appnext removed
+    Avocarrot removed
+    Millennial Media removed
 
-    Fix issue with checking Mobvista classes
+2.3.3 (May 17, 2018)
+    Support General Data Protection Regulation (GDPR) compliant
+    Mobvista updated to 8.11.0
+    Startapp updated to 3.8.4
+    Inmobi updated to 7.1.0
+    Applovin update to 8.0.0
+    Chartboost updated to 7.2.0
+    Vungle updated to 6.2.5
+    Flurry updated to 10.1.0
+    Appnext removed
+    Avocarrot removed
+    Millennial Media removed
 
+2.3.2 (May 7, 2018)
+    Fix MaxDex build (If you're not using MultiDex in your application and encountering 65K methods limit)
+    Support new D8 compiler
+
+2.3.1 (April 27, 2018)
+    Mobvista updated to 8.9.0
+    Add force test mode support
+    Ogury is no longer optional
+    Support play services version 12.0.0 and above (for Admob rewarded video)
+
+2.4.0 (April 28, 2018)
+    Parallel bidding support
+    Applovin updated to 7.8.5
+
+2.3.0 (February 27, 2018)
+    Segment V2 support
+    Vungle updated to 5.3.2
+    Unity ads updated to 2.1.2
+    Tapjoy updated to 11.11.1
+    myTarget updated to 4.7.2
+    Ironsource updated to 6.7.6
+    Chartboost updated to 7.0.1
+    Appnext updated to 2.1.1.436
+    Applovin updated to 7.7.0
+    Yandex metrica updated to 2.80
+    Startapp updated to 3.6.9
+    Inmobi updated to 7.0.2
+    Flurry updated to 8.2.0
+    Adcolony updated to 3.3.0
+    Fixed some issues
+
+2.2.3 (February 13, 2018)
+    Fix loading assets in Native Ad
+    Fix permission check in Native Ad
+
+2.2.2 (January 22, 2018)
+    NativeAd fixes
+
+2.2.1 (December 27, 2017)
+    Yandex Metrica updated to 2.78
+    Yandex Mobile Ads SDK updated to 2.62
+    Vungle updated to 5.3.0
+    Facebook Audience Network updated to 4.27.0
+    Add AOL api integration (banner and interstitial)
+
+2.2.0 (December 11, 2017)
+    NativeAd integration changed
+    MREC ad type is deprecated, should use NativeAd instead
+    Startapp updated to 3.6.7
+    Inmobi updated to 6.2.4
+    Yandex Metrica updated to 2.76
+    Yandex Mobile Ads SDK updated to 2.61
+    Mobvista updated to 8.3.7
+    Applovin updated to 7.5.0
+    Chartboost updated to 7.0.0
+    Facebook Audience Network updated to 4.26.1
+    IronSource updated to 6.7.3
+    myTarget updated to 4.6.19
+    Bug fixes
 
 2.1.9 (November 30, 2017)
-
     Updating com.appodeal.ads.InterstitialActivity and com.appodeal.ads.VideoActivity in AndroidManifest
     Adding Mobvista support (Interstitial, Rewarded videos), add new activities to AndroidManifest, update ProGuard
     Adding support for Tapjoy skippable videos
@@ -18,8 +108,7 @@
     Updating Adcolony to 3.2.1, update ProGuard
     Updating Facebook to 4.26.1
     Updating IronSource to 6.7.3, update ProGuard
-
-
+    
 2.1.7 (October 26, 2017)
 
     Improving Admob mediation algorithm
