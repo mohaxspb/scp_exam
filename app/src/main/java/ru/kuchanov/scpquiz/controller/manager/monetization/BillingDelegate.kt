@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.controller.manager.monetization
 
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import com.android.billingclient.api.*
 import io.reactivex.BackpressureStrategy
@@ -33,6 +34,9 @@ class BillingDelegate(
 
     @Inject
     lateinit var apiClient: ApiClient
+
+    @Inject
+    lateinit var context: Context
 
     private var billingClient: BillingClient = BillingClient.newBuilder(activity!!).setListener(this).build()
 
@@ -113,7 +117,7 @@ class BillingDelegate(
             //nothing to do
         } else {
             // Handle any other error codes.
-            view?.showMessage(activity?.getString(R.string.error_purchase, responseCode.toString()) ?: "Error")
+            view?.showMessage(context.getString(R.string.error_purchase, responseCode.toString()) ?: "Error")
         }
     }
 

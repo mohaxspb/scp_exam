@@ -11,7 +11,7 @@
     <string name="doctor_name" translatable="false">Др. Д██ К██</string>
     <string name="player_name" translatable="false">D-%d</string>
     <string name="message_suggest_scp_number">Хочешь попытаться вспомнить номер этого SCP?</string>
-    <string name="message_suggest_scp_name">Хочешь попытаться вспомнить номер этого SCP?</string>
+    <string name="message_suggest_scp_name">Хочешь попытаться вспомнить название этого SCP?</string>
     <string name="chat_action_next_level">Следующий SCP</string>
     <string name="chat_action_enter_number">Я попробую</string>
     <string name="chat_action_enter_name">Я попробую</string>
@@ -66,6 +66,9 @@
     <string name="error_billing_client_connection">Ошибка при запуске клиента выставления счетов. Код ошибки: %d</string>
     <string name="already_owned">Приобретено</string>
     <string name="error_billing_client_not_ready">Клиент выставления счетов не готов</string>
+    <string name="message_choose_name_or_number">Хотите сначала назвать имя или номер?</string>
+    <string name="chat_action_want_to_enter_number">Я выбираю номер!</string>
+    <string name="chat_action_want_to_enter_name">Начнём с имени.</string>
 
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>

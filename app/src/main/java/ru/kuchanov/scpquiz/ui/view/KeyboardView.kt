@@ -36,6 +36,7 @@ class KeyboardView @JvmOverloads constructor(
                 Timber.d("availableChars: $availableChars")
                 val topBorder = if (availableChars.size > charsToAddCount) charsToAddCount else availableChars.size
                 chars.addAll(availableChars.subList(0, topBorder))
+                chars.shuffle()
                 Timber.d("chars.size: ${chars.size}")
             }
             return when {

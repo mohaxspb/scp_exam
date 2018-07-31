@@ -66,6 +66,9 @@
     <string name="error_billing_client_connection">Error while start billing client. Error code: %d</string>
     <string name="already_owned">Purchased</string>
     <string name="error_billing_client_not_ready">Billing client not ready</string>
+    <string name="message_choose_name_or_number">Do you want to tell me it\'s name or number?</string>
+    <string name="chat_action_want_to_enter_number">I choose number!</string>
+    <string name="chat_action_want_to_enter_name">I want to tell name first</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>
