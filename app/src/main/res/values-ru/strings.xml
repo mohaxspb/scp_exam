@@ -34,7 +34,7 @@
     <string name="feedback_title">Отзыв о SCP Exam</string>
     <string name="chat_action_yes">Да</string>
     <string name="chat_action_sure">Конечно</string>
-    <string name="monetization_action_appodeal_title">Поддержи нас </string>
+    <string name="monetization_action_appodeal_title">Поддержи нас</string>
     <string name="monetization_action_appodeal_description">Посмотри рекламу и тебе начислят %d рептикойнов</string>
     <string name="monetization_action_noads_title">Протокол \"Молчание\"</string>
     <string name="monetization_action_noads_description">Запуск мем-агента блокирующего любое проявление рекламного агента в приложении</string>

@@ -34,7 +34,7 @@
     <string name="feedback_title">Review SCP Quiz</string>
     <string name="chat_action_yes">Yes</string>
     <string name="chat_action_sure">Sure</string>
-    <string name="monetization_action_appodeal_title">Vote for us</string>
+    <string name="monetization_action_appodeal_title">Support us</string>
     <string name="monetization_action_appodeal_description">Look at the ads and you will be credited with %d repticoins</string>
     <string name="monetization_action_noads_title">\"Silence\" Protocol</string>
     <string name="monetization_action_noads_description">Running a meme agent blocking any manifestation of the advertising agent in the application</string>
