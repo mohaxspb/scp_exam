@@ -30,25 +30,24 @@ class AppModule(context: Context) : Module() {
         bind(MyPreferenceManager::class.java).singletonInScope()
         //database
         bind(AppDatabase::class.java).toInstance(
-            Room.databaseBuilder(
-                context,
-                AppDatabase::class.java,
-                "database"
-            )
-                    //todo create migrations if need
-                    .fallbackToDestructiveMigration()
-                    .build()
+                Room.databaseBuilder(
+                        context,
+                        AppDatabase::class.java,
+                        "database"
+                )
+                        //todo create migrations if need
+                        .fallbackToDestructiveMigration()
+                        .build()
         )
 
         //models converter
         bind(QuizConverter::class.java).singletonInScope()
 
         //json
-        bind(Moshi::class.java).toInstance(
-            Moshi.Builder()
-                    .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
-                    .build()
-        )
+        val moshi = Moshi.Builder()
+                .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
+                .build()
+        bind(Moshi::class.java).toInstance(moshi)
 
         //routing
         val cicerone: Cicerone<ScpRouter> = Cicerone.create(ScpRouter())
@@ -59,18 +58,18 @@ class AppModule(context: Context) : Module() {
         //api
         val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(
-                    HttpLoggingInterceptor { log -> Timber.d(log) }
-                            .setLevel(HttpLoggingInterceptor.Level.BODY)
+                        HttpLoggingInterceptor { log -> Timber.d(log) }
+                                .setLevel(HttpLoggingInterceptor.Level.BODY)
                 )
                 .build()
 
         bind(Retrofit::class.java).toInstance(
-            Retrofit.Builder()
-                    .baseUrl(BuildConfig.VPS_API_URL)
-                    .addConverterFactory(MoshiConverterFactory.create())
-                    .client(okHttpClient)
-                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                    .build()
+                Retrofit.Builder()
+                        .baseUrl(BuildConfig.VPS_API_URL)
+                        .addConverterFactory(MoshiConverterFactory.create(moshi))
+                        .client(okHttpClient)
+                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                        .build()
         )
         bind(ApiClient::class.java).singletonInScope()
     }

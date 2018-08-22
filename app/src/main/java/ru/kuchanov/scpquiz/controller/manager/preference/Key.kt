@@ -12,4 +12,5 @@ object Key {
     const val ADS_DISABLED = "ADS_DISABLED"
     const val SUGGEST_RATE_US = "SUGGEST_RATE_US"
     const val LAST_FINISHED_LEVELS_NUM = "LAST_FINISHED_LEVELS_NUM"
+    const val ACCESS_TOKEN = "ACCESS_TOKEN"
 }

@@ -153,6 +153,8 @@ class EnterPresenter @Inject constructor(
                     },
                     onError = Timber::e
                 )
+
+
     }
 
     private fun readProgressPhrases() {

@@ -44,15 +44,19 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun isAlreadySuggestRateUs() = preferences.getBoolean(Key.SUGGEST_RATE_US, false)
 
+    fun getAccessToken() = preferences.getString(Key.ACCESS_TOKEN, null)
+
+    fun setAccessToken(accessToken: String) = preferences.edit().putString(Key.ACCESS_TOKEN, accessToken).apply()
+
     fun setAlreadySuggestRateUs(alreadySuggestRateUs: Boolean) = preferences.edit().putBoolean(
-        Key.SUGGEST_RATE_US,
-        alreadySuggestRateUs
+            Key.SUGGEST_RATE_US,
+            alreadySuggestRateUs
     ).apply()
 
     fun getLastFinishedLevelsNum() = preferences.getLong(Key.LAST_FINISHED_LEVELS_NUM, 0)
 
     fun setLastFinishedLevelsNum(lastFinishedLevelsNum: Long) = preferences.edit().putLong(
-        Key.LAST_FINISHED_LEVELS_NUM,
-        lastFinishedLevelsNum
+            Key.LAST_FINISHED_LEVELS_NUM,
+            lastFinishedLevelsNum
     ).apply()
 }
