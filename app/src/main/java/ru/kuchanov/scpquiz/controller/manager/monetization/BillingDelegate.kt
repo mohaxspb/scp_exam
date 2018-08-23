@@ -159,7 +159,7 @@ class BillingDelegate(
 
     fun isHasDisableAdsInApp(): Flowable<Boolean> = Flowable.fromCallable { billingClient.queryPurchases(BillingClient.SkuType.INAPP) }
             .flatMap { purchasesResult ->
-                val disableAdsInApp = purchasesResult.purchasesList.firstOrNull { it.sku == Constants.SKU_INAPP_DISABLE_ADS }
+                val disableAdsInApp = purchasesResult.purchasesList?.firstOrNull { it.sku == Constants.SKU_INAPP_DISABLE_ADS }
                 if (disableAdsInApp == null) {
                     Flowable.just(false)
                 } else {

@@ -319,9 +319,13 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     override fun clearChatMessages() = chatMessagesView.removeAllViews()
 
-    override fun onNeedToOpenSettings() = presenter.openSettings(BitmapUtils.loadBitmapFromView(root))
+    override fun onNeedToOpenSettings() {
+        BitmapUtils.loadBitmapFromView(root)?.let { presenter.openSettings(it) }
+    }
 
-    override fun onNeedToOpenCoins() = presenter.openCoins(BitmapUtils.loadBitmapFromView(root))
+    override fun onNeedToOpenCoins() {
+        BitmapUtils.loadBitmapFromView(root)?.let { presenter.openCoins(it) }
+    }
 
     override fun showError(error: Throwable) = Snackbar.make(
         root,
