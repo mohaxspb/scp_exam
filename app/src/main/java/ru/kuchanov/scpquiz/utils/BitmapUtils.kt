@@ -13,10 +13,15 @@ import java.io.OutputStream
 
 object BitmapUtils {
 
-    fun loadBitmapFromView(v: View): Bitmap {
-        val b = Bitmap.createBitmap(v.measuredWidth, v.measuredHeight, Bitmap.Config.ARGB_8888)
+    fun loadBitmapFromView(v: View): Bitmap? {
+        val width = v.measuredWidth
+        val height = v.measuredHeight
+        if (width <= 0 || height <= 0) {
+            return null
+        }
+        val b = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val c = Canvas(b)
-        v.layout(0, 0, v.measuredWidth, v.measuredHeight)
+        v.layout(0, 0, width, height)
         v.draw(c)
         return Bitmap.createScaledBitmap(b, 360, 640, true)
     }
@@ -30,7 +35,7 @@ object BitmapUtils {
             os = FileOutputStream(imageFile)
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, os)
         } catch (e: Exception) {
-            Timber.e(javaClass.simpleName, "Error writing bitmap", e)
+            Timber.e(e, "Error writing bitmap")
         } finally {
             os?.flush()
             os?.close()
