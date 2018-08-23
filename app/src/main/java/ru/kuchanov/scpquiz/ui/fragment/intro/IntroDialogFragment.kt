@@ -64,12 +64,14 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
         //todo move to delegate
         val bitmap = BitmapUtils.fileToBitmap("${activity?.cacheDir}/${Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME}.png")
 
-        backgroundImageView.post {
-            Blurry.with(context)
-                    .async()
-                    .animate(500)
-                    .from(bitmap)
-                    .into(backgroundImageView)
+        context?.let {
+            backgroundImageView.post {
+                Blurry.with(it)
+                        .async()
+                        .animate(500)
+                        .from(bitmap)
+                        .into(backgroundImageView)
+            }
         }
 
         chatView.layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
