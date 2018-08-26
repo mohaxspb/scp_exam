@@ -113,6 +113,39 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
         levelNumberTextView.setOnClickListener { presenter.onLevelsClicked() }
 
+        imageView.setOnClickListener {
+            Timber.d("scpNameAndNumber: ${presenter.quizLevelInfo.quiz.scpNumber}/${presenter.quizLevelInfo.quiz.quizTranslations?.first()?.translation}")
+        }
+
+        backspaceButton.setOnClickListener {
+            val isNameFilled = presenter.quizLevelInfo.finishedLevel.scpNameFilled
+            val isNumberFilled = presenter.quizLevelInfo.finishedLevel.scpNumberFilled
+
+            val deleteNumberChar = {
+                val indexOfChild = scpNumberFlexBoxLayout.childCount - 1
+                val charView = scpNumberFlexBoxLayout.getChildAt(indexOfChild) as CharacterView
+                presenter.onCharRemovedFromNumber(charView.charId, indexOfChild)
+            }
+
+            val deleteNameChar = {
+                val indexOfChild = scpNameFlexBoxLayout.childCount - 1
+                val charView = scpNameFlexBoxLayout.getChildAt(indexOfChild) as CharacterView
+                presenter.onCharRemovedFromName(charView.charId, indexOfChild)
+            }
+
+            if (!isNameFilled && !isNumberFilled) {
+                if (presenter.choosedToEnterNumberFirst) {
+                    deleteNumberChar.invoke()
+                } else {
+                    deleteNameChar.invoke()
+                }
+            } else if (isNameFilled) {
+                deleteNumberChar.invoke()
+            } else if (isNumberFilled) {
+                deleteNameChar.invoke()
+            }
+        }
+
         //ads
         if (myPreferenceManager.isAdsDisabled()) {
             adView.isEnabled = false
@@ -325,6 +358,15 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     override fun onNeedToOpenCoins() {
         BitmapUtils.loadBitmapFromView(root)?.let { presenter.openCoins(it) }
+    }
+
+    override fun showBackspaceButton(show: Boolean) {
+        Timber.d("showBackspaceButton: $show")
+        if (show) {
+            backspaceButton.show()
+        } else {
+            backspaceButton.hide()
+        }
     }
 
     override fun showError(error: Throwable) = Snackbar.make(

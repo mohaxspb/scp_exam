@@ -204,17 +204,18 @@
 
     </android.support.v4.widget.NestedScrollView>
 
-    <!--<LinearLayout-->
-    <!--android:id="@+id/bottomPanelView"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="0dp"-->
-    <!--android:orientation="vertical"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--app:layout_constraintLeft_toLeftOf="parent"-->
-    <!--app:layout_constraintRight_toRightOf="parent"-->
-    <!--app:layout_constraintTop_toBottomOf="@id/gameScrollView"-->
-    <!--app:layout_constraintVertical_weight="1">-->
-
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/backspaceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/defaultMargin"
+        android:src="@drawable/ic_backspace_black_24dp"
+        android:tint="@android:color/white"
+        android:visibility="gone"
+        app:backgroundTint="?colorAccent"
+        app:fabSize="mini"
+        app:layout_constraintBottom_toTopOf="@+id/keyboardScrollView"
+        app:layout_constraintRight_toRightOf="@+id/keyboardScrollView" />
 
     <HorizontalScrollView
         android:id="@+id/keyboardScrollView"
@@ -246,8 +247,6 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/keyboardScrollView"
         tools:visibility="visible" />
-
-    <!--</LinearLayout>-->
 
     <FrameLayout
         android:id="@+id/progressView"
