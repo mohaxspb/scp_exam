@@ -284,6 +284,7 @@ class GamePresenter @Inject constructor(
         viewState.showProgress(true)
 
         //todo do not start periodic suggestions before user chooses what to enter
+        //todo do not repeat suggestions, but remove old and show new one
         levelDataDisposable = gameInteractor
                 .getLevelInfo(quizId)
                 .subscribeBy(
