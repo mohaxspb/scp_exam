@@ -131,45 +131,63 @@ class GamePresenter @Inject constructor(
             hasEnoughCoins
         }
 
-        val removeCharsActionText = appContext.getString(R.string.suggestion_remove_redundant_chars)
-        actions += ChatAction(
-            removeCharsActionText,
-            {
-                viewState.removeChatAction(it)
-                viewState.showChatMessage(removeCharsActionText, quizLevelInfo.player)
-                val price = Constants.SUGGESTION_PRICE_REMOVE_CHARS
-                if (checkCoins.invoke(price, it)) {
-                    val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_remove_chars)
-                    viewState.showChatMessage(
-                        suggestionsMessages[Random().nextInt(suggestionsMessages.size)],
-                        quizLevelInfo.doctor
-                    )
-                    var nameRedundantCharsRemoved: Boolean? = null
-                    var numberRedundantCharsRemoved: Boolean? = null
-                    val chars = if (!quizLevelInfo.finishedLevel.scpNameFilled) {
-                        nameRedundantCharsRemoved = true
-                        quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toList()?.shuffled()
-                                ?: throw IllegalStateException("no chars for keyboard")
-                    } else {
-                        numberRedundantCharsRemoved = true
-                        quizLevelInfo.quiz.scpNumber.toList().shuffled()
+        val nameCharsRemoved = quizLevelInfo.finishedLevel.nameRedundantCharsRemoved
+        val numberCharsRemoved = quizLevelInfo.finishedLevel.numberRedundantCharsRemoved
+        val nameFilled = quizLevelInfo.finishedLevel.scpNameFilled
+        val numberFilled = quizLevelInfo.finishedLevel.scpNumberFilled
+
+//        if (nameFilled) {
+//            if (!numberFilled && !numberCharsRemoved) {
+//                //add suggestion
+//            }
+//        } else {
+//            if (!nameCharsRemoved) {
+//                //add suggestions
+//            }
+//        }
+        Timber.d("$nameCharsRemoved/$nameFilled/$numberCharsRemoved/$numberFilled")
+        //todo do not show remove chars for name if we currently try to enter number and wise-versa
+        if (!nameCharsRemoved && !nameFilled || !numberCharsRemoved && !numberFilled) {
+            val removeCharsActionText = appContext.getString(R.string.suggestion_remove_redundant_chars)
+            actions += ChatAction(
+                removeCharsActionText,
+                { indexOfChatActionsViewInChatLayout: Int ->
+                    viewState.removeChatAction(indexOfChatActionsViewInChatLayout)
+                    viewState.showChatMessage(removeCharsActionText, quizLevelInfo.player)
+                    val price = Constants.SUGGESTION_PRICE_REMOVE_CHARS
+                    if (checkCoins.invoke(price, indexOfChatActionsViewInChatLayout)) {
+                        val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_remove_chars)
+                        viewState.showChatMessage(
+                            suggestionsMessages[Random().nextInt(suggestionsMessages.size)],
+                            quizLevelInfo.doctor
+                        )
+                        var nameRedundantCharsRemoved: Boolean? = null
+                        var numberRedundantCharsRemoved: Boolean? = null
+                        val chars = if (!quizLevelInfo.finishedLevel.scpNameFilled) {
+                            nameRedundantCharsRemoved = true
+                            quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toList()?.shuffled()
+                                    ?: throw IllegalStateException("no chars for keyboard")
+                        } else {
+                            numberRedundantCharsRemoved = true
+                            quizLevelInfo.quiz.scpNumber.toList().shuffled()
+                        }
+                        viewState.setKeyboardChars(chars)
+
+                        gameInteractor.saveCharsRemovedState(
+                            quizLevelInfo.quiz.id,
+                            nameRedundantCharsRemoved,
+                            numberRedundantCharsRemoved
+                        )
+                                .flatMap { gameInteractor.increaseScore(-price).toSingleDefault(-price) }
+                                .subscribeOn(Schedulers.io())
+                                .subscribe()
                     }
-                    viewState.setKeyboardChars(chars)
+                },
+                R.drawable.selector_chat_action_green
+            )
+        }
 
-                    gameInteractor.saveCharsRemovedState(
-                        quizLevelInfo.quiz.id,
-                        nameRedundantCharsRemoved,
-                        numberRedundantCharsRemoved
-                    )
-                            .flatMap { gameInteractor.increaseScore(-price).toSingleDefault(-price) }
-                            .subscribeOn(Schedulers.io())
-                            .subscribe()
-                }
-            },
-            R.drawable.selector_chat_action_green
-        )
-
-        if (!quizLevelInfo.finishedLevel.scpNameFilled) {
+        if (!nameFilled) {
             val enterNameActionText = appContext.getString(R.string.suggestion_enter_name)
             actions += ChatAction(
                 enterNameActionText,
@@ -186,20 +204,22 @@ class GamePresenter @Inject constructor(
             )
         }
 
-        val enterNumberActionText = appContext.getString(R.string.suggestion_enter_number)
-        actions += ChatAction(
-            enterNumberActionText,
-            {
-                with(viewState) {
-                    removeChatAction(it)
-                    showChatMessage(enterNumberActionText, quizLevelInfo.player)
-                    if (checkCoins.invoke(Constants.SUGGESTION_PRICE_NUMBER, it)) {
-                        onNumberEntered(false)
+        if (!numberFilled) {
+            val enterNumberActionText = appContext.getString(R.string.suggestion_enter_number)
+            actions += ChatAction(
+                enterNumberActionText,
+                {
+                    with(viewState) {
+                        removeChatAction(it)
+                        showChatMessage(enterNumberActionText, quizLevelInfo.player)
+                        if (checkCoins.invoke(Constants.SUGGESTION_PRICE_NUMBER, it)) {
+                            onNumberEntered(false)
+                        }
                     }
-                }
-            },
-            R.drawable.selector_chat_action_green
-        )
+                },
+                R.drawable.selector_chat_action_green
+            )
+        }
 
         val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_no)
         val noActionText = suggestionsMessages[Random().nextInt(suggestionsMessages.size)]
@@ -263,6 +283,7 @@ class GamePresenter @Inject constructor(
 
         viewState.showProgress(true)
 
+        //todo do not start periodic suggestions before user chooses what to enter
         levelDataDisposable = gameInteractor
                 .getLevelInfo(quizId)
                 .subscribeBy(

@@ -121,13 +121,17 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             val isNameFilled = presenter.quizLevelInfo.finishedLevel.scpNameFilled
             val isNumberFilled = presenter.quizLevelInfo.finishedLevel.scpNumberFilled
 
-            val deleteNumberChar = {
+            val deleteNumberChar = deleteNumberChar@{
+                if (scpNumberFlexBoxLayout.childCount == 0) return@deleteNumberChar
+
                 val indexOfChild = scpNumberFlexBoxLayout.childCount - 1
                 val charView = scpNumberFlexBoxLayout.getChildAt(indexOfChild) as CharacterView
                 presenter.onCharRemovedFromNumber(charView.charId, indexOfChild)
             }
 
-            val deleteNameChar = {
+            val deleteNameChar = deleteNameChar@{
+                if (scpNameFlexBoxLayout.childCount == 0) return@deleteNameChar
+
                 val indexOfChild = scpNameFlexBoxLayout.childCount - 1
                 val charView = scpNameFlexBoxLayout.getChildAt(indexOfChild) as CharacterView
                 presenter.onCharRemovedFromName(charView.charId, indexOfChild)
