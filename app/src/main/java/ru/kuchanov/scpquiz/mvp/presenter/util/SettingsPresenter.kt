@@ -2,6 +2,7 @@ package ru.kuchanov.scpquiz.mvp.presenter.util
 
 import android.app.Application
 import com.arellomobile.mvp.InjectViewState
+import com.google.android.gms.ads.MobileAds
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
@@ -29,13 +30,23 @@ class SettingsPresenter @Inject constructor(
 
     fun onLangClicked() = viewState.showLangsChooser(preferences.getLangs(), preferences.getLang())
 
-    fun onSoundEnabled(checked: Boolean) = preferences.setSoundEnabled(checked)
+    fun onSoundEnabled(enabled: Boolean){
+        preferences.setSoundEnabled(enabled)
+        if (enabled) {
+            MobileAds.setAppMuted(false)
+            MobileAds.setAppVolume(0.5f)
+        } else {
+            // Set app volume to be half of current device volume.
+            MobileAds.setAppMuted(true)
+        }
+    }
 
     fun onVibrationEnabled(checked: Boolean) = preferences.setVibrationEnabled(checked)
 
     fun onShareClicked() = IntentUtils.tryShareApp(appContext)
 
     fun onPrivacyPolicyClicked() = IntentUtils.openUrl(appContext, Constants.PRIVACY_POLICY_URL)
+
     fun onLangSelected(selectedLang: String) {
         preferences.setLang(selectedLang)
         viewState.showLang(preferences.getLang())
