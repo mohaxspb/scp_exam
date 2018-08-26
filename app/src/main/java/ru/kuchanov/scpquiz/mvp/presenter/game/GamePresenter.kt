@@ -412,18 +412,35 @@ class GamePresenter @Inject constructor(
     fun onCharClicked(char: Char, charId: Int) {
         Timber.d("char pressed: $char")
 
-        if (!quizLevelInfo.finishedLevel.scpNameFilled && !choosedToEnterNumberFirst) {
+        val isNameFilled = quizLevelInfo.finishedLevel.scpNameFilled
+        val isNumberFilled = quizLevelInfo.finishedLevel.scpNumberFilled
+
+        val charEnteredForName = {
             enteredName += char.toLowerCase()
 
             viewState.addCharToNameInput(char, charId)
 
             checkEnteredScpName()
-        } else {
+        }
+
+        val charEnteredForNumber =  {
             enteredNumber += char.toLowerCase()
 
             viewState.addCharToNumberInput(char, charId)
 
             checkEnteredScpNumber()
+        }
+
+        if (!isNameFilled && !isNumberFilled) {
+            if (choosedToEnterNumberFirst) {
+                charEnteredForNumber.invoke()
+            } else {
+                charEnteredForName.invoke()
+            }
+        } else if (isNameFilled){
+            charEnteredForNumber.invoke()
+        } else {
+            charEnteredForName.invoke()
         }
     }
 
