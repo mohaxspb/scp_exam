@@ -12,6 +12,7 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
+import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.ui.view.ChatMessageView
 import ru.kuchanov.scpquiz.utils.SystemUtils
 import timber.log.Timber
@@ -21,6 +22,8 @@ class ChatDelegate(
     private val scrollView: NestedScrollView,
     private val myPreferenceManager: MyPreferenceManager
 ) {
+
+    private val actionsTypesIndexes = hashMapOf<ChatActionsGroupType, Int>()
 
     fun showChatMessage(message: String, user: User, @ColorRes nameTextColorRes: Int) {
         Timber.d("showChatMessage from ${user.name}")
@@ -53,7 +56,7 @@ class ChatDelegate(
         })
     }
 
-    fun showChatActions(chatActions: List<ChatAction>) {
+    fun showChatActions(chatActions: List<ChatAction>, chatActionsGroupType: ChatActionsGroupType) {
         Timber.d("showChatActions: ${chatActions.joinToString()}")
         val inflater = LayoutInflater.from(chatView.context)
 
@@ -62,7 +65,14 @@ class ChatDelegate(
             chatView,
             false
         ) as FlexboxLayout
+
+        if(actionsTypesIndexes.containsKey(chatActionsGroupType)){
+            removeChatAction(actionsTypesIndexes.remove(chatActionsGroupType)!!)
+        }
+
         chatView.addView(chatActionsFlexBoxLayout)
+
+        actionsTypesIndexes[chatActionsGroupType] = chatView.indexOfChild(chatActionsFlexBoxLayout)
 
         chatActions.forEach { chatAction ->
             val chatActionView = inflater.inflate(

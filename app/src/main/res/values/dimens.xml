@@ -7,4 +7,5 @@
     <dimen name="defaultMarginTiny">4dp</dimen>
     <dimen name="levelImageSizeBig">208dp</dimen>
     <dimen name="monetization_image_size">50dp</dimen>
+    <dimen name="defaultMarginSmallNegative">-8dp</dimen>
 </resources>

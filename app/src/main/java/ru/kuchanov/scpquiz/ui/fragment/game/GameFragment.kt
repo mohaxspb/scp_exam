@@ -24,6 +24,7 @@ import ru.kuchanov.scpquiz.di.module.GameModule
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
+import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.mvp.presenter.game.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.GameView
 import ru.kuchanov.scpquiz.ui.BaseActivity
@@ -118,31 +119,27 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         }
 
         backspaceButton.setOnClickListener {
-            val isNameFilled = presenter.quizLevelInfo.finishedLevel.scpNameFilled
-            val isNumberFilled = presenter.quizLevelInfo.finishedLevel.scpNumberFilled
+            val deleteNumberChar = deleteNumberChar@{
+                if (scpNumberFlexBoxLayout.childCount == 0) return@deleteNumberChar
 
-            val deleteNumberChar = {
                 val indexOfChild = scpNumberFlexBoxLayout.childCount - 1
                 val charView = scpNumberFlexBoxLayout.getChildAt(indexOfChild) as CharacterView
                 presenter.onCharRemovedFromNumber(charView.charId, indexOfChild)
             }
 
-            val deleteNameChar = {
+            val deleteNameChar = deleteNameChar@{
+                if (scpNameFlexBoxLayout.childCount == 0) return@deleteNameChar
+
                 val indexOfChild = scpNameFlexBoxLayout.childCount - 1
                 val charView = scpNameFlexBoxLayout.getChildAt(indexOfChild) as CharacterView
                 presenter.onCharRemovedFromName(charView.charId, indexOfChild)
             }
 
-            if (!isNameFilled && !isNumberFilled) {
-                if (presenter.choosedToEnterNumberFirst) {
-                    deleteNumberChar.invoke()
-                } else {
-                    deleteNameChar.invoke()
-                }
-            } else if (isNameFilled) {
-                deleteNumberChar.invoke()
-            } else if (isNumberFilled) {
+            Timber.d("presenter.currentEnterType: ${presenter.currentEnterType}")
+            if (presenter.currentEnterType == GamePresenter.EnterType.NAME) {
                 deleteNameChar.invoke()
+            } else if (presenter.currentEnterType == GamePresenter.EnterType.NUMBER) {
+                deleteNumberChar.invoke()
             }
         }
 
@@ -326,7 +323,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         }
     }
 
-    override fun showChatActions(chatActions: List<ChatAction>) = chatDelegate.showChatActions(chatActions)
+    override fun showChatActions(chatActions: List<ChatAction>, chatActionsGroupType: ChatActionsGroupType) =
+            chatDelegate.showChatActions(chatActions, chatActionsGroupType)
 
     override fun removeChatAction(indexInParent: Int) = chatDelegate.removeChatAction(indexInParent)
 

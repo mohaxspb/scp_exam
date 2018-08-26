@@ -208,12 +208,14 @@
         android:id="@+id/backspaceButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/defaultMargin"
+        android:layout_marginEnd="@dimen/defaultMargin"
         android:src="@drawable/ic_backspace_black_24dp"
         android:tint="@android:color/white"
         android:visibility="gone"
         app:backgroundTint="?colorAccent"
+        tools:visibility="visible"
         app:fabSize="mini"
+        ads:layout_constraintTop_toTopOf="@+id/keyboardScrollView"
         app:layout_constraintBottom_toTopOf="@+id/keyboardScrollView"
         app:layout_constraintRight_toRightOf="@+id/keyboardScrollView" />
 
