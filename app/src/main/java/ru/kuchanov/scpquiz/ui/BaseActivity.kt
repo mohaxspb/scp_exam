@@ -5,13 +5,11 @@ import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.widget.Toast
 import com.appodeal.ads.Appodeal
-import com.appodeal.ads.utils.Log
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import ru.kuchanov.rate.PreRate
-import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.manager.monetization.BillingDelegate
@@ -121,6 +119,14 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     private fun initAds() {
         MobileAds.initialize(applicationContext, getString(R.string.ads_app_id))
 
+        // Set app volume to be half of current device volume.
+        if (preferenceManager.isSoundEnabled()) {
+            MobileAds.setAppMuted(false)
+            MobileAds.setAppVolume(0.5f)
+        } else {
+            // Set app volume to be half of current device volume.
+            MobileAds.setAppMuted(true)
+        }
         interstitialAd = InterstitialAd(this)
         interstitialAd.adUnitId = getString(R.string.ad_unit_id_interstitial)
 
