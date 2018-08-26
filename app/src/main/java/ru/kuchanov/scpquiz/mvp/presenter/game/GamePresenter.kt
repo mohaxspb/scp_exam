@@ -64,7 +64,7 @@ class GamePresenter @Inject constructor(
 
     private var periodicMessagesDisposable: CompositeDisposable = CompositeDisposable()
 
-    private var choosedToEnterNumberFirst = false
+    var choosedToEnterNumberFirst = false
 
     override fun onFirstViewAttach() {
         Timber.d("onFirstViewAttach")
@@ -416,18 +416,22 @@ class GamePresenter @Inject constructor(
         val isNumberFilled = quizLevelInfo.finishedLevel.scpNumberFilled
 
         val charEnteredForName = {
+            Timber.d("charEnteredForName invoked")
             enteredName += char.toLowerCase()
 
             viewState.addCharToNameInput(char, charId)
 
+            viewState.showBackspaceButton(true)
             checkEnteredScpName()
         }
 
-        val charEnteredForNumber =  {
+        val charEnteredForNumber = {
+            Timber.d("charEnteredForNumber invoked")
             enteredNumber += char.toLowerCase()
 
             viewState.addCharToNumberInput(char, charId)
 
+            viewState.showBackspaceButton(true)
             checkEnteredScpNumber()
         }
 
@@ -437,7 +441,7 @@ class GamePresenter @Inject constructor(
             } else {
                 charEnteredForName.invoke()
             }
-        } else if (isNameFilled){
+        } else if (isNameFilled) {
             charEnteredForNumber.invoke()
         } else {
             charEnteredForName.invoke()
@@ -449,8 +453,14 @@ class GamePresenter @Inject constructor(
         Timber.d("enteredName: $enteredName, enteredNumber: $enteredNumber")
         if (!quizLevelInfo.finishedLevel.scpNameFilled) {
             enteredName.removeAt(indexOfChild)
+            if (enteredName.isEmpty()) {
+                viewState.showBackspaceButton(false)
+            }
         } else {
             enteredNumber.removeAt(indexOfChild)
+            if (enteredNumber.isEmpty()) {
+                viewState.showBackspaceButton(false)
+            }
         }
         viewState.removeCharFromNameInput(charId, indexOfChild)
     }
@@ -460,8 +470,14 @@ class GamePresenter @Inject constructor(
         Timber.d("enteredName: $enteredName, enteredNumber: $enteredNumber")
         if (!quizLevelInfo.finishedLevel.scpNameFilled && !choosedToEnterNumberFirst) {
             enteredName.removeAt(indexOfChild)
+            if (enteredName.isEmpty()) {
+                viewState.showBackspaceButton(false)
+            }
         } else {
             enteredNumber.removeAt(indexOfChild)
+            if (enteredNumber.isEmpty()) {
+                viewState.showBackspaceButton(false)
+            }
         }
         viewState.removeCharFromNumberInput(charId, indexOfChild)
     }
@@ -657,6 +673,7 @@ class GamePresenter @Inject constructor(
     }
 
     private fun onNameEntered(receiveReward: Boolean) {
+        Timber.d("onNameEntered")
         val quizTranslation = quizLevelInfo.quiz.quizTranslations?.first()
                 ?: throw IllegalStateException("quizTranslation is NULL!")
 
@@ -694,6 +711,7 @@ class GamePresenter @Inject constructor(
             }
 
             showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
+            showBackspaceButton(false)
 
             if (quizLevelInfo.finishedLevel.scpNameFilled && quizLevelInfo.finishedLevel.scpNumberFilled) {
                 onLevelCompletelyFinished()
@@ -710,6 +728,7 @@ class GamePresenter @Inject constructor(
     }
 
     private fun onNumberEntered(receiveReward: Boolean) {
+        Timber.d("onNumberEntered")
         quizLevelInfo.finishedLevel.scpNumberFilled = true
         onLevelCompleted()
 
@@ -726,8 +745,6 @@ class GamePresenter @Inject constructor(
                     quizLevelInfo.player
                 )
 
-                showNumber(quizLevelInfo.quiz.scpNumber.toList())
-
                 gameInteractor.increaseScore(-Constants.SUGGESTION_PRICE_NUMBER)
                         .subscribeOn(Schedulers.io())
                         .subscribe()
@@ -741,12 +758,13 @@ class GamePresenter @Inject constructor(
                     quizLevelInfo.doctor
                 )
 
-                showNumber(quizLevelInfo.quiz.scpNumber.toList())
-
                 gameInteractor.increaseScore(Constants.COINS_FOR_NUMBER)
                         .subscribeOn(Schedulers.io())
                         .subscribe()
             }
+
+            showNumber(quizLevelInfo.quiz.scpNumber.toList())
+            showBackspaceButton(false)
 
             if (quizLevelInfo.finishedLevel.scpNameFilled && quizLevelInfo.finishedLevel.scpNumberFilled) {
                 onLevelCompletelyFinished()
