@@ -66,7 +66,7 @@ class GamePresenter @Inject constructor(
 
     private var levelDataDisposable: Disposable? = null
 
-    private var periodicMessagesDisposable: CompositeDisposable = CompositeDisposable()
+    private var periodicMessagesCompositeDisposable: CompositeDisposable = CompositeDisposable()
 
     var currentEnterType = EnterType.NOT_CHOOSED
 
@@ -78,10 +78,10 @@ class GamePresenter @Inject constructor(
     }
 
     private fun sendPeriodicMessages() {
-        if (periodicMessagesDisposable.isDisposed) {
-            periodicMessagesDisposable = CompositeDisposable()
+        if (periodicMessagesCompositeDisposable.isDisposed) {
+            periodicMessagesCompositeDisposable = CompositeDisposable()
         }
-        periodicMessagesDisposable.add(Flowable.interval(
+        periodicMessagesCompositeDisposable.add(Flowable.interval(
             PERIODIC_MESSAGES_INITIAL_DELAY,
             PERIODIC_MESSAGES_PERIOD,
             TimeUnit.SECONDS
@@ -101,7 +101,13 @@ class GamePresenter @Inject constructor(
                     }
                 }
         )
-        periodicMessagesDisposable.add(Flowable.interval(
+    }
+
+    private fun sendPeriodicSuggestionsMessages() {
+        if (periodicMessagesCompositeDisposable.isDisposed) {
+            periodicMessagesCompositeDisposable = CompositeDisposable()
+        }
+        periodicMessagesCompositeDisposable.add(Flowable.interval(
             PERIODIC_SUGGESTIONS_INITIAL_DELAY,
             PERIODIC_SUGGESTIONS_PERIOD,
             TimeUnit.SECONDS
@@ -335,6 +341,7 @@ class GamePresenter @Inject constructor(
                                         }
 
                                         sendPeriodicMessages()
+                                        sendPeriodicSuggestionsMessages()
                                     }
                                     else -> {
                                         with(viewState) {
@@ -369,6 +376,8 @@ class GamePresenter @Inject constructor(
                                                     }
                                                 )
                                                 animateKeyboard()
+
+                                                sendPeriodicSuggestionsMessages()
                                             } else {
                                                 showChatMessage(
                                                     appContext.getString(R.string.message_choose_name_or_number),
@@ -602,6 +611,7 @@ class GamePresenter @Inject constructor(
                 }
 
                 currentEnterType = EnterType.NUMBER
+                sendPeriodicSuggestionsMessages()
             },
             R.drawable.selector_chat_action_green
         )
@@ -634,6 +644,7 @@ class GamePresenter @Inject constructor(
                 }
 
                 currentEnterType = EnterType.NAME
+                sendPeriodicSuggestionsMessages()
             },
             R.drawable.selector_chat_action_accent
         )
@@ -683,7 +694,7 @@ class GamePresenter @Inject constructor(
 
     override fun onDestroy() {
         super.onDestroy()
-        periodicMessagesDisposable.dispose()
+        periodicMessagesCompositeDisposable.dispose()
         levelDataDisposable?.dispose()
     }
 
@@ -857,7 +868,7 @@ class GamePresenter @Inject constructor(
             showChatActions(generateLevelCompletedActions())
         }
 
-        periodicMessagesDisposable.dispose()
+        periodicMessagesCompositeDisposable.dispose()
     }
 
     fun onHelpClicked() {
