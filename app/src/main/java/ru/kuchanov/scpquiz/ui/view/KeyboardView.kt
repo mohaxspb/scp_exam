@@ -95,7 +95,7 @@ class KeyboardView @JvmOverloads constructor(
     fun setCharacters(characters: List<Char>) {
         Timber.d("setCharacters: $characters")
         this.characters.clear()
-        this.characters.addAll(characters)
+        this.characters.addAll(characters.shuffled())
         flexBoxLayout.removeAllViews()
         characterViewsMap.clear()
         this.characters.forEach { addCharView(it) }

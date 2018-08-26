@@ -46,6 +46,10 @@ class GamePresenter @Inject constructor(
         const val PERIODIC_SUGGESTIONS_PERIOD = 180L
     }
 
+    enum class EnterType {
+        NAME, NUMBER, NOT_CHOOSED
+    }
+
     private var currentLang: String = preferences.getLang()
 
     private var isLevelShown: Boolean = false
@@ -64,7 +68,7 @@ class GamePresenter @Inject constructor(
 
     private var periodicMessagesDisposable: CompositeDisposable = CompositeDisposable()
 
-    var choosedToEnterNumberFirst = false
+    var currentEnterType = EnterType.NOT_CHOOSED
 
     override fun onFirstViewAttach() {
         Timber.d("onFirstViewAttach")
@@ -136,18 +140,8 @@ class GamePresenter @Inject constructor(
         val nameFilled = quizLevelInfo.finishedLevel.scpNameFilled
         val numberFilled = quizLevelInfo.finishedLevel.scpNumberFilled
 
-//        if (nameFilled) {
-//            if (!numberFilled && !numberCharsRemoved) {
-//                //add suggestion
-//            }
-//        } else {
-//            if (!nameCharsRemoved) {
-//                //add suggestions
-//            }
-//        }
-        Timber.d("$nameCharsRemoved/$nameFilled/$numberCharsRemoved/$numberFilled")
-        //todo do not show remove chars for name if we currently try to enter number and wise-versa
-        if (!nameCharsRemoved && !nameFilled || !numberCharsRemoved && !numberFilled) {
+        if (!nameCharsRemoved && !nameFilled && currentEnterType == EnterType.NAME
+                || !numberCharsRemoved && !numberFilled && currentEnterType == EnterType.NUMBER) {
             val removeCharsActionText = appContext.getString(R.string.suggestion_remove_redundant_chars)
             actions += ChatAction(
                 removeCharsActionText,
@@ -163,15 +157,16 @@ class GamePresenter @Inject constructor(
                         )
                         var nameRedundantCharsRemoved: Boolean? = null
                         var numberRedundantCharsRemoved: Boolean? = null
-                        val chars = if (!quizLevelInfo.finishedLevel.scpNameFilled) {
+                        var chars: List<Char>? = null
+                        if (currentEnterType == EnterType.NAME) {
                             nameRedundantCharsRemoved = true
-                            quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toList()?.shuffled()
+                            chars = quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toList()
                                     ?: throw IllegalStateException("no chars for keyboard")
-                        } else {
+                        } else if (currentEnterType == EnterType.NUMBER) {
                             numberRedundantCharsRemoved = true
-                            quizLevelInfo.quiz.scpNumber.toList().shuffled()
+                            chars = quizLevelInfo.quiz.scpNumber.toList()
                         }
-                        viewState.setKeyboardChars(chars)
+                        chars?.let { viewState.setKeyboardChars(it) }
 
                         gameInteractor.saveCharsRemovedState(
                             quizLevelInfo.quiz.id,
@@ -312,10 +307,12 @@ class GamePresenter @Inject constructor(
                                     }
                                     !scpNumberFilled && scpNameFilled -> {
                                         Timber.d("!scpNumberFilled && scpNameFilled")
+                                        currentEnterType = EnterType.NUMBER
+
                                         with(viewState) {
                                             showToolbar(true)
 
-                                            val scpNumberChars = quizLevelInfo.quiz.scpNumber.toList().shuffled().toMutableList()
+                                            val scpNumberChars = quizLevelInfo.quiz.scpNumber.toMutableList()
                                             setKeyboardChars(
                                                 if (numberRedundantCharsRemoved) {
                                                     scpNumberChars
@@ -323,7 +320,7 @@ class GamePresenter @Inject constructor(
                                                     KeyboardView.fillCharsList(
                                                         scpNumberChars,
                                                         Constants.DIGITS_CHAR_LIST
-                                                    ).shuffled()
+                                                    )
                                                 }
                                             )
                                             showChatMessage(
@@ -344,6 +341,8 @@ class GamePresenter @Inject constructor(
                                             showToolbar(true)
 
                                             if (scpNumberFilled && !scpNameFilled) {
+                                                currentEnterType = EnterType.NAME
+
                                                 showNumber(quizLevelInfo.quiz.scpNumber.toList())
 
                                                 val startLevelMessages = appContext
@@ -354,7 +353,7 @@ class GamePresenter @Inject constructor(
                                                     quizLevelInfo.doctor
                                                 )
 
-                                                val chars = quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toList()?.shuffled()?.toMutableList()
+                                                val chars = quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toMutableList()
                                                         ?: throw IllegalStateException("translations is null")
                                                 val availableChars = quizLevelInfo.randomTranslations
                                                         .joinToString(separator = "") { it.translation }
@@ -366,7 +365,7 @@ class GamePresenter @Inject constructor(
                                                         KeyboardView.fillCharsList(
                                                             chars,
                                                             availableChars
-                                                        ).apply { shuffle() }
+                                                        )
                                                     }
                                                 )
                                                 animateKeyboard()
@@ -434,9 +433,6 @@ class GamePresenter @Inject constructor(
     fun onCharClicked(char: Char, charId: Int) {
         Timber.d("char pressed: $char")
 
-        val isNameFilled = quizLevelInfo.finishedLevel.scpNameFilled
-        val isNumberFilled = quizLevelInfo.finishedLevel.scpNumberFilled
-
         val charEnteredForName = {
             Timber.d("charEnteredForName invoked")
             enteredName += char.toLowerCase()
@@ -457,15 +453,9 @@ class GamePresenter @Inject constructor(
             checkEnteredScpNumber()
         }
 
-        if (!isNameFilled && !isNumberFilled) {
-            if (choosedToEnterNumberFirst) {
-                charEnteredForNumber.invoke()
-            } else {
-                charEnteredForName.invoke()
-            }
-        } else if (isNameFilled) {
+        if (currentEnterType == EnterType.NUMBER) {
             charEnteredForNumber.invoke()
-        } else {
+        } else if (currentEnterType == EnterType.NAME) {
             charEnteredForName.invoke()
         }
     }
@@ -490,7 +480,7 @@ class GamePresenter @Inject constructor(
     fun onCharRemovedFromNumber(charId: Int, indexOfChild: Int) {
         Timber.d("onCharRemoved: $charId, $indexOfChild")
         Timber.d("enteredName: $enteredName, enteredNumber: $enteredNumber")
-        if (!quizLevelInfo.finishedLevel.scpNameFilled && !choosedToEnterNumberFirst) {
+        if (!quizLevelInfo.finishedLevel.scpNameFilled && currentEnterType == EnterType.NAME) {
             enteredName.removeAt(indexOfChild)
             if (enteredName.isEmpty()) {
                 viewState.showBackspaceButton(false)
@@ -507,7 +497,8 @@ class GamePresenter @Inject constructor(
     private fun checkEnteredScpNumber() {
         if (quizLevelInfo.quiz.scpNumber.toLowerCase() == enteredNumber.joinToString("").toLowerCase()) {
             Timber.d("number is correct!")
-            choosedToEnterNumberFirst = false
+            currentEnterType = EnterType.NAME
+            currentEnterType = EnterType.NAME
             onNumberEntered(true)
         } else {
             Timber.d("number is not correct")
@@ -566,11 +557,11 @@ class GamePresenter @Inject constructor(
         val enterNumberAction = ChatAction(
             message,
             {
-                val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0').shuffled()
-                val scpNumberChars = quizLevelInfo.quiz.scpNumber.toList().shuffled().toMutableList()
+                val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0')
+                val scpNumberChars = quizLevelInfo.quiz.scpNumber.toMutableList()
                 with(viewState) {
                     setKeyboardChars(
-                        if (quizLevelInfo.finishedLevel.scpNumberFilled) {
+                        if (quizLevelInfo.finishedLevel.numberRedundantCharsRemoved) {
                             scpNumberChars
                         } else {
                             KeyboardView.fillCharsList(scpNumberChars, availableChars)
@@ -594,8 +585,8 @@ class GamePresenter @Inject constructor(
         val enterNumberAction = ChatAction(
             message,
             {
-                val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0').shuffled()
-                val scpNumberChars = quizLevelInfo.quiz.scpNumber.toList().shuffled().toMutableList()
+                val availableChars = listOf('1', '2', '3', '4', '5', '6', '7', '8', '9', '0')
+                val scpNumberChars = quizLevelInfo.quiz.scpNumber.toMutableList()
                 with(viewState) {
                     setKeyboardChars(
                         if (quizLevelInfo.finishedLevel.scpNumberFilled) {
@@ -610,7 +601,7 @@ class GamePresenter @Inject constructor(
                     removeChatAction(it)
                 }
 
-                choosedToEnterNumberFirst = true
+                currentEnterType = EnterType.NUMBER
             },
             R.drawable.selector_chat_action_green
         )
@@ -619,7 +610,7 @@ class GamePresenter @Inject constructor(
         val messageEnterName = appContext.getString(R.string.chat_action_want_to_enter_name)
         val enterNameAction = ChatAction(
             messageEnterName,
-            {
+            { index ->
                 with(viewState) {
                     val chars = quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toMutableList()
                             ?: throw IllegalStateException("translations is null")
@@ -633,14 +624,16 @@ class GamePresenter @Inject constructor(
                             KeyboardView.fillCharsList(
                                 chars,
                                 availableChars
-                            ).shuffled()
+                            )
                         }
                     )
                     showKeyboard(true)
                     animateKeyboard()
                     showChatMessage(messageEnterName, quizLevelInfo.player)
-                    removeChatAction(it)
+                    removeChatAction(index)
                 }
+
+                currentEnterType = EnterType.NAME
             },
             R.drawable.selector_chat_action_accent
         )
@@ -817,7 +810,7 @@ class GamePresenter @Inject constructor(
         val message = appContext.getString(R.string.chat_action_enter_name)
         chatActions += ChatAction(
             message,
-            {
+            { index ->
                 with(viewState) {
                     val chars = quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toMutableList()
                             ?: throw IllegalStateException("translations is null")
@@ -831,13 +824,13 @@ class GamePresenter @Inject constructor(
                             KeyboardView.fillCharsList(
                                 chars,
                                 availableChars
-                            ).shuffled()
+                            )
                         }
                     )
                     showKeyboard(true)
                     animateKeyboard()
                     showChatMessage(message, quizLevelInfo.player)
-                    removeChatAction(it)
+                    removeChatAction(index)
                 }
             },
             R.drawable.selector_chat_action_green

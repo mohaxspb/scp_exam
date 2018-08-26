@@ -118,9 +118,6 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         }
 
         backspaceButton.setOnClickListener {
-            val isNameFilled = presenter.quizLevelInfo.finishedLevel.scpNameFilled
-            val isNumberFilled = presenter.quizLevelInfo.finishedLevel.scpNumberFilled
-
             val deleteNumberChar = deleteNumberChar@{
                 if (scpNumberFlexBoxLayout.childCount == 0) return@deleteNumberChar
 
@@ -137,16 +134,11 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                 presenter.onCharRemovedFromName(charView.charId, indexOfChild)
             }
 
-            if (!isNameFilled && !isNumberFilled) {
-                if (presenter.choosedToEnterNumberFirst) {
-                    deleteNumberChar.invoke()
-                } else {
-                    deleteNameChar.invoke()
-                }
-            } else if (isNameFilled) {
-                deleteNumberChar.invoke()
-            } else if (isNumberFilled) {
+            Timber.d("presenter.currentEnterType: ${presenter.currentEnterType}")
+            if (presenter.currentEnterType == GamePresenter.EnterType.NAME) {
                 deleteNameChar.invoke()
+            } else if (presenter.currentEnterType == GamePresenter.EnterType.NUMBER) {
+                deleteNumberChar.invoke()
             }
         }
 
