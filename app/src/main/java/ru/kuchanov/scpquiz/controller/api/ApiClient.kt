@@ -7,10 +7,10 @@ import javax.inject.Inject
 
 
 class ApiClient @Inject constructor(
-    private val retrofit: Retrofit
+    retrofit: Retrofit
 ) {
 
-    val vpsApi = retrofit.create(VpsApi::class.java)
+    private val vpsApi = retrofit.create(VpsApi::class.java)
 
     fun validateInApp(sku: String, purchaseToken: String): Single<Int> = vpsApi.validatePurchase(
         false,
