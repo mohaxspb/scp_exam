@@ -18,6 +18,7 @@ import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase
 import ru.kuchanov.scpquiz.model.ui.ChatAction
+import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.GameView
@@ -120,7 +121,7 @@ class GamePresenter @Inject constructor(
                         suggestionsMessages[Random().nextInt(suggestionsMessages.size)],
                         quizLevelInfo.doctor
                     )
-                    viewState.showChatActions(generateSuggestions())
+                    viewState.showChatActions(generateSuggestions(), ChatActionsGroupType.SUGGESTIONS)
                 }
         )
     }
@@ -136,7 +137,7 @@ class GamePresenter @Inject constructor(
                     appContext.getString(R.string.message_not_enough_coins),
                     quizLevelInfo.doctor
                 )
-                viewState.showChatActions(generateGainCoinsActions())
+                viewState.showChatActions(generateGainCoinsActions(), ChatActionsGroupType.GAIN_COINS)
             }
             hasEnoughCoins
         }
@@ -284,7 +285,6 @@ class GamePresenter @Inject constructor(
 
         viewState.showProgress(true)
 
-        //todo do not start periodic suggestions before user chooses what to enter
         //todo do not repeat suggestions, but remove old and show new one
         levelDataDisposable = gameInteractor
                 .getLevelInfo(quizId)
@@ -384,7 +384,7 @@ class GamePresenter @Inject constructor(
                                                     quizLevelInfo.doctor
                                                 )
 
-                                                showChatActions(generateChooseNameOrNumberActions())
+                                                showChatActions(generateChooseNameOrNumberActions(), ChatActionsGroupType.CHOOSE_ENTER_TYPE)
                                                 showKeyboard(false)
                                             }
                                         }
@@ -747,7 +747,7 @@ class GamePresenter @Inject constructor(
                     quizLevelInfo.doctor
                 )
 
-                showChatActions(generateNameEnteredChatActions())
+                showChatActions(generateNameEnteredChatActions(), ChatActionsGroupType.NAME_ENTERED)
                 showKeyboard(false)
             }
         }
@@ -800,7 +800,7 @@ class GamePresenter @Inject constructor(
                     quizLevelInfo.doctor
                 )
 
-                showChatActions(generateNumberEnteredChatActions())
+                showChatActions(generateNumberEnteredChatActions(), ChatActionsGroupType.NUMBER_ENTERED)
                 showKeyboard(false)
             }
         }
@@ -865,7 +865,7 @@ class GamePresenter @Inject constructor(
                 quizLevelInfo.doctor
             )
 
-            showChatActions(generateLevelCompletedActions())
+            showChatActions(generateLevelCompletedActions(), ChatActionsGroupType.LEVEL_FINISHED)
         }
 
         periodicMessagesCompositeDisposable.dispose()
@@ -877,6 +877,6 @@ class GamePresenter @Inject constructor(
             suggestionsMessages[Random().nextInt(suggestionsMessages.size)],
             quizLevelInfo.doctor
         )
-        viewState.showChatActions(generateSuggestions())
+        viewState.showChatActions(generateSuggestions(), ChatActionsGroupType.SUGGESTIONS)
     }
 }

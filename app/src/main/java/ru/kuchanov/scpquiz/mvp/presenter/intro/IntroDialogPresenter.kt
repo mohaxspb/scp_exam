@@ -17,6 +17,7 @@ import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.model.ui.ChatAction
+import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.IntroDialogView
 import java.util.concurrent.TimeUnit
@@ -75,7 +76,7 @@ class IntroDialogPresenter @Inject constructor(
                         )
                     },
                     onComplete = {
-                        viewState.showChatActions(generateStartGameActions())
+                        viewState.showChatActions(generateStartGameActions(), ChatActionsGroupType.START_GAME)
                     }
                 )
     }
@@ -99,9 +100,9 @@ class IntroDialogPresenter @Inject constructor(
         return chatActions
     }
 
-    private fun getOkActionForText(text: String): (Int) -> Unit = {
+    private fun getOkActionForText(text: String): (Int) -> Unit = { index ->
         preferences.setIntroDialogShown(true)
-        viewState.removeChatAction(it)
+        viewState.removeChatAction(index)
         viewState.showChatMessage(text, player)
         Single.timer(1, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())

@@ -24,6 +24,7 @@ import ru.kuchanov.scpquiz.di.module.GameModule
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
+import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.mvp.presenter.game.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.GameView
 import ru.kuchanov.scpquiz.ui.BaseActivity
@@ -322,7 +323,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         }
     }
 
-    override fun showChatActions(chatActions: List<ChatAction>) = chatDelegate.showChatActions(chatActions)
+    override fun showChatActions(chatActions: List<ChatAction>, chatActionsGroupType: ChatActionsGroupType) =
+            chatDelegate.showChatActions(chatActions, chatActionsGroupType)
 
     override fun removeChatAction(indexInParent: Int) = chatDelegate.removeChatAction(indexInParent)
 

@@ -14,3 +14,7 @@ class ChatAction(
         return "ChatAction(actionName='$actionName')"
     }
 }
+
+enum class ChatActionsGroupType {
+    START_GAME, CHOOSE_ENTER_TYPE, LEVEL_FINISHED, NAME_ENTERED, NUMBER_ENTERED, SUGGESTIONS, GAIN_COINS
+}
