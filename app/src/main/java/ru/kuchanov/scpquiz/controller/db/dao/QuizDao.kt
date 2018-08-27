@@ -3,6 +3,7 @@ package ru.kuchanov.scpquiz.controller.db.dao
 import android.arch.persistence.room.*
 import io.reactivex.Flowable
 import io.reactivex.Single
+import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.Quiz
 import ru.kuchanov.scpquiz.model.db.QuizTranslation
 import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase
@@ -44,6 +45,9 @@ interface QuizDao {
     @Query("SELECT * FROM quiz ORDER BY id ASC LIMIT 1")
     fun getFirst(): Single<Quiz>
 
+    @Query("SELECT * FROM FinishedLevel WHERE quizId = :quizId")
+    fun getFinishedLevelById(quizId: Long): FinishedLevel?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(quiz: Quiz): Long
 
@@ -52,6 +56,9 @@ interface QuizDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertQuizTranslationPhrases(list: List<QuizTranslationPhrase>): List<Long>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertFinishedLevel(finishedLevel: FinishedLevel): Long
 
     @Update
     fun update(quiz: Quiz): Int
@@ -73,7 +80,9 @@ interface QuizDao {
             }
             insertQuizTranslations(quizTranslations)
         }
-
+        if (getFinishedLevelById(quiz.id) == null) {
+            insertFinishedLevel(FinishedLevel(quiz.id))
+        }
         return insert(quiz)
     }
 

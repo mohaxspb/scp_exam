@@ -11,7 +11,6 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.api.QuizConverter
-import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.activity.MainView
 import timber.log.Timber
@@ -33,20 +32,20 @@ class MainPresenter @Inject constructor(
 
         router.navigateTo(Constants.Screens.ENTER)
         apiClient.getNwQuizList()
+                .doOnNext { Timber.d("quizList before filter :%s", it.size) }
+                .map { it -> it.filter { it.approved } }
                 .map { it ->
-                    it.filter { it.approved }
+
+                    Timber.d("quizList after filter :%s", it.size)
+
+                    Timber.d("in db before insert quizCount :%s", appDatabase.quizDao().getCount())
+
                     appDatabase.quizDao().insertQuizesWithQuizTranslations(
                             quizConverter.convertCollection(
                                     it,
                                     quizConverter::convert))
-                    appDatabase.finishedLevelsDao().insert(it.map { nwQuiz ->
-                        FinishedLevel(
-                                nwQuiz.id,
-                                false,
-                                false
-                        )
-                    })
 
+                    Timber.d(" inserted :%s", appDatabase.quizDao().getCount())
                 }
                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeBy(onError =
                 { it: Throwable ->

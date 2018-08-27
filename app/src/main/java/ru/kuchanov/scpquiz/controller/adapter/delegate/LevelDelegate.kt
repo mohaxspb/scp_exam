@@ -13,10 +13,11 @@ import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.ui.utils.getImageUrl
 import ru.kuchanov.scpquiz.utils.DimensionUtils
+import ru.kuchanov.scpquiz.utils.StorageUtils
 
 
 class LevelDelegate(
-    private val clickListener: (Long) -> Unit
+        private val clickListener: (Long) -> Unit
 ) : AbsListItemAdapterDelegate<LevelViewModel, MyListItem, LevelDelegate.LevelViewHolder>() {
 
     override fun isForViewType(item: MyListItem, items: MutableList<MyListItem>, position: Int) = item is LevelViewModel
@@ -30,11 +31,17 @@ class LevelDelegate(
     override fun onBindViewHolder(item: LevelViewModel, viewHolder: LevelViewHolder, payloads: MutableList<Any>) {
         with(viewHolder.itemView) {
             if (item.scpNameFilled || item.scpNumberFilled) {
-                GlideApp.with(imageView.context)
-                        .load(Uri.parse("file:///android_asset/quizImages/${item.quiz.getImageUrl()}"))
-                        .dontAnimate()
-                        .centerCrop()
-                        .into(imageView)
+                val glideRequest = GlideApp.with(imageView.context)
+                if (StorageUtils.ifFileExistsInAssets(item.quiz.getImageUrl(), imageView.context, "quizImages")) {
+                    glideRequest.load(Uri.parse("file:///android_asset/quizImages/${item.quiz.getImageUrl()}"))
+                            .fitCenter()
+                            .into(imageView)
+                } else {
+                    glideRequest.load(item.quiz.imageUrl)
+                            .fitCenter()
+                            .into(imageView)
+
+                }
                 if (item.scpNumberFilled && item.scpNameFilled) {
                     strokeView.visibility = View.GONE
                     scpNumberTextView.visibility = View.VISIBLE

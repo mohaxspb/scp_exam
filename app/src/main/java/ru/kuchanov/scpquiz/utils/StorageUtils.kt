@@ -1,8 +1,10 @@
 package ru.kuchanov.scpquiz.utils
 
 import android.content.Context
+import timber.log.Timber
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.util.*
 
 object StorageUtils {
 
@@ -18,5 +20,10 @@ object StorageUtils {
         }
         reader.close()
         return sb.toString()
+    }
+
+    fun ifFileExistsInAssets(filename: String, context: Context,path:String): Boolean {
+        Timber.d("%s", context.resources.assets.list(path).contains(filename))
+        return context.resources.assets.list(path).contains(filename)
     }
 }

@@ -26,7 +26,7 @@ class ApiClient @Inject constructor(
             .onErrorResumeNext { error: Throwable ->
                 if (error is HttpException) {
                     if (error.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                        getAccessToken().flatMap<List<NwQuiz>> { getNwQuizList() }
+                       return@onErrorResumeNext getAccessToken().flatMap<List<NwQuiz>> { getNwQuizList() }
                     }
                 }
                 Observable.error<List<NwQuiz>>(error)
