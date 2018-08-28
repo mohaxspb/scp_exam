@@ -75,5 +75,7 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
         progressAnimator.start()
     }
 
-    override fun onNeedToOpenIntroDialogFragment() = presenter.openIntroDialogScreen(BitmapUtils.loadBitmapFromView(root))
+    override fun onNeedToOpenIntroDialogFragment() {
+        BitmapUtils.loadBitmapFromView(root)?.let { presenter.openIntroDialogScreen(it) }
+    }
 }

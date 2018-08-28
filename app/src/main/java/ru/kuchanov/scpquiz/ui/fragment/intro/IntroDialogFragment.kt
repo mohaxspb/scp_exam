@@ -14,6 +14,7 @@ import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.IntroDialogModule
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
+import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.mvp.presenter.intro.IntroDialogPresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.IntroDialogView
 import ru.kuchanov.scpquiz.ui.BaseFragment
@@ -64,15 +65,17 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
         //todo move to delegate
         val bitmap = BitmapUtils.fileToBitmap("${activity?.cacheDir}/${Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME}.png")
 
-        backgroundImageView.post {
-            Blurry.with(context)
-                    .async()
-                    .animate(500)
-                    .from(bitmap)
-                    .into(backgroundImageView)
+        context?.let {
+            backgroundImageView.post {
+                Blurry.with(it)
+                        .async()
+                        .animate(500)
+                        .from(bitmap)
+                        .into(backgroundImageView)
+            }
         }
 
-        chatView.layoutTransition.enableTransitionType(LayoutTransition.CHANGING);
+        chatView.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
     }
 
     override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(
@@ -81,7 +84,8 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
         android.R.color.white
     )
 
-    override fun showChatActions(chatActions: List<ChatAction>) = chatDelegate.showChatActions(chatActions)
+    override fun showChatActions(chatActions: List<ChatAction>, chatActionsGroupType: ChatActionsGroupType) =
+            chatDelegate.showChatActions(chatActions, chatActionsGroupType)
 
     override fun removeChatAction(indexInParent: Int) = chatDelegate.removeChatAction(indexInParent)
 }
