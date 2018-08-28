@@ -36,9 +36,6 @@ android {
 
             //analitics
             buildConfigField('String', 'YANDEX_METRICA_API_KEY', '"' + properties.get("yandexMetricaApiKey") + '"')
-            buildConfigField('String', 'USER', '"' + properties.get("user") + '"')
-            buildConfigField('String', 'PASSWORD', '"' + properties.get("password") + '"')
-            buildConfigField('String', 'GRANT_TYPE', '"' + properties.get("grantType") + '"')
             //analitics END
 
             //ads
@@ -50,8 +47,14 @@ android {
             resValue('string', 'appodeal_app_key', properties.get("appodealAppKey"))
             //ads END
 
-            //api
+            //vps api
             buildConfigField('String', 'VPS_API_URL', '"' + properties.get("vpsApiUrl") + '"')
+            //quiz api
+            buildConfigField('String', 'QUIZ_API_URL', '"' + properties.get("quizApiUrl") + '"')
+            //quiz api auth
+            buildConfigField('String', 'USER', '"' + properties.get("user") + '"')
+            buildConfigField('String', 'PASSWORD', '"' + properties.get("password") + '"')
+            buildConfigField('String', 'GRANT_TYPE', '"' + properties.get("grantType") + '"')
         } else {
             throw new GradleException(
                     "You need to have projectRoot/config/config.properties file with "

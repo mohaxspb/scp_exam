@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import ru.kuchanov.scpquiz.controller.api.response.PurchaseValidateResponse
 
-interface VpsApi {
+interface ToolsApi {
 
     @GET("purchaseValidation/validate")
     fun validatePurchase(

@@ -1,4 +1,4 @@
-package ru.kuchanov.scpquiz.api.response
+package ru.kuchanov.scpquiz.controller.api.response
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

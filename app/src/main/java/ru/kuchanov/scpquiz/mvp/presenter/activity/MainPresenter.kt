@@ -6,7 +6,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
-import ru.kuchanov.scpquiz.api.ApiClient
+import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
@@ -18,13 +18,12 @@ import javax.inject.Inject
 
 @InjectViewState
 class MainPresenter @Inject constructor(
-
-        private var apiClient: ApiClient,
-        override var appContext: Application,
-        override var preferences: MyPreferenceManager,
-        override var router: ScpRouter,
-        override var appDatabase: AppDatabase,
-        private var quizConverter: QuizConverter
+    private var apiClient: ApiClient,
+    override var appContext: Application,
+    override var preferences: MyPreferenceManager,
+    override var router: ScpRouter,
+    override var appDatabase: AppDatabase,
+    private var quizConverter: QuizConverter
 ) : BasePresenter<MainView>(appContext, preferences, router, appDatabase) {
 
     override fun onFirstViewAttach() {
@@ -32,25 +31,20 @@ class MainPresenter @Inject constructor(
 
         router.navigateTo(Constants.Screens.ENTER)
         apiClient.getNwQuizList()
-                .doOnNext { Timber.d("quizList before filter :%s", it.size) }
                 .map { it -> it.filter { it.approved } }
-                .map { it ->
-
-                    Timber.d("quizList after filter :%s", it.size)
-
-                    Timber.d("in db before insert quizCount :%s", appDatabase.quizDao().getCount())
-
+                .map {
                     appDatabase.quizDao().insertQuizesWithQuizTranslations(
-                            quizConverter.convertCollection(
-                                    it,
-                                    quizConverter::convert))
-
-                    Timber.d(" inserted :%s", appDatabase.quizDao().getCount())
+                        quizConverter.convertCollection(
+                            it,
+                            quizConverter::convert))
                 }
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeBy(onError =
-                { it: Throwable ->
-                    Timber.e(it)
-                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onError = { it: Throwable ->
+                        Timber.e(it)
+                    }
+                )
     }
 }
 

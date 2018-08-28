@@ -28,7 +28,9 @@ import ru.kuchanov.scpquiz.mvp.presenter.game.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.GameView
 import ru.kuchanov.scpquiz.ui.BaseActivity
 import ru.kuchanov.scpquiz.ui.BaseFragment
-import ru.kuchanov.scpquiz.ui.utils.*
+import ru.kuchanov.scpquiz.ui.utils.ChatDelegate
+import ru.kuchanov.scpquiz.ui.utils.GlideApp
+import ru.kuchanov.scpquiz.ui.utils.getImageUrl
 import ru.kuchanov.scpquiz.ui.view.CharacterView
 import ru.kuchanov.scpquiz.utils.AdsUtils
 import ru.kuchanov.scpquiz.utils.BitmapUtils
@@ -97,9 +99,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         super.onViewCreated(view, savedInstanceState)
 
         chatDelegate = ChatDelegate(
-                chatMessagesView,
-                gameScrollView,
-                myPreferenceManager
+            chatMessagesView,
+            gameScrollView,
+            myPreferenceManager
         )
 
         keyboardView.keyPressListener = { char, charId -> presenter.onCharClicked(char, charId) }
@@ -129,10 +131,10 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         Timber.d("addCharToNameInput: $char, $charId")
         val inputFlexBox = scpNameFlexBoxLayout
         addCharToFlexBox(
-                char,
-                charId,
-                inputFlexBox,
-                TEXT_SIZE_NAME
+            char,
+            charId,
+            inputFlexBox,
+            TEXT_SIZE_NAME
         ) {
             presenter.quizLevelInfo.finishedLevel.scpNameFilled
         }
@@ -143,10 +145,10 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         Timber.d("addCharToNumberInput: $char, $charId")
         val inputFlexBox = scpNumberFlexBoxLayout
         addCharToFlexBox(
-                char,
-                charId,
-                inputFlexBox,
-                TEXT_SIZE_NUMBER
+            char,
+            charId,
+            inputFlexBox,
+            TEXT_SIZE_NUMBER
         ) {
             presenter.quizLevelInfo.finishedLevel.scpNumberFilled
         }
@@ -158,41 +160,40 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showImage(quiz: Quiz) {
-        val glideRequest = GlideApp.with(imageView.context)
-        if (StorageUtils.ifFileExistsInAssets(quiz.getImageUrl(), imageView.context,"quizImages")) {
-            glideRequest.load(Uri.parse("file:///android_asset/quizImages/${quiz.getImageUrl()}"))
-                    .fitCenter()
-                    .into(imageView)
-        } else {
-            glideRequest.load(quiz.imageUrl)
-                    .fitCenter()
-                    .into(imageView)
+        with(GlideApp.with(imageView.context)) {
+            if (StorageUtils.ifFileExistsInAssets(quiz.getImageUrl(), imageView.context, "quizImages")) {
+                load(Uri.parse("file:///android_asset/quizImages/${quiz.getImageUrl()}"))
+            } else {
+                load(quiz.imageUrl)
+            }
         }
+                .fitCenter()
+                .into(imageView)
     }
 
     override fun animateKeyboard() {
         keyboardScrollView?.postDelayed(
-                {
-                    keyboardScrollView?.apply {
-                        ObjectAnimator
-                                .ofInt(this, "scrollX", this.right)
-                                .setDuration(500)
-                                .start()
-                        val animBack = ObjectAnimator
-                                .ofInt(this, "scrollX", 0)
-                                .setDuration(500)
+            {
+                keyboardScrollView?.apply {
+                    ObjectAnimator
+                            .ofInt(this, "scrollX", this.right)
+                            .setDuration(500)
+                            .start()
+                    val animBack = ObjectAnimator
+                            .ofInt(this, "scrollX", 0)
+                            .setDuration(500)
 
-                        animBack.startDelay = 500
-                        animBack.start()
-                    }
-                },
-                100
+                    animBack.startDelay = 500
+                    animBack.start()
+                }
+            },
+            100
         )
     }
 
     override fun setBackgroundDark(showDark: Boolean) = root.setBackgroundResource(
-            if (showDark) R.color.backgroundColorLevelCompleted
-            else R.color.backgroundColor
+        if (showDark) R.color.backgroundColorLevelCompleted
+        else R.color.backgroundColor
     )
 
     override fun showToolbar(show: Boolean) {
@@ -214,9 +215,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         removeAllViews()
         number.forEach {
             addCharToFlexBox(
-                    char = it,
-                    flexBoxContainer = this,
-                    textSize = TEXT_SIZE_NUMBER) { presenter.quizLevelInfo.finishedLevel.scpNumberFilled }
+                char = it,
+                flexBoxContainer = this,
+                textSize = TEXT_SIZE_NUMBER) { presenter.quizLevelInfo.finishedLevel.scpNumberFilled }
         }
     }
 
@@ -233,11 +234,11 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     private fun addCharToFlexBox(
-            char: Char,
-            charId: Int = View.NO_ID,
-            flexBoxContainer: FlexboxLayout,
-            textSize: Float = TEXT_SIZE_NAME,
-            shouldIgnoreClick: () -> Boolean
+        char: Char,
+        charId: Int = View.NO_ID,
+        flexBoxContainer: FlexboxLayout,
+        textSize: Float = TEXT_SIZE_NAME,
+        shouldIgnoreClick: () -> Boolean
     ) {
         val characterView = CharacterView(flexBoxContainer.context)
         characterView.isSquare = false
@@ -252,7 +253,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                     SystemUtils.vibrate()
                 }
                 Timber.d(
-                        """
+                    """
                     char: $char,
                     flexBoxContainer.indexOfChild(it): ${flexBoxContainer.indexOfChild(it)}
                     flexBoxContainer.childCount: ${flexBoxContainer.childCount}
@@ -310,15 +311,15 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(
-            message,
-            user,
-            R.color.textColorGrey
+        message,
+        user,
+        R.color.textColorGrey
     )
 
     override fun askForRateApp() = PreRate.init(
-            activity,
-            getString(R.string.feedback_email),
-            getString(R.string.feedback_title)
+        activity,
+        getString(R.string.feedback_email),
+        getString(R.string.feedback_title)
     ).showRateDialog()
 
     override fun clearChatMessages() = chatMessagesView.removeAllViews()
@@ -328,9 +329,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     override fun onNeedToOpenCoins() = presenter.openCoins(BitmapUtils.loadBitmapFromView(root))
 
     override fun showError(error: Throwable) = Snackbar.make(
-            root,
-            error.message ?: getString(R.string.error_unknown),
-            Snackbar.LENGTH_LONG
+        root,
+        error.message ?: getString(R.string.error_unknown),
+        Snackbar.LENGTH_LONG
     ).show()
 
     override fun showProgress(show: Boolean) {
