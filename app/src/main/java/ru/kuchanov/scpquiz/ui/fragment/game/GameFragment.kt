@@ -35,6 +35,7 @@ import ru.kuchanov.scpquiz.ui.utils.getImageUrl
 import ru.kuchanov.scpquiz.ui.view.CharacterView
 import ru.kuchanov.scpquiz.utils.AdsUtils
 import ru.kuchanov.scpquiz.utils.BitmapUtils
+import ru.kuchanov.scpquiz.utils.StorageUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
 import timber.log.Timber
 import toothpick.Toothpick
@@ -189,9 +190,13 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showImage(quiz: Quiz) {
-        GlideApp
-                .with(imageView.context)
-                .load(Uri.parse("file:///android_asset/quizImages/${quiz.getImageUrl()}"))
+        with(GlideApp.with(imageView.context)) {
+            if (StorageUtils.ifFileExistsInAssets(quiz.getImageUrl(), imageView.context, "quizImages")) {
+                load(Uri.parse("file:///android_asset/quizImages/${quiz.getImageUrl()}"))
+            } else {
+                load(quiz.imageUrl)
+            }
+        }
                 .fitCenter()
                 .into(imageView)
     }

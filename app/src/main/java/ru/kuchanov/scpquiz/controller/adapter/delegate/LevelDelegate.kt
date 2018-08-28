@@ -13,6 +13,7 @@ import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.ui.utils.getImageUrl
 import ru.kuchanov.scpquiz.utils.DimensionUtils
+import ru.kuchanov.scpquiz.utils.StorageUtils
 
 
 class LevelDelegate(
@@ -30,11 +31,17 @@ class LevelDelegate(
     override fun onBindViewHolder(item: LevelViewModel, viewHolder: LevelViewHolder, payloads: MutableList<Any>) {
         with(viewHolder.itemView) {
             if (item.scpNameFilled || item.scpNumberFilled) {
-                GlideApp.with(imageView.context)
-                        .load(Uri.parse("file:///android_asset/quizImages/${item.quiz.getImageUrl()}"))
+                with(GlideApp.with(imageView.context)) {
+                    if (StorageUtils.ifFileExistsInAssets(item.quiz.getImageUrl(), imageView.context, "quizImages")) {
+                        load(Uri.parse("file:///android_asset/quizImages/${item.quiz.getImageUrl()}"))
+                    } else {
+                        load(item.quiz.imageUrl)
+                    }
+                }
                         .dontAnimate()
                         .centerCrop()
                         .into(imageView)
+
                 if (item.scpNumberFilled && item.scpNameFilled) {
                     strokeView.visibility = View.GONE
                     scpNumberTextView.visibility = View.VISIBLE

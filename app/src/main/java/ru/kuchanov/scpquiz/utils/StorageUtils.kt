@@ -19,4 +19,7 @@ object StorageUtils {
         reader.close()
         return sb.toString()
     }
+
+    fun ifFileExistsInAssets(filename: String, context: Context, path: String) =
+            context.resources.assets.list(path).contains(filename)
 }

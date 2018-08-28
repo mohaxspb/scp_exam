@@ -14,6 +14,8 @@ import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
+import ru.kuchanov.scpquiz.di.qualifier.VpsQuizApi
+import ru.kuchanov.scpquiz.di.qualifier.VpsToolsApi
 import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.terrakok.cicerone.Cicerone
 import ru.terrakok.cicerone.NavigatorHolder
@@ -44,11 +46,10 @@ class AppModule(context: Context) : Module() {
         bind(QuizConverter::class.java).singletonInScope()
 
         //json
-        bind(Moshi::class.java).toInstance(
-            Moshi.Builder()
-                    .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
-                    .build()
-        )
+        val moshi = Moshi.Builder()
+                .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
+                .build()
+        bind(Moshi::class.java).toInstance(moshi)
 
         //routing
         val cicerone: Cicerone<ScpRouter> = Cicerone.create(ScpRouter())
@@ -64,10 +65,19 @@ class AppModule(context: Context) : Module() {
                 )
                 .build()
 
-        bind(Retrofit::class.java).toInstance(
+        bind(Retrofit::class.java).withName(VpsToolsApi::class.java).toInstance(
             Retrofit.Builder()
                     .baseUrl(BuildConfig.VPS_API_URL)
-                    .addConverterFactory(MoshiConverterFactory.create())
+                    .addConverterFactory(MoshiConverterFactory.create(moshi))
+                    .client(okHttpClient)
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build()
+        )
+
+        bind(Retrofit::class.java).withName(VpsQuizApi::class.java).toInstance(
+            Retrofit.Builder()
+                    .baseUrl(BuildConfig.QUIZ_API_URL)
+                    .addConverterFactory(MoshiConverterFactory.create(moshi))
                     .client(okHttpClient)
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .build()

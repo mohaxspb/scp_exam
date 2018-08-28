@@ -47,8 +47,14 @@ android {
             resValue('string', 'appodeal_app_key', properties.get("appodealAppKey"))
             //ads END
 
-            //api
+            //vps api
             buildConfigField('String', 'VPS_API_URL', '"' + properties.get("vpsApiUrl") + '"')
+            //quiz api
+            buildConfigField('String', 'QUIZ_API_URL', '"' + properties.get("quizApiUrl") + '"')
+            //quiz api auth
+            buildConfigField('String', 'USER', '"' + properties.get("user") + '"')
+            buildConfigField('String', 'PASSWORD', '"' + properties.get("password") + '"')
+            buildConfigField('String', 'GRANT_TYPE', '"' + properties.get("grantType") + '"')
         } else {
             throw new GradleException(
                     "You need to have projectRoot/config/config.properties file with "
@@ -99,10 +105,14 @@ android {
     lintOptions {
         checkReleaseBuilds false
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     //kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -119,14 +129,16 @@ dependencies {
     api 'com.android.support:multidex:1.0.3'
 
     //google libs
-    implementation "com.google.firebase:firebase-core:16.0.1"
-    implementation "com.google.firebase:firebase-analytics:16.0.1"
-    implementation "com.google.firebase:firebase-invites:16.0.1"
-    implementation "com.google.firebase:firebase-ads:15.0.1"
-    implementation "com.google.firebase:firebase-messaging:17.1.0"
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-analytics:16.0.1'
+    implementation 'com.google.firebase:firebase-invites:16.0.1'
+    implementation 'com.google.firebase:firebase-ads:15.0.1'
+    implementation 'com.google.firebase:firebase-messaging:17.1.0'
+
     //need for appodeal
     implementation 'com.google.android.gms:play-services-location:15.0.1'
     implementation 'com.google.android.gms:play-services-gcm:15.0.1'
+
     //new crash reporting
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') { transitive = true }
 
@@ -147,13 +159,14 @@ dependencies {
 
     //rx
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.13'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.16'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
 
     //db
     def roomVersion = "1.1.1"
     implementation "android.arch.persistence.room:runtime:$roomVersion"
     kapt "android.arch.persistence.room:compiler:$roomVersion"
+
     //optional - RxJava support for Room
     implementation "android.arch.persistence.room:rxjava2:$roomVersion"
 
@@ -189,7 +202,9 @@ dependencies {
     implementation 'com.hannesdorfmann:adapterdelegates3:3.0.1'
 
     //appodeal
-    implementation 'com.squareup.picasso:picasso:2.5.2' //for Inmobi
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+
+    //for Inmobi
     implementation name: 'adcolony-3.3.4', ext: 'aar'
     implementation name: 'mobvista-8.11.0-alphab', ext: 'aar'
     implementation name: 'mobvista-8.11.0-common', ext: 'aar'
@@ -204,11 +219,14 @@ dependencies {
     implementation name: 'mobvista-8.11.0-videocommon', ext: 'aar'
     implementation name: 'mobvista-8.11.0-videofeeds', ext: 'aar'
     implementation name: 'mobvista-8.11.0-videojs', ext: 'aar'
+
     //appodeal END
 
     // AppMetrica
+
     //we add it here and delete jar from appodeal
     implementation 'com.yandex.android:mobmetricalib:3.1.0'
+
     // Optional. Play Install Referrer library for better attribution.
     implementation 'com.android.installreferrer:installreferrer:1.0'
 

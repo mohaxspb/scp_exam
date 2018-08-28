@@ -44,6 +44,10 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun isAlreadySuggestRateUs() = preferences.getBoolean(Key.SUGGEST_RATE_US, false)
 
+    fun getAccessToken() = preferences.getString(Key.ACCESS_TOKEN, null)
+
+    fun setAccessToken(accessToken: String) = preferences.edit().putString(Key.ACCESS_TOKEN, accessToken).apply()
+
     fun setAlreadySuggestRateUs(alreadySuggestRateUs: Boolean) = preferences.edit().putBoolean(
         Key.SUGGEST_RATE_US,
         alreadySuggestRateUs
