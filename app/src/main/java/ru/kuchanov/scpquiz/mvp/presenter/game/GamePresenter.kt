@@ -20,9 +20,9 @@ import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
+import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.GameView
-import ru.kuchanov.scpquiz.ui.fragment.game.GameFragment
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
@@ -317,6 +317,7 @@ class GamePresenter @Inject constructor(
 
                                         with(viewState) {
                                             showToolbar(true)
+                                            showHelpButton(true)
 
                                             val scpNumberChars = quizLevelInfo.quiz.scpNumber.toMutableList()
                                             setKeyboardChars(
@@ -349,6 +350,7 @@ class GamePresenter @Inject constructor(
 
                                             if (scpNumberFilled && !scpNameFilled) {
                                                 currentEnterType = EnterType.NAME
+                                                showHelpButton(true)
 
                                                 showNumber(quizLevelInfo.quiz.scpNumber.toList())
 
@@ -384,7 +386,10 @@ class GamePresenter @Inject constructor(
                                                     quizLevelInfo.doctor
                                                 )
 
-                                                showChatActions(generateChooseNameOrNumberActions(), ChatActionsGroupType.CHOOSE_ENTER_TYPE)
+                                                showChatActions(
+                                                    generateChooseNameOrNumberActions(),
+                                                    ChatActionsGroupType.CHOOSE_ENTER_TYPE
+                                                )
                                                 showKeyboard(false)
                                             }
                                         }
@@ -527,17 +532,8 @@ class GamePresenter @Inject constructor(
 
     private fun generateLevelCompletedActions(): List<ChatAction> {
         val chatActions = mutableListOf<ChatAction>()
-        if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
-            val nextLevelAction = ChatAction(
-                appContext.getString(R.string.chat_action_next_level),
-                {
-                    Timber.d("NextLevel ID: ${quizLevelInfo.nextQuizId}")
-                    router.navigateTo(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
-                },
-                R.drawable.selector_chat_action_green
-            )
-            chatActions += nextLevelAction
-        }
+
+        generateNextLevelAction()?.let { chatActions += it }
 
         val enterNumberAction = ChatAction(
             appContext.getString(R.string.chat_action_levels_list),
@@ -552,16 +548,9 @@ class GamePresenter @Inject constructor(
 
     private fun generateNameEnteredChatActions(): List<ChatAction> {
         val chatActions = mutableListOf<ChatAction>()
-        if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
-            val nextLevelAction = ChatAction(
-                appContext.getString(R.string.chat_action_next_level),
-                {
-                    router.navigateTo(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
-                },
-                R.drawable.selector_chat_action_accent
-            )
-            chatActions += nextLevelAction
-        }
+
+        generateNextLevelAction()?.let { chatActions += it }
+
         val message = appContext.getString(R.string.chat_action_enter_number)
         val enterNumberAction = ChatAction(
             message,
@@ -587,6 +576,35 @@ class GamePresenter @Inject constructor(
         return chatActions
     }
 
+    private fun generateNextLevelAction() = if (quizLevelInfo.nextQuizIdAndFinishedLevel.first != null) {
+        ChatAction(
+            appContext.getString(R.string.chat_action_next_level),
+            {
+                val showAds = !preferences.isAdsDisabled()
+                        && preferences.isNeedToShowInterstitial()
+                        && (!quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNameFilled
+                        || !quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNumberFilled)
+                Timber.d(
+                    "!preferences.isAdsDisabled()\n" +
+                            "preferences.isNeedToShowInterstitial()\n" +
+                            "(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
+                    !preferences.isAdsDisabled(),
+                    preferences.isNeedToShowInterstitial(),
+                    !quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNameFilled
+                            || !quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNumberFilled
+                )
+                Timber.d("showAds: $showAds")
+                router.navigateTo(
+                    Constants.Screens.QUIZ,
+                    QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
+                )
+            },
+            R.drawable.selector_chat_action_accent
+        )
+    } else {
+        null
+    }
+
     private fun generateChooseNameOrNumberActions(): List<ChatAction> {
         val chatActions = mutableListOf<ChatAction>()
 
@@ -608,6 +626,7 @@ class GamePresenter @Inject constructor(
                     animateKeyboard()
                     showChatMessage(message, quizLevelInfo.player)
                     removeChatAction(it)
+                    showHelpButton(true)
                 }
 
                 currentEnterType = EnterType.NUMBER
@@ -641,6 +660,7 @@ class GamePresenter @Inject constructor(
                     animateKeyboard()
                     showChatMessage(messageEnterName, quizLevelInfo.player)
                     removeChatAction(index)
+                    showHelpButton(true)
                 }
 
                 currentEnterType = EnterType.NAME
@@ -809,15 +829,8 @@ class GamePresenter @Inject constructor(
     private fun generateNumberEnteredChatActions(): List<ChatAction> {
         val chatActions = mutableListOf<ChatAction>()
 
-        if (quizLevelInfo.nextQuizId != GameFragment.NO_NEXT_QUIZ_ID) {
-            chatActions += ChatAction(
-                appContext.getString(R.string.chat_action_next_level),
-                {
-                    router.navigateTo(Constants.Screens.QUIZ, quizLevelInfo.nextQuizId)
-                },
-                R.drawable.selector_chat_action_accent
-            )
-        }
+        generateNextLevelAction()?.let { chatActions += it }
+
         val message = appContext.getString(R.string.chat_action_enter_name)
         chatActions += ChatAction(
             message,
@@ -854,6 +867,7 @@ class GamePresenter @Inject constructor(
         with(viewState) {
             showKeyboard(false)
             showToolbar(false)
+            showHelpButton(false)
             setBackgroundDark(true)
 
             showChatMessage(

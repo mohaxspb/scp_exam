@@ -16,6 +16,7 @@ import ru.kuchanov.scpquiz.controller.manager.monetization.BillingDelegate
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.di.Di
+import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.BaseView
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.ui.utils.MyRewardedVideoCallbacks
@@ -170,7 +171,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
                 super.onAdOpened()
                 requestNewInterstitial()
                 preferenceManager.setNeedToShowInterstitial(false)
-                router.replaceScreen(Constants.Screens.QUIZ, quizId)
+                router.replaceScreen(Constants.Screens.QUIZ, QuizScreenLaunchData(quizId, true))
             }
         }
         interstitialAd.show()

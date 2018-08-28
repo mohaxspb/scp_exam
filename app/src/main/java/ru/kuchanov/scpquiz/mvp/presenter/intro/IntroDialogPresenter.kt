@@ -18,6 +18,7 @@ import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
+import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.IntroDialogView
 import java.util.concurrent.TimeUnit
@@ -109,7 +110,7 @@ class IntroDialogPresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onSuccess = {
-                        router.newRootScreen(Constants.Screens.QUIZ, quiz.id)
+                        router.newRootScreen(Constants.Screens.QUIZ, QuizScreenLaunchData(quiz.id, true))
                     }
                 )
     }

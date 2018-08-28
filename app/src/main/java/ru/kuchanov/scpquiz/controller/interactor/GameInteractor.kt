@@ -11,7 +11,6 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
-import ru.kuchanov.scpquiz.ui.fragment.game.GameFragment
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -26,20 +25,20 @@ class GameInteractor @Inject constructor(
         getPlayer(),
         getDoctor(),
         getFinishedLevel(quizId),
-        getNextQuizId(quizId),
+        getNextQuizIdAndFinishedLevel(quizId),
         Function6 { quiz: Quiz,
             randomTranslations: List<QuizTranslation>,
             player: User,
             doctor: User,
             finishedLevel: FinishedLevel,
-            nextQuizId: Long ->
+            nextQuizIdAndFinishedLevel: Pair<Long?, FinishedLevel?> ->
             QuizLevelInfo(
                 quiz = quiz,
                 randomTranslations = randomTranslations,
                 player = player,
                 doctor = doctor,
                 finishedLevel = finishedLevel,
-                nextQuizId = nextQuizId
+                nextQuizIdAndFinishedLevel = nextQuizIdAndFinishedLevel
             )
         }
     )
@@ -94,9 +93,14 @@ class GameInteractor @Inject constructor(
             .getByIdWithUpdates(quizId)
             .map { it.first() }
 
-    private fun getNextQuizId(quizId: Long) = appDatabase.quizDao()
+    private fun getNextQuizIdAndFinishedLevel(quizId: Long) = appDatabase.quizDao()
             .getNextQuizId(quizId)
-            .onErrorReturn { GameFragment.NO_NEXT_QUIZ_ID }
+            .flatMap<Pair<Long?, FinishedLevel?>> { nextQuizId ->
+                appDatabase.finishedLevelsDao()
+                        .getByIdOrErrorOnce(nextQuizId)
+                        .map { Pair(nextQuizId, it) }
+            }
+            .onErrorReturn { Pair(null, null) }
             .toFlowable()
 
     fun increaseScore(scoreToDecrease: Int): Completable = Completable.fromAction {

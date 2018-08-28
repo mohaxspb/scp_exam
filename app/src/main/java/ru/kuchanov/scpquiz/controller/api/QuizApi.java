@@ -14,14 +14,14 @@ import ru.kuchanov.scpquiz.model.api.NwQuiz;
 public interface QuizApi {
 
     @FormUrlEncoded
-    @POST("scp-quiz/oauth/token")
+    @POST("oauth/token")
     Single<TokenResponse> getAccessToken(
             @Header("Authorization") String authorization,
             @Field("grant_type") String grantType
     );
 
 
-    @GET("scp-quiz/quiz/all")
+    @GET("quiz/all")
     Single<List<NwQuiz>> getNwQuizList(
             @Header("Authorization") String authorization
     );

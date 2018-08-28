@@ -47,7 +47,6 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     companion object {
         const val ARG_QUIZ_ID = "ARG_QUIZ_ID"
-        const val NO_NEXT_QUIZ_ID = -1L
 
         const val TEXT_SIZE_NAME = 20f
         const val TEXT_SIZE_NUMBER = 16f
@@ -231,7 +230,10 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         hamburgerButton.visibility = visibility
         levelNumberTextView.visibility = visibility
         coinsButton.visibility = visibility
-        helpButton.visibility = visibility
+    }
+
+    override fun showHelpButton(show: Boolean) {
+        helpButton.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     override fun showCoins(coins: Int) {

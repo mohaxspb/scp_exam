@@ -39,4 +39,5 @@ interface GameView : BaseView {
     fun removeCharFromNameInput(charId: Int, indexOfChild: Int)
     fun removeCharFromNumberInput(charId: Int, indexOfChild: Int)
     fun showBackspaceButton(show: Boolean)
+    fun showHelpButton(show: Boolean)
 }

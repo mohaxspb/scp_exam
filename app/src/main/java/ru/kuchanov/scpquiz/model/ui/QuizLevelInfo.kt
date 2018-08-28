@@ -11,5 +11,5 @@ data class QuizLevelInfo(
     val finishedLevel: FinishedLevel,
     val player: User,
     val doctor: User,
-    val nextQuizId: Long
+    val nextQuizIdAndFinishedLevel: Pair<Long?, FinishedLevel?>
 )
