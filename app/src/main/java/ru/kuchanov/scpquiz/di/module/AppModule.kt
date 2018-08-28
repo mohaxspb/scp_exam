@@ -32,14 +32,14 @@ class AppModule(context: Context) : Module() {
         bind(MyPreferenceManager::class.java).singletonInScope()
         //database
         bind(AppDatabase::class.java).toInstance(
-                Room.databaseBuilder(
-                        context,
-                        AppDatabase::class.java,
-                        "database"
-                )
-                        //todo create migrations if need
-                        .fallbackToDestructiveMigration()
-                        .build()
+            Room.databaseBuilder(
+                context,
+                AppDatabase::class.java,
+                "database"
+            )
+                    //todo create migrations if need
+                    .fallbackToDestructiveMigration()
+                    .build()
         )
 
         //models converter
@@ -60,8 +60,8 @@ class AppModule(context: Context) : Module() {
         //api
         val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor(
-                        HttpLoggingInterceptor { log -> Timber.d(log) }
-                                .setLevel(HttpLoggingInterceptor.Level.BODY)
+                    HttpLoggingInterceptor { log -> Timber.d(log) }
+                            .setLevel(HttpLoggingInterceptor.Level.BODY)
                 )
                 .build()
 
@@ -75,12 +75,12 @@ class AppModule(context: Context) : Module() {
         )
 
         bind(Retrofit::class.java).withName(VpsQuizApi::class.java).toInstance(
-                Retrofit.Builder()
-                        .baseUrl(BuildConfig.QUIZ_API_URL)
-                        .addConverterFactory(MoshiConverterFactory.create(moshi))
-                        .client(okHttpClient)
-                        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                        .build()
+            Retrofit.Builder()
+                    .baseUrl(BuildConfig.QUIZ_API_URL)
+                    .addConverterFactory(MoshiConverterFactory.create(moshi))
+                    .client(okHttpClient)
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .build()
         )
         bind(ApiClient::class.java).singletonInScope()
     }

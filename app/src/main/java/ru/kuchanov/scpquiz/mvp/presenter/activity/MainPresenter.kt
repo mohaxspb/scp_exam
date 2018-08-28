@@ -47,5 +47,3 @@ class MainPresenter @Inject constructor(
                 )
     }
 }
-
-
