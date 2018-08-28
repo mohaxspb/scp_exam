@@ -39,7 +39,7 @@ class LevelDelegate(
                     }
                 }
                         .dontAnimate()
-                        .fitCenter()
+                        .centerCrop()
                         .into(imageView)
 
                 if (item.scpNumberFilled && item.scpNameFilled) {

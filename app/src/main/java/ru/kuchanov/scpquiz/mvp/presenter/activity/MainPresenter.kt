@@ -36,7 +36,9 @@ class MainPresenter @Inject constructor(
                     appDatabase.quizDao().insertQuizesWithQuizTranslations(
                         quizConverter.convertCollection(
                             it,
-                            quizConverter::convert))
+                            quizConverter::convert
+                        )
+                    )
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
