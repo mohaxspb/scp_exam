@@ -14,6 +14,7 @@ import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.Quiz
+import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
 import timber.log.Timber
@@ -36,9 +37,21 @@ class LevelsPresenter @Inject constructor(
         updateLevels()
     }
 
-    fun onLevelClick(quizId: Long) {
-        Timber.d("onLevelClick: %s", quizId)
-        router.navigateTo(Constants.Screens.QUIZ, quizId)
+    fun onLevelClick(levelViewModel: LevelViewModel) {
+        Timber.d("onLevelClick: %s", levelViewModel.quiz.id)
+        val showAds = !preferences.isAdsDisabled()
+                && preferences.isNeedToShowInterstitial()
+                && (!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled)
+        Timber.d(
+            "!preferences.isAdsDisabled()\n" +
+                    "preferences.isNeedToShowInterstitial()\n" +
+                    "(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
+            !preferences.isAdsDisabled(),
+            preferences.isNeedToShowInterstitial(),
+            !levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled
+        )
+        Timber.d("showAds: $showAds")
+        router.navigateTo(Constants.Screens.QUIZ, QuizScreenLaunchData(levelViewModel.quiz.id, !showAds))
     }
 
     private fun updateLevels() {

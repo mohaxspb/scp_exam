@@ -12,6 +12,7 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.navigation.ShowCommand
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.MainActivityModule
+import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.presenter.activity.MainPresenter
 import ru.kuchanov.scpquiz.mvp.view.activity.MainView
 import ru.kuchanov.scpquiz.ui.BaseActivity
@@ -56,7 +57,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                 Constants.Screens.ENTER -> EnterFragment.newInstance()
                 Constants.Screens.APP_INFO -> AppInfoFragment.newInstance()
                 Constants.Screens.QUIZ_LIST -> LevelsFragment.newInstance()
-                Constants.Screens.QUIZ -> GameFragment.newInstance(data as Long)
+                Constants.Screens.QUIZ -> GameFragment.newInstance((data as QuizScreenLaunchData).quizId)
                 Constants.Screens.SETTINGS -> ScpSettingsFragment.newInstance()
                 Constants.Screens.INTRO_DIALOG -> IntroDialogFragment.newInstance()
                 Constants.Screens.MONETIZATION -> MonetizationFragment.newInstance()
@@ -81,20 +82,13 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                     screenKey = command.screenKey
                     data = command.transitionData
                 }
-                Timber.d(
-                    """attemptToOpenQuiz !preferenceManager.isAdsDisabled(): ${!preferenceManager.isAdsDisabled()}
-                          |  screenKey != null: ${screenKey != null}\n
-                          |  screenKey == Constants.Screens.QUIZ: ${screenKey == Constants.Screens.QUIZ}\n
-                          |  preferenceManager.isNeedToShowInterstitial(): ${preferenceManager.isNeedToShowInterstitial()}"""
-                            .trimMargin()
-                )
-                if (!preferenceManager.isAdsDisabled()
-                        && screenKey != null
+                if (
+                        screenKey != null
                         && screenKey == Constants.Screens.QUIZ
-                        && preferenceManager.isNeedToShowInterstitial()
+                        && !(data as QuizScreenLaunchData).skipAdsShowing
                         && isInterstitialLoaded()
                 ) {
-                    showAdsDialog(data as Long)
+                    showAdsDialog(data.quizId)
                 } else {
                     requestNewInterstitial()
                     super.applyCommand(command)

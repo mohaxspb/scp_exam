@@ -17,7 +17,7 @@ import ru.kuchanov.scpquiz.utils.StorageUtils
 
 
 class LevelDelegate(
-    private val clickListener: (Long) -> Unit
+    private val clickListener: (LevelViewModel) -> Unit
 ) : AbsListItemAdapterDelegate<LevelViewModel, MyListItem, LevelDelegate.LevelViewHolder>() {
 
     override fun isForViewType(item: MyListItem, items: MutableList<MyListItem>, position: Int) = item is LevelViewModel
@@ -56,7 +56,7 @@ class LevelDelegate(
                 scpNumberTextView.visibility = View.GONE
             }
 
-            setOnClickListener { clickListener(item.quiz.id) }
+            setOnClickListener { clickListener(item) }
         }
     }
 
