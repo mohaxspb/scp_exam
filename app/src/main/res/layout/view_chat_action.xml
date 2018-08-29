@@ -1,16 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.AppCompatTextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout android:id="@+id/chatActionView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/selector_chat_action_accent"
-    android:paddingBottom="5dp"
-    android:paddingEnd="@dimen/defaultMargin"
-    android:paddingStart="@dimen/defaultMargin"
-    android:paddingTop="5dp"
-    android:textColor="@android:color/black"
-    android:textSize="14sp"
-    tools:layout_gravity="center"
-    tools:text="OK">
+    android:orientation="horizontal"
+    tools:layout_gravity="center">
 
-</android.support.v7.widget.AppCompatTextView>
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/actionPriceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:drawableEnd="@drawable/ic_coin"
+        android:drawablePadding="@dimen/defaultMarginSmall"
+        android:paddingBottom="5dp"
+        android:paddingStart="@dimen/defaultMargin"
+        android:paddingTop="5dp"
+        android:textColor="@color/colorRed"
+        android:textSize="16sp"
+        tools:ignore="RtlSymmetry"
+        tools:layout_gravity="center"
+        tools:text="5" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/chatActionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingBottom="5dp"
+        android:paddingEnd="@dimen/defaultMargin"
+        android:paddingStart="@dimen/defaultMargin"
+        android:paddingTop="5dp"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        tools:text="asldhaslkd  khalksdhal khl hala ajksdhakjh haskjd hak hakjs hhak jha hkja hakjhOK" />
+</LinearLayout>
