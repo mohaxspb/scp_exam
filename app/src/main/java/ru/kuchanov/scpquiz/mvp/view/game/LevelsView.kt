@@ -7,4 +7,7 @@ interface LevelsView : BaseView {
     fun showProgress(show: Boolean)
     fun showLevels(quizes: List<LevelViewModel>)
     fun showAllLevelsFinishedPanel(show: Boolean)
+    fun onNeedToOpenCoins()
+    fun onNeedToOpenSettings()
+    fun showCoins(coins: Int)
 }
