@@ -107,6 +107,21 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
 
     override fun inject() = Toothpick.inject(this, scope)
 
+    override fun showFirstTimeAppodealAdsDialog() {
+        Timber.d("showFirstTimeAppodealAdsDialog")
+        MaterialDialog.Builder(this)
+                .title(R.string.will_show_ads_title)
+                .content(R.string.want_watch_ads_content)
+                .positiveText(android.R.string.ok)
+                .onPositive { _, _ ->
+                    preferenceManager.setAppodealDescriptionShown(true)
+                    showRewardedVideo()
+                }
+                .negativeText(android.R.string.cancel)
+                .build()
+                .show()
+    }
+
     override fun showAdsDialog(quizId: Long) {
         Timber.d("showAdsDialog")
         MaterialDialog.Builder(this)

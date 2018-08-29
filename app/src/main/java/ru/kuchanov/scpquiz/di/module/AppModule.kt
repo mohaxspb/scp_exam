@@ -12,6 +12,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.db.migrations.Migrations
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.di.qualifier.VpsQuizApi
@@ -37,8 +38,7 @@ class AppModule(context: Context) : Module() {
                 AppDatabase::class.java,
                 "database"
             )
-                    //todo create migrations if need
-                    .fallbackToDestructiveMigration()
+                    .addMigrations(Migrations.MIGRATION_1_2)
                     .build()
         )
 

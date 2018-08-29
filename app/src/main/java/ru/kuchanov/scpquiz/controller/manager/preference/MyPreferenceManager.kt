@@ -42,11 +42,11 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun isAdsDisabled() = preferences.getBoolean(Key.ADS_DISABLED, false)
 
-    fun isAlreadySuggestRateUs() = preferences.getBoolean(Key.SUGGEST_RATE_US, false)
-
     fun getAccessToken() = preferences.getString(Key.ACCESS_TOKEN, null)
 
     fun setAccessToken(accessToken: String) = preferences.edit().putString(Key.ACCESS_TOKEN, accessToken).apply()
+
+    fun isAlreadySuggestRateUs() = preferences.getBoolean(Key.SUGGEST_RATE_US, false)
 
     fun setAlreadySuggestRateUs(alreadySuggestRateUs: Boolean) = preferences.edit().putBoolean(
         Key.SUGGEST_RATE_US,
@@ -59,4 +59,11 @@ class MyPreferenceManager @Inject constructor(context: Context) {
         Key.LAST_FINISHED_LEVELS_NUM,
         lastFinishedLevelsNum
     ).apply()
+
+    fun setAppodealDescriptionShown(shown: Boolean) = preferences.edit().putBoolean(
+        Key.APPODEAL_DESCRIPTION_SHOWN,
+        shown
+    ).apply()
+
+    fun isAppodealDescriptionShown() = preferences.getBoolean(Key.APPODEAL_DESCRIPTION_SHOWN, false)
 }

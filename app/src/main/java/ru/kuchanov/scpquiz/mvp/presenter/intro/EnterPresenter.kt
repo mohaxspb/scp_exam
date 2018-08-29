@@ -93,11 +93,12 @@ class EnterPresenter @Inject constructor(
                             it,
                             quizConverter::convert
                         ))
-                    appDatabase.finishedLevelsDao().insert(it.map { nwQuiz ->
+                    appDatabase.finishedLevelsDao().insert(it.mapIndexed { index, nwQuiz ->
                         FinishedLevel(
                             nwQuiz.id,
                             false,
-                            false
+                            false,
+                            index < 5
                         )
                     })
 

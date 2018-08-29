@@ -15,14 +15,17 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.LevelDelegate
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.LevelsModule
 import ru.kuchanov.scpquiz.mvp.presenter.game.LevelsPresenter
+import ru.kuchanov.scpquiz.mvp.view.activity.MainView
 import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import toothpick.Toothpick
 import toothpick.config.Module
+import javax.inject.Inject
 
 
 class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
@@ -43,6 +46,9 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
     @ProvidePresenter
     override fun providePresenter(): LevelsPresenter = scope.getInstance(LevelsPresenter::class.java)
 
+    @Inject
+    lateinit var preferenceManager: MyPreferenceManager
+
     override fun inject() = Toothpick.inject(this, scope)
 
     override fun getLayoutResId() = R.layout.fragment_levels
@@ -58,13 +64,24 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
 
         hamburgerButton.setOnClickListener { presenter.onHamburgerMenuClicked() }
 
-        getCoinsButton.setOnClickListener { getBaseActivity().showRewardedVideo() }
+        getCoinsButton.setOnClickListener {
+            if (preferenceManager.isAppodealDescriptionShown()) {
+                getBaseActivity().showRewardedVideo()
+            } else {
+                (getBaseActivity() as MainView).showFirstTimeAppodealAdsDialog()
+            }
+        }
+
+        levelsTextView.setOnClickListener { presenter.onLevelsClick() }
     }
 
     private fun initRecyclerView() {
         recyclerView.layoutManager = GridLayoutManager(activity, 3)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
-        delegateManager.addDelegate(LevelDelegate { presenter.onLevelClick(it) })
+        delegateManager.addDelegate(LevelDelegate(
+            { presenter.onLevelClick(it) },
+            { presenter.onLevelUnlockClicked(it) }
+        ))
         adapter = ListDelegationAdapter(delegateManager)
         recyclerView.adapter = adapter
     }

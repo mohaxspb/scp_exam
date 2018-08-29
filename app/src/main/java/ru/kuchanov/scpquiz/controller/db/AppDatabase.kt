@@ -20,7 +20,7 @@ import ru.kuchanov.scpquiz.model.db.*
         User::class,
         FinishedLevel::class
     ],
-    version = 1
+    version = 2
 )
 @TypeConverters(
     MyDateConverter::class,

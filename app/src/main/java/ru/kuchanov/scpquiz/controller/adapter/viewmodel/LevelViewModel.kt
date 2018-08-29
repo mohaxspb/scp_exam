@@ -6,5 +6,6 @@ import ru.kuchanov.scpquiz.model.db.Quiz
 data class LevelViewModel(
     val quiz: Quiz,
     val scpNameFilled: Boolean = false,
-    val scpNumberFilled: Boolean = false
+    val scpNumberFilled: Boolean = false,
+    val isLevelAvailable:Boolean = false
 ) : MyListItem

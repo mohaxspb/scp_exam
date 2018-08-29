@@ -47,15 +47,23 @@ class GameInteractor @Inject constructor(
 
     fun updateFinishedLevel(
         quizId: Long,
-        isNameFilled: Boolean,
-        isNumberFilled: Boolean
+        scpNameFilled: Boolean? = null,
+        scpNumberFilled: Boolean? = null,
+        nameRedundantCharsRemoved: Boolean? = null,
+        numberRedundantCharsRemoved: Boolean? = null,
+        isLevelAvailable: Boolean? = null
     ): Single<Long> = Single.fromCallable {
-        appDatabase.finishedLevelsDao().insert(
-            FinishedLevel(
-                quizId = quizId,
-                scpNameFilled = isNameFilled,
-                scpNumberFilled = isNumberFilled
-            ))
+        with(appDatabase.finishedLevelsDao().getByIdOrErrorOnce(quizId).blockingGet()) {
+            scpNameFilled?.let { this.scpNameFilled = scpNameFilled }
+            scpNumberFilled?.let { this.scpNumberFilled = scpNumberFilled }
+            nameRedundantCharsRemoved?.let { this.nameRedundantCharsRemoved = nameRedundantCharsRemoved }
+            numberRedundantCharsRemoved?.let { this.numberRedundantCharsRemoved = numberRedundantCharsRemoved }
+            this.isLevelAvailable = isLevelAvailable ?: this.scpNameFilled
+                    || this.scpNumberFilled
+                    || this.nameRedundantCharsRemoved
+                    || this.numberRedundantCharsRemoved
+            appDatabase.finishedLevelsDao().insert(this)
+        }
     }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -80,7 +88,7 @@ class GameInteractor @Inject constructor(
 
     private fun getQuiz(quizId: Long) = Single.fromCallable {
         val quiz = appDatabase.quizDao().getQuizWithTranslationsAndPhrases(quizId, preferenceManager.getLang())
-        Timber.d("quiz:$quiz")
+        Timber.d("quiz:${quiz.quizTranslations?.first()?.translation}")
         quiz
     }
             .toFlowable()
@@ -107,18 +115,6 @@ class GameInteractor @Inject constructor(
         with(appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet()) {
             score += scoreToDecrease
             appDatabase.userDao().update(this).toLong()
-        }
-    }
-
-    fun saveCharsRemovedState(
-        quizId: Long,
-        nameRedundantCharsRemoved: Boolean?,
-        numberRedundantCharsRemoved: Boolean?
-    ): Single<Long> = Single.fromCallable {
-        with(appDatabase.finishedLevelsDao().getByIdWithUpdates(quizId).blockingFirst().first()) {
-            nameRedundantCharsRemoved?.let { this.nameRedundantCharsRemoved = nameRedundantCharsRemoved }
-            numberRedundantCharsRemoved?.let { this.numberRedundantCharsRemoved = numberRedundantCharsRemoved }
-            appDatabase.finishedLevelsDao().insert(this)
         }
     }
 }

@@ -10,5 +10,6 @@ data class FinishedLevel(
     var scpNameFilled: Boolean = false,
     var scpNumberFilled: Boolean = false,
     var nameRedundantCharsRemoved: Boolean = false,
-    var numberRedundantCharsRemoved: Boolean = false
+    var numberRedundantCharsRemoved: Boolean = false,
+    var isLevelAvailable: Boolean = false
 )

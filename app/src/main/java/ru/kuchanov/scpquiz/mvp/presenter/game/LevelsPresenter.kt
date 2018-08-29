@@ -9,7 +9,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function3
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
+import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
@@ -32,6 +34,8 @@ class LevelsPresenter @Inject constructor(
     override var router: ScpRouter,
     override var appDatabase: AppDatabase
 ) : BasePresenter<LevelsView>(appContext, preferences, router, appDatabase) {
+
+    lateinit var player: User
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -113,7 +117,8 @@ class LevelsPresenter @Inject constructor(
                         LevelViewModel(
                             quiz,
                             finishedLevel.scpNameFilled,
-                            finishedLevel.scpNumberFilled
+                            finishedLevel.scpNumberFilled,
+                            finishedLevel.isLevelAvailable
                         )
                     }
 
@@ -124,8 +129,47 @@ class LevelsPresenter @Inject constructor(
                     onNext = {
                         Timber.d("loadLevels onNext")
                         viewState.showLevels(it.first)
+                        player = it.second
                         viewState.showCoins(it.second.score)
                     }
                 )
+    }
+
+    fun onLevelsClick() {
+        if (BuildConfig.DEBUG) {
+            appDatabase.userDao()
+                    .getOneByRole(UserRole.PLAYER)
+                    .map {
+                        it.score = 0
+                        appDatabase.userDao().update(it)
+                    }
+                    .subscribeOn(Schedulers.io())
+                    .subscribe()
+            appDatabase.finishedLevelsDao()
+                    .getAll()
+                    .subscribeOn(Schedulers.io())
+                    .subscribe { finishedLevels -> Timber.d("FinishedLevels: ${finishedLevels.map { it.isLevelAvailable }}") }
+        }
+    }
+
+    fun onLevelUnlockClicked(levelViewModel: LevelViewModel) {
+        if (player.score >= Constants.COINS_FOR_LEVEL_UNLOCK) {
+            appDatabase.finishedLevelsDao()
+                    .getByIdOrErrorOnce(levelViewModel.quiz.id)
+                    .map {
+                        it.isLevelAvailable = true
+                        appDatabase.finishedLevelsDao().update(it)
+                    }
+                    .flatMap { appDatabase.userDao().getOneByRole(UserRole.PLAYER) }
+                    .map {
+                        it.score -= Constants.COINS_FOR_LEVEL_UNLOCK
+                        appDatabase.userDao().update(it)
+                    }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe()
+        } else {
+            viewState.showMessage(R.string.message_not_enough_coins_level_unlock)
+        }
     }
 }
