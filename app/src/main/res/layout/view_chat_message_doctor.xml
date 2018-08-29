@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--tools:layout_gravity="center">-->
+
+    <ImageView
+        android:id="@+id/avatarImageView"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/ic_doctor" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/userNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/defaultMargin"
+        android:textColor="@color/textColorGrey"
+        android:textSize="12sp"
+        app:layout_constraintLeft_toLeftOf="@+id/messageView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Др. Ф ████" />
+
+    <LinearLayout
+        android:id="@+id/messageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/bg_chat_message_doctor"
+        android:orientation="horizontal"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/avatarImageView"
+        app:layout_constraintRight_toLeftOf="@id/space"
+        app:layout_constraintTop_toBottomOf="@+id/userNameTextView">
+
+        <ImageView
+            android:layout_width="@dimen/defaultMargin"
+            android:layout_height="@dimen/defaultMargin"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/defaultMarginSmall"
+            android:layout_marginEnd="@dimen/defaultMarginSmall"
+            android:layout_marginStart="@dimen/defaultMarginSmall"
+            android:src="@drawable/ic_check"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/messageTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="start"
+            android:paddingBottom="@dimen/defaultMargin"
+            android:paddingEnd="@dimen/defaultMargin"
+            android:paddingTop="@dimen/defaultMargin"
+            tools:ignore="RtlSymmetry"
+            tools:text="Очень хорошо D-3087,\nпродолжайте." />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/space"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/messageView"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_min="63dp"
+        tools:background="#80FF0000" />
+    <!--</android.support.constraint.ConstraintLayout>-->
+</merge>

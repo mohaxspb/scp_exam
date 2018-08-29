@@ -1,3 +1,117 @@
 <resources>
-    <string name="app_name">Scp Quiz</string>
+
+    <string name="market_url" translatable="false">market://details?id=%s</string>
+    <string name="feedback_email" translatable="false">neva.spb.rx@gmail.com</string>
+    <string name="error_unexpected" translatable="false">Unexpected error</string>
+
+    <string name="app_name">Scp Exam</string>
+    <string name="menu">Menu</string>
+    <string name="level">Level %d</string>
+    <string name="zero" translatable="false">0</string>
+    <string name="doctor_name" translatable="false">Dr. D██ K██</string>
+    <string name="player_name" translatable="false">D-%d</string>
+    <string name="message_suggest_scp_number">Wanna try to remember this scp number?</string>
+    <string name="message_suggest_scp_name">Wanna try to remember this scp name?</string>
+    <string name="chat_action_next_level">Next scp</string>
+    <string name="chat_action_enter_number">I\'ll try!</string>
+    <string name="chat_action_enter_name">I\'ll try!</string>
+    <string name="message_correct_give_coins">Correct! You gain %d coins</string>
+    <string name="chat_action_levels_list">I want to select level</string>
+    <string name="error_unknown">Unknown error occurred</string>
+    <string name="scp_placeholder">SCP-%s</string>
+    <string name="message_level_comleted">Very well, %s, continue.</string>
+    <string name="message_enter_number_description">Well, now you can try to remember this SCP number and get %d coins</string>
+    <string name="settings_sound">Sound</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_coins">Repticoins</string>
+    <string name="settings_vibrate">Vibration</string>
+    <string name="settings_share">Share</string>
+    <string name="settings_privacy_policy">Privacy policy</string>
+
+    <string name="error_start_market">Failed to start Play Market</string>
+    <string name="share_app_link_with_text">Try cool quiz app about SCPs!\nhttps://play.google.com/store/apps/details?id=%s</string>
+    <string name="share_choser_text">Share through…</string>
+    <string name="feedback_title">Review SCP Quiz</string>
+    <string name="chat_action_yes">Yes</string>
+    <string name="chat_action_sure">Sure</string>
+    <string name="monetization_action_appodeal_title">Support us</string>
+    <string name="monetization_action_appodeal_description">Look at the ads and you will be credited with %d repticoins</string>
+    <string name="monetization_action_noads_title">\"Silence\" Protocol</string>
+    <string name="monetization_action_noads_description">Running a meme agent blocking any manifestation of the advertising agent in the application</string>
+    <string name="coins_amount">Repticoins: %d</string>
+    <string name="suggestion_remove_redundant_chars">Remove redundant characters</string>
+    <string name="message_not_enough_coins">You don\'t have enough coins. But you could get it! Try these options:</string>
+    <string name="chat_action_watch_video">Watch video ads to gain %d repticoins</string>
+    <string name="suggestion_enter_name">Enter SCP name</string>
+    <string name="message_after_suggestion_of_name">Yes! Now I remember…</string>
+    <string name="message_after_suggestion_of_number">How can I forgot it…</string>
+    <string name="message_correct">Correct!</string>
+    <string name="suggestion_enter_number">Enter SCP number</string>
+    <string name="will_show_ads_content">Now we\'ll show you ads as we need to support and upgrade app, but you can always remove it!</string>
+    <string name="will_show_ads_title">Ads will be shown</string>
+    <string name="want_watch_ads_content">You can watch ads and receive %d repticoins!</string>
+    <string name="remove_ads">Remove ads</string>
+    <string name="why_ads">Why ads</string>
+    <string name="watch_ads">Watch ads</string>
+    <string name="why_ads_content">Friends-agents! We show you advertising for finance the project in addition. Painful for the fund as zealously as you, we are constantly working on quality. After viewing the advertisement, you support the project and motivate us to work further.</string>
+    <string name="why_ads_title">Attention!</string>
+    <string name="levels">Levels</string>
+    <string name="reward_not_loaded_yet">Video not loaded yet</string>
+    <string name="coins_received">You get %d repticoins</string>
+    <string name="next_levels_will_be_soon">Congratulations, you\'ve gone through all the levels! But do not rush to delete the application - soon there will be new levels!</string>
+    <string name="error_buy">Purchase error. Try again</string>
+    <string name="purchase_not_valid">Could not validate purchase</string>
+    <string name="purchase_validation_google_error">Google servers cannot validate purchase. Please, try again later.</string>
+    <string name="error_purchase">Purchase error: %s</string>
+    <string name="ads_disabled">Ads disabled! Hurray!</string>
+    <string name="error_billing_client_connection">Error while start billing client. Error code: %d</string>
+    <string name="already_owned">Purchased</string>
+    <string name="error_billing_client_not_ready">Billing client not ready</string>
+    <string name="message_choose_name_or_number">Do you want to tell me it\'s name or number?</string>
+    <string name="chat_action_want_to_enter_number">I choose number!</string>
+    <string name="chat_action_want_to_enter_name">I want to tell name first</string>
+    <string name="plus_5" translatable="false">+5</string>
+    <string name="message_not_enough_coins_level_unlock">You don\'t have enough coins.</string>
+
+    <string-array name="intro_dialog_texts">
+        <item>Hello, %s</item>
+        <item>We received your request for further training.</item>
+        <item>Are you ready to start testing?</item>
+    </string-array>
+
+    <string-array name="messages_level_start">
+        <item>Try to remember this SCP name</item>
+        <item>Tell me its name</item>
+        <item>Could you tell us this SCP name?</item>
+    </string-array>
+
+    <string-array name="messages_suggestions">
+        <item>Want some help? You can spend some repticoins for suggestion.</item>
+        <item>Too hard? Try these options:</item>
+        <item>Maybe you need suggestion?</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_remove_chars">
+        <item>OK, we remove redundant chars. Can you remember now?</item>
+        <item>Done!</item>
+        <item>As you wish.</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_enter_name">
+        <item>OK, here it is!</item>
+        <item>Done!</item>
+        <item>As you wish.</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_enter_number">
+        <item>OK, here it is!</item>
+        <item>Done!</item>
+        <item>As you wish.</item>
+    </string-array>
+
+    <string-array name="messages_suggestion_no">
+        <item>No, thanks.</item>
+        <item>I don\'t need help!</item>
+        <item>Maybe later…</item>
+    </string-array>
 </resources>

@@ -6,6 +6,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 //new crash reporting
 apply plugin: 'io.fabric'
+//fix firebase 16+ versions issue
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 
 //here is script to generate version code from version name
 //which is set in gradle.properties as value of version var
@@ -16,51 +18,135 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "ru.kuchanov.scpquiz"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 27
         versionCode buildVersionCode()
         versionName version
         multiDexEnabled true
+
+        kapt {
+            arguments {
+                arg("room.schemaLocation", "$projectDir/schemas".toString())
+            }
+        }
+
+        if (rootProject.file("config/config.properties").exists()) {
+            def properties = new Properties()
+            properties.load(new FileInputStream(rootProject.file("config/config.properties")))
+
+            //analitics
+            buildConfigField('String', 'YANDEX_METRICA_API_KEY', '"' + properties.get("yandexMetricaApiKey") + '"')
+            //analitics END
+
+            //ads
+            //admob
+            resValue('string', 'ads_app_id', properties.get("adMobAppId"))
+            resValue('string', 'ad_unit_id_interstitial', properties.get("adsBannerIdInterstitial"))
+            resValue('string', 'ad_unit_id_game_screen_banner', properties.get("adsBannerIdGameScreen"))
+            //appodeal
+            resValue('string', 'appodeal_app_key', properties.get("appodealAppKey"))
+            //ads END
+
+            //vps api
+            buildConfigField('String', 'VPS_API_URL', '"' + properties.get("vpsApiUrl") + '"')
+            //quiz api
+            buildConfigField('String', 'QUIZ_API_URL', '"' + properties.get("quizApiUrl") + '"')
+            //quiz api auth
+            buildConfigField('String', 'USER', '"' + properties.get("user") + '"')
+            buildConfigField('String', 'PASSWORD', '"' + properties.get("password") + '"')
+            buildConfigField('String', 'GRANT_TYPE', '"' + properties.get("grantType") + '"')
+        } else {
+            throw new GradleException(
+                    "You need to have projectRoot/config/config.properties file with "
+                            + "yandexMetricaApiKey,"
+                            + "adMobAppId,"
+                            + "adsBannerIdInterstitial,"
+                            + "adsBannerIdGameScreen,"
+                            + "appodealAppKey,"
+                            + "vpsApiUrl,"
+                            + " to build project"
+            )
+        }
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            signingConfigs {
+                release {
+                    // Load keystore
+                    if (rootProject.file('keystore.properties').exists()) {
+                        def keystorePropertiesFile = rootProject.file("keystore.properties")
+                        def keystoreProperties = new Properties()
+                        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+                        storeFile file(keystoreProperties['storeFile'])
+                        storePassword keystoreProperties['storePassword']
+                        keyAlias keystoreProperties['keyAlias']
+                        keyPassword keystoreProperties['keyPassword']
+                    }
+                }
+            }
+
+            if (rootProject.file('keystore.properties').exists()) {
+                signingConfig signingConfigs.release
+            }
         }
+        debug {
+            debuggable true
+
+            //test adUnit IDs from https://developers.google.com/admob/android/test-ads#enable_test_devices
+            resValue('string', 'ad_unit_id_interstitial', 'ca-app-pub-3940256099942544/1033173712')
+            resValue('string', 'ad_unit_id_game_screen_banner', 'ca-app-pub-3940256099942544/6300978111')
+        }
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
     //kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
     //support
     String supportLibraryVersion = '27.1.1'
     implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
     implementation "com.android.support:design:$supportLibraryVersion"
     implementation "com.android.support:cardview-v7:$supportLibraryVersion"
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
 
     //multidex to support more than 65K methods
     api 'com.android.support:multidex:1.0.3'
 
     //google libs
-    implementation "com.google.firebase:firebase-analytics:15.0.2"
-    implementation "com.google.firebase:firebase-invites:15.0.1"
-    implementation "com.google.firebase:firebase-ads:15.0.1"
-    implementation "com.google.firebase:firebase-messaging:15.0.2"
-    //new crash reporting
-    compile('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') {
-        transitive = true
-    }
-    // AppMetrica
-    //we add it here and delete jar from appodeal
-    implementation 'com.yandex.android:mobmetricalib:2.77'
+    implementation 'com.google.firebase:firebase-core:16.0.1'
+    implementation 'com.google.firebase:firebase-analytics:16.0.1'
+    implementation 'com.google.firebase:firebase-invites:16.0.1'
+    implementation 'com.google.firebase:firebase-ads:15.0.1'
+    implementation 'com.google.firebase:firebase-messaging:17.1.0'
 
-    //rx
-    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
-    implementation 'io.reactivex.rxjava2:rxjava:2.1.13'
+    //need for appodeal
+    implementation 'com.google.android.gms:play-services-location:15.0.1'
+    implementation 'com.google.android.gms:play-services-gcm:15.0.1'
+
+    //new crash reporting
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.1@aar') { transitive = true }
+
+    //DI
+    String toothPickVersion = '1.1.3'
+    implementation "com.github.stephanenicolas.toothpick:toothpick-runtime:$toothPickVersion"
+    implementation "com.github.stephanenicolas.toothpick:smoothie:$toothPickVersion"
+    kapt "com.github.stephanenicolas.toothpick:toothpick-compiler:$toothPickVersion"
 
     //mvp
     String moxyVersion = '1.5.3'
@@ -68,18 +154,87 @@ dependencies {
     kapt "com.arello-mobile:moxy-compiler:$moxyVersion"
     implementation "com.arello-mobile:moxy-app-compat:$moxyVersion"
 
+    //routing
+    implementation 'ru.terrakok.cicerone:cicerone:3.0.0'
+
+    //rx
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.16'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
+
+    //db
+    def roomVersion = "1.1.1"
+    implementation "android.arch.persistence.room:runtime:$roomVersion"
+    kapt "android.arch.persistence.room:compiler:$roomVersion"
+
+    //optional - RxJava support for Room
+    implementation "android.arch.persistence.room:rxjava2:$roomVersion"
+
     // Retrofit
     implementation('com.squareup.retrofit2:retrofit:2.3.0') { exclude module: 'okhttp' }
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.4.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
+
+    //json
+    def moshiVersion = "1.6.0"
+    implementation "com.squareup.moshi:moshi:$moshiVersion"
+    implementation "com.squareup.moshi:moshi-adapters:$moshiVersion"
+    implementation "com.squareup.moshi:moshi-kotlin:$moshiVersion"
+    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
+
+    //adapter delegate
+    implementation 'com.hannesdorfmann:adapterdelegates3:3.0.1'
+
     //logs
-    implementation 'com.jakewharton.timber:timber:4.6.0'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+
     //image
-    implementation 'com.github.bumptech.glide:glide:3.8.0'
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    kapt 'com.github.bumptech.glide:compiler:4.7.1'
+
+    //views
+    implementation 'com.google.android:flexbox:1.0.0'
+    implementation 'jp.wasabeef:blurry:2.1.1'
+
     //adapter delegates
     implementation 'com.hannesdorfmann:adapterdelegates3:3.0.1'
+
+    //appodeal
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+
+    //for Inmobi
+    implementation name: 'adcolony-3.3.4', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-alphab', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-common', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-interstitial', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-interstitialvideo', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-mvdownloads', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-mvjscommon', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-mvnative', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-nativeex', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-playercommon', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-reward', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-videocommon', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-videofeeds', ext: 'aar'
+    implementation name: 'mobvista-8.11.0-videojs', ext: 'aar'
+
+    //appodeal END
+
+    // AppMetrica
+
+    //we add it here and delete jar from appodeal
+    implementation 'com.yandex.android:mobmetricalib:3.1.0'
+
+    // Optional. Play Install Referrer library for better attribution.
+    implementation 'com.android.installreferrer:installreferrer:1.0'
+
+    //inapp
+    implementation 'com.android.billingclient:billing:1.1'
+
+    //rate app
+    implementation('ru.kuchanov.utils:rate:1.2.1@aar') { transitive = true }
 }
 
 apply plugin: 'com.google.gms.google-services'

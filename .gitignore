@@ -7,3 +7,6 @@
 /captures
 .externalNativeBuild
 google-services.json
+/config
+keystore.properties
+*.keystore

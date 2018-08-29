@@ -1,0 +1,94 @@
+{
+  "ru": [
+    {
+      "id": 0,
+      "translation": "Подключаемся к Фонду"
+    },
+    {
+      "id": 1,
+      "translation": "Проверяем архив"
+    },
+    {
+      "id": 2,
+      "translation": "Создаем защищенный канал"
+    },
+    {
+      "id": 3,
+      "translation": "Составляем вопросы"
+    },
+    {
+      "id": 4,
+      "translation": "Настраиваем детектор лжи"
+    },
+    {
+      "id": 5,
+      "translation": "Проверяем вашу лояльность"
+    },
+    {
+      "id": 6,
+      "translation": "Активируем защитные протоколы"
+    },
+    {
+      "id": 7,
+      "translation": "Собираем фото архив"
+    },
+    {
+      "id": 8,
+      "translation": "Проверяем ваще личное дело"
+    },
+    {
+      "id": 9,
+      "translation": "Устали читать этот бред, пьем кофе"
+    },
+    {
+      "id": 10,
+      "translation": "Разгоняем баааабочек"
+    }
+  ],
+  "en": [
+    {
+      "id": 0,
+      "translation": "Connecting to the Foundation"
+    },
+    {
+      "id": 1,
+      "translation": "Checking the archive"
+    },
+    {
+      "id": 2,
+      "translation": "Creating a secure channel"
+    },
+    {
+      "id": 3,
+      "translation": "Formulating questions"
+    },
+    {
+      "id": 4,
+      "translation": "Configuring the lie detector"
+    },
+    {
+      "id": 5,
+      "translation": "Checking your loyalty"
+    },
+    {
+      "id": 6,
+      "translation": "Activating protective protocols"
+    },
+    {
+      "id": 7,
+      "translation": "Collecting the photo archive"
+    },
+    {
+      "id": 8,
+      "translation": "Checking your personal file"
+    },
+    {
+      "id": 9,
+      "translation": "Tired of reading this nonsense, drinking coffee"
+    },
+    {
+      "id": 10,
+      "translation": "Chasing Booooterflies"
+    }
+  ]
+}
