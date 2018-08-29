@@ -99,4 +99,6 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
             }
         }
     }
+
+    fun getBaseActivity() = activity as BaseActivity<*, *>
 }

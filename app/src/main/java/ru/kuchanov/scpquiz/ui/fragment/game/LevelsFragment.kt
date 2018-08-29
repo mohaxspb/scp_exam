@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.ui.fragment.game
 
+import android.animation.ValueAnimator
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
@@ -19,6 +20,7 @@ import ru.kuchanov.scpquiz.di.module.LevelsModule
 import ru.kuchanov.scpquiz.mvp.presenter.game.LevelsPresenter
 import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.utils.BitmapUtils
 import toothpick.Toothpick
 import toothpick.config.Module
 
@@ -51,6 +53,12 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
         super.onViewCreated(view, savedInstanceState)
 
         initRecyclerView()
+
+        coinsButton.setOnClickListener { presenter.onCoinsClicked() }
+
+        hamburgerButton.setOnClickListener { presenter.onHamburgerMenuClicked() }
+
+        getCoinsButton.setOnClickListener { getBaseActivity().showRewardedVideo() }
     }
 
     private fun initRecyclerView() {
@@ -72,5 +80,20 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
 
     override fun showAllLevelsFinishedPanel(show: Boolean) {
         nextLevelsTextView.visibility = if (show) VISIBLE else GONE
+    }
+
+    override fun onNeedToOpenSettings() {
+        BitmapUtils.loadBitmapFromView(root)?.let { presenter.openSettings(it) }
+    }
+
+    override fun onNeedToOpenCoins() {
+        BitmapUtils.loadBitmapFromView(root)?.let { presenter.openCoins(it) }
+    }
+
+    override fun showCoins(coins: Int) {
+        val animator = ValueAnimator.ofInt(coinsValueTextView.text.toString().toInt(), coins)
+        animator.duration = 1000
+        animator.addUpdateListener { animation -> coinsValueTextView?.text = animation.animatedValue.toString() }
+        animator.start()
     }
 }

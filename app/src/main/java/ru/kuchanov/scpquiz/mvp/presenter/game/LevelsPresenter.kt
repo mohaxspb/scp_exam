@@ -1,10 +1,12 @@
 package ru.kuchanov.scpquiz.mvp.presenter.game
 
 import android.app.Application
+import android.graphics.Bitmap
 import com.arellomobile.mvp.InjectViewState
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.BiFunction
+import io.reactivex.functions.Function3
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
@@ -14,11 +16,13 @@ import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.Quiz
+import ru.kuchanov.scpquiz.model.db.User
+import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
+import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 @InjectViewState
@@ -29,12 +33,10 @@ class LevelsPresenter @Inject constructor(
     override var appDatabase: AppDatabase
 ) : BasePresenter<LevelsView>(appContext, preferences, router, appDatabase) {
 
-    private lateinit var levels: List<Quiz>
-
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
-        updateLevels()
+        loadLevels()
     }
 
     fun onLevelClick(levelViewModel: LevelViewModel) {
@@ -43,9 +45,7 @@ class LevelsPresenter @Inject constructor(
                 && preferences.isNeedToShowInterstitial()
                 && (!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled)
         Timber.d(
-            "!preferences.isAdsDisabled()\n" +
-                    "preferences.isNeedToShowInterstitial()\n" +
-                    "(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
+            "!preferences.isAdsDisabled()\npreferences.isNeedToShowInterstitial()\n(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
             !preferences.isAdsDisabled(),
             preferences.isNeedToShowInterstitial(),
             !levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled
@@ -54,13 +54,51 @@ class LevelsPresenter @Inject constructor(
         router.navigateTo(Constants.Screens.QUIZ, QuizScreenLaunchData(levelViewModel.quiz.id, !showAds))
     }
 
-    private fun updateLevels() {
+    fun onCoinsClicked() = viewState.onNeedToOpenCoins()
+
+    fun openCoins(bitmap: Bitmap) {
+        Completable.fromAction {
+            BitmapUtils.persistImage(
+                appContext,
+                bitmap,
+                Constants.SETTINGS_BACKGROUND_FILE_NAME)
+        }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onComplete = { router.navigateTo(Constants.Screens.MONETIZATION) }
+                )
+    }
+
+    fun onHamburgerMenuClicked() = viewState.onNeedToOpenSettings()
+
+    fun openSettings(bitmap: Bitmap) {
+        Completable.fromAction {
+            BitmapUtils.persistImage(
+                appContext,
+                bitmap,
+                Constants.SETTINGS_BACKGROUND_FILE_NAME)
+        }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onComplete = { router.navigateTo(Constants.Screens.SETTINGS) }
+                )
+    }
+
+    private fun loadLevels() {
         Flowable.combineLatest(
             appDatabase.quizDao().getAll(),
             appDatabase.finishedLevelsDao().getAll(),
-            BiFunction { quizes: List<Quiz>, finishedLevels: List<FinishedLevel> -> quizes to finishedLevels }
+            appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
+            Function3 { quizes: List<Quiz>, finishedLevels: List<FinishedLevel>, player: User ->
+                Triple(
+                    quizes,
+                    finishedLevels,
+                    player
+                )
+            }
         )
-
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { pair ->
@@ -68,13 +106,9 @@ class LevelsPresenter @Inject constructor(
                     viewState.showAllLevelsFinishedPanel(isAllLevelsFinished)
                 }
                 .observeOn(Schedulers.io())
-                .map { pair ->
-                    Timber.d("pair.second: ${pair.second.size}")
-
-                    levels = LinkedList(pair.first)
-
-                    pair.first.map { quiz ->
-                        val finishedLevel = pair.second.find { it.quizId == quiz.id }
+                .map { triple ->
+                    val levels = triple.first.map { quiz ->
+                        val finishedLevel = triple.second.find { it.quizId == quiz.id }
                                 ?: throw IllegalStateException("level not found for quizId: ${quiz.id}")
                         LevelViewModel(
                             quiz,
@@ -82,12 +116,15 @@ class LevelsPresenter @Inject constructor(
                             finishedLevel.scpNumberFilled
                         )
                     }
+
+                    return@map Pair(levels, triple.third)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onNext = {
-                        Timber.d("updateLevels onNext")
-                        viewState.showLevels(it)
+                        Timber.d("loadLevels onNext")
+                        viewState.showLevels(it.first)
+                        viewState.showCoins(it.second.score)
                     }
                 )
     }

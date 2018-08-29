@@ -69,6 +69,7 @@
     <string name="message_choose_name_or_number">Do you want to tell me it\'s name or number?</string>
     <string name="chat_action_want_to_enter_number">I choose number!</string>
     <string name="chat_action_want_to_enter_name">I want to tell name first</string>
+    <string name="plus_5">+5</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>
