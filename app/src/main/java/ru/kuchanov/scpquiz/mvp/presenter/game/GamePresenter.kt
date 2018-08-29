@@ -175,10 +175,10 @@ class GamePresenter @Inject constructor(
                         }
                         chars?.let { viewState.setKeyboardChars(it) }
 
-                        gameInteractor.saveCharsRemovedState(
+                        gameInteractor.updateFinishedLevel(
                             quizLevelInfo.quiz.id,
-                            nameRedundantCharsRemoved,
-                            numberRedundantCharsRemoved
+                            nameRedundantCharsRemoved = nameRedundantCharsRemoved,
+                            numberRedundantCharsRemoved = numberRedundantCharsRemoved
                         )
                                 .flatMap { gameInteractor.increaseScore(-price).toSingleDefault(-price) }
                                 .subscribeOn(Schedulers.io())
@@ -585,9 +585,7 @@ class GamePresenter @Inject constructor(
                         && (!quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNameFilled
                         || !quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNumberFilled)
                 Timber.d(
-                    "!preferences.isAdsDisabled()\n" +
-                            "preferences.isNeedToShowInterstitial()\n" +
-                            "(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
+                    "!preferences.isAdsDisabled()\npreferences.isNeedToShowInterstitial()\n(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
                     !preferences.isAdsDisabled(),
                     preferences.isNeedToShowInterstitial(),
                     !quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNameFilled
