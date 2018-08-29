@@ -4,6 +4,8 @@ import ru.kuchanov.scpquiz.mvp.BaseView
 
 interface MainView : BaseView {
 
+    fun showFirstTimeAppodealAdsDialog()
+
     fun showAdsDialog(quizId: Long)
 
     fun showWhyAdsDialog(quizId: Long)

@@ -17,7 +17,8 @@ import ru.kuchanov.scpquiz.utils.StorageUtils
 
 
 class LevelDelegate(
-    private val clickListener: (LevelViewModel) -> Unit
+    private val clickListener: (LevelViewModel) -> Unit,
+    private val unlockLevelListener: (LevelViewModel) -> Unit
 ) : AbsListItemAdapterDelegate<LevelViewModel, MyListItem, LevelDelegate.LevelViewHolder>() {
 
     override fun isForViewType(item: MyListItem, items: MutableList<MyListItem>, position: Int) = item is LevelViewModel
@@ -31,6 +32,7 @@ class LevelDelegate(
     override fun onBindViewHolder(item: LevelViewModel, viewHolder: LevelViewHolder, payloads: MutableList<Any>) {
         with(viewHolder.itemView) {
             if (item.scpNameFilled || item.scpNumberFilled) {
+                imageView.setPadding(0, 0, 0, 0)
                 with(GlideApp.with(imageView.context)) {
                     if (StorageUtils.ifFileExistsInAssets(item.quiz.getImageUrl(), imageView.context, "quizImages")) {
                         load(Uri.parse("file:///android_asset/quizImages/${item.quiz.getImageUrl()}"))
@@ -50,13 +52,24 @@ class LevelDelegate(
                     strokeView.visibility = View.VISIBLE
                     scpNumberTextView.visibility = View.GONE
                 }
+
+                setOnClickListener { clickListener(item) }
             } else {
-                imageView.setImageResource(R.drawable.ic_level_unknown)
+                if (item.isLevelAvailable) {
+                    imageView.setPadding(0, 0, 0, 0)
+                    imageView.setImageResource(R.drawable.ic_level_unknown)
+                    imageView.setBackgroundResource(android.R.color.black)
+                    setOnClickListener { clickListener(item) }
+                } else {
+                    val padding = DimensionUtils.dpToPx(5)
+                    imageView.setPadding(padding, padding, padding, padding)
+                    imageView.setImageResource(R.drawable.ic_coins5)
+                    imageView.setBackgroundResource(R.color.backgroundColorLevelLocked)
+                    setOnClickListener { unlockLevelListener(item) }
+                }
                 strokeView.visibility = View.VISIBLE
                 scpNumberTextView.visibility = View.GONE
             }
-
-            setOnClickListener { clickListener(item) }
         }
     }
 

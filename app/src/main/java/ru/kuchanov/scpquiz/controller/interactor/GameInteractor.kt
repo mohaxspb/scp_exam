@@ -88,7 +88,7 @@ class GameInteractor @Inject constructor(
 
     private fun getQuiz(quizId: Long) = Single.fromCallable {
         val quiz = appDatabase.quizDao().getQuizWithTranslationsAndPhrases(quizId, preferenceManager.getLang())
-        Timber.d("quiz:$quiz")
+        Timber.d("quiz:${quiz.quizTranslations?.first()?.translation}")
         quiz
     }
             .toFlowable()

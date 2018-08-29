@@ -48,6 +48,7 @@
     <string name="message_correct">Правильно!</string>
     <string name="suggestion_enter_number">Введите номер SCP</string>
     <string name="will_show_ads_content">Сейчас будет показана реклама</string>
+    <string name="want_watch_ads_content">Вы можете посмотреть рекламу и получить 5 рептикоинов!</string>
     <string name="will_show_ads_title">Немного рекламы</string>
     <string name="remove_ads">Убрать рекламу</string>
     <string name="why_ads">Зачем реклама</string>
@@ -69,6 +70,7 @@
     <string name="message_choose_name_or_number">Хотите сначала назвать имя или номер?</string>
     <string name="chat_action_want_to_enter_number">Я выбираю номер!</string>
     <string name="chat_action_want_to_enter_name">Начнём с имени.</string>
+    <string name="message_not_enough_coins_level_unlock">У вас недостаточно монет.</string>
 
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>

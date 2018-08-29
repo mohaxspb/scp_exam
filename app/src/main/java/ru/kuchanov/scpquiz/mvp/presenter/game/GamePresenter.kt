@@ -129,8 +129,9 @@ class GamePresenter @Inject constructor(
     private fun generateSuggestions(): List<ChatAction> {
         val actions = mutableListOf<ChatAction>()
 
+        //todo move to function
         val checkCoins: (Int, Int) -> Boolean = { price, indexOfChatAction ->
-            val hasEnoughCoins = price < quizLevelInfo.player.score
+            val hasEnoughCoins = quizLevelInfo.player.score >= price
             if (!hasEnoughCoins) {
                 viewState.removeChatAction(indexOfChatAction)
                 viewState.showChatMessage(
@@ -285,7 +286,6 @@ class GamePresenter @Inject constructor(
 
         viewState.showProgress(true)
 
-        //todo do not repeat suggestions, but remove old and show new one
         levelDataDisposable = gameInteractor
                 .getLevelInfo(quizId)
                 .subscribeBy(
@@ -577,9 +577,10 @@ class GamePresenter @Inject constructor(
     }
 
     private fun generateNextLevelAction() = if (quizLevelInfo.nextQuizIdAndFinishedLevel.first != null) {
+        val nextLevelMessageText = appContext.getString(R.string.chat_action_next_level)
         ChatAction(
-            appContext.getString(R.string.chat_action_next_level),
-            {
+            nextLevelMessageText,
+            { index ->
                 val showAds = !preferences.isAdsDisabled()
                         && preferences.isNeedToShowInterstitial()
                         && (!quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNameFilled
@@ -592,10 +593,41 @@ class GamePresenter @Inject constructor(
                             || !quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNumberFilled
                 )
                 Timber.d("showAds: $showAds")
-                router.navigateTo(
-                    Constants.Screens.QUIZ,
-                    QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
-                )
+                if (quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.isLevelAvailable) {
+                    router.navigateTo(
+                        Constants.Screens.QUIZ,
+                        QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
+                    )
+                } else {
+                    //todo move to function
+                    val checkCoins: (Int, Int) -> Boolean = { price, _ ->
+                        val hasEnoughCoins = quizLevelInfo.player.score >= price
+                        Timber.d("hasEnoughCoins: $hasEnoughCoins (coins: ${quizLevelInfo.player.score})")
+                        if (!hasEnoughCoins) {
+                            viewState.showChatMessage(nextLevelMessageText, quizLevelInfo.player)
+                            viewState.showChatMessage(
+                                appContext.getString(R.string.message_not_enough_coins),
+                                quizLevelInfo.doctor
+                            )
+                            viewState.showChatActions(generateGainCoinsActions(), ChatActionsGroupType.GAIN_COINS)
+                        }
+                        hasEnoughCoins
+                    }
+
+                    if (checkCoins.invoke(Constants.COINS_FOR_LEVEL_UNLOCK, index)) {
+                        viewState.removeChatAction(index)
+                        viewState.showChatMessage(nextLevelMessageText, quizLevelInfo.player)
+                        gameInteractor.increaseScore(-Constants.COINS_FOR_LEVEL_UNLOCK)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe {
+                                    router.navigateTo(
+                                        Constants.Screens.QUIZ,
+                                        QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
+                                    )
+                                }
+                    }
+                }
             },
             R.drawable.selector_chat_action_accent
         )

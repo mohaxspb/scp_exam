@@ -32,6 +32,8 @@ interface GameView : BaseView {
 
     fun clearChatMessages()
     fun askForRateApp()
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
     fun onNeedToShowRewardedVideo()
     fun addCharToNameInput(char: Char, charId: Int)
     fun addCharToNumberInput(char: Char, charId: Int)
