@@ -47,8 +47,9 @@
     <string name="message_after_suggestion_of_number">How can I forgot it…</string>
     <string name="message_correct">Correct!</string>
     <string name="suggestion_enter_number">Enter SCP number</string>
-    <string name="will_show_ads_content">You can watch ads and receive %d repticoins!</string>
+    <string name="will_show_ads_content">Now we\'ll show you ads as we need to support and upgrade app, but you can always remove it!</string>
     <string name="will_show_ads_title">Ads will be shown</string>
+    <string name="want_watch_ads_content">You can watch ads and receive %d repticoins!</string>
     <string name="remove_ads">Remove ads</string>
     <string name="why_ads">Why ads</string>
     <string name="watch_ads">Watch ads</string>
@@ -69,7 +70,7 @@
     <string name="message_choose_name_or_number">Do you want to tell me it\'s name or number?</string>
     <string name="chat_action_want_to_enter_number">I choose number!</string>
     <string name="chat_action_want_to_enter_name">I want to tell name first</string>
-    <string name="plus_5">+5</string>
+    <string name="plus_5" translatable="false">+5</string>
     <string name="message_not_enough_coins_level_unlock">You don\'t have enough coins.</string>
 
     <string-array name="intro_dialog_texts">

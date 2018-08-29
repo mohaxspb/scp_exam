@@ -47,8 +47,9 @@
     <string name="message_after_suggestion_of_number">How can I forgot it…</string>
     <string name="message_correct">Correct!</string>
     <string name="suggestion_enter_number">Enter SCP number</string>
-    <string name="will_show_ads_content">You can watch ads and receive %d repticoins!</string>
+    <string name="will_show_ads_content">Now we\'ll show you ads as we need to support and upgrade app, but you can always remove it!</string>
     <string name="will_show_ads_title">Ads will be shown</string>
+    <string name="want_watch_ads_content">You can watch ads and receive %d repticoins!</string>
     <string name="remove_ads">Remove ads</string>
     <string name="why_ads">Why ads</string>
     <string name="watch_ads">Watch ads</string>
