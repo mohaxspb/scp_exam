@@ -186,7 +186,8 @@ class GamePresenter @Inject constructor(
                                 .subscribe()
                     }
                 },
-                R.drawable.selector_chat_action_green
+                R.drawable.selector_chat_action_green,
+                Constants.SUGGESTION_PRICE_REMOVE_CHARS
             )
         }
 
@@ -203,7 +204,8 @@ class GamePresenter @Inject constructor(
                         }
                     }
                 },
-                R.drawable.selector_chat_action_green
+                R.drawable.selector_chat_action_green,
+                Constants.SUGGESTION_PRICE_NAME
             )
         }
 
@@ -220,7 +222,8 @@ class GamePresenter @Inject constructor(
                         }
                     }
                 },
-                R.drawable.selector_chat_action_green
+                R.drawable.selector_chat_action_green,
+                Constants.SUGGESTION_PRICE_NUMBER
             )
         }
 
@@ -629,7 +632,8 @@ class GamePresenter @Inject constructor(
                     }
                 }
             },
-            R.drawable.selector_chat_action_accent
+            R.drawable.selector_chat_action_accent,
+            if (quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.isLevelAvailable) 0 else Constants.COINS_FOR_LEVEL_UNLOCK
         )
     } else {
         null

@@ -6,13 +6,13 @@ import android.support.v4.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
-import android.widget.TextView
 import com.google.android.flexbox.FlexboxLayout
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
+import ru.kuchanov.scpquiz.ui.view.ChatActionView
 import ru.kuchanov.scpquiz.ui.view.ChatMessageView
 import ru.kuchanov.scpquiz.utils.SystemUtils
 import timber.log.Timber
@@ -66,7 +66,7 @@ class ChatDelegate(
             false
         ) as FlexboxLayout
 
-        if(actionsTypesIndexes.containsKey(chatActionsGroupType)){
+        if (actionsTypesIndexes.containsKey(chatActionsGroupType)) {
             removeChatAction(actionsTypesIndexes.remove(chatActionsGroupType)!!)
         }
 
@@ -75,14 +75,9 @@ class ChatDelegate(
         actionsTypesIndexes[chatActionsGroupType] = chatView.indexOfChild(chatActionsFlexBoxLayout)
 
         chatActions.forEach { chatAction ->
-            val chatActionView = inflater.inflate(
-                R.layout.view_chat_action,
-                chatView,
-                false
-            ) as TextView
+            val chatActionView = ChatActionView(chatAction, chatView.context)
             chatActionsFlexBoxLayout.addView(chatActionView)
-            chatActionView.text = chatAction.actionName
-            chatActionView.setBackgroundResource(chatAction.bgResource)
+            //todo move to view constructor
             chatActionView.setOnClickListener {
                 if (myPreferenceManager.isVibrationEnabled()) {
                     SystemUtils.vibrate()

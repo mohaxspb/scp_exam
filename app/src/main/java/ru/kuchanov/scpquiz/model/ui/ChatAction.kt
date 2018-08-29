@@ -8,7 +8,8 @@ class ChatAction(
      * Int is index of chat actions view in chat layout
      */
     val action: (Int) -> Unit,
-    @DrawableRes val bgResource: Int
+    @DrawableRes val bgResource: Int,
+    val price: Int = 0
 ) {
     override fun toString(): String {
         return "ChatAction(actionName='$actionName')"
