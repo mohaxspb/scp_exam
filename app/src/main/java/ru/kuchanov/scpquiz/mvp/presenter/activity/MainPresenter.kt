@@ -30,6 +30,7 @@ class MainPresenter @Inject constructor(
         super.onFirstViewAttach()
 
         router.navigateTo(Constants.Screens.ENTER)
+
         apiClient.getNwQuizList()
                 .map { it -> it.filter { it.approved } }
                 .map {

@@ -128,4 +128,10 @@ class LevelsPresenter @Inject constructor(
                     }
                 )
     }
+
+    fun onLevelsClick() {
+        appDatabase.finishedLevelsDao().getAll()
+                .subscribeOn(Schedulers.io())
+                .subscribe { finishedLevels -> Timber.d("FinishedLevels: ${finishedLevels.map { it.isLevelAvailable }}") }
+    }
 }
