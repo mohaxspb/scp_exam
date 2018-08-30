@@ -55,6 +55,9 @@ android {
             buildConfigField('String', 'USER', '"' + properties.get("user") + '"')
             buildConfigField('String', 'PASSWORD', '"' + properties.get("password") + '"')
             buildConfigField('String', 'GRANT_TYPE', '"' + properties.get("grantType") + '"')
+            //quiz api ssl pinning
+            buildConfigField('String', 'SSL_PINNING_DOMAIN', '"' + properties.get("sslPinningDomain") + '"')
+            buildConfigField('String', 'SSL_PINNING_VALUE', '"' + properties.get("sslPinningValue") + '"')
         } else {
             throw new GradleException(
                     "You need to have projectRoot/config/config.properties file with "
