@@ -72,6 +72,8 @@
     <string name="chat_action_want_to_enter_name">I want to tell name first</string>
     <string name="plus_5" translatable="false">+5</string>
     <string name="message_not_enough_coins_level_unlock">You don\'t have enough coins.</string>
+    <string name="settings_fingerprint">Вход по отпечатку пальца</string>
+    <string name="error_no_fingerprints"><![CDATA[Отпечатки пальца не найдены. Добавьте их в \"Настройки\" -> \"Безопасность\" -> \"Отпечатки пальца\"]]></string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>

@@ -71,6 +71,8 @@
     <string name="chat_action_want_to_enter_number">Я выбираю номер!</string>
     <string name="chat_action_want_to_enter_name">Начнём с имени.</string>
     <string name="message_not_enough_coins_level_unlock">У вас недостаточно монет.</string>
+    <string name="settings_fingerprint">Вход по отпечатку пальца</string>
+    <string name="error_no_fingerprints"><![CDATA[Отпечатки пальца не найдены. Добавьте их в \"Настройки\" -> \"Безопасность\" -> \"Отпечатки пальца\"]]></string>
 
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>

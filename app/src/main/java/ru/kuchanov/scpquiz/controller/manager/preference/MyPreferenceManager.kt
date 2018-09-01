@@ -29,6 +29,10 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun setVibrationEnabled(enabled: Boolean) = preferences.edit().putBoolean(Key.VIBRATION_ENABLED, enabled).apply()
 
+    fun isFingerprintEnabled() = preferences.getBoolean(Key.FINGERPRINT_ENABLED, false)
+
+    fun setFingerprintEnabled(enabled: Boolean) = preferences.edit().putBoolean(Key.FINGERPRINT_ENABLED, enabled).apply()
+
     fun isIntroDialogShown() = preferences.getBoolean(Key.INTRO_DIALOG_SHOWN, false)
 
     fun setIntroDialogShown(shown: Boolean) = preferences.edit().putBoolean(Key.INTRO_DIALOG_SHOWN, shown).apply()

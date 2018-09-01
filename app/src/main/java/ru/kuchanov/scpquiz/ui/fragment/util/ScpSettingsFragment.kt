@@ -5,6 +5,8 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import com.arellomobile.mvp.presenter.InjectPresenter
@@ -24,6 +26,7 @@ import ru.kuchanov.scpquiz.mvp.presenter.util.SettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.utils.BitmapUtils
+import ru.kuchanov.scpquiz.utils.security.FingerprintUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
 import timber.log.Timber
 import toothpick.Toothpick
@@ -81,7 +84,14 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
 
         soundSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onSoundEnabled(isChecked) }
         vibrateSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onVibrationEnabled(isChecked) }
-
+        if (FingerprintUtils.isFingerprintSupported()) {
+            fingerprintLabelTextView.visibility = VISIBLE
+            fingerprintSwitch.visibility = VISIBLE
+            fingerprintSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onFingerPrintEnabled(isChecked) }
+        } else {
+            fingerprintLabelTextView.visibility = GONE
+            fingerprintSwitch.visibility = GONE
+        }
         val onShareClickListener: (View) -> Unit = { presenter.onShareClicked() }
         shareImageView.setOnClickListener(onShareClickListener)
         shareLabelTextView.setOnClickListener(onShareClickListener)
@@ -143,5 +153,11 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
                 presenter.onVibrationEnabled(isChecked)
             }
         }
+    }
+
+    override fun showFingerprint(enabled: Boolean) {
+        fingerprintSwitch.setOnCheckedChangeListener(null)
+        fingerprintSwitch.isChecked = enabled
+        fingerprintSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onFingerPrintEnabled(isChecked) }
     }
 }

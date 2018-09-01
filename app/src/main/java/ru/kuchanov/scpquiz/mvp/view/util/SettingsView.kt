@@ -7,4 +7,5 @@ interface SettingsView : BaseView {
     fun showLangsChooser(langs: Set<String>, lang: String)
     fun showSound(enabled: Boolean)
     fun showVibration(enabled: Boolean)
+    fun showFingerprint(enabled: Boolean)
 }
