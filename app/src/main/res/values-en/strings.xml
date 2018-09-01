@@ -76,6 +76,7 @@
     <string name="dialog_fingerprints_title">Войдите в приложение используя отпечаток пальца</string>
     <string name="touch_sensor">Прикоснитесь к сенсору</string>
     <string name="error_fingerprint_auth_failed">Не удалось аутентифицироваться по отпечатку.</string>
+    <string name="try_again">Попробуйте ещё раз</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>

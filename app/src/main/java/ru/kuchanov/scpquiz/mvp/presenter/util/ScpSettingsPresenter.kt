@@ -19,7 +19,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @InjectViewState
-class SettingsPresenter @Inject constructor(
+class ScpSettingsPresenter @Inject constructor(
     override var appContext: Application,
     override var preferences: MyPreferenceManager,
     override var router: ScpRouter,

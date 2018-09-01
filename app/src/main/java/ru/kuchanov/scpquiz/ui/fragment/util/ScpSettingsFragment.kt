@@ -3,6 +3,7 @@ package ru.kuchanov.scpquiz.ui.fragment.util
 import android.annotation.TargetApi
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat
 import android.support.v4.os.CancellationSignal
 import android.support.v7.widget.LinearLayoutManager
@@ -21,6 +22,7 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import jp.wasabeef.blurry.Blurry
+import kotlinx.android.synthetic.main.dialog_fingerprint.view.*
 import kotlinx.android.synthetic.main.fragment_settings.*
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
@@ -29,7 +31,7 @@ import ru.kuchanov.scpquiz.controller.adapter.delegate.DelegateLang
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LangViewModel
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.SettingsModule
-import ru.kuchanov.scpquiz.mvp.presenter.util.SettingsPresenter
+import ru.kuchanov.scpquiz.mvp.presenter.util.ScpSettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.utils.BitmapUtils
@@ -40,7 +42,7 @@ import toothpick.Toothpick
 import toothpick.config.Module
 
 
-class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), SettingsView {
+class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), SettingsView {
 
     companion object {
 
@@ -59,10 +61,10 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
     override val modules: Array<Module> = arrayOf(SettingsModule())
 
     @InjectPresenter
-    override lateinit var presenter: SettingsPresenter
+    override lateinit var presenter: ScpSettingsPresenter
 
     @ProvidePresenter
-    override fun providePresenter(): SettingsPresenter = scope.getInstance(SettingsPresenter::class.java)
+    override fun providePresenter(): ScpSettingsPresenter = scope.getInstance(ScpSettingsPresenter::class.java)
 
     override fun inject() = Toothpick.inject(this, scope)
 
@@ -178,39 +180,45 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
                 cancellationSignal.cancel()
             }
 
+            val dialogView = LayoutInflater.from(activity!!).inflate(R.layout.dialog_fingerprint, null, false)
+
             val fingerprintCallback = object : FingerprintManagerCompat.AuthenticationCallback() {
                 override fun onAuthenticationError(errMsgId: Int, errString: CharSequence?) {
                     super.onAuthenticationError(errMsgId, errString)
                     Timber.d("onAuthenticationError: $errMsgId, $errString")
-                    //todo show in dialog
-                    errString?.let { showMessage(it.toString()) }
+                    dialogView.sensorTextView.text = errString ?: getString(R.string.error_fingerprint_auth_failed)
+                    dialogView.sensorImageView.setImageResource(R.drawable.ic_warning_black_24dp)
+                    dialogView.sensorImageView.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorRed))
+
                 }
 
                 override fun onAuthenticationSucceeded(result: FingerprintManagerCompat.AuthenticationResult?) {
                     super.onAuthenticationSucceeded(result)
                     Timber.d("onAuthenticationSucceeded: $result, ${result?.cryptoObject?.cipher}")
-                    //todo login with decripted password
+                    //todo login with decrypted password
                 }
 
                 override fun onAuthenticationHelp(helpMsgId: Int, helpString: CharSequence?) {
                     super.onAuthenticationHelp(helpMsgId, helpString)
                     Timber.d("onAuthenticationHelp: $helpMsgId, $helpString")
-                    //todo show in dialog
-                    helpString?.let { showMessage(it.toString()) }
+                    dialogView.sensorTextView.text = helpString?.toString() ?: getString(R.string.try_again)
+                    dialogView.sensorImageView.setImageResource(R.drawable.ic_info_outline_black_24dp)
+                    dialogView.sensorImageView.setColorFilter(ContextCompat.getColor(activity!!, android.R.color.black))
                 }
 
                 override fun onAuthenticationFailed() {
                     super.onAuthenticationFailed()
                     Timber.d("onAuthenticationFailed")
-                    //todo show in dialog
-                    showMessage(R.string.error_fingerprint_auth_failed)
+                    dialogView.sensorTextView.setText(R.string.error_fingerprint_auth_failed)
+                    dialogView.sensorImageView.setImageResource(R.drawable.ic_warning_black_24dp)
+                    dialogView.sensorImageView.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorRed))
                 }
             }
 
             MaterialDialog(activity!!)
                     .title(R.string.dialog_fingerprints_title)
                     .negativeButton(android.R.string.cancel) { dismissFingerprintSensor.invoke() }
-                    .customView(R.layout.dialog_fingerprint)
+                    .customView(view = dialogView)
                     .onDismiss { dismissFingerprintSensor.invoke() }
                     .show {
                         FingerprintUtils.useFingerprintSensor(
