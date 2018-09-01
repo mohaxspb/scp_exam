@@ -56,8 +56,7 @@ class SettingsPresenter @Inject constructor(
         when (FingerprintUtils.getSensorState()) {
             SensorState.READY -> {
                 Timber.d("READY")
-                //todo show dialog
-                FingerprintUtils.useFingerprintSensor()
+                viewState.showFingerprintDialog(true)
             }
             SensorState.NO_FINGERPRINTS -> {
                 Timber.d("NO_FINGERPRINTS")

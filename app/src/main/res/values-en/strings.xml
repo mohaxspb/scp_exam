@@ -73,6 +73,9 @@
     <string name="message_not_enough_coins_level_unlock">You don\'t have enough coins.</string>
     <string name="settings_fingerprint">Вход по отпечатку пальца</string>
     <string name="error_no_fingerprints"><![CDATA[Отпечатки пальца не найдены. Добавьте их в \"Настройки\" -> \"Безопасность\" -> \"Отпечатки пальца\"]]></string>
+    <string name="dialog_fingerprints_title">Войдите в приложение используя отпечаток пальца</string>
+    <string name="touch_sensor">Прикоснитесь к сенсору</string>
+    <string name="error_fingerprint_auth_failed">Не удалось аутентифицироваться по отпечатку.</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>

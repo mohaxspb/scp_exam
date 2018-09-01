@@ -8,4 +8,5 @@ interface SettingsView : BaseView {
     fun showSound(enabled: Boolean)
     fun showVibration(enabled: Boolean)
     fun showFingerprint(enabled: Boolean)
+    fun showFingerprintDialog(show: Boolean)
 }

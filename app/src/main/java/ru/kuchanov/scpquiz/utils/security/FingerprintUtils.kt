@@ -31,32 +31,15 @@ object FingerprintUtils {
 
 
     @RequiresApi(Build.VERSION_CODES.M)
-    fun useFingerprintSensor() {
+    fun useFingerprintSensor(
+        cancellationSignal: CancellationSignal,
+        authenticationCallback: FingerprintManagerCompat.AuthenticationCallback
+    ) {
         fingerprintManager.authenticate(
             CryptoUtils.getCryptoObject(),
             0,
-            CancellationSignal(),
-            object : FingerprintManagerCompat.AuthenticationCallback() {
-                override fun onAuthenticationError(errMsgId: Int, errString: CharSequence?) {
-                    super.onAuthenticationError(errMsgId, errString)
-                    Timber.d("onAuthenticationError: $errMsgId, $errString")
-                }
-
-                override fun onAuthenticationSucceeded(result: FingerprintManagerCompat.AuthenticationResult?) {
-                    super.onAuthenticationSucceeded(result)
-                    Timber.d("onAuthenticationSucceeded: $result, ${result?.cryptoObject?.cipher}")
-                }
-
-                override fun onAuthenticationHelp(helpMsgId: Int, helpString: CharSequence?) {
-                    super.onAuthenticationHelp(helpMsgId, helpString)
-                    Timber.d("onAuthenticationHelp: $helpMsgId, $helpString")
-                }
-
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
-                    Timber.d("onAuthenticationFailed")
-                }
-            },
+            cancellationSignal,
+            authenticationCallback,
             null
         )
     }

@@ -1,6 +1,10 @@
 package ru.kuchanov.scpquiz.ui.fragment.util
 
+import android.annotation.TargetApi
+import android.os.Build
 import android.os.Bundle
+import android.support.v4.hardware.fingerprint.FingerprintManagerCompat
+import android.support.v4.os.CancellationSignal
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -9,6 +13,9 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.callbacks.onDismiss
+import com.afollestad.materialdialogs.customview.customView
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
@@ -26,8 +33,8 @@ import ru.kuchanov.scpquiz.mvp.presenter.util.SettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.utils.BitmapUtils
-import ru.kuchanov.scpquiz.utils.security.FingerprintUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
+import ru.kuchanov.scpquiz.utils.security.FingerprintUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -159,5 +166,58 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
         fingerprintSwitch.setOnCheckedChangeListener(null)
         fingerprintSwitch.isChecked = enabled
         fingerprintSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onFingerPrintEnabled(isChecked) }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    override fun showFingerprintDialog(show: Boolean) {
+        if (isAdded) {
+            val cancellationSignal = CancellationSignal()
+            cancellationSignal.setOnCancelListener { Timber.d("cancellationSignal canceled!") }
+            val dismissFingerprintSensor = {
+                //todo dismiss sensor in onPause
+                cancellationSignal.cancel()
+            }
+
+            val fingerprintCallback = object : FingerprintManagerCompat.AuthenticationCallback() {
+                override fun onAuthenticationError(errMsgId: Int, errString: CharSequence?) {
+                    super.onAuthenticationError(errMsgId, errString)
+                    Timber.d("onAuthenticationError: $errMsgId, $errString")
+                    //todo show in dialog
+                    errString?.let { showMessage(it.toString()) }
+                }
+
+                override fun onAuthenticationSucceeded(result: FingerprintManagerCompat.AuthenticationResult?) {
+                    super.onAuthenticationSucceeded(result)
+                    Timber.d("onAuthenticationSucceeded: $result, ${result?.cryptoObject?.cipher}")
+                    //todo login with decripted password
+                }
+
+                override fun onAuthenticationHelp(helpMsgId: Int, helpString: CharSequence?) {
+                    super.onAuthenticationHelp(helpMsgId, helpString)
+                    Timber.d("onAuthenticationHelp: $helpMsgId, $helpString")
+                    //todo show in dialog
+                    helpString?.let { showMessage(it.toString()) }
+                }
+
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                    Timber.d("onAuthenticationFailed")
+                    //todo show in dialog
+                    showMessage(R.string.error_fingerprint_auth_failed)
+                }
+            }
+
+            MaterialDialog(activity!!)
+                    .title(R.string.dialog_fingerprints_title)
+                    .negativeButton(android.R.string.cancel) { dismissFingerprintSensor.invoke() }
+                    .customView(R.layout.dialog_fingerprint)
+                    .onDismiss { dismissFingerprintSensor.invoke() }
+                    .show {
+                        FingerprintUtils.useFingerprintSensor(
+                            cancellationSignal,
+                            fingerprintCallback
+                        )
+                    }
+        }
     }
 }
