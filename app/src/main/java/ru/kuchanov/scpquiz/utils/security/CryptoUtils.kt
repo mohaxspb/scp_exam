@@ -9,6 +9,7 @@ import android.support.v4.hardware.fingerprint.FingerprintManagerCompat
 import android.util.Base64
 import timber.log.Timber
 import java.io.IOException
+import java.nio.charset.Charset
 import java.security.*
 import java.security.cert.CertificateException
 import java.security.spec.InvalidKeySpecException
@@ -163,7 +164,7 @@ object CryptoUtils {
     private fun initEncodeCipher(mode: Int) {
         val key = keyStore?.getCertificate(KEY_ALIAS)?.publicKey
         key?.let {
-            val unrestricted = KeyFactory.getInstance(key.algorithm).generatePublic(X509EncodedKeySpec(key.encoded))
+            val unrestricted = KeyFactory.getInstance(it.algorithm).generatePublic(X509EncodedKeySpec(it.encoded))
             val spec = OAEPParameterSpec(
                 MD_NAME,
                 MGF_NAME, MGF1ParameterSpec.SHA1, PSource.PSpecified.DEFAULT)
@@ -187,10 +188,9 @@ object CryptoUtils {
 
     fun encode(inputString: String): String? {
         try {
-            if (prepare() && initCipher(
-                        Cipher.ENCRYPT_MODE)) {
+            if (prepare() && initCipher(Cipher.ENCRYPT_MODE)) {
                 val bytes = cipher?.doFinal(inputString.toByteArray())
-                return bytes?.let { Base64.encodeToString(bytes, Base64.NO_WRAP) }
+                return bytes?.let { String(Base64.encode(bytes, Base64.NO_WRAP)) }
             }
         } catch (e: IllegalBlockSizeException) {
             Timber.e(e)
@@ -217,4 +217,12 @@ object CryptoUtils {
     fun getCryptoObject() = if (prepare() && initCipher(Cipher.DECRYPT_MODE)) {
         cipher?.let { FingerprintManagerCompat.CryptoObject(it) }
     } else null
+
+    fun generateUserPassword(): String? {
+        val min = 100000
+        val max = 999999
+        val password = (SecureRandom().nextInt(max - min + 1) + min).toString()
+        Timber.d("passwordRaw: $password")
+        return CryptoUtils.encode(password)
+    }
 }

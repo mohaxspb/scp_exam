@@ -64,6 +64,10 @@ class MyPreferenceManager @Inject constructor(context: Context) {
         lastFinishedLevelsNum
     ).apply()
 
+    fun getUserPassword(): String? = preferences.getString(Key.USER_PASSWORD, null)
+
+    fun setUserPassword(password: String?) = preferences.edit().putString(Key.USER_PASSWORD, password).apply()
+
     fun setAppodealDescriptionShown(shown: Boolean) = preferences.edit().putBoolean(
         Key.APPODEAL_DESCRIPTION_SHOWN,
         shown

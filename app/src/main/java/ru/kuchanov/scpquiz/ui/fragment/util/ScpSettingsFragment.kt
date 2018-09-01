@@ -180,24 +180,36 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
                 cancellationSignal.cancel()
             }
 
+            var materialDialog : MaterialDialog? = null
+
             val dialogView = LayoutInflater.from(activity!!).inflate(R.layout.dialog_fingerprint, null, false)
 
             val fingerprintCallback = object : FingerprintManagerCompat.AuthenticationCallback() {
+                /**
+                 * несколько неудачных попыток считывания (5)
+                 *
+                 * после этого сенсор станет недоступным на некоторое время (30 сек)
+                 */
                 override fun onAuthenticationError(errMsgId: Int, errString: CharSequence?) {
                     super.onAuthenticationError(errMsgId, errString)
                     Timber.d("onAuthenticationError: $errMsgId, $errString")
-                    dialogView.sensorTextView.text = errString ?: getString(R.string.error_fingerprint_auth_failed)
-                    dialogView.sensorImageView.setImageResource(R.drawable.ic_warning_black_24dp)
-                    dialogView.sensorImageView.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorRed))
-
+                    showMessage(R.string.error_fingerprint_auth_failed_try_again)
+                    materialDialog?.dismiss()
                 }
 
+                /**
+                 * все прошло успешно
+                 */
                 override fun onAuthenticationSucceeded(result: FingerprintManagerCompat.AuthenticationResult?) {
                     super.onAuthenticationSucceeded(result)
-                    Timber.d("onAuthenticationSucceeded: $result, ${result?.cryptoObject?.cipher}")
-                    //todo login with decrypted password
+                    Timber.d("onAuthenticationSucceeded: $result, ${result?.cryptoObject?.cipher?.parameters}")
+                    presenter.onFingerprintAuthSucceeded(result?.cryptoObject?.cipher)
+                    materialDialog?.dismiss()
                 }
 
+                /**
+                 * грязные пальчики, недостаточно сильный зажим
+                 */
                 override fun onAuthenticationHelp(helpMsgId: Int, helpString: CharSequence?) {
                     super.onAuthenticationHelp(helpMsgId, helpString)
                     Timber.d("onAuthenticationHelp: $helpMsgId, $helpString")
@@ -206,6 +218,9 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
                     dialogView.sensorImageView.setColorFilter(ContextCompat.getColor(activity!!, android.R.color.black))
                 }
 
+                /**
+                 * отпечаток считался, но не распознался
+                 */
                 override fun onAuthenticationFailed() {
                     super.onAuthenticationFailed()
                     Timber.d("onAuthenticationFailed")
@@ -215,7 +230,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
                 }
             }
 
-            MaterialDialog(activity!!)
+            materialDialog = MaterialDialog(activity!!)
                     .title(R.string.dialog_fingerprints_title)
                     .negativeButton(android.R.string.cancel) { dismissFingerprintSensor.invoke() }
                     .customView(view = dialogView)

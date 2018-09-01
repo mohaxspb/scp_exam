@@ -78,6 +78,10 @@
     <string name="touch_sensor">Прикоснитесь к сенсору</string>
     <string name="error_fingerprint_auth_failed">Не удалось аутентифицироваться по отпечатку.</string>
     <string name="try_again">Попробуйте ещё раз</string>
+    <string name="error_fingerprint_auth_failed_try_again">Не удалось аутентифицироваться по отпечатку. Попробуйте ещё раз.</string>
+    <string name="error_create_password">Не удалось создать пароль.</string>
+    <string name="fingerprint_access_enabled">Вход по отпечатку пальца активирован</string>
+    <string name="error_decode_password">Не удалось расшифровать пароль. Попробуйте ещё раз.</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>
