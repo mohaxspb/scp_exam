@@ -18,7 +18,10 @@ interface QuizDao {
     @Query("SELECT COUNT(*) FROM Quiz")
     fun getCount(): Long
 
-    @Query("SELECT * FROM Quiz")
+    /**
+     * returns all quizes, sorted by ID ASC
+     */
+    @Query("SELECT * FROM Quiz ORDER BY id ASC")
     fun getAll(): Flowable<List<Quiz>>
 
     @Query("SELECT * FROM Quiz ORDER BY RANDOM() LIMIT :count")

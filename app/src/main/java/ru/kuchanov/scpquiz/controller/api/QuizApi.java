@@ -22,8 +22,6 @@ public interface QuizApi {
 
 
     @GET("quiz/all")
-    Single<List<NwQuiz>> getNwQuizList(
-            @Header("Authorization") String authorization
-    );
+    Single<List<NwQuiz>> getNwQuizList(@Header("Authorization") String authorization);
 }
 

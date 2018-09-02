@@ -330,10 +330,19 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         }
     }
 
-    override fun showChatActions(chatActions: List<ChatAction>, chatActionsGroupType: ChatActionsGroupType) =
-            chatDelegate.showChatActions(chatActions, chatActionsGroupType)
+    override fun showChatActions(chatActions: List<ChatAction>, chatActionsGroupType: ChatActionsGroupType) {
+        if (!isAdded) {
+            return
+        }
+        chatDelegate.showChatActions(chatActions, chatActionsGroupType)
+    }
 
-    override fun removeChatAction(indexInParent: Int) = chatDelegate.removeChatAction(indexInParent)
+    override fun removeChatAction(indexInParent: Int) {
+        if (!isAdded) {
+            return
+        }
+        chatDelegate.removeChatAction(indexInParent)
+    }
 
     override fun showKeyboard(show: Boolean) {
         keyboardScrollView.visibility = if (show) VISIBLE else GONE
@@ -343,11 +352,16 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         keyboardView?.setCharacters(characters)
     }
 
-    override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(
-        message,
-        user,
-        R.color.textColorGrey
-    )
+    override fun showChatMessage(message: String, user: User) {
+        if (!isAdded) {
+            return
+        }
+        chatDelegate.showChatMessage(
+            message,
+            user,
+            R.color.textColorGrey
+        )
+    }
 
     override fun askForRateApp() = PreRate.init(
         activity,

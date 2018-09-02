@@ -4,6 +4,7 @@ import android.arch.persistence.room.Room
 import android.content.Context
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
+import okhttp3.CertificatePinner
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -58,7 +59,14 @@ class AppModule(context: Context) : Module() {
         bind(NavigatorHolder::class.java).toInstance(cicerone.navigatorHolder)
 
         //api
+        val certPinner = CertificatePinner.Builder()
+                .add(
+                    BuildConfig.SSL_PINNING_DOMAIN,
+                    "sha256/${BuildConfig.SSL_PINNING_VALUE}")
+                .build()
+
         val okHttpClient = OkHttpClient.Builder()
+                .certificatePinner(certPinner)
                 .addInterceptor(
                     HttpLoggingInterceptor { log -> Timber.d(log) }
                             .setLevel(HttpLoggingInterceptor.Level.BODY)
