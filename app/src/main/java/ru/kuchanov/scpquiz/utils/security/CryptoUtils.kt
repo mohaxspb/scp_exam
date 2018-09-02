@@ -66,6 +66,7 @@ object CryptoUtils {
         }
     }
 
+    //todo create different instances for decode/encode
     private val cipher: Cipher? by lazy {
         try {
             Cipher.getInstance(TRANSFORMATION)
