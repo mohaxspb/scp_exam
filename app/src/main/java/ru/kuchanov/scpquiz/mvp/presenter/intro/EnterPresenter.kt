@@ -96,9 +96,8 @@ class EnterPresenter @Inject constructor(
                     appDatabase.finishedLevelsDao().insert(it.mapIndexed { index, nwQuiz ->
                         FinishedLevel(
                             nwQuiz.id,
-                            false,
-                            false,
-                            index < 5
+                            //first 5 levels must be available always
+                            isLevelAvailable = index < 5
                         )
                     })
 
