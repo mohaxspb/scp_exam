@@ -115,10 +115,10 @@ class LevelsPresenter @Inject constructor(
                         val finishedLevel = triple.second.find { it.quizId == quiz.id }
                                 ?: throw IllegalStateException("level not found for quizId: ${quiz.id}")
                         LevelViewModel(
-                            quiz,
-                            finishedLevel.scpNameFilled,
-                            finishedLevel.scpNumberFilled,
-                            finishedLevel.isLevelAvailable
+                            quiz = quiz,
+                            scpNameFilled = finishedLevel.scpNameFilled,
+                            scpNumberFilled = finishedLevel.scpNumberFilled,
+                            isLevelAvailable = finishedLevel.isLevelAvailable
                         )
                     }
 

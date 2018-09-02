@@ -2,6 +2,7 @@ package ru.kuchanov.scpquiz.mvp.presenter.activity
 
 import android.app.Application
 import com.arellomobile.mvp.InjectViewState
+import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -31,12 +32,14 @@ class MainPresenter @Inject constructor(
 
         router.navigateTo(Constants.Screens.ENTER)
 
-        apiClient.getNwQuizList()
-                .map { it -> it.filter { it.approved } }
-                .map {
+        Maybe.fromCallable { if (appDatabase.quizDao().getCount() == 0L) null else true }
+                .flatMap { apiClient.getNwQuizList().toMaybe() }
+                .map { quizes -> quizes.filter { it.approved } }
+                .map { quizes -> quizes.sortedBy { it.id } }
+                .map { quizes ->
                     appDatabase.quizDao().insertQuizesWithQuizTranslations(
                         quizConverter.convertCollection(
-                            it,
+                            quizes,
                             quizConverter::convert
                         )
                     )
@@ -44,9 +47,8 @@ class MainPresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onError = { it: Throwable ->
-                        Timber.e(it)
-                    }
+                    onError = { error: Throwable -> Timber.e(error) },
+                    onComplete = { Timber.d("onComplete") }
                 )
     }
 }
