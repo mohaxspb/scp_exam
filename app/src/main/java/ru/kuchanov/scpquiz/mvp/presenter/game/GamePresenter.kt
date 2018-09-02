@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -176,12 +177,14 @@ class GamePresenter @Inject constructor(
                         }
                         chars?.let { viewState.setKeyboardChars(it) }
 
-                        gameInteractor.updateFinishedLevel(
-                            quizLevelInfo.quiz.id,
-                            nameRedundantCharsRemoved = nameRedundantCharsRemoved,
-                            numberRedundantCharsRemoved = numberRedundantCharsRemoved
+                        Single.merge(
+                            gameInteractor.updateFinishedLevel(
+                                quizLevelInfo.quiz.id,
+                                nameRedundantCharsRemoved = nameRedundantCharsRemoved,
+                                numberRedundantCharsRemoved = numberRedundantCharsRemoved
+                            ),
+                            gameInteractor.increaseScore(-price).toSingleDefault(-price)
                         )
-                                .flatMap { gameInteractor.increaseScore(-price).toSingleDefault(-price) }
                                 .subscribeOn(Schedulers.io())
                                 .subscribe()
                     }
@@ -515,7 +518,6 @@ class GamePresenter @Inject constructor(
         if (quizLevelInfo.quiz.scpNumber.toLowerCase() == enteredNumber.joinToString("").toLowerCase()) {
             Timber.d("number is correct!")
             currentEnterType = EnterType.NAME
-            currentEnterType = EnterType.NAME
             onNumberEntered(true)
         } else {
             Timber.d("number is not correct")
@@ -526,6 +528,7 @@ class GamePresenter @Inject constructor(
         quizLevelInfo.quiz.quizTranslations?.first()?.let { quizTranslation ->
             if (enteredName.joinToString("").toLowerCase() == quizTranslation.translation.toLowerCase()) {
                 Timber.d("name is correct!")
+                currentEnterType = EnterType.NUMBER
                 onNameEntered(true)
             } else {
                 Timber.d("name is not correct")

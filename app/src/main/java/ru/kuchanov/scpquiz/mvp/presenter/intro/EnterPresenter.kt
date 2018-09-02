@@ -71,7 +71,8 @@ class EnterPresenter @Inject constructor(
             val adapter = moshi.adapter<List<NwQuiz>>(type)
             adapter.fromJson(json)
         }
-                .map {
+                .map { initialQuizes -> initialQuizes.sortedBy { it.id } }
+                .map { initialQuizes ->
                     Timber.d("write initial data to DB")
 
                     Timber.d("write users:")
@@ -90,10 +91,11 @@ class EnterPresenter @Inject constructor(
                     Timber.d("write quizes")
                     appDatabase.quizDao().insertQuizesWithQuizTranslations(
                         quizConverter.convertCollection(
-                            it,
+                            initialQuizes,
                             quizConverter::convert
                         ))
-                    appDatabase.finishedLevelsDao().insert(it.mapIndexed { index, nwQuiz ->
+                    appDatabase.finishedLevelsDao().insert(initialQuizes.mapIndexed { index, nwQuiz ->
+                        Timber.d("initialQuizes: $index, ${nwQuiz.id}")
                         FinishedLevel(
                             nwQuiz.id,
                             //first 5 levels must be available always
