@@ -180,7 +180,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
                 cancellationSignal.cancel()
             }
 
-            var materialDialog : MaterialDialog? = null
+            var materialDialog: MaterialDialog? = null
 
             val dialogView = LayoutInflater.from(activity!!).inflate(R.layout.dialog_fingerprint, null, false)
 

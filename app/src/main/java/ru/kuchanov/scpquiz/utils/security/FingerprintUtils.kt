@@ -11,8 +11,14 @@ import timber.log.Timber
 
 enum class SensorState {
     NOT_SUPPORTED,
-    NOT_BLOCKED, // если устройство не защищено пином, рисунком или паролем
-    NO_FINGERPRINTS, // если на устройстве нет отпечатков
+    /**
+     * in case devices is not protected with pin, graphic key or password
+     */
+    NOT_BLOCKED,
+    /**
+     * If there is no fingerprints on device
+     */
+    NO_FINGERPRINTS,
     READY
 }
 
@@ -35,8 +41,10 @@ object FingerprintUtils {
         cancellationSignal: CancellationSignal,
         authenticationCallback: FingerprintManagerCompat.AuthenticationCallback
     ) {
+        val cryptoObject = CryptoUtils.getCryptoObject()
+        Timber.d("useFingerprintSensor cryptoObject: $cryptoObject")
         fingerprintManager.authenticate(
-            CryptoUtils.getCryptoObject(),
+            cryptoObject,
             0,
             cancellationSignal,
             authenticationCallback,

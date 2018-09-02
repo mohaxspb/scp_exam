@@ -80,6 +80,7 @@ class ScpSettingsPresenter @Inject constructor(
     fun onShareClicked() = IntentUtils.tryShareApp(appContext)
 
     fun onPrivacyPolicyClicked() =
+    //fixme test
             preferences.setUserPassword(null)
 //            IntentUtils.openUrl(appContext, Constants.PRIVACY_POLICY_URL)
 
@@ -112,23 +113,21 @@ class ScpSettingsPresenter @Inject constructor(
             }
             //here we have password and save it...
             //todo so we just need to say that everything is OK and fingerprint set/removed
+        }
+        val encodedPassword = preferences.getUserPassword()
+        Timber.d("encodedPassword: $encodedPassword")
+        val decodedPassword = encodedPassword?.let { CryptoUtils.decode(it, cipherForDecoding) }
+        Timber.d("passwordDecoded: $decodedPassword")
+        if (decodedPassword != null) {
+            //OK
+            //now we can use decoded data to login. I.e. send auth request to server, use token to get data, or simulate pin enter
+            //in our case we'll only navigate to levels screen while open app
+            //and now we simply say user result - enable/disable this feature
+            //todo show message for enable/disable cases
+            viewState.showMessage(R.string.fingerprint_access_enabled)
         } else {
-            val encodedPassword = preferences.getUserPassword()
-            Timber.d("encodedPassword: $encodedPassword")
-            val decodedPassword = encodedPassword?.let { CryptoUtils.decode(it, cipherForDecoding) }
-            Timber.d("passwordDecoded: $decodedPassword")
-            if (decodedPassword != null) {
-                //OK
-                //now we can use decoded data to login. I.e. send auth request to server, use token to get data, or simulate pin enter
-                //in our case we'll only navigate to levels screen while open app
-                //and now we simply say user result - enable/disable this feature
-                //todo show message for enable/disable cases
-                viewState.showMessage(R.string.fingerprint_access_enabled)
-            } else {
-                //some error occurred while decode password
-                viewState.showMessage(R.string.error_decode_password)
-            }
-
+            //some error occurred while decode password
+            viewState.showMessage(R.string.error_decode_password)
         }
     }
 }
