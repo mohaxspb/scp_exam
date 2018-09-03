@@ -1,10 +1,14 @@
 package ru.kuchanov.scpquiz.ui.fragment.util
 
+import android.annotation.TargetApi
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import com.arellomobile.mvp.presenter.InjectPresenter
@@ -20,17 +24,19 @@ import ru.kuchanov.scpquiz.controller.adapter.delegate.DelegateLang
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LangViewModel
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.SettingsModule
-import ru.kuchanov.scpquiz.mvp.presenter.util.SettingsPresenter
+import ru.kuchanov.scpquiz.mvp.presenter.util.ScpSettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.ui.utils.DialogUtils
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
+import ru.kuchanov.scpquiz.utils.security.FingerprintUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
 
 
-class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), SettingsView {
+class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), SettingsView {
 
     companion object {
 
@@ -49,10 +55,10 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
     override val modules: Array<Module> = arrayOf(SettingsModule())
 
     @InjectPresenter
-    override lateinit var presenter: SettingsPresenter
+    override lateinit var presenter: ScpSettingsPresenter
 
     @ProvidePresenter
-    override fun providePresenter(): SettingsPresenter = scope.getInstance(SettingsPresenter::class.java)
+    override fun providePresenter(): ScpSettingsPresenter = scope.getInstance(ScpSettingsPresenter::class.java)
 
     override fun inject() = Toothpick.inject(this, scope)
 
@@ -81,7 +87,15 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
 
         soundSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onSoundEnabled(isChecked) }
         vibrateSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onVibrationEnabled(isChecked) }
-
+        Timber.d("FingerprintUtils.isFingerprintSupported(): ${FingerprintUtils.isFingerprintSupported()}")
+        if (FingerprintUtils.isFingerprintSupported()) {
+            fingerprintLabelTextView.visibility = VISIBLE
+            fingerprintSwitch.visibility = VISIBLE
+            fingerprintSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onFingerPrintEnabled(isChecked) }
+        } else {
+            fingerprintLabelTextView.visibility = GONE
+            fingerprintSwitch.visibility = GONE
+        }
         val onShareClickListener: (View) -> Unit = { presenter.onShareClicked() }
         shareImageView.setOnClickListener(onShareClickListener)
         shareLabelTextView.setOnClickListener(onShareClickListener)
@@ -142,6 +156,25 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
                 }
                 presenter.onVibrationEnabled(isChecked)
             }
+        }
+    }
+
+    override fun showFingerprint(enabled: Boolean) {
+        fingerprintSwitch.setOnCheckedChangeListener(null)
+        fingerprintSwitch.isChecked = enabled
+        fingerprintSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onFingerPrintEnabled(isChecked) }
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    override fun showFingerprintDialog(enableFingerprintLogin: Boolean) {
+        if (isAdded) {
+            DialogUtils.showFingerprintDialog(
+                context = activity!!,
+                title = if (enableFingerprintLogin) R.string.dialog_fingerprint_enable_title else R.string.dialog_fingerprint_disable_title,
+                onErrorAction = { showMessage(R.string.error_fingerprint_auth_failed_try_again) },
+                onCipherErrorAction = { showMessage(R.string.error_get_chipher) },
+                onSuccessAction = { presenter.onFingerprintAuthSucceeded(enableFingerprintLogin, it) }
+            )
         }
     }
 }

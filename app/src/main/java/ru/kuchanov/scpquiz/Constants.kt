@@ -16,7 +16,7 @@ object Constants {
         '0'
     )
     const val DEFAULT_LANG = "en"
-    const val PRIVACY_POLICY_URL = "http://37.143.14.68/scpQuiz/privacyPolicy.html"
+    const val PRIVACY_POLICY_URL = "https://scpfoundation.app/scpQuiz/privacyPolicy.html"
     const val SETTINGS_BACKGROUND_FILE_NAME = "bgSettings"
     const val INTRO_DIALOG_BACKGROUND_FILE_NAME = "bgIntoDialog"
     const val FINISHED_LEVEL_BEFORE_ASK_RATE_APP = 5L

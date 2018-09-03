@@ -171,6 +171,29 @@
         tools:ignore="ContentDescription" />
 
     <TextView
+        android:id="@+id/fingerprintLabelTextView"
+        style="@style/SettingsTextStyle"
+        android:layout_width="0dp"
+        android:gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/defaultMarginSmall"
+        android:padding="@dimen/defaultMarginSmall"
+        android:text="@string/settings_fingerprint"
+        app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+        app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintTop_toBottomOf="@+id/shareLabelTextView" />
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/fingerprintSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        app:layout_constraintBottom_toBottomOf="@id/fingerprintLabelTextView"
+        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/fingerprintLabelTextView" />
+
+    <TextView
         android:id="@+id/privacyPolicyLabelTextView"
         style="@style/SettingsTextStyle"
         android:layout_width="match_parent"

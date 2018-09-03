@@ -69,7 +69,7 @@ class AppModule(context: Context) : Module() {
                 .certificatePinner(certPinner)
                 .addInterceptor(
                     HttpLoggingInterceptor { log -> Timber.d(log) }
-                            .setLevel(HttpLoggingInterceptor.Level.BODY)
+                            .setLevel(HttpLoggingInterceptor.Level.NONE)
                 )
                 .build()
 
