@@ -2,6 +2,8 @@ package ru.kuchanov.scpquiz.mvp.presenter.intro
 
 import android.app.Application
 import android.graphics.Bitmap
+import android.os.Build
+import android.support.annotation.RequiresApi
 import com.arellomobile.mvp.InjectViewState
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -28,9 +30,11 @@ import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.EnterView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.StorageUtils
+import ru.kuchanov.scpquiz.utils.security.CryptoUtils
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
+import javax.crypto.Cipher
 import javax.inject.Inject
 
 @InjectViewState
@@ -148,7 +152,12 @@ class EnterPresenter @Inject constructor(
                     onComplete = {
                         Timber.d("onComplete")
                         if (preferences.isIntroDialogShown()) {
-                            router.newRootScreen(Constants.Screens.QUIZ_LIST)
+                            if (preferences.isFingerprintEnabled()) {
+                                viewState.showFingerprintButton(true)
+                                viewState.showFingerprintDialog()
+                            } else {
+                                router.newRootScreen(Constants.Screens.QUIZ_LIST)
+                            }
                         } else {
                             viewState.onNeedToOpenIntroDialogFragment()
                         }
@@ -196,7 +205,6 @@ class EnterPresenter @Inject constructor(
 
     fun onProgressTextClicked() {
         //later there will be an easter egg
-
         if (BuildConfig.DEBUG) {
             val scoreToDecrease = 1000
             Completable.fromAction {
@@ -208,6 +216,19 @@ class EnterPresenter @Inject constructor(
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun onFingerprintAuthSuccess(cipherForDecoding: Cipher) {
+        val encodedPassword = preferences.getUserPassword()
+        val decodedPassword = encodedPassword?.let { CryptoUtils.decode(it, cipherForDecoding) }
+        if (decodedPassword != null) {
+            //OK
+            router.newRootScreen(Constants.Screens.QUIZ_LIST)
+        } else {
+            //some error occurred while decode password
+            viewState.showMessage(R.string.error_decode_password)
         }
     }
 }

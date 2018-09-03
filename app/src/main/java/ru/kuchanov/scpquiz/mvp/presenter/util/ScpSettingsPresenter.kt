@@ -59,6 +59,7 @@ class ScpSettingsPresenter @Inject constructor(
         when (FingerprintUtils.getSensorState()) {
             SensorState.READY -> {
                 Timber.d("READY")
+                viewState.showFingerprint(preferences.isFingerprintEnabled())
                 viewState.showFingerprintDialog(checked)
             }
             SensorState.NO_FINGERPRINTS -> {
@@ -94,14 +95,8 @@ class ScpSettingsPresenter @Inject constructor(
     fun onNavigationIconClicked() = router.exit()
 
     @TargetApi(Build.VERSION_CODES.M)
-    fun onFingerprintAuthSucceeded(enableFingerprintLogin: Boolean, cipherForDecoding: Cipher?) {
+    fun onFingerprintAuthSucceeded(enableFingerprintLogin: Boolean, cipherForDecoding: Cipher) {
         Timber.d("onFingerprintAuthSucceeded: $enableFingerprintLogin")
-        if (cipherForDecoding == null) {
-            Timber.e("cipherForDecoding is NULL!")
-            viewState.showMessage(R.string.error_get_chipher)
-            return
-        }
-
         if (enableFingerprintLogin) {
             //write password for user
             //it must be 6 signs number, which we encrypt and save to preferences
@@ -109,6 +104,7 @@ class ScpSettingsPresenter @Inject constructor(
             Timber.d("passwordEncoded: $password")
             if (password != null) {
                 preferences.setUserPassword(password)
+                preferences.setFingerprintEnabled(true)
             } else {
                 viewState.showMessage(R.string.error_create_password)
                 return

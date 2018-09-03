@@ -85,6 +85,8 @@
     <string name="error_get_chipher">Не удалось получить Cipher для декодирования.</string>
     <string name="error_compare_password">Пароли не совпадают. Операция отменена</string>
     <string name="fingerprint_access_disabled">Вход по отпечатку пальца отключён</string>
+    <string name="dialog_fingerprint_enable_title">Подтвердите включение входа по отпечатку</string>
+    <string name="dialog_fingerprint_disable_title">Подтвердите отключение входа по отпечатку</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>

@@ -1,11 +1,8 @@
 package ru.kuchanov.scpquiz.ui.fragment.util
 
 import android.annotation.TargetApi
-import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.os.Bundle
-import android.os.CancellationSignal
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -14,15 +11,11 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.PopupWindow
-import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.callbacks.onDismiss
-import com.afollestad.materialdialogs.customview.customView
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import jp.wasabeef.blurry.Blurry
-import kotlinx.android.synthetic.main.dialog_fingerprint.view.*
 import kotlinx.android.synthetic.main.fragment_settings.*
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
@@ -34,6 +27,7 @@ import ru.kuchanov.scpquiz.di.module.SettingsModule
 import ru.kuchanov.scpquiz.mvp.presenter.util.ScpSettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.ui.utils.DialogUtils
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
 import ru.kuchanov.scpquiz.utils.security.FingerprintUtils
@@ -174,74 +168,13 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
     @TargetApi(Build.VERSION_CODES.M)
     override fun showFingerprintDialog(enableFingerprintLogin: Boolean) {
         if (isAdded) {
-            val cancellationSignal = CancellationSignal()
-            cancellationSignal.setOnCancelListener { Timber.d("cancellationSignal canceled!") }
-            val dismissFingerprintSensor = {
-                //todo dismiss sensor in onPause
-                cancellationSignal.cancel()
-            }
-
-            var materialDialog: MaterialDialog? = null
-
-            val dialogView = LayoutInflater.from(activity!!).inflate(R.layout.dialog_fingerprint, null, false)
-
-            val fingerprintCallback = object : FingerprintManager.AuthenticationCallback() {
-                /**
-                 * несколько неудачных попыток считывания (5)
-                 *
-                 * после этого сенсор станет недоступным на некоторое время (30 сек)
-                 */
-                override fun onAuthenticationError(errMsgId: Int, errString: CharSequence?) {
-                    super.onAuthenticationError(errMsgId, errString)
-                    Timber.d("onAuthenticationError: $errMsgId, $errString")
-                    showMessage(R.string.error_fingerprint_auth_failed_try_again)
-                    materialDialog?.dismiss()
-                }
-
-                /**
-                 * все прошло успешно
-                 */
-                override fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult?) {
-                    super.onAuthenticationSucceeded(result)
-                    Timber.d("onAuthenticationSucceeded: $result, ${result?.cryptoObject?.cipher?.parameters}")
-                    presenter.onFingerprintAuthSucceeded(enableFingerprintLogin, result?.cryptoObject?.cipher)
-                    materialDialog?.dismiss()
-                }
-
-                /**
-                 * грязные пальчики, недостаточно сильный зажим
-                 */
-                override fun onAuthenticationHelp(helpMsgId: Int, helpString: CharSequence?) {
-                    super.onAuthenticationHelp(helpMsgId, helpString)
-                    Timber.d("onAuthenticationHelp: $helpMsgId, $helpString")
-                    dialogView.sensorTextView.text = helpString?.toString() ?: getString(R.string.try_again)
-                    dialogView.sensorImageView.setImageResource(R.drawable.ic_info_outline_black_24dp)
-                    dialogView.sensorImageView.setColorFilter(ContextCompat.getColor(activity!!, android.R.color.black))
-                }
-
-                /**
-                 * отпечаток считался, но не распознался
-                 */
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
-                    Timber.d("onAuthenticationFailed")
-                    dialogView.sensorTextView.setText(R.string.error_fingerprint_auth_failed)
-                    dialogView.sensorImageView.setImageResource(R.drawable.ic_warning_black_24dp)
-                    dialogView.sensorImageView.setColorFilter(ContextCompat.getColor(activity!!, R.color.colorRed))
-                }
-            }
-
-            materialDialog = MaterialDialog(activity!!)
-                    .title(R.string.dialog_fingerprints_title)
-                    .negativeButton(android.R.string.cancel) { dismissFingerprintSensor.invoke() }
-                    .customView(view = dialogView)
-                    .onDismiss { dismissFingerprintSensor.invoke() }
-                    .show {
-                        FingerprintUtils.useFingerprintSensor(
-                            cancellationSignal,
-                            fingerprintCallback
-                        )
-                    }
+            DialogUtils.showFingerprintDialog(
+                context = activity!!,
+                title = if (enableFingerprintLogin) R.string.dialog_fingerprint_enable_title else R.string.dialog_fingerprint_disable_title,
+                onErrorAction = { showMessage(R.string.error_fingerprint_auth_failed_try_again) },
+                onCipherErrorAction = { showMessage(R.string.error_get_chipher) },
+                onSuccessAction = { presenter.onFingerprintAuthSucceeded(enableFingerprintLogin, it) }
+            )
         }
     }
 }

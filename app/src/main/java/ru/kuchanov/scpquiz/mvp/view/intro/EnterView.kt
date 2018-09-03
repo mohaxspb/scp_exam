@@ -4,7 +4,9 @@ import ru.kuchanov.scpquiz.mvp.BaseView
 
 interface EnterView : BaseView {
     fun showProgressAnimation()
-    fun showProgressText(text:String)
+    fun showProgressText(text: String)
     fun showImage(imageNumber: Int)
     fun onNeedToOpenIntroDialogFragment()
+    fun showFingerprintDialog()
+    fun showFingerprintButton(show: Boolean)
 }
