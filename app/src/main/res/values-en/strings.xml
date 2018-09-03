@@ -82,6 +82,8 @@
     <string name="fingerprint_access_enabled">Вход по отпечатку пальца активирован</string>
     <string name="error_decode_password">Не удалось расшифровать пароль. Попробуйте ещё раз.</string>
     <string name="error_get_chipher">Не удалось получить Cipher для декодирования.</string>
+    <string name="error_compare_password">Пароли не совпадают. Операция отменена</string>
+    <string name="fingerprint_access_disabled">Вход по отпечатку пальца отключён</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>

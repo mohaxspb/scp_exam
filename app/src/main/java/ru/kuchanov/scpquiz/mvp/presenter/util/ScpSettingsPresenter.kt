@@ -59,7 +59,7 @@ class ScpSettingsPresenter @Inject constructor(
         when (FingerprintUtils.getSensorState()) {
             SensorState.READY -> {
                 Timber.d("READY")
-                viewState.showFingerprintDialog(true)
+                viewState.showFingerprintDialog(checked)
             }
             SensorState.NO_FINGERPRINTS -> {
                 Timber.d("NO_FINGERPRINTS")
@@ -94,14 +94,16 @@ class ScpSettingsPresenter @Inject constructor(
     fun onNavigationIconClicked() = router.exit()
 
     @TargetApi(Build.VERSION_CODES.M)
-    fun onFingerprintAuthSucceeded(cipherForDecoding: Cipher?) {
+    fun onFingerprintAuthSucceeded(enableFingerprintLogin: Boolean, cipherForDecoding: Cipher?) {
+        Timber.d("onFingerprintAuthSucceeded: $enableFingerprintLogin")
         if (cipherForDecoding == null) {
             Timber.e("cipherForDecoding is NULL!")
             viewState.showMessage(R.string.error_get_chipher)
             return
         }
-        if (preferences.getUserPassword() == null) {
-            //write password for user if it isn't existed yet
+
+        if (enableFingerprintLogin) {
+            //write password for user
             //it must be 6 signs number, which we encrypt and save to preferences
             val password = CryptoUtils.generateUserPassword()
             Timber.d("passwordEncoded: $password")
@@ -111,23 +113,26 @@ class ScpSettingsPresenter @Inject constructor(
                 viewState.showMessage(R.string.error_create_password)
                 return
             }
-            //here we have password and save it...
-            //todo so we just need to say that everything is OK and fingerprint set/removed
-        }
-        val encodedPassword = preferences.getUserPassword()
-        Timber.d("encodedPassword: $encodedPassword")
-        val decodedPassword = encodedPassword?.let { CryptoUtils.decode(it, cipherForDecoding) }
-        Timber.d("passwordDecoded: $decodedPassword")
-        if (decodedPassword != null) {
-            //OK
-            //now we can use decoded data to login. I.e. send auth request to server, use token to get data, or simulate pin enter
-            //in our case we'll only navigate to levels screen while open app
-            //and now we simply say user result - enable/disable this feature
-            //todo show message for enable/disable cases
             viewState.showMessage(R.string.fingerprint_access_enabled)
+            viewState.showFingerprint(true)
         } else {
-            //some error occurred while decode password
-            viewState.showMessage(R.string.error_decode_password)
+            val encodedPassword = preferences.getUserPassword()
+            Timber.d("encodedPassword: $encodedPassword")
+            val decodedPassword = encodedPassword?.let { CryptoUtils.decode(it, cipherForDecoding) }
+            Timber.d("passwordDecoded: $decodedPassword")
+            if (decodedPassword != null) {
+                //OK
+                //now we can use decoded data to login. I.e. send auth request to server, use token to get data, or simulate pin enter
+                //in our case we'll only use it to navigate to levels screen while open app
+                preferences.setFingerprintEnabled(false)
+                preferences.setUserPassword(null)
+                viewState.showFingerprint(false)
+                viewState.showMessage(R.string.fingerprint_access_disabled)
+            } else {
+                //some error occurred while decode password
+                viewState.showMessage(R.string.error_decode_password)
+                viewState.showFingerprint(true)
+            }
         }
     }
 }

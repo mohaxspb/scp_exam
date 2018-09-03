@@ -172,7 +172,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    override fun showFingerprintDialog(show: Boolean) {
+    override fun showFingerprintDialog(enableFingerprintLogin: Boolean) {
         if (isAdded) {
             val cancellationSignal = CancellationSignal()
             cancellationSignal.setOnCancelListener { Timber.d("cancellationSignal canceled!") }
@@ -204,7 +204,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
                 override fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult?) {
                     super.onAuthenticationSucceeded(result)
                     Timber.d("onAuthenticationSucceeded: $result, ${result?.cryptoObject?.cipher?.parameters}")
-                    presenter.onFingerprintAuthSucceeded(result?.cryptoObject?.cipher)
+                    presenter.onFingerprintAuthSucceeded(enableFingerprintLogin, result?.cryptoObject?.cipher)
                     materialDialog?.dismiss()
                 }
 
