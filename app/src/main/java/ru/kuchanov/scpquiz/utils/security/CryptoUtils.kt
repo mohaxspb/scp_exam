@@ -1,11 +1,11 @@
 package ru.kuchanov.scpquiz.utils.security
 
+import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.support.annotation.RequiresApi
-import android.support.v4.hardware.fingerprint.FingerprintManagerCompat
 import android.util.Base64
 import timber.log.Timber
 import java.io.IOException
@@ -56,6 +56,8 @@ object CryptoUtils {
         null
     }
 
+    //todo up to 500ms loading
+    //need to do it in background
     /**
      * use it to generate key pairs
      */
@@ -216,9 +218,9 @@ object CryptoUtils {
      *
      * and use for decoding data with private key
      */
-    fun getCryptoObject(): FingerprintManagerCompat.CryptoObject? {
+    fun getCryptoObject(): FingerprintManager.CryptoObject? {
         return if (cryptoUtilsIsReady()) {
-            cipherForDecoding?.let { FingerprintManagerCompat.CryptoObject(it) }
+            cipherForDecoding?.let { FingerprintManager.CryptoObject(it) }
         } else null
     }
 

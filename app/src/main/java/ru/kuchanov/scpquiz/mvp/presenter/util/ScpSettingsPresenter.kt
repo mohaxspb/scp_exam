@@ -63,15 +63,18 @@ class ScpSettingsPresenter @Inject constructor(
             }
             SensorState.NO_FINGERPRINTS -> {
                 Timber.d("NO_FINGERPRINTS")
+                preferences.setFingerprintEnabled(false)
                 viewState.showFingerprint(false)
                 viewState.showMessage(R.string.error_no_fingerprints)
             }
             SensorState.NOT_BLOCKED -> {
                 Timber.d("NOT_BLOCKED")
+                preferences.setFingerprintEnabled(false)
                 viewState.showFingerprint(false)
             }
             SensorState.NOT_SUPPORTED -> {
                 Timber.d("NOT_SUPPORTED")
+                preferences.setFingerprintEnabled(false)
                 viewState.showFingerprint(false)
             }
         }
@@ -79,10 +82,7 @@ class ScpSettingsPresenter @Inject constructor(
 
     fun onShareClicked() = IntentUtils.tryShareApp(appContext)
 
-    fun onPrivacyPolicyClicked() =
-    //fixme test
-            preferences.setUserPassword(null)
-//            IntentUtils.openUrl(appContext, Constants.PRIVACY_POLICY_URL)
+    fun onPrivacyPolicyClicked() = IntentUtils.openUrl(appContext, Constants.PRIVACY_POLICY_URL)
 
     fun onLangSelected(selectedLang: String) {
         preferences.setLang(selectedLang)
@@ -97,7 +97,7 @@ class ScpSettingsPresenter @Inject constructor(
     fun onFingerprintAuthSucceeded(cipherForDecoding: Cipher?) {
         if (cipherForDecoding == null) {
             Timber.e("cipherForDecoding is NULL!")
-            //todo do something, i.e. tell user that...
+            viewState.showMessage(R.string.error_get_chipher)
             return
         }
         if (preferences.getUserPassword() == null) {

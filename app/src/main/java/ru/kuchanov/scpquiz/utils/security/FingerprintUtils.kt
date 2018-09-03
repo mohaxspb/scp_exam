@@ -2,12 +2,14 @@ package ru.kuchanov.scpquiz.utils.security
 
 import android.app.KeyguardManager
 import android.content.Context.KEYGUARD_SERVICE
+import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
+import android.os.CancellationSignal
 import android.support.annotation.RequiresApi
 import android.support.v4.hardware.fingerprint.FingerprintManagerCompat
-import android.support.v4.os.CancellationSignal
 import ru.kuchanov.scpquiz.App
 import timber.log.Timber
+
 
 enum class SensorState {
     NOT_SUPPORTED,
@@ -24,12 +26,19 @@ enum class SensorState {
 
 object FingerprintUtils {
 
-    private val fingerprintManager = FingerprintManagerCompat.from(App.INSTANCE)
+    private val fingerprintManagerCompat = FingerprintManagerCompat.from(App.INSTANCE)
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    private val fingerprintManager = App.INSTANCE.getSystemService(FingerprintManager::class.java) as FingerprintManager
 
     private val keyguardManager = App.INSTANCE.getSystemService(KEYGUARD_SERVICE) as KeyguardManager
 
-    fun isFingerprintSupported() = fingerprintManager.isHardwareDetected
+    fun isFingerprintSupported() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        fingerprintManager.isHardwareDetected
+    else
+        fingerprintManagerCompat.isHardwareDetected
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun getSensorState() = if (isFingerprintSupported()) {
         if (!keyguardManager.isKeyguardSecure) SensorState.NOT_BLOCKED
         if (!fingerprintManager.hasEnrolledFingerprints()) SensorState.NO_FINGERPRINTS else SensorState.READY
@@ -39,14 +48,14 @@ object FingerprintUtils {
     @RequiresApi(Build.VERSION_CODES.M)
     fun useFingerprintSensor(
         cancellationSignal: CancellationSignal,
-        authenticationCallback: FingerprintManagerCompat.AuthenticationCallback
+        authenticationCallback: FingerprintManager.AuthenticationCallback
     ) {
         val cryptoObject = CryptoUtils.getCryptoObject()
         Timber.d("useFingerprintSensor cryptoObject: $cryptoObject")
         fingerprintManager.authenticate(
             cryptoObject,
-            0,
             cancellationSignal,
+            0,
             authenticationCallback,
             null
         )

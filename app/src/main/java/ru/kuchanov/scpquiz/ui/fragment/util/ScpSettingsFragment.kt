@@ -1,11 +1,11 @@
 package ru.kuchanov.scpquiz.ui.fragment.util
 
 import android.annotation.TargetApi
+import android.hardware.fingerprint.FingerprintManager
 import android.os.Build
 import android.os.Bundle
+import android.os.CancellationSignal
 import android.support.v4.content.ContextCompat
-import android.support.v4.hardware.fingerprint.FingerprintManagerCompat
-import android.support.v4.os.CancellationSignal
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -93,6 +93,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
 
         soundSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onSoundEnabled(isChecked) }
         vibrateSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onVibrationEnabled(isChecked) }
+        Timber.d("FingerprintUtils.isFingerprintSupported(): ${FingerprintUtils.isFingerprintSupported()}")
         if (FingerprintUtils.isFingerprintSupported()) {
             fingerprintLabelTextView.visibility = VISIBLE
             fingerprintSwitch.visibility = VISIBLE
@@ -184,7 +185,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
 
             val dialogView = LayoutInflater.from(activity!!).inflate(R.layout.dialog_fingerprint, null, false)
 
-            val fingerprintCallback = object : FingerprintManagerCompat.AuthenticationCallback() {
+            val fingerprintCallback = object : FingerprintManager.AuthenticationCallback() {
                 /**
                  * несколько неудачных попыток считывания (5)
                  *
@@ -200,7 +201,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
                 /**
                  * все прошло успешно
                  */
-                override fun onAuthenticationSucceeded(result: FingerprintManagerCompat.AuthenticationResult?) {
+                override fun onAuthenticationSucceeded(result: FingerprintManager.AuthenticationResult?) {
                     super.onAuthenticationSucceeded(result)
                     Timber.d("onAuthenticationSucceeded: $result, ${result?.cryptoObject?.cipher?.parameters}")
                     presenter.onFingerprintAuthSucceeded(result?.cryptoObject?.cipher)
