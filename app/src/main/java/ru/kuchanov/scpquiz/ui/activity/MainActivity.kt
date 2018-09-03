@@ -109,6 +109,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
 
     override fun showFirstTimeAppodealAdsDialog() {
         Timber.d("showFirstTimeAppodealAdsDialog")
+        //todo move to DialogUtils
         MaterialDialog(this)
                 .title(R.string.will_show_ads_title)
                 .message(R.string.want_watch_ads_content)
@@ -122,6 +123,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
 
     override fun showAdsDialog(quizId: Long) {
         Timber.d("showAdsDialog")
+        //todo move to DialogUtils
         MaterialDialog(this)
                 .title(R.string.will_show_ads_title)
                 .message(R.string.will_show_ads_content)
@@ -133,6 +135,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
 
     override fun showWhyAdsDialog(quizId: Long) {
         Timber.d("showWhyAdsDialog")
+        //todo move to DialogUtils
         MaterialDialog(this)
                 .title(R.string.why_ads_title)
                 .message(R.string.why_ads_content)
