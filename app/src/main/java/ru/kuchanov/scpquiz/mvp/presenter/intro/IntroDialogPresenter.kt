@@ -26,10 +26,10 @@ import javax.inject.Inject
 
 @InjectViewState
 class IntroDialogPresenter @Inject constructor(
-    override var appContext: Application,
-    override var preferences: MyPreferenceManager,
-    override var router: ScpRouter,
-    override var appDatabase: AppDatabase
+        override var appContext: Application,
+        override var preferences: MyPreferenceManager,
+        override var router: ScpRouter,
+        override var appDatabase: AppDatabase
 ) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase) {
 
     private lateinit var doctor: User
@@ -42,43 +42,43 @@ class IntroDialogPresenter @Inject constructor(
         super.onFirstViewAttach()
 
         Flowable.zip(
-            appDatabase.userDao().getOneByRole(UserRole.DOCTOR).toFlowable(),
-            appDatabase.userDao().getOneByRole(UserRole.PLAYER).toFlowable(),
-            appDatabase.quizDao().getFirst().toFlowable(),
-            Function3 { doctor: User, player: User, firstLevel: Quiz -> Triple(doctor, player, firstLevel) }
+                appDatabase.userDao().getOneByRole(UserRole.DOCTOR).toFlowable(),
+                appDatabase.userDao().getOneByRole(UserRole.PLAYER).toFlowable(),
+                appDatabase.quizDao().getFirst().toFlowable(),
+                Function3 { doctor: User, player: User, firstLevel: Quiz -> Triple(doctor, player, firstLevel) }
         )
                 .doOnNext {
                     doctor = it.first
                     player = it.second
                     quiz = it.third
                 }
-                .flatMap { _ ->
+                .flatMap {
                     Flowable.intervalRange(
-                        0,
-                        3,
-                        1,
-                        2,
-                        TimeUnit.SECONDS
+                            0,
+                            3,
+                            1,
+                            2,
+                            TimeUnit.SECONDS
                     )
                 }
 
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onNext = {
-                        val array = appContext.resources.getStringArray(R.array.intro_dialog_texts)
-                        var message = array[it.toInt()]
-                        if (message.contains("%s")) {
-                            message = message.replace("%s", player.name)
+                        onNext = {
+                            val array = appContext.resources.getStringArray(R.array.intro_dialog_texts)
+                            var message = array[it.toInt()]
+                            if (message.contains("%s")) {
+                                message = message.replace("%s", player.name)
+                            }
+                            viewState.showChatMessage(
+                                    message,
+                                    doctor
+                            )
+                        },
+                        onComplete = {
+                            viewState.showChatActions(generateStartGameActions(), ChatActionsGroupType.START_GAME)
                         }
-                        viewState.showChatMessage(
-                            message,
-                            doctor
-                        )
-                    },
-                    onComplete = {
-                        viewState.showChatActions(generateStartGameActions(), ChatActionsGroupType.START_GAME)
-                    }
                 )
     }
 
@@ -87,15 +87,15 @@ class IntroDialogPresenter @Inject constructor(
 
         val messageOk = appContext.getString(R.string.chat_action_sure)
         chatActions += ChatAction(
-            messageOk,
-            getOkActionForText(messageOk),
-            R.drawable.selector_chat_action_accent
+                messageOk,
+                getOkActionForText(messageOk),
+                R.drawable.selector_chat_action_accent
         )
         val messageSure = appContext.getString(R.string.chat_action_yes)
         chatActions += ChatAction(
-            messageSure,
-            getOkActionForText(messageSure),
-            R.drawable.selector_chat_action_green
+                messageSure,
+                getOkActionForText(messageSure),
+                R.drawable.selector_chat_action_green
         )
 
         return chatActions
@@ -109,9 +109,9 @@ class IntroDialogPresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onSuccess = {
-                        router.newRootScreen(Constants.Screens.QUIZ, QuizScreenLaunchData(quiz.id, true))
-                    }
+                        onSuccess = {
+                            router.newRootScreen(Constants.Screens.QUIZ, QuizScreenLaunchData(quiz.id, true))
+                        }
                 )
     }
 }
