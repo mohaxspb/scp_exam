@@ -9,8 +9,6 @@ import android.support.annotation.StringRes
 import android.support.v4.content.ContextCompat
 import android.view.LayoutInflater
 import com.afollestad.materialdialogs.MaterialDialog
-import com.afollestad.materialdialogs.callbacks.onDismiss
-import com.afollestad.materialdialogs.customview.customView
 import kotlinx.android.synthetic.main.dialog_fingerprint.view.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.utils.security.FingerprintUtils
@@ -21,12 +19,12 @@ object DialogUtils {
 
     @TargetApi(Build.VERSION_CODES.M)
     fun showFingerprintDialog(
-        context: Context,
-        @StringRes title: Int = R.string.dialog_fingerprints_title,
-        isCancelable: Boolean = true,
-        onErrorAction: () -> Unit,
-        onCipherErrorAction: () -> Unit,
-        onSuccessAction: (cipher: Cipher) -> Unit
+            context: Context,
+            @StringRes title: Int = R.string.dialog_fingerprints_title,
+            isCancelable: Boolean = true,
+            onErrorAction: () -> Unit,
+            onCipherErrorAction: () -> Unit,
+            onSuccessAction: (cipher: Cipher) -> Unit
     ) {
         val cancellationSignal = CancellationSignal()
         cancellationSignal.setOnCancelListener { Timber.d("cancellationSignal canceled!") }
@@ -88,26 +86,25 @@ object DialogUtils {
             }
         }
 
-        materialDialog = MaterialDialog(context)
+        var materialDialogBuilder = MaterialDialog.Builder(context)
+                .customView(dialogView, true)
                 .title(title)
-                .onDismiss { dismissFingerprintSensor.invoke() }
-                .customView(view = dialogView)
-                .onDismiss { dismissFingerprintSensor.invoke() }
+                .dismissListener { dismissFingerprintSensor.invoke() }
+                .canceledOnTouchOutside(isCancelable)
+                .cancelable(isCancelable)
+                .showListener {
+                    FingerprintUtils.useFingerprintSensor(
+                            cancellationSignal,
+                            fingerprintCallback
+                    )
+                }
 
         if (isCancelable) {
-            materialDialog.negativeButton(android.R.string.cancel)
+            materialDialogBuilder = materialDialogBuilder.negativeText(android.R.string.cancel)
         }
 
-        materialDialog
-                .setCanceledOnTouchOutside(isCancelable)
-        materialDialog
-                .setCancelable(isCancelable)
+        materialDialog = materialDialogBuilder.build()
 
-        materialDialog.show {
-            FingerprintUtils.useFingerprintSensor(
-                cancellationSignal,
-                fingerprintCallback
-            )
-        }
+        materialDialog.show()
     }
 }

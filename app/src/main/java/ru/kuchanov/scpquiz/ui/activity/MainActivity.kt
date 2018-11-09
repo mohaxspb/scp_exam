@@ -69,7 +69,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
             Timber.d("applyCommand: ${command?.javaClass?.simpleName ?: command}")
             if (command is ShowCommand) {
                 supportFragmentManager.beginTransaction()
-                        .add(containerId, createFragment(command.screenKey, command.transitionData))
+                        .add(containerId, createFragment(command.screenKey, command.transitionData)!!)
                         .addToBackStack(null)
                         .commit()
             } else {
@@ -110,37 +110,43 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
     override fun showFirstTimeAppodealAdsDialog() {
         Timber.d("showFirstTimeAppodealAdsDialog")
         //todo move to DialogUtils
-        MaterialDialog(this)
+        MaterialDialog.Builder(this)
                 .title(R.string.will_show_ads_title)
-                .message(R.string.want_watch_ads_content)
-                .positiveButton(android.R.string.ok) {
+                .content(R.string.want_watch_ads_content)
+                .positiveText(android.R.string.ok)
+                .onPositive { _, _ ->
                     preferenceManager.setAppodealDescriptionShown(true)
                     showRewardedVideo()
                 }
-                .negativeButton(android.R.string.cancel)
+                .negativeText(android.R.string.cancel)
                 .show()
     }
 
     override fun showAdsDialog(quizId: Long) {
         Timber.d("showAdsDialog")
         //todo move to DialogUtils
-        MaterialDialog(this)
+        MaterialDialog.Builder(this)
                 .title(R.string.will_show_ads_title)
-                .message(R.string.will_show_ads_content)
-                .positiveButton(android.R.string.ok) { showInterstitial(quizId) }
-                .negativeButton(R.string.remove_ads) { startPurchase() }
-                .neutralButton(R.string.why_ads) { showWhyAdsDialog(quizId) }
+                .content(R.string.will_show_ads_content)
+                .positiveText(android.R.string.ok)
+                .onPositive { _, _ -> showInterstitial(quizId) }
+                .negativeText(R.string.remove_ads)
+                .onNegative { _, _ -> startPurchase() }
+                .neutralText(R.string.why_ads)
+                .onNeutral { _, _ -> showWhyAdsDialog(quizId) }
                 .show()
     }
 
     override fun showWhyAdsDialog(quizId: Long) {
         Timber.d("showWhyAdsDialog")
         //todo move to DialogUtils
-        MaterialDialog(this)
+        MaterialDialog.Builder(this)
                 .title(R.string.why_ads_title)
-                .message(R.string.why_ads_content)
-                .positiveButton(R.string.watch_ads) { showInterstitial(quizId) }
-                .negativeButton(R.string.remove_ads) { startPurchase() }
+                .content(R.string.why_ads_content)
+                .positiveText(R.string.watch_ads)
+                .onPositive { _, _ -> showInterstitial(quizId) }
+                .negativeText(R.string.remove_ads)
+                .onNegative { _, _ -> startPurchase() }
                 .show()
     }
 
