@@ -40,6 +40,16 @@
             </intent-filter>
         </activity>
 
+        <!--AdMob crash fix-->
+        <!--see https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml-->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/ads_app_id"/>
+        <!--see https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml-->
+        <meta-data
+            android:name="com.google.android.gms.ads.AD_MANAGER_APP"
+            android:value="true"/>
+
         <!--appodeal-->
         <activity android:name="com.appodeal.ads.InterstitialActivity"
             android:configChanges="orientation|screenSize"
@@ -145,7 +155,7 @@
                 <action android:name="com.yandex.metrica.IMetricaService" />
                 <data android:scheme="metrica" />
             </intent-filter>
-            <meta-data android:name="metrica:api:level" android:value="67" />
+            <meta-data android:name="metrica:api:level" android:value="70" />
         </service>
         <service android:name="com.yandex.metrica.ConfigurationService" android:enabled="true"
             android:exported="true" android:process=":Metrica" tools:ignore="ExportedService">
