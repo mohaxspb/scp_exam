@@ -251,6 +251,12 @@ dependencies {
 
     //rate app
     implementation('ru.kuchanov.utils:rate:1.2.1@aar') { transitive = true }
+
+    //social auth
+    //facebook
+    implementation 'com.facebook.android:facebook-android-sdk:4.24.0'
+    //vk
+    implementation 'com.vk:androidsdk:1.6.9'
 }
 
 apply plugin: 'com.google.gms.google-services'

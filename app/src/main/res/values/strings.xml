@@ -4,6 +4,12 @@
     <string name="feedback_email" translatable="false">neva.spb.rx@gmail.com</string>
     <string name="error_unexpected" translatable="false">Unexpected error</string>
 
+    <!--social login-->
+    <!--facebook-->
+    <string name="facebook_app_id" translatable="false">2167234416849408</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb2167234416849408</string>
+
+
     <string name="app_name">Scp Exam</string>
     <string name="menu">Menu</string>
     <string name="level">Level %d</string>
