@@ -4,6 +4,7 @@ import android.app.Application
 import com.arellomobile.mvp.MvpPresenter
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
@@ -16,11 +17,13 @@ import ru.kuchanov.scpquiz.mvp.BaseView
 import timber.log.Timber
 
 abstract class BasePresenter<V : BaseView>(
-    protected open var appContext: Application,
-    protected open var preferences: MyPreferenceManager,
-    protected open var router: ScpRouter,
-    protected open var appDatabase: AppDatabase
+        protected open var appContext: Application,
+        protected open var preferences: MyPreferenceManager,
+        protected open var router: ScpRouter,
+        protected open var appDatabase: AppDatabase
 ) : MvpPresenter<V>() {
+
+    val compositeDisposable = CompositeDisposable()
 
     init {
         Timber.d("constructor: ${javaClass.simpleName}")
@@ -34,6 +37,7 @@ abstract class BasePresenter<V : BaseView>(
     override fun onDestroy() {
         Timber.d("onDestroy: ${javaClass.simpleName}")
         super.onDestroy()
+        compositeDisposable.dispose()
     }
 
     fun onRewardedVideoFinished() {

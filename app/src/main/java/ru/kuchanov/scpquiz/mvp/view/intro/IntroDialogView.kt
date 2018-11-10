@@ -9,4 +9,5 @@ interface IntroDialogView : BaseView {
     fun showChatMessage(message: String, user: User)
     fun showChatActions(chatActions: List<ChatAction>, chatActionsGroupType: ChatActionsGroupType)
     fun removeChatAction(indexInParent: Int)
+    fun startFacebookLogin()
 }

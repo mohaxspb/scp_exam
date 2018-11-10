@@ -1,13 +1,16 @@
 package ru.kuchanov.scpquiz.ui.fragment.intro
 
 import android.animation.LayoutTransition
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
+import com.facebook.login.LoginManager
 import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.fragment_intro_dialog.*
 import ru.kuchanov.scpquiz.Constants
+import ru.kuchanov.scpquiz.Constants.Auth.FACEBOOK_SCOPES
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
@@ -57,9 +60,9 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
         super.onViewCreated(view, savedInstanceState)
 
         chatDelegate = ChatDelegate(
-            chatView,
-            scrollView,
-            myPreferenceManager
+                chatView,
+                scrollView,
+                myPreferenceManager
         )
 
         //todo move to delegate
@@ -78,14 +81,25 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
         chatView.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
     }
 
-    override fun showChatMessage(message: String, user: User) = chatDelegate.showChatMessage(
-        message,
-        user,
-        android.R.color.white
-    )
+    override fun showChatMessage(message: String, user: User) =
+            chatDelegate.showChatMessage(
+                    message,
+                    user,
+                    android.R.color.white
+            )
 
     override fun showChatActions(chatActions: List<ChatAction>, chatActionsGroupType: ChatActionsGroupType) =
             chatDelegate.showChatActions(chatActions, chatActionsGroupType)
 
-    override fun removeChatAction(indexInParent: Int) = chatDelegate.removeChatAction(indexInParent)
+    override fun removeChatAction(indexInParent: Int) =
+            chatDelegate.removeChatAction(indexInParent)
+
+    override fun startFacebookLogin() {
+        LoginManager.getInstance().logInWithReadPermissions(this, FACEBOOK_SCOPES)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        presenter.onActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 }
