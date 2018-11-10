@@ -37,8 +37,7 @@ class IntroDialogPresenter @Inject constructor(
         override var appContext: Application,
         override var preferences: MyPreferenceManager,
         override var router: ScpRouter,
-        override var appDatabase: AppDatabase,
-        val api: QuizApi
+        override var appDatabase: AppDatabase
 ) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase) {
 
     //auth

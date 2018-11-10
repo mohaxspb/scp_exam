@@ -30,7 +30,7 @@ class MainPresenter @Inject constructor(
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
-        router.navigateTo(Constants.Screens.ENTER)
+        router.newRootScreen(Constants.Screens.ENTER)
 
         Maybe.fromCallable { if (appDatabase.quizDao().getCount() == 0L) null else true }
                 .flatMap { apiClient.getNwQuizList().toMaybe() }

@@ -70,11 +70,13 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
 
         context?.let {
             backgroundImageView.post {
-                Blurry.with(it)
-                        .async()
-                        .animate(500)
-                        .from(bitmap)
-                        .into(backgroundImageView)
+                if (isAdded) {
+                    Blurry.with(it)
+                            .async()
+                            .animate(500)
+                            .from(bitmap)
+                            .into(backgroundImageView)
+                }
             }
         }
 

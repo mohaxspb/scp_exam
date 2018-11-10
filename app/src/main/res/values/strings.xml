@@ -97,6 +97,7 @@
     <string name="fingerprint_access_disabled">Вход по отпечатку пальца отключён</string>
     <string name="dialog_fingerprint_enable_title">Подтвердите включение входа по отпечатку</string>
     <string name="dialog_fingerprint_disable_title">Подтвердите отключение входа по отпечатку</string>
+    <!--todo translate-->
     <string name="message_auth_suggestion">Before you start we sugest you to login. So your progress will be saved on our cloud and you\'ll be able to compare your progress with other players. Ofcourse, you can do it later from game settings. Please, choose:</string>
 
     <string-array name="intro_dialog_texts">
