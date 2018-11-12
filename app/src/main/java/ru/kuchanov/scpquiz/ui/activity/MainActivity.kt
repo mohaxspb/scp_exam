@@ -43,13 +43,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
 
     override var navigator: Navigator = object : SupportAppNavigator(this, containerId) {
 
-        override fun createActivityIntent(context: Context, screenKey: String?, data: Any?): Intent? {
-            Timber.d("createActivityIntent key: $screenKey, data: $data")
-            return when (screenKey) {
-//                Constants.Screens.AUTH -> AuthActivity.newIntent(this@MainActivity)
-                else -> null
-            }
-        }
+        override fun createActivityIntent(context: Context, screenKey: String?, data: Any?): Intent? = null
 
         override fun createFragment(screenKey: String?, data: Any?): Fragment? {
             Timber.d("createFragment key: $screenKey, data: $data")

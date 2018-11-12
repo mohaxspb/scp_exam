@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.controller.api.response
 
+import com.google.gson.annotations.SerializedName
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -7,6 +8,8 @@ import com.squareup.moshi.JsonClass
 data class TokenResponse(
         @Json(name = "access_token")
         val accessToken: String,
+        @SerializedName("refresh_token")
+        var refreshToken: String,
         @Json(name = "token_type")
         val tokenType: String,
         @Json(name = "expires_in")

@@ -51,9 +51,8 @@ android {
             //quiz api
             buildConfigField('String', 'QUIZ_API_URL', '"' + properties.get("quizApiUrl") + '"')
             //quiz api auth
-            buildConfigField('String', 'USER', '"' + properties.get("user") + '"')
-            buildConfigField('String', 'PASSWORD', '"' + properties.get("password") + '"')
-            buildConfigField('String', 'GRANT_TYPE', '"' + properties.get("grantType") + '"')
+            buildConfigField('String', 'CLIENT_ID', '"' + properties.get("clientId") + '"')
+            buildConfigField('String', 'CLIENT_SECRET', '"' + properties.get("clientSecret") + '"')
             //quiz api ssl pinning
             buildConfigField('String', 'SSL_PINNING_DOMAIN', '"' + properties.get("sslPinningDomain") + '"')
             buildConfigField('String', 'SSL_PINNING_VALUE', '"' + properties.get("sslPinningValue") + '"')

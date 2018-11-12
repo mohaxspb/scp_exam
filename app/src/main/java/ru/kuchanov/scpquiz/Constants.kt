@@ -40,6 +40,13 @@ object Constants {
         const val MONETIZATION = "MONETIZATION"
     }
 
+    object Api {
+        const val GRANT_TYPE_REFRESH_TOKEN = "refresh_token"
+
+        const val HEADER_AUTHORIZATION = "Authorization"
+        const val HEADER_PART_BEARER = "Bearer"
+    }
+
     object Auth {
         private const val FACEBOOK_SCOPE_EMAIL = "email"
         private const val FACEBOOK_SCOPE_PUBLIC_PROFILE = "public_profile"
