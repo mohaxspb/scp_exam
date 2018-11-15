@@ -11,11 +11,11 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun setLangs(langs: Set<String>) = preferences.edit().putStringSet(Key.LANGS, langs).apply()
 
-    fun getLangs() = preferences.getStringSet(Key.LANGS, setOf())
+    fun getLangs(): MutableSet<String>? = preferences.getStringSet(Key.LANGS, setOf())
 
     fun setLang(lang: String) = preferences.edit().putString(Key.LANG, lang).apply()
 
-    fun getLang() = preferences.getString(Key.LANG, Constants.DEFAULT_LANG)
+    fun getLang(): String = preferences.getString(Key.LANG, Constants.DEFAULT_LANG)!!
 
     fun setPushToken(pushToken: String) = preferences.edit().putString(Key.PUSH_TOKEN, pushToken).apply()
 

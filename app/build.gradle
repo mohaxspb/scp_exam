@@ -51,6 +51,9 @@ android {
             //quiz api
             buildConfigField('String', 'QUIZ_API_URL', '"' + properties.get("quizApiUrl") + '"')
             //quiz api auth
+            buildConfigField('String', 'USER', '"' + properties.get("user") + '"')
+            buildConfigField('String', 'PASSWORD', '"' + properties.get("password") + '"')
+
             buildConfigField('String', 'CLIENT_ID', '"' + properties.get("clientId") + '"')
             buildConfigField('String', 'CLIENT_SECRET', '"' + properties.get("clientSecret") + '"')
             //quiz api ssl pinning
