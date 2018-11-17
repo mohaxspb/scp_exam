@@ -165,7 +165,7 @@ class IntroDialogPresenter @Inject constructor(
         val messageSkipAuth = appContext.getString(R.string.chat_action_skip_auth)
         chatActions += ChatAction(
                 messageSkipAuth,
-                onActionClicked(messageSkipAuth) { onSkipAuthClicked() },
+                onActionClicked(messageSkipAuth) { navigateToFirstLevel() },
                 R.drawable.selector_chat_action_accent
         )
 
@@ -185,10 +185,6 @@ class IntroDialogPresenter @Inject constructor(
     private fun onAuthFacebookClicked() {
         Timber.d("onAuthFacebookClicked")
         viewState.startFacebookLogin()
-    }
-
-    private fun onSkipAuthClicked() {
-        router.navigateTo(Constants.Screens.QUIZ_LIST)
     }
 
     private fun onActionClicked(text: String, onCompleteAction: () -> Unit): (Int) -> Unit =

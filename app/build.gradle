@@ -6,8 +6,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 //new crash reporting
 apply plugin: 'io.fabric'
-//google
-apply plugin: 'com.google.gms.google-services'
 
 //here is script to generate version code from version name
 //which is set in gradle.properties as value of version var
@@ -288,3 +286,5 @@ dependencies {
     //vk
     implementation 'com.vk:androidsdk:1.6.9'
 }
+//google
+apply plugin: 'com.google.gms.google-services'
