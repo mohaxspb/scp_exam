@@ -32,6 +32,7 @@ interface AuthApi {
             @Field("provider") provider: String,
             @Field("token") tokenValue: String,
             @Field("clientId") clientId: String,
-            @Field("clientSecret") clientSecret: String
+            @Field("clientSecret") clientSecret: String,
+            @Field("clientApp") clientApp: String
     ): Single<TokenResponse>
 }

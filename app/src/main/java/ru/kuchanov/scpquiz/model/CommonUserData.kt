@@ -1,6 +1,6 @@
 package ru.kuchanov.scpquiz.model
 
-public class CommonUserData {
+class CommonUserData {
     var id: String? = null
     var email: String? = null
     var firstName: String? = null

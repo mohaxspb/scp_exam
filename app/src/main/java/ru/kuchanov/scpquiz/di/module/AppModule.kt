@@ -139,7 +139,6 @@ class AppModule(context: Context) : Module() {
                 .build()
         bind(QuizApi::class.java).toInstance(quizRetrofit.create(QuizApi::class.java))
 
-
         val toolsRetrofit = Retrofit.Builder()
                 .baseUrl(BuildConfig.VPS_API_URL)
                 .addConverterFactory(MoshiConverterFactory.create(moshi))

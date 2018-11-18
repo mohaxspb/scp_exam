@@ -5,6 +5,7 @@ import retrofit2.HttpException
 import ru.kuchanov.scpquiz.App
 import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
+import ru.kuchanov.scpquiz.controller.api.response.TokenResponse
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.api.NwQuiz
 import java.net.HttpURLConnection
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class ApiClient @Inject constructor(
         private val toolsApi: ToolsApi,
         private val quizApi: QuizApi,
+        private val authApi: AuthApi,
         private val preferences: MyPreferenceManager
 ) {
 
@@ -53,4 +55,14 @@ class ApiClient @Inject constructor(
                         }
                         Single.error<List<NwQuiz>>(error)
                     }
+
+    fun socialLogin(provider: String, tokenValue: String): Single<TokenResponse> =
+            authApi
+                    .socialLogin(
+                            provider,
+                            tokenValue,
+                            BuildConfig.CLIENT_ID,
+                            BuildConfig.CLIENT_SECRET,
+                            Constants.Social.GAME
+                    )
 }

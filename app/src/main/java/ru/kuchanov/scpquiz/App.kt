@@ -1,6 +1,9 @@
 package ru.kuchanov.scpquiz
 
 import android.support.multidex.MultiDexApplication
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
+import com.vk.sdk.VKSdk
 import com.yandex.metrica.YandexMetrica
 import com.yandex.metrica.YandexMetricaConfig
 import ru.kuchanov.scpquiz.di.Di
@@ -26,6 +29,9 @@ class App : MultiDexApplication() {
         initTimber()
         initDi()
         initYandexMetrica()
+        VKSdk.initialize(this)
+        FacebookSdk.sdkInitialize(applicationContext)
+        AppEventsLogger.activateApp(this)
 
         //use it for printing keys hash for facebook
 //        Timber.d("App#onCreate")
