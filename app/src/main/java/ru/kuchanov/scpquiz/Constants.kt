@@ -55,10 +55,9 @@ object Constants {
         val FACEBOOK_SCOPES = listOf(FACEBOOK_SCOPE_EMAIL, FACEBOOK_SCOPE_PUBLIC_PROFILE)
     }
 
-    object Social {
-        const val VK = "VK"
-        const val FACEBOOK = "FACEBOOK"
-        const val GOOGLE = "GOOGLE"
-        const val GAME = "GAME"
+    enum class Social {
+        VK, FACEBOOK, GOOGLE
     }
+
+    const val GAME = "GAME"
 }

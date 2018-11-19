@@ -86,6 +86,7 @@ class AppModule(context: Context) : Module() {
                 .client(okHttpClientCommon)
                 .build()
         val authApi = authRetrofit.create(AuthApi::class.java)
+        bind(AuthApi::class.java).toInstance(authApi)
 
         val quizOkHttpClient = OkHttpClient.Builder()
                 .certificatePinner(certPinner)

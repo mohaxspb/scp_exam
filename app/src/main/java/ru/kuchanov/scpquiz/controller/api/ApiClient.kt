@@ -56,13 +56,13 @@ class ApiClient @Inject constructor(
                         Single.error<List<NwQuiz>>(error)
                     }
 
-    fun socialLogin(provider: String, tokenValue: String): Single<TokenResponse> =
+    fun socialLogin(provider: Constants.Social, tokenValue: String): Single<TokenResponse> =
             authApi
                     .socialLogin(
                             provider,
                             tokenValue,
                             BuildConfig.CLIENT_ID,
                             BuildConfig.CLIENT_SECRET,
-                            Constants.Social.GAME
+                            Constants.GAME
                     )
 }

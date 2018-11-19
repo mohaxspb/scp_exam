@@ -1,7 +1,8 @@
 package ru.kuchanov.scpquiz.ui.utils;
 
-import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -24,8 +25,6 @@ import com.vk.sdk.api.VKResponse;
 import com.vk.sdk.api.model.VKApiUserFull;
 import com.vk.sdk.api.model.VKList;
 
-import java.util.Arrays;
-
 import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -35,49 +34,68 @@ import ru.kuchanov.scpquiz.Constants;
 import ru.kuchanov.scpquiz.R;
 import ru.kuchanov.scpquiz.controller.api.ApiClient;
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager;
+import ru.kuchanov.scpquiz.di.Di;
 import ru.kuchanov.scpquiz.model.CommonUserData;
+import ru.kuchanov.scpquiz.mvp.AuthPresenter;
+import ru.kuchanov.scpquiz.mvp.AuthView;
+import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter;
+import ru.kuchanov.scpquiz.ui.BaseFragment;
 import timber.log.Timber;
+import toothpick.Toothpick;
 
-public class AuthDelagate {
+public class AuthDelegate<T extends BaseFragment<? extends AuthView, ? extends BasePresenter<? extends AuthView>>> {
     private static final int REQUEST_CODE_GOOGLE = 11;
-    @Inject
+    //    @Inject
     ApiClient apiClient;
-    @Inject
+    //    @Inject
     MyPreferenceManager preferences;
-    @Inject
-    Application appContext;
+    private AuthPresenter authPresenter;
+    private T authView;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private CallbackManager callbackManager = CallbackManager.Factory.create();
-    GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(String.valueOf(R.string.default_web_client_id))
-            .requestEmail()
-            .build();
-    GoogleApiClient googleApiClient = new GoogleApiClient.Builder(appContext)
-//            .enableAutoManage(appContext, connectionResult -> Timber.d("ERROR"))
-            .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-            .build();
+    private GoogleApiClient googleApiClient;
 
-    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-
-    public AuthDelagate() {
+    public AuthDelegate(
+            T fragment,
+            AuthPresenter authPresenter,
+            ApiClient apiClient,
+            MyPreferenceManager preferences
+    ) {
+        this.authView = fragment;
+        this.authPresenter = authPresenter;
+        this.apiClient = apiClient;
+        this.preferences = preferences;
     }
 
-    public void fbRegisterCallback() {
+    public BaseFragment<? extends AuthView, ? extends BasePresenter<? extends AuthView>> getAuthView() {
+        return authView;
+    }
+
+    public void onViewCreated(FragmentActivity fragmentActivity) {
+//        Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP));
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(fragmentActivity.getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleApiClient = new GoogleApiClient.Builder(fragmentActivity)
+                .enableAutoManage(fragmentActivity, connectionResult -> Timber.d("ERROR"))
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+        fbRegisterCallback();
+    }
+
+    public void startGoogleLogin() {
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+        ((AuthView) authView).startGoogleLogin(signInIntent, authView);
+    }
+
+    private void fbRegisterCallback() {
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        compositeDisposable.add(apiClient.socialLogin(Constants.Social.FACEBOOK, loginResult.getAccessToken().getToken())
-                                .doOnSuccess(tokenResponse -> {
-                                    preferences.setAccessToken(tokenResponse.getAccessToken());
-                                    preferences.setRefreshToken(tokenResponse.getRefreshToken());
-                                })
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(tokenResponse -> {
-                                        },
-                                        error -> Timber.e(error))
-                        );
+                        socialLogin(Constants.Social.FACEBOOK, loginResult.getAccessToken().getToken());
                     }
 
                     @Override
@@ -102,6 +120,7 @@ public class AuthDelagate {
                 request.executeWithListener(new VKRequest.VKRequestListener() {
                     @Override
                     public void onComplete(VKResponse response) {
+                        //noinspection unchecked
                         VKApiUserFull user = ((VKList<VKApiUserFull>) response.parsedModel).get(0);
                         commonUserData.setFirstName(user.first_name);
                         commonUserData.setLastName(user.last_name);
@@ -109,18 +128,7 @@ public class AuthDelagate {
                         commonUserData.setFullName(user.first_name + "" + user.last_name);
                         GsonBuilder builder = new GsonBuilder();
                         Gson gson = builder.create();
-                        compositeDisposable.add(apiClient.socialLogin(Constants.Social.VK, gson.toJson(commonUserData))
-                                .doOnSuccess(tokenResponse -> {
-                                    preferences.setAccessToken(tokenResponse.getAccessToken());
-                                    preferences.setRefreshToken(tokenResponse.getRefreshToken());
-
-                                })
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(tokenResponse -> {
-                                        },
-                                        error -> Timber.e(error))
-                        );
+                        socialLogin(Constants.Social.VK, gson.toJson(commonUserData));
                     }
 
                     @Override
@@ -146,19 +154,36 @@ public class AuthDelagate {
             case REQUEST_CODE_GOOGLE:
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 if (result.isSuccess()) {
-                    compositeDisposable.add(apiClient.socialLogin(Constants.Social.GOOGLE, result.getSignInAccount().getIdToken())
-                            .doOnSuccess(tokenResponse -> {
-                                preferences.setAccessToken(tokenResponse.getAccessToken());
-                                preferences.setRefreshToken(tokenResponse.getRefreshToken());
-                            })
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(tokenResponse -> {
-                            }));
-                } else Timber.e("ERROR : %s", result.getStatus());
+                    socialLogin(Constants.Social.GOOGLE, result.getSignInAccount().getIdToken());
+                } else {
+                    Timber.e("ERROR : %s", result.getStatus());
+                }
                 break;
             default:
                 callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void socialLogin(Constants.Social socialName, String data) {
+        compositeDisposable.add(apiClient.socialLogin(socialName, data)
+                .doOnSuccess(tokenResponse -> {
+                    preferences.setAccessToken(tokenResponse.getAccessToken());
+                    preferences.setRefreshToken(tokenResponse.getRefreshToken());
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(tokenResponse -> authPresenter.onAuthSuccess(),
+                        error -> {
+                            Timber.e(error);
+                            authView.showMessage(error.toString());
+                        }));
+    }
+
+    public void onPause() {
+        if (googleApiClient != null) {
+            //noinspection ConstantConditions
+            googleApiClient.stopAutoManage(authView.getActivity());
+            googleApiClient.disconnect();
         }
     }
 }

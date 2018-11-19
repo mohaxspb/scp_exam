@@ -6,11 +6,9 @@ import android.os.Bundle
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
-import com.facebook.login.LoginManager
 import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.fragment_intro_dialog.*
 import ru.kuchanov.scpquiz.Constants
-import ru.kuchanov.scpquiz.Constants.Auth.FACEBOOK_SCOPES
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
@@ -21,6 +19,7 @@ import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.mvp.presenter.intro.IntroDialogPresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.IntroDialogView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
 import ru.kuchanov.scpquiz.ui.utils.ChatDelegate
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import toothpick.Toothpick
@@ -31,7 +30,6 @@ import javax.inject.Inject
 class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(), IntroDialogView {
 
     companion object {
-
         fun newInstance() = IntroDialogFragment()
     }
 
@@ -39,6 +37,8 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
     lateinit var myPreferenceManager: MyPreferenceManager
 
     private lateinit var chatDelegate: ChatDelegate
+
+    lateinit var authDelegate: AuthDelegate<IntroDialogFragment>
 
     override val translucent = true
 
@@ -58,6 +58,15 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        authDelegate = AuthDelegate(
+                this,
+                presenter,
+                presenter.apiClient,
+                presenter.preferences
+        )
+        presenter.authDelegate = authDelegate
+        authDelegate.onViewCreated(activity)
 
         chatDelegate = ChatDelegate(
                 chatView,
@@ -96,12 +105,13 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
     override fun removeChatAction(indexInParent: Int) =
             chatDelegate.removeChatAction(indexInParent)
 
-    override fun startFacebookLogin() {
-        LoginManager.getInstance().logInWithReadPermissions(this, FACEBOOK_SCOPES)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         presenter.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        authDelegate.onPause()
     }
 }

@@ -3,11 +3,6 @@ package ru.kuchanov.scpquiz.mvp.presenter.intro
 import android.app.Application
 import android.content.Intent
 import com.arellomobile.mvp.InjectViewState
-import com.facebook.CallbackManager
-import com.facebook.FacebookCallback
-import com.facebook.FacebookException
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginResult
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -16,6 +11,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
@@ -25,8 +21,13 @@ import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
+import ru.kuchanov.scpquiz.mvp.AuthPresenter
+import ru.kuchanov.scpquiz.mvp.AuthView
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.IntroDialogView
+import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.ui.fragment.intro.IntroDialogFragment
+import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -36,11 +37,30 @@ class IntroDialogPresenter @Inject constructor(
         override var appContext: Application,
         override var preferences: MyPreferenceManager,
         override var router: ScpRouter,
-        override var appDatabase: AppDatabase
-) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase) {
+        override var appDatabase: AppDatabase,
+        var apiClient: ApiClient
+) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase), AuthPresenter<IntroDialogFragment> {
 
-    //auth
-    private val callbackManager: CallbackManager = CallbackManager.Factory.create()
+    override fun onAuthSuccess() {
+
+    }
+
+    override lateinit var authDelegate: AuthDelegate<IntroDialogFragment>
+
+    override fun onFacebookLoginClicked() {
+        Timber.d("onAuthFBClicked")
+        viewState.startFacebookLogin(authDelegate.authView)
+    }
+
+    override fun onVkLoginClicked() {
+        Timber.d("onAuthVkClicked")
+        viewState.startVkLogin(authDelegate.authView)
+    }
+
+    override fun onGoogleLoginClicked() {
+        Timber.d("onAuthGoogleClicked")
+        authDelegate.startGoogleLogin()
+    }
 
     private lateinit var doctor: User
 
@@ -90,36 +110,6 @@ class IntroDialogPresenter @Inject constructor(
                             viewState.showChatActions(generateStartGameActions(), ChatActionsGroupType.START_GAME)
                         }
                 )
-
-        initFacebook()
-    }
-
-    private fun initFacebook() {
-        LoginManager.getInstance().registerCallback(callbackManager,
-                object : FacebookCallback<LoginResult> {
-                    override fun onSuccess(loginResult: LoginResult) {
-                        Timber.d("LOGIN FB RESULT : %s", loginResult.accessToken.token)
-                        //todo
-//                        apiClient.loginSocial(Constants.FACEBOOK, loginResult.accessToken.token)
-//                                .doOnSuccess({ tokenResponse ->
-//                                    preferences.setAccessToken(tokenResponse.accessToken)
-//                                    preferences.setRefreshToken(tokenResponse.refreshToken)
-//                                })
-//                                .subscribeOn(Schedulers.io())
-//                                .observeOn(AndroidSchedulers.mainThread())
-//                                .subscribeBy(
-//                                        { tokenResponse -> router.navigateTo(Constants.ALL_QUIZ_SCREEN) },
-//                                        { error -> Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show() }
-//                                )
-
-                    }
-
-                    override fun onCancel() {}
-
-                    override fun onError(exception: FacebookException) {
-                        Timber.d("ON ERROR FB :%s", exception.toString())
-                    }
-                })
     }
 
     private fun generateStartGameActions(): List<ChatAction> {
@@ -147,19 +137,19 @@ class IntroDialogPresenter @Inject constructor(
         val messageAuthFacebook = appContext.getString(R.string.chat_action_auth_facebook)
         chatActions += ChatAction(
                 messageAuthFacebook,
-                onActionClicked(messageAuthFacebook) { onAuthFacebookClicked() },
+                onActionClicked(messageAuthFacebook) { onFacebookLoginClicked() },
                 R.drawable.selector_chat_action_accent
         )
         val messageAuthGoogle = appContext.getString(R.string.chat_action_auth_google)
         chatActions += ChatAction(
                 messageAuthGoogle,
-                onActionClicked(messageAuthGoogle) { onAuthGoogleClicked() },
+                onActionClicked(messageAuthGoogle) { onGoogleLoginClicked() },
                 R.drawable.selector_chat_action_accent
         )
         val messageAuthVk = appContext.getString(R.string.chat_action_auth_vk)
         chatActions += ChatAction(
                 messageAuthVk,
-                onActionClicked(messageAuthVk) { onAuthVkClicked() },
+                onActionClicked(messageAuthVk) { onVkLoginClicked() },
                 R.drawable.selector_chat_action_accent
         )
         val messageSkipAuth = appContext.getString(R.string.chat_action_skip_auth)
@@ -170,21 +160,6 @@ class IntroDialogPresenter @Inject constructor(
         )
 
         return chatActions
-    }
-
-    private fun onAuthVkClicked() {
-        Timber.d("onAuthVkClicked")
-        //todo
-    }
-
-    private fun onAuthGoogleClicked() {
-        Timber.d("onAuthGoogleClicked")
-        //todo
-    }
-
-    private fun onAuthFacebookClicked() {
-        Timber.d("onAuthFacebookClicked")
-        viewState.startFacebookLogin()
     }
 
     private fun onActionClicked(text: String, onCompleteAction: () -> Unit): (Int) -> Unit =
@@ -227,6 +202,6 @@ class IntroDialogPresenter @Inject constructor(
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        callbackManager.onActivityResult(requestCode, resultCode, data)
+        authDelegate.onActivityResult(requestCode, resultCode, data)
     }
 }

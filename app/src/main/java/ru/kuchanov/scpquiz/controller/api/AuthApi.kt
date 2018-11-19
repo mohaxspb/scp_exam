@@ -5,6 +5,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Header
 import retrofit2.http.POST
+import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.api.response.TokenResponse
 
 interface AuthApi {
@@ -29,7 +30,7 @@ interface AuthApi {
     @FormUrlEncoded
     @POST("auth/socialLogin")
     fun socialLogin(
-            @Field("provider") provider: String,
+            @Field("provider") provider: Constants.Social,
             @Field("token") tokenValue: String,
             @Field("clientId") clientId: String,
             @Field("clientSecret") clientSecret: String,

@@ -18,7 +18,7 @@ import timber.log.Timber
 
 abstract class BasePresenter<V : BaseView>(
         protected open var appContext: Application,
-        protected open var preferences: MyPreferenceManager,
+        open var preferences: MyPreferenceManager,
         protected open var router: ScpRouter,
         protected open var appDatabase: AppDatabase
 ) : MvpPresenter<V>() {
