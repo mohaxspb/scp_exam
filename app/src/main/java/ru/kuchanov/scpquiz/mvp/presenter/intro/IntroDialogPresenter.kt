@@ -42,7 +42,9 @@ class IntroDialogPresenter @Inject constructor(
 ) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase), AuthPresenter<IntroDialogFragment> {
 
     override fun onAuthSuccess() {
+        preferences.setIntroDialogShown(true)
 
+        navigateToFirstLevel()
     }
 
     override lateinit var authDelegate: AuthDelegate<IntroDialogFragment>

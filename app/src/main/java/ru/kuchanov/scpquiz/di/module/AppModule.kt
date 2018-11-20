@@ -2,6 +2,7 @@ package ru.kuchanov.scpquiz.di.module
 
 import android.arch.persistence.room.Room
 import android.content.Context
+import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import okhttp3.CertificatePinner
@@ -55,6 +56,7 @@ class AppModule(context: Context) : Module() {
         //json
         val moshi = Moshi.Builder()
                 .add(Date::class.java, Rfc3339DateJsonAdapter().nullSafe())
+                .add(KotlinJsonAdapterFactory())
                 .build()
         bind(Moshi::class.java).toInstance(moshi)
 
@@ -82,7 +84,7 @@ class AppModule(context: Context) : Module() {
         val authRetrofit = Retrofit.Builder()
                 .baseUrl(BuildConfig.QUIZ_API_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .client(okHttpClientCommon)
                 .build()
         val authApi = authRetrofit.create(AuthApi::class.java)
@@ -117,8 +119,8 @@ class AppModule(context: Context) : Module() {
                                 preferenceManager.getRefreshToken()!!
                         )
                                 .blockingGet()
-                        preferenceManager.setAccessToken(tokenResponse.accessToken)
-                        preferenceManager.setRefreshToken(tokenResponse.refreshToken)
+                        preferenceManager.setAccessToken(tokenResponse.accessToken!!)
+                        preferenceManager.setRefreshToken(tokenResponse.refreshToken!!)
                         request = request
                                 .newBuilder()
                                 .header(

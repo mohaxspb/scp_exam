@@ -8,7 +8,7 @@ data class TokenResponse(
         @Json(name = "access_token")
         val accessToken: String,
         @Json(name = "refresh_token")
-        var refreshToken: String,
+        val refreshToken: String,
         @Json(name = "token_type")
         val tokenType: String,
         @Json(name = "expires_in")

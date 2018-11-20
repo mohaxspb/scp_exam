@@ -42,7 +42,7 @@ class ApiClient @Inject constructor(
                             ),
                             Constants.Api.GRANT_TYPE_CLIENT_CREDENTIALS
                     )
-                    .doOnSuccess { (accessToken) -> preferences.setAccessToken(accessToken) }
+                    .doOnSuccess { (accessToken) -> preferences.setAccessToken(accessToken!!) }
 
     fun getNwQuizList(): Single<List<NwQuiz>> =
             quizApi
