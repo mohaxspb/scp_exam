@@ -175,7 +175,7 @@ class IntroDialogPresenter @Inject constructor(
                 )
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         authDelegate.onActivityResult(requestCode, resultCode, data)
     }
 }

@@ -40,10 +40,10 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
         internal var apiClient: ApiClient,
         internal var preferences: MyPreferenceManager
 ) {
+
     private val compositeDisposable = CompositeDisposable()
     private val callbackManager = CallbackManager.Factory.create()
     private var googleApiClient: GoogleApiClient? = null
-    private val REQUEST_CODE_GOOGLE = 11
 
     fun getFragment(): BaseFragment<out AuthView, out BasePresenter<out AuthView>> {
         return fragment
@@ -82,52 +82,54 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                 })
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        if (VKSdk.onActivityResult(requestCode, resultCode, data, object : VKCallback<VKAccessToken> {
-                    override fun onResult(vkAccessToken: VKAccessToken) {
-                        val commonUserData = CommonUserData()
-                        commonUserData.email = vkAccessToken.email
-                        commonUserData.id = vkAccessToken.userId
-                        val request = VKApi.users().get()
-                        request.executeWithListener(object : VKRequest.VKRequestListener() {
-                            override fun onComplete(response: VKResponse?) {
-
-                                val user = (response!!.parsedModel as VKList<VKApiUserFull>)[0]
-                                commonUserData.firstName = user.first_name
-                                commonUserData.lastName = user.last_name
-                                commonUserData.avatarUrl = user.photo_200
-                                commonUserData.fullName = user.first_name + "" + user.last_name
-                                val builder = GsonBuilder()
-                                val gson = builder.create()
-                                socialLogin(Constants.Social.VK, gson.toJson(commonUserData))
-                            }
-
-                            override fun onError(error: VKError?) {
-                                Timber.e(error!!.errorMessage)
-                            }
-
-                            override fun attemptFailed(request: VKRequest?, attemptNumber: Int, totalAttempts: Int) {
-
-                            }
-                        })
-                    }
-
-                    override fun onError(error: VKError) {
-                        Timber.d("Error ; %s", error.toString())
-                    }
-                })) {
-            return
-        }
-        when (requestCode) {
-            REQUEST_CODE_GOOGLE -> {
-                val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
-                if (result.isSuccess) {
-                    socialLogin(Constants.Social.GOOGLE, result.signInAccount!!.idToken)
-                } else {
-                    Timber.e("ERROR : %s", result.status)
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val vkCallback = object : VKCallback<VKAccessToken> {
+            override fun onResult(vkAccessToken: VKAccessToken) {
+                val commonUserData = CommonUserData().apply {
+                    email = vkAccessToken.email
+                    id = vkAccessToken.userId
                 }
+                val request = VKApi.users().get()
+                request.executeWithListener(object : VKRequest.VKRequestListener() {
+                    override fun onComplete(response: VKResponse?) {
+                        @Suppress("UNCHECKED_CAST")
+                        val user = (response!!.parsedModel as VKList<VKApiUserFull>)[0]
+                        commonUserData.firstName = user.first_name
+                        commonUserData.lastName = user.last_name
+                        commonUserData.avatarUrl = user.photo_200
+                        commonUserData.fullName = user.first_name + "" + user.last_name
+                        val builder = GsonBuilder()
+                        val gson = builder.create()
+                        socialLogin(Constants.Social.VK, gson.toJson(commonUserData))
+                    }
+
+                    override fun onError(error: VKError?) {
+                        Timber.e(error!!.errorMessage)
+                    }
+
+                    override fun attemptFailed(request: VKRequest?, attemptNumber: Int, totalAttempts: Int) {
+                        fragment.showMessage("VK failed $request attemptNumber: $attemptNumber totalAttempts: $totalAttempts")
+                    }
+                })
             }
-            else -> callbackManager.onActivityResult(requestCode, resultCode, data)
+
+            override fun onError(error: VKError) {
+                Timber.d("Error: $error")
+            }
+        }
+
+        if (!VKSdk.onActivityResult(requestCode, resultCode, data, vkCallback)) {
+            when (requestCode) {
+                REQUEST_CODE_GOOGLE -> {
+                    val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+                    if (result.isSuccess) {
+                        socialLogin(Constants.Social.GOOGLE, result.signInAccount!!.idToken)
+                    } else {
+                        Timber.e("ERROR : %s", result.status)
+                    }
+                }
+                else -> callbackManager.onActivityResult(requestCode, resultCode, data)
+            }
         }
     }
 
@@ -139,7 +141,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ tokenResponse -> authPresenter.onAuthSuccess() },
+                .subscribe({ authPresenter.onAuthSuccess() },
                         { error ->
                             Timber.e(error)
                             fragment.showMessage(error.toString())
@@ -151,5 +153,9 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
             googleApiClient!!.stopAutoManage(fragment.getActivity()!!)
             googleApiClient!!.disconnect()
         }
+    }
+
+    companion object {
+        private const val REQUEST_CODE_GOOGLE = 11
     }
 }

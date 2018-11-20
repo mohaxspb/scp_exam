@@ -38,7 +38,7 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
 
     private lateinit var chatDelegate: ChatDelegate
 
-    lateinit var authDelegate: AuthDelegate<IntroDialogFragment>
+    private lateinit var authDelegate: AuthDelegate<IntroDialogFragment>
 
     override val translucent = true
 
@@ -105,7 +105,7 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
     override fun removeChatAction(indexInParent: Int) =
             chatDelegate.removeChatAction(indexInParent)
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         presenter.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
