@@ -22,13 +22,10 @@ import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.AuthPresenter
-import ru.kuchanov.scpquiz.mvp.AuthView
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.IntroDialogView
-import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.fragment.intro.IntroDialogFragment
 import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
-import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -164,18 +161,6 @@ class IntroDialogPresenter @Inject constructor(
         viewState.showChatActions(generateAuthActions(), ChatActionsGroupType.AUTH)
     }
 
-    private fun getOkActionForText(text: String): (Int) -> Unit =
-            { index ->
-                //todo move to auth actions
-//                preferences.setIntroDialogShown(true)
-
-                viewState.removeChatAction(index)
-                viewState.showChatMessage(text, player)
-
-                //todo move to auth actions
-//                navigateToFirstLevel()
-            }
-
     private fun navigateToFirstLevel() {
         Single.timer(1, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
@@ -190,7 +175,7 @@ class IntroDialogPresenter @Inject constructor(
                 )
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         authDelegate.onActivityResult(requestCode, resultCode, data)
     }
 }

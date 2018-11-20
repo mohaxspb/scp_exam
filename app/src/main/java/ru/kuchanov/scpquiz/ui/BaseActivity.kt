@@ -75,11 +75,11 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         VKSdk.onActivityResult(requestCode, resultCode, data, object : VKCallback<VKAccessToken> {
             override fun onResult(res: VKAccessToken) {
+                Timber.d("REQUEST CODE:%s,ResultCODE : %s, DATA :%s", requestCode, resultCode, data)
                 for (fragment in supportFragmentManager.fragments) {
                     fragment.onActivityResult(requestCode, resultCode, data)
                 }
             }
-
             override fun onError(error: VKError) {}
         })
         super.onActivityResult(requestCode, resultCode, data)
@@ -161,10 +161,10 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 //        Appodeal.disableNetwork(this, "vungle")
 //        Appodeal.disableNetwork(this, "facebook");
         Appodeal.initialize(
-            this,
-            getString(R.string.appodeal_app_key),
-            Appodeal.REWARDED_VIDEO,
-            true
+                this,
+                getString(R.string.appodeal_app_key),
+                Appodeal.REWARDED_VIDEO,
+                true
         )
 
         Appodeal.muteVideosIfCallsMuted(true)
@@ -197,10 +197,10 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 
     protected fun requestNewInterstitial() {
         Timber.d(
-            "requestNewInterstitial loading/loaded/disabled: %s/%s/%s",
-            interstitialAd.isLoading,
-            interstitialAd.isLoaded,
-            preferenceManager.isAdsDisabled()
+                "requestNewInterstitial loading/loaded/disabled: %s/%s/%s",
+                interstitialAd.isLoading,
+                interstitialAd.isLoaded,
+                preferenceManager.isAdsDisabled()
         )
         if (interstitialAd.isLoading || interstitialAd.isLoaded || preferenceManager.isAdsDisabled()) {
             Timber.d("loading already in progress or already done or disabled")

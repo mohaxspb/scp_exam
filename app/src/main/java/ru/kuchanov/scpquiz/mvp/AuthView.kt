@@ -9,7 +9,6 @@ import ru.kuchanov.scpquiz.Constants
 
 interface AuthView : BaseView {
 
-//    fun showMessage(message: String)
     fun startGoogleLogin(signInIntent: Intent, fragment: Fragment) {
         fragment.startActivityForResult(signInIntent, REQUEST_CODE_GOOGLE)
     }

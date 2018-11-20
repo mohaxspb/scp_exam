@@ -66,7 +66,7 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
                 presenter.preferences
         )
         presenter.authDelegate = authDelegate
-        authDelegate.onViewCreated(activity)
+        activity?.let { authDelegate.onViewCreated(it) }
 
         chatDelegate = ChatDelegate(
                 chatView,
@@ -105,7 +105,7 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
     override fun removeChatAction(indexInParent: Int) =
             chatDelegate.removeChatAction(indexInParent)
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         presenter.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
     }
