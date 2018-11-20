@@ -1,16 +1,17 @@
 package ru.kuchanov.scpquiz
 
 import android.support.multidex.MultiDexApplication
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsLogger
+import com.vk.sdk.VKSdk
+import com.yandex.metrica.YandexMetrica
+import com.yandex.metrica.YandexMetricaConfig
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.AppModule
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
 import toothpick.smoothie.module.SmoothieApplicationModule
-import com.yandex.metrica.YandexMetrica
-import com.yandex.metrica.YandexMetricaConfig
-
-
 
 
 @SuppressWarnings("unused")
@@ -28,6 +29,13 @@ class App : MultiDexApplication() {
         initTimber()
         initDi()
         initYandexMetrica()
+        VKSdk.initialize(this)
+        FacebookSdk.sdkInitialize(applicationContext)
+        AppEventsLogger.activateApp(this)
+
+        //use it for printing keys hash for facebook
+//        Timber.d("App#onCreate")
+//        SystemUtils.printCertificateFingerprints(this)
     }
 
     private fun initYandexMetrica() {
@@ -42,8 +50,8 @@ class App : MultiDexApplication() {
         Toothpick
                 .openScope(Di.Scope.APP)
                 .installModules(
-                    SmoothieApplicationModule(this),
-                    AppModule(this)
+                        SmoothieApplicationModule(this),
+                        AppModule(this)
                 )
 
         if (BuildConfig.DEBUG) {

@@ -4,16 +4,16 @@ object Constants {
     const val COINS_FOR_NUMBER = 5
     const val COINS_FOR_NAME = 10
     val DIGITS_CHAR_LIST = listOf(
-        '1',
-        '2',
-        '3',
-        '4',
-        '5',
-        '6',
-        '7',
-        '8',
-        '9',
-        '0'
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            '0'
     )
     const val DEFAULT_LANG = "en"
     const val PRIVACY_POLICY_URL = "https://scpfoundation.app/scpQuiz/privacyPolicy.html"
@@ -30,6 +30,7 @@ object Constants {
     const val SKU_INAPP_DISABLE_ADS = "disable_ads_0718"
     const val COINS_FOR_LEVEL_UNLOCK = 5
 
+
     object Screens {
         const val ENTER = "ENTER"
         const val SETTINGS = "SETTINGS"
@@ -39,4 +40,24 @@ object Constants {
         const val INTRO_DIALOG = "INTRO_DIALOG"
         const val MONETIZATION = "MONETIZATION"
     }
+
+    object Api {
+        const val GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials"
+        const val GRANT_TYPE_REFRESH_TOKEN = "refresh_token"
+
+        const val HEADER_AUTHORIZATION = "Authorization"
+        const val HEADER_PART_BEARER = "Bearer"
+    }
+
+    object Auth {
+        private const val FACEBOOK_SCOPE_EMAIL = "email"
+        private const val FACEBOOK_SCOPE_PUBLIC_PROFILE = "public_profile"
+        val FACEBOOK_SCOPES = listOf(FACEBOOK_SCOPE_EMAIL, FACEBOOK_SCOPE_PUBLIC_PROFILE)
+    }
+
+    enum class Social {
+        VK, FACEBOOK, GOOGLE
+    }
+
+    const val GAME = "GAME"
 }

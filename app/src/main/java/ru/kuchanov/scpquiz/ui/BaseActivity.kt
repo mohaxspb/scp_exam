@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
@@ -9,6 +10,10 @@ import com.arellomobile.mvp.MvpAppCompatActivity
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
+import com.vk.sdk.VKAccessToken
+import com.vk.sdk.VKCallback
+import com.vk.sdk.VKSdk
+import com.vk.sdk.api.VKError
 import ru.kuchanov.rate.PreRate
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
@@ -65,6 +70,18 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     override fun onPause() {
         super.onPause()
         navigationHolder.removeNavigator()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        VKSdk.onActivityResult(requestCode, resultCode, data, object : VKCallback<VKAccessToken> {
+            override fun onResult(res: VKAccessToken) {
+                for (fragment in supportFragmentManager.fragments) {
+                    fragment.onActivityResult(requestCode, resultCode, data)
+                }
+            }
+            override fun onError(error: VKError) {}
+        })
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
 
@@ -143,10 +160,10 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 //        Appodeal.disableNetwork(this, "vungle")
 //        Appodeal.disableNetwork(this, "facebook");
         Appodeal.initialize(
-            this,
-            getString(R.string.appodeal_app_key),
-            Appodeal.REWARDED_VIDEO,
-            true
+                this,
+                getString(R.string.appodeal_app_key),
+                Appodeal.REWARDED_VIDEO,
+                true
         )
 
         Appodeal.muteVideosIfCallsMuted(true)
@@ -179,10 +196,10 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 
     protected fun requestNewInterstitial() {
         Timber.d(
-            "requestNewInterstitial loading/loaded/disabled: %s/%s/%s",
-            interstitialAd.isLoading,
-            interstitialAd.isLoaded,
-            preferenceManager.isAdsDisabled()
+                "requestNewInterstitial loading/loaded/disabled: %s/%s/%s",
+                interstitialAd.isLoading,
+                interstitialAd.isLoaded,
+                preferenceManager.isAdsDisabled()
         )
         if (interstitialAd.isLoading || interstitialAd.isLoaded || preferenceManager.isAdsDisabled()) {
             Timber.d("loading already in progress or already done or disabled")

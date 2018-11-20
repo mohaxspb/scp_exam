@@ -22,10 +22,10 @@ import javax.inject.Inject
 
 @InjectViewState
 class ScpSettingsPresenter @Inject constructor(
-    override var appContext: Application,
-    override var preferences: MyPreferenceManager,
-    override var router: ScpRouter,
-    override var appDatabase: AppDatabase
+        override var appContext: Application,
+        override var preferences: MyPreferenceManager,
+        override var router: ScpRouter,
+        override var appDatabase: AppDatabase
 ) : BasePresenter<SettingsView>(appContext, preferences, router, appDatabase) {
 
     override fun onFirstViewAttach() {
@@ -37,7 +37,8 @@ class ScpSettingsPresenter @Inject constructor(
         viewState.showFingerprint(preferences.isFingerprintEnabled())
     }
 
-    fun onLangClicked() = viewState.showLangsChooser(preferences.getLangs(), preferences.getLang())
+    fun onLangClicked() = preferences.getLangs()?.let { viewState.showLangsChooser(it, preferences.getLang()) }
+            ?: viewState.showMessage(R.string.error_unexpected)
 
     fun onSoundEnabled(enabled: Boolean) {
         preferences.setSoundEnabled(enabled)
