@@ -1,6 +1,5 @@
 package ru.kuchanov.scpquiz.ui.utils;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 
@@ -25,8 +24,6 @@ import com.vk.sdk.api.VKResponse;
 import com.vk.sdk.api.model.VKApiUserFull;
 import com.vk.sdk.api.model.VKList;
 
-import javax.inject.Inject;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
@@ -34,23 +31,20 @@ import ru.kuchanov.scpquiz.Constants;
 import ru.kuchanov.scpquiz.R;
 import ru.kuchanov.scpquiz.controller.api.ApiClient;
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager;
-import ru.kuchanov.scpquiz.di.Di;
 import ru.kuchanov.scpquiz.model.CommonUserData;
 import ru.kuchanov.scpquiz.mvp.AuthPresenter;
 import ru.kuchanov.scpquiz.mvp.AuthView;
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter;
 import ru.kuchanov.scpquiz.ui.BaseFragment;
 import timber.log.Timber;
-import toothpick.Toothpick;
 
 public class AuthDelegate<T extends BaseFragment<? extends AuthView, ? extends BasePresenter<? extends AuthView>>> {
+
     private static final int REQUEST_CODE_GOOGLE = 11;
-    //    @Inject
     ApiClient apiClient;
-    //    @Inject
     MyPreferenceManager preferences;
     private AuthPresenter authPresenter;
-    private T authView;
+    private T fragment;
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private CallbackManager callbackManager = CallbackManager.Factory.create();
     private GoogleApiClient googleApiClient;
@@ -61,18 +55,17 @@ public class AuthDelegate<T extends BaseFragment<? extends AuthView, ? extends B
             ApiClient apiClient,
             MyPreferenceManager preferences
     ) {
-        this.authView = fragment;
+        this.fragment = fragment;
         this.authPresenter = authPresenter;
         this.apiClient = apiClient;
         this.preferences = preferences;
     }
 
-    public BaseFragment<? extends AuthView, ? extends BasePresenter<? extends AuthView>> getAuthView() {
-        return authView;
+    public BaseFragment<? extends AuthView, ? extends BasePresenter<? extends AuthView>> getFragment() {
+        return fragment;
     }
 
     public void onViewCreated(FragmentActivity fragmentActivity) {
-//        Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP));
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(fragmentActivity.getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -87,7 +80,7 @@ public class AuthDelegate<T extends BaseFragment<? extends AuthView, ? extends B
 
     public void startGoogleLogin() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-        ((AuthView) authView).startGoogleLogin(signInIntent, authView);
+        ((AuthView) fragment).startGoogleLogin(signInIntent, fragment);
     }
 
     private void fbRegisterCallback() {
@@ -175,14 +168,14 @@ public class AuthDelegate<T extends BaseFragment<? extends AuthView, ? extends B
                 .subscribe(tokenResponse -> authPresenter.onAuthSuccess(),
                         error -> {
                             Timber.e(error);
-                            authView.showMessage(error.toString());
+                            fragment.showMessage(error.toString());
                         }));
     }
 
     public void onPause() {
         if (googleApiClient != null) {
             //noinspection ConstantConditions
-            googleApiClient.stopAutoManage(authView.getActivity());
+            googleApiClient.stopAutoManage(fragment.getActivity());
             googleApiClient.disconnect();
         }
     }

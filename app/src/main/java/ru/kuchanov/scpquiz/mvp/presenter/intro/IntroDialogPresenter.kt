@@ -49,20 +49,7 @@ class IntroDialogPresenter @Inject constructor(
 
     override lateinit var authDelegate: AuthDelegate<IntroDialogFragment>
 
-    override fun onFacebookLoginClicked() {
-        Timber.d("onAuthFBClicked")
-        viewState.startFacebookLogin(authDelegate.authView)
-    }
-
-    override fun onVkLoginClicked() {
-        Timber.d("onAuthVkClicked")
-        viewState.startVkLogin(authDelegate.authView)
-    }
-
-    override fun onGoogleLoginClicked() {
-        Timber.d("onAuthGoogleClicked")
-        authDelegate.startGoogleLogin()
-    }
+    override fun getAuthView(): IntroDialogView = viewState
 
     private lateinit var doctor: User
 
