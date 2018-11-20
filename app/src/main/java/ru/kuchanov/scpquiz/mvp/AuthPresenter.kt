@@ -12,17 +12,14 @@ interface AuthPresenter<T : BaseFragment<out AuthView, out BasePresenter<out Aut
     fun getAuthView(): AuthView
 
     fun onFacebookLoginClicked() {
-        Timber.d("onAuthFBClicked")
         getAuthView().startFacebookLogin(authDelegate.getFragment())
     }
 
     fun onVkLoginClicked() {
-        Timber.d("onAuthVkClicked")
         getAuthView().startVkLogin(authDelegate.getFragment())
     }
 
     fun onGoogleLoginClicked() {
-        Timber.d("onAuthGoogleClicked")
         authDelegate.startGoogleLogin()
     }
 

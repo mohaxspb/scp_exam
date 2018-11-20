@@ -75,7 +75,6 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         VKSdk.onActivityResult(requestCode, resultCode, data, object : VKCallback<VKAccessToken> {
             override fun onResult(res: VKAccessToken) {
-                Timber.d("REQUEST CODE:%s,ResultCODE : %s, DATA :%s", requestCode, resultCode, data)
                 for (fragment in supportFragmentManager.fragments) {
                     fragment.onActivityResult(requestCode, resultCode, data)
                 }

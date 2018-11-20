@@ -37,7 +37,7 @@ import timber.log.Timber
 class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView>>>(
         private val fragment: T,
         private val authPresenter: AuthPresenter<*>,
-        internal var apiClient: ApiClient,
+        private var apiClient: ApiClient,
         internal var preferences: MyPreferenceManager
 ) {
 
