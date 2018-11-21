@@ -5,11 +5,16 @@ import android.app.Application
 import android.os.Build
 import com.arellomobile.mvp.InjectViewState
 import com.google.android.gms.ads.MobileAds
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
+import ru.kuchanov.scpquiz.model.db.FinishedLevel
+import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.utils.IntentUtils
@@ -89,8 +94,26 @@ class ScpSettingsPresenter @Inject constructor(
         preferences.setAccessToken(null)
         preferences.setRefreshToken(null)
         preferences.setUserPassword(null)
-
-        router.newRootScreen(Constants.Screens.ENTER)
+        compositeDisposable.add(appDatabase.userDao().getOneByRole(UserRole.PLAYER)
+                .map { user -> user.score = 0 }
+                .toFlowable()
+                .flatMap { appDatabase.finishedLevelsDao().getAfterFifthByAsc() }
+                .map { finishedLevels ->
+                    finishedLevels.forEach { finishedLevel: FinishedLevel ->
+                        run {
+                            finishedLevel.scpNameFilled = false
+                            finishedLevel.scpNumberFilled = false
+                            finishedLevel.nameRedundantCharsRemoved = false
+                            finishedLevel.numberRedundantCharsRemoved = false
+                        }
+                    }
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onComplete = { router.newRootScreen(Constants.Screens.ENTER) },
+                        onError = { viewState.showMessage("Error") }
+                ))
     }
 
     fun onPrivacyPolicyClicked() = IntentUtils.openUrl(appContext, Constants.PRIVACY_POLICY_URL)
