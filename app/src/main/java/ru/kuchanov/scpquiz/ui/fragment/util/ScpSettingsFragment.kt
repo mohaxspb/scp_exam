@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.ui.fragment.util
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.os.Build
 import android.os.Bundle
@@ -14,9 +15,11 @@ import android.widget.PopupWindow
 import com.afollestad.materialdialogs.MaterialDialog
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
+import com.bumptech.glide.request.RequestOptions
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import jp.wasabeef.blurry.Blurry
+import kotlinx.android.synthetic.main.dialog_logout.view.*
 import kotlinx.android.synthetic.main.fragment_settings.*
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
@@ -29,6 +32,7 @@ import ru.kuchanov.scpquiz.mvp.presenter.util.ScpSettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.DialogUtils
+import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
 import ru.kuchanov.scpquiz.utils.security.FingerprintUtils
@@ -110,12 +114,18 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
     }
 
+    @SuppressLint("InflateParams")
     private fun showLogoutDialog() {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_logout, null, false)
+        GlideApp
+                .with(activity!!)
+                .load(R.drawable.ic_doctor)
+                .apply(RequestOptions.circleCropTransform())
+                .into(dialogView.doctorImageView)
         activity?.let {
             MaterialDialog.Builder(it)
-                    .title(R.string.logout)
+                    .customView(dialogView, true)
                     .positiveText(R.string.OK)
-                    .iconRes(R.drawable.ic_doctor)
                     .onPositive { dialog, _ ->
                         presenter.onLogoutClicked()
                         dialog.cancel()

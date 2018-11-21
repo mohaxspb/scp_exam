@@ -16,7 +16,6 @@
         android:layout_height="48dp"
         android:layout_marginEnd="@dimen/defaultMargin"
         android:src="@drawable/ic_doctor"
-        android:tint="@color/colorAccent"
         tools:ignore="ContentDescription" />
 
     <TextView
