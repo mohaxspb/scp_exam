@@ -11,6 +11,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import com.afollestad.materialdialogs.MaterialDialog
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
@@ -100,13 +101,32 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         shareImageView.setOnClickListener(onShareClickListener)
         shareLabelTextView.setOnClickListener(onShareClickListener)
 
-        val onLogoutClickListener: (View) -> Unit = { presenter.onLogoutClicked() }
+        val onLogoutClickListener: (View) -> Unit = { showLogoutDialog() }
         logoutLabelTextView.setOnClickListener(onLogoutClickListener)
         logoutImageView.setOnClickListener(onLogoutClickListener)
 
         privacyPolicyLabelTextView.setOnClickListener { presenter.onPrivacyPolicyClicked() }
 
         toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
+    }
+
+    private fun showLogoutDialog() {
+        activity?.let {
+            MaterialDialog.Builder(it)
+                    .title(R.string.logout)
+                    .positiveText(R.string.OK)
+                    .iconRes(R.drawable.ic_doctor)
+                    .onPositive { dialog, _ ->
+                        presenter.onLogoutClicked()
+                        dialog.cancel()
+                    }
+                    .negativeText(R.string.cancel)
+                    .onNegative { dialog, _ -> dialog.cancel() }
+                    .canceledOnTouchOutside(true)
+                    .cancelable(true)
+                    .build()
+                    .show()
+        }
     }
 
     override fun showLang(langString: String) {
@@ -182,3 +202,4 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         }
     }
 }
+

@@ -88,6 +88,9 @@
     <string name="dialog_fingerprint_disable_title">Подтвердите отключение входа по отпечатку</string>
     <string name="settings_logout">Разлогиниться</string>
     <string name="chat_action_skip_auth">Пропустить авторизацию</string>
+    <string name="logout">Подтвердите выход</string>
+    <string name="OK">Да</string>
+    <string name="cancel">Отмена</string>
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>
         <item>Мы получили ваш запрос на повышение квалификации.</item>
