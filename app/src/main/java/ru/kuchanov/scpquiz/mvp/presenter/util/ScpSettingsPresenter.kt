@@ -84,6 +84,15 @@ class ScpSettingsPresenter @Inject constructor(
 
     fun onShareClicked() = IntentUtils.tryShareApp(appContext)
 
+    fun onLogoutClicked()  {
+        router.newRootScreen(Constants.Screens.ENTER)
+        preferences.setIntroDialogShown(false)
+        preferences.setAccessToken(null)
+        preferences.setRefreshToken(null)
+        preferences.setUserPassword(null)
+        preferences.setAppodealDescriptionShown(false)
+    }
+
     fun onPrivacyPolicyClicked() = IntentUtils.openUrl(appContext, Constants.PRIVACY_POLICY_URL)
 
     fun onLangSelected(selectedLang: String) {

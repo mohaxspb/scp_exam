@@ -100,6 +100,10 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         shareImageView.setOnClickListener(onShareClickListener)
         shareLabelTextView.setOnClickListener(onShareClickListener)
 
+        val onLogoutClickListener: (View) -> Unit = { presenter.onLogoutClicked() }
+        logoutLabelTextView.setOnClickListener(onLogoutClickListener)
+        logoutImageView.setOnClickListener(onLogoutClickListener)
+
         privacyPolicyLabelTextView.setOnClickListener { presenter.onPrivacyPolicyClicked() }
 
         toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
@@ -119,10 +123,10 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         val focusable = true
         val wrapContent = ViewGroup.LayoutParams.WRAP_CONTENT
         val popupWindow = PopupWindow(
-            popupView,
-            wrapContent,
-            wrapContent,
-            focusable
+                popupView,
+                wrapContent,
+                wrapContent,
+                focusable
         )
 
         val recyclerView = popupView.findViewById(R.id.recyclerView) as RecyclerView
@@ -169,11 +173,11 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
     override fun showFingerprintDialog(enableFingerprintLogin: Boolean) {
         if (isAdded) {
             DialogUtils.showFingerprintDialog(
-                context = activity!!,
-                title = if (enableFingerprintLogin) R.string.dialog_fingerprint_enable_title else R.string.dialog_fingerprint_disable_title,
-                onErrorAction = { showMessage(R.string.error_fingerprint_auth_failed_try_again) },
-                onCipherErrorAction = { showMessage(R.string.error_get_chipher) },
-                onSuccessAction = { presenter.onFingerprintAuthSucceeded(enableFingerprintLogin, it) }
+                    context = activity!!,
+                    title = if (enableFingerprintLogin) R.string.dialog_fingerprint_enable_title else R.string.dialog_fingerprint_disable_title,
+                    onErrorAction = { showMessage(R.string.error_fingerprint_auth_failed_try_again) },
+                    onCipherErrorAction = { showMessage(R.string.error_get_chipher) },
+                    onSuccessAction = { presenter.onFingerprintAuthSucceeded(enableFingerprintLogin, it) }
             )
         }
     }
