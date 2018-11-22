@@ -125,6 +125,28 @@ class ScpSettingsPresenter @Inject constructor(
                 ))
     }
 
+    fun onResetProgressClicked() {
+        compositeDisposable.add(appDatabase.finishedLevelsDao().getAfterFifthByAsc()
+                .map { finishedLevels ->
+                    finishedLevels.forEach { finishedLevel: FinishedLevel ->
+                        run {
+                            finishedLevel.scpNameFilled = false
+                            finishedLevel.scpNumberFilled = false
+                            finishedLevel.nameRedundantCharsRemoved = false
+                            finishedLevel.numberRedundantCharsRemoved = false
+                        }
+                        appDatabase.finishedLevelsDao().update(finishedLevel)
+                        Timber.d("FinishedLevels : %s", finishedLevels)
+                    }
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onSuccess = { router.newRootScreen(Constants.Screens.QUIZ) },
+                        onError = { Timber.e(it) }
+                ))
+    }
+
     fun onPrivacyPolicyClicked() = IntentUtils.openUrl(appContext, Constants.PRIVACY_POLICY_URL)
 
     fun onLangSelected(selectedLang: String) {

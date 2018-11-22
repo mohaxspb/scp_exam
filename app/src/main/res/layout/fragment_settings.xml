@@ -50,7 +50,7 @@
         style="@style/SettingsTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="60dp"
         android:background="?selectableItemBackground"
         android:padding="@dimen/defaultMarginSmall"
         android:text="@string/settings_coins"
@@ -219,7 +219,7 @@
         android:text="@string/settings_logout"
         app:layout_constraintLeft_toRightOf="parent"
         app:layout_constraintRight_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fingerprintLabelTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/resetProgressLabelTextView" />
 
     <ImageView
         android:id="@+id/logoutImageView"
@@ -232,6 +232,34 @@
         app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="@+id/logoutLabelTextView"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/resetProgressLabelTextView"
+        style="@style/SettingsTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/defaultMarginSmall"
+        android:background="?selectableItemBackground"
+        android:gravity="center"
+        android:padding="@dimen/defaultMargin"
+        android:text="@string/settings_reset_progress"
+        app:layout_constraintBottom_toTopOf="@+id/logoutLabelTextView"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fingerprintLabelTextView" />
+
+    <ImageView
+        android:id="@+id/resetProgressImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="?selectableItemBackground"
+        android:src="@drawable/ic_autorenew_white_24dp"
+        app:layout_constraintBottom_toBottomOf="@id/resetProgressLabelTextView"
+        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/resetProgressLabelTextView"
         tools:ignore="ContentDescription" />
 
     <android.support.design.widget.AppBarLayout

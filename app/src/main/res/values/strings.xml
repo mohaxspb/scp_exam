@@ -107,6 +107,8 @@
     <string name="cancel">Cancel</string>
     <!--todo translate-->
     <string name="message_auth_suggestion">Before you start we sugest you to login. So your progress will be saved on our cloud and you\'ll be able to compare your progress with other players. Ofcourse, you can do it later from game settings. Please, choose:</string>
+    <string name="resetProgress">Reset your game progress?</string>
+    <string name="settings_reset_progress">Reset progress</string>
 
 
     <string-array name="intro_dialog_texts">
