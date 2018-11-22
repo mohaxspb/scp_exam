@@ -168,6 +168,10 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         }
     }
 
+    override fun showProgress(show: Boolean) {
+        progressView.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
     override fun showLang(langString: String) {
         val langRes = getIconForLang(langString)
         languageImageView.setImageResource(langRes)

@@ -13,7 +13,6 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
-import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
@@ -96,26 +95,22 @@ class ScpSettingsPresenter @Inject constructor(
         preferences.setUserPassword(null)
         compositeDisposable.add(appDatabase.userDao().getOneByRole(UserRole.PLAYER)
                 .map { user ->
-                    run { user.score = 0 }
+                    user.score = 0
                     appDatabase.userDao().update(user)
                     Timber.d("USER : %s", user)
                 }
-                .flatMap { appDatabase.finishedLevelsDao().getAfterFifthByAsc() }
+                .flatMap { appDatabase.finishedLevelsDao().getAllByAsc() }
                 .map { finishedLevels ->
-                    finishedLevels.forEach { finishedLevel: FinishedLevel ->
-                        run {
-                            finishedLevel.scpNameFilled = false
-                            finishedLevel.scpNumberFilled = false
-                            finishedLevel.nameRedundantCharsRemoved = false
-                            finishedLevel.numberRedundantCharsRemoved = false
-
-                            // ушёл в рекурсию
-                            // D/GamePresenter$loadLevel: quiz:173
-                            //    translationTexts:[Секрет Джеки, Каплеглазики]
+                    appDatabase.finishedLevelsDao().update(finishedLevels.mapIndexed { index, it ->
+                        it.apply {
+                            scpNameFilled = false
+                            scpNumberFilled = false
+                            nameRedundantCharsRemoved = false
+                            numberRedundantCharsRemoved = false
+                            isLevelAvailable = index < 5
+                            Timber.d("FINISHED LEVEL : %s", it)
                         }
-                        appDatabase.finishedLevelsDao().update(finishedLevel)
-                        Timber.d("FinishedLevels : %s", finishedLevels)
-                    }
+                    })
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -126,23 +121,25 @@ class ScpSettingsPresenter @Inject constructor(
     }
 
     fun onResetProgressClicked() {
-        compositeDisposable.add(appDatabase.finishedLevelsDao().getAfterFifthByAsc()
+        compositeDisposable.add(appDatabase.finishedLevelsDao().getAllByAsc()
                 .map { finishedLevels ->
-                    finishedLevels.forEach { finishedLevel: FinishedLevel ->
-                        run {
-                            finishedLevel.scpNameFilled = false
-                            finishedLevel.scpNumberFilled = false
-                            finishedLevel.nameRedundantCharsRemoved = false
-                            finishedLevel.numberRedundantCharsRemoved = false
+                    appDatabase.finishedLevelsDao().update(finishedLevels.mapIndexed { index, it ->
+                        it.apply {
+                            scpNameFilled = false
+                            scpNumberFilled = false
+                            nameRedundantCharsRemoved = false
+                            numberRedundantCharsRemoved = false
+                            isLevelAvailable = index < 5
+                            Timber.d("FINISHED LEVEL : %s", it)
                         }
-                        appDatabase.finishedLevelsDao().update(finishedLevel)
-                        Timber.d("FinishedLevels : %s", finishedLevels)
-                    }
+                    })
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { viewState.showProgress(true) }
+                .doOnEvent { _, _ -> viewState.showProgress(false) }
                 .subscribeBy(
-                        onSuccess = { router.newRootScreen(Constants.Screens.QUIZ) },
+                        onSuccess = { viewState.showMessage(R.string.reset_progress_user_message) },
                         onError = { Timber.e(it) }
                 ))
     }
