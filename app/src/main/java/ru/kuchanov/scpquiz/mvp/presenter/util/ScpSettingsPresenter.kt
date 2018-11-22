@@ -116,7 +116,10 @@ class ScpSettingsPresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onSuccess = { router.newRootScreen(Constants.Screens.ENTER) },
-                        onError = { Timber.e(it) }
+                        onError = {
+                            Timber.e(it)
+                            viewState.showMessage(it.message.toString())
+                        }
                 ))
     }
 
@@ -140,7 +143,10 @@ class ScpSettingsPresenter @Inject constructor(
                 .doOnEvent { _, _ -> viewState.showProgress(false) }
                 .subscribeBy(
                         onSuccess = { viewState.showMessage(R.string.reset_progress_user_message) },
-                        onError = { Timber.e(it) }
+                        onError = {
+                            Timber.e(it)
+                            viewState.showMessage(it.message.toString())
+                        }
                 ))
     }
 
