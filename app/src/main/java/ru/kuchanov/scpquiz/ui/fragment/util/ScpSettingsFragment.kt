@@ -109,6 +109,10 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         logoutLabelTextView.setOnClickListener(onLogoutClickListener)
         logoutImageView.setOnClickListener(onLogoutClickListener)
 
+        val onResetProgressClickListener: (View) -> Unit = { showResetProgressDialog() }
+        resetProgressLabelTextView.setOnClickListener(onResetProgressClickListener)
+        resetProgressImageView.setOnClickListener(onLogoutClickListener)
+
         privacyPolicyLabelTextView.setOnClickListener { presenter.onPrivacyPolicyClicked() }
 
         toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
@@ -137,6 +141,35 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
                     .build()
                     .show()
         }
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showResetProgressDialog() {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_reset_progress, null, false)
+        GlideApp
+                .with(activity!!)
+                .load(R.drawable.ic_doctor)
+                .apply(RequestOptions.circleCropTransform())
+                .into(dialogView.doctorImageView)
+        activity?.let {
+            MaterialDialog.Builder(it)
+                    .customView(dialogView, true)
+                    .positiveText(R.string.OK)
+                    .onPositive { dialog, _ ->
+                        presenter.onResetProgressClicked()
+                        dialog.cancel()
+                    }
+                    .negativeText(R.string.cancel)
+                    .onNegative { dialog, _ -> dialog.cancel() }
+                    .canceledOnTouchOutside(true)
+                    .cancelable(true)
+                    .build()
+                    .show()
+        }
+    }
+
+    override fun showProgress(show: Boolean) {
+        progressView.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     override fun showLang(langString: String) {

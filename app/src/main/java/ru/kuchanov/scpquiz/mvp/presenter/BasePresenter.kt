@@ -36,8 +36,8 @@ abstract class BasePresenter<V : BaseView>(
 
     override fun onDestroy() {
         Timber.d("onDestroy: ${javaClass.simpleName}")
+        compositeDisposable.clear()
         super.onDestroy()
-        compositeDisposable.dispose()
     }
 
     fun onRewardedVideoFinished() {

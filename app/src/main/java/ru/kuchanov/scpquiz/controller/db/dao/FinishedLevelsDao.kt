@@ -12,8 +12,8 @@ interface FinishedLevelsDao {
     @Query("SELECT * FROM FinishedLevel")
     fun getAll(): Flowable<List<FinishedLevel>>
 
-    @Query("SELECT * FROM FinishedLevel WHERE quizId > 4 ORDER BY quizId ASC")
-    fun getAfterFifthByAsc(): Single<List<FinishedLevel>>
+    @Query("SELECT * FROM FinishedLevel ORDER BY quizId ASC")
+    fun getAllByAsc(): Single<List<FinishedLevel>>
 
     @Query("SELECT COUNT(*) FROM FinishedLevel WHERE scpNameFilled = 1 OR scpNumberFilled = 1")
     fun getCountOfPartiallyFinishedLevels(): Long
@@ -35,6 +35,9 @@ interface FinishedLevelsDao {
 
     @Update
     fun update(finishedLevel: FinishedLevel): Int
+
+    @Update
+    fun update(finishedLevels: List<FinishedLevel>): Int
 
     @Delete
     fun delete(finishedLevel: FinishedLevel): Int
