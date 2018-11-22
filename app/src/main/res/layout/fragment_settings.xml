@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout android:id="@+id/root"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
@@ -50,7 +50,7 @@
         style="@style/SettingsTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
+        android:layout_marginTop="60dp"
         android:background="?selectableItemBackground"
         android:padding="@dimen/defaultMarginSmall"
         android:text="@string/settings_coins"
@@ -174,9 +174,9 @@
         android:id="@+id/fingerprintLabelTextView"
         style="@style/SettingsTextStyle"
         android:layout_width="0dp"
-        android:gravity="center"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/defaultMarginSmall"
+        android:gravity="center"
         android:padding="@dimen/defaultMarginSmall"
         android:text="@string/settings_fingerprint"
         app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
@@ -207,6 +207,61 @@
         app:layout_constraintLeft_toRightOf="parent"
         app:layout_constraintRight_toLeftOf="parent" />
 
+    <TextView
+        android:id="@+id/logoutLabelTextView"
+        style="@style/SettingsTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/defaultMarginSmall"
+        android:background="?selectableItemBackground"
+        android:gravity="center"
+        android:padding="@dimen/defaultMargin"
+        android:text="@string/settings_logout"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/resetProgressLabelTextView" />
+
+    <ImageView
+        android:id="@+id/logoutImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="?selectableItemBackground"
+        android:src="@drawable/ic_exit_to_app_white_24dp"
+        app:layout_constraintBottom_toBottomOf="@id/logoutLabelTextView"
+        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/logoutLabelTextView"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/resetProgressLabelTextView"
+        style="@style/SettingsTextStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/defaultMarginSmall"
+        android:background="?selectableItemBackground"
+        android:gravity="center"
+        android:padding="@dimen/defaultMargin"
+        android:text="@string/settings_reset_progress"
+        app:layout_constraintBottom_toTopOf="@+id/logoutLabelTextView"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fingerprintLabelTextView" />
+
+    <ImageView
+        android:id="@+id/resetProgressImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="?selectableItemBackground"
+        android:src="@drawable/ic_autorenew_white_24dp"
+        app:layout_constraintBottom_toBottomOf="@id/resetProgressLabelTextView"
+        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/resetProgressLabelTextView"
+        tools:ignore="ContentDescription" />
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
@@ -227,5 +282,20 @@
             app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel" />
 
     </android.support.design.widget.AppBarLayout>
+
+    <FrameLayout
+        android:id="@+id/progressView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>

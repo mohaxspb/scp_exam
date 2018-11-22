@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.ui.fragment.util
 
+import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.os.Build
 import android.os.Bundle
@@ -11,11 +12,14 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import com.afollestad.materialdialogs.MaterialDialog
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
+import com.bumptech.glide.request.RequestOptions
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import jp.wasabeef.blurry.Blurry
+import kotlinx.android.synthetic.main.dialog_logout.view.*
 import kotlinx.android.synthetic.main.fragment_settings.*
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
@@ -28,6 +32,7 @@ import ru.kuchanov.scpquiz.mvp.presenter.util.ScpSettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.DialogUtils
+import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
 import ru.kuchanov.scpquiz.utils.security.FingerprintUtils
@@ -100,9 +105,71 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         shareImageView.setOnClickListener(onShareClickListener)
         shareLabelTextView.setOnClickListener(onShareClickListener)
 
+        val onLogoutClickListener: (View) -> Unit = { showLogoutDialog() }
+        logoutLabelTextView.setOnClickListener(onLogoutClickListener)
+        logoutImageView.setOnClickListener(onLogoutClickListener)
+
+        val onResetProgressClickListener: (View) -> Unit = { showResetProgressDialog() }
+        resetProgressLabelTextView.setOnClickListener(onResetProgressClickListener)
+        resetProgressImageView.setOnClickListener(onLogoutClickListener)
+
         privacyPolicyLabelTextView.setOnClickListener { presenter.onPrivacyPolicyClicked() }
 
         toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showLogoutDialog() {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_logout, null, false)
+        GlideApp
+                .with(activity!!)
+                .load(R.drawable.ic_doctor)
+                .apply(RequestOptions.circleCropTransform())
+                .into(dialogView.doctorImageView)
+        activity?.let {
+            MaterialDialog.Builder(it)
+                    .customView(dialogView, true)
+                    .positiveText(R.string.OK)
+                    .onPositive { dialog, _ ->
+                        presenter.onLogoutClicked()
+                        dialog.cancel()
+                    }
+                    .negativeText(R.string.cancel)
+                    .onNegative { dialog, _ -> dialog.cancel() }
+                    .canceledOnTouchOutside(true)
+                    .cancelable(true)
+                    .build()
+                    .show()
+        }
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showResetProgressDialog() {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_reset_progress, null, false)
+        GlideApp
+                .with(activity!!)
+                .load(R.drawable.ic_doctor)
+                .apply(RequestOptions.circleCropTransform())
+                .into(dialogView.doctorImageView)
+        activity?.let {
+            MaterialDialog.Builder(it)
+                    .customView(dialogView, true)
+                    .positiveText(R.string.OK)
+                    .onPositive { dialog, _ ->
+                        presenter.onResetProgressClicked()
+                        dialog.cancel()
+                    }
+                    .negativeText(R.string.cancel)
+                    .onNegative { dialog, _ -> dialog.cancel() }
+                    .canceledOnTouchOutside(true)
+                    .cancelable(true)
+                    .build()
+                    .show()
+        }
+    }
+
+    override fun showProgress(show: Boolean) {
+        progressView.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     override fun showLang(langString: String) {
@@ -119,10 +186,10 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         val focusable = true
         val wrapContent = ViewGroup.LayoutParams.WRAP_CONTENT
         val popupWindow = PopupWindow(
-            popupView,
-            wrapContent,
-            wrapContent,
-            focusable
+                popupView,
+                wrapContent,
+                wrapContent,
+                focusable
         )
 
         val recyclerView = popupView.findViewById(R.id.recyclerView) as RecyclerView
@@ -169,12 +236,13 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
     override fun showFingerprintDialog(enableFingerprintLogin: Boolean) {
         if (isAdded) {
             DialogUtils.showFingerprintDialog(
-                context = activity!!,
-                title = if (enableFingerprintLogin) R.string.dialog_fingerprint_enable_title else R.string.dialog_fingerprint_disable_title,
-                onErrorAction = { showMessage(R.string.error_fingerprint_auth_failed_try_again) },
-                onCipherErrorAction = { showMessage(R.string.error_get_chipher) },
-                onSuccessAction = { presenter.onFingerprintAuthSucceeded(enableFingerprintLogin, it) }
+                    context = activity!!,
+                    title = if (enableFingerprintLogin) R.string.dialog_fingerprint_enable_title else R.string.dialog_fingerprint_disable_title,
+                    onErrorAction = { showMessage(R.string.error_fingerprint_auth_failed_try_again) },
+                    onCipherErrorAction = { showMessage(R.string.error_get_chipher) },
+                    onSuccessAction = { presenter.onFingerprintAuthSucceeded(enableFingerprintLogin, it) }
             )
         }
     }
 }
+

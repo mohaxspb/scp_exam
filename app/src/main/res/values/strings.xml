@@ -100,9 +100,16 @@
     <string name="fingerprint_access_disabled">Вход по отпечатку пальца отключён</string>
     <string name="dialog_fingerprint_enable_title">Подтвердите включение входа по отпечатку</string>
     <string name="dialog_fingerprint_disable_title">Подтвердите отключение входа по отпечатку</string>
+    <string name="settings_logout">Logout</string>
+    <string name="chat_action_skip_auth">Skip auth</string>
+    <string name="logout">Confirm logout</string>
+    <string name="OK">OK</string>
+    <string name="cancel">Cancel</string>
     <!--todo translate-->
     <string name="message_auth_suggestion">Before you start we sugest you to login. So your progress will be saved on our cloud and you\'ll be able to compare your progress with other players. Ofcourse, you can do it later from game settings. Please, choose:</string>
-    <string name="chat_action_skip_auth">Skip auth</string>
+    <string name="resetProgress">Reset your game progress?</string>
+    <string name="settings_reset_progress">Reset progress</string>
+    <string name="reset_progress_user_message">Successfully reset</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>

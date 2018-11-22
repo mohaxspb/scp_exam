@@ -48,9 +48,9 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun getAccessToken(): String? = preferences.getString(Key.ACCESS_TOKEN, null)
 
-    fun setAccessToken(accessToken: String) = preferences.edit().putString(Key.ACCESS_TOKEN, accessToken).apply()
+    fun setAccessToken(accessToken: String?) = preferences.edit().putString(Key.ACCESS_TOKEN, accessToken).apply()
 
-    fun setRefreshToken(testRefreshToken: String) {
+    fun setRefreshToken(testRefreshToken: String?) {
         preferences.edit().putString(Key.REFRESH_TOKEN, testRefreshToken).apply()
     }
 

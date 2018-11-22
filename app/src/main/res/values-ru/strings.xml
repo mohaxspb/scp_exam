@@ -86,7 +86,15 @@
     <string name="fingerprint_access_disabled">Вход по отпечатку пальца отключён</string>
     <string name="dialog_fingerprint_enable_title">Подтвердите включение входа по отпечатку</string>
     <string name="dialog_fingerprint_disable_title">Подтвердите отключение входа по отпечатку</string>
-
+    <string name="settings_logout">Разлогиниться</string>
+    <string name="chat_action_skip_auth">Пропустить авторизацию</string>
+    <string name="logout">Подтвердите выход</string>
+    <string name="OK">Да</string>
+    <string name="cancel">Отмена</string>
+    <string name="resetProgress">Сбросить игровой прогресс?</string>
+    <string name="settings_reset_progress">Сбросить прогресс</string>
+    <string name="reset_progress_user_message">Прогресс сброшен</string>
+    <string name="message_auth_suggestion">Прежде чем вы начнете, можете залогиниться. Таким образом, ваш прогресс будет сохранен на нпшем сервере, и вы сможете сравнить свой прогресс с другими игроками. Конечно, вы можете сделать это позже из настроек игры. Пожалуйста, выберите:</string>
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>
         <item>Мы получили ваш запрос на повышение квалификации.</item>
