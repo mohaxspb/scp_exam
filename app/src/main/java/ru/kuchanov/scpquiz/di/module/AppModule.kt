@@ -11,7 +11,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
@@ -119,8 +118,8 @@ class AppModule(context: Context) : Module() {
                                 preferenceManager.getRefreshToken()!!
                         )
                                 .blockingGet()
-                        preferenceManager.setAccessToken(tokenResponse.accessToken!!)
-                        preferenceManager.setRefreshToken(tokenResponse.refreshToken!!)
+                        preferenceManager.setAccessToken(tokenResponse.accessToken)
+                        preferenceManager.setRefreshToken(tokenResponse.refreshToken)
                         request = request
                                 .newBuilder()
                                 .header(

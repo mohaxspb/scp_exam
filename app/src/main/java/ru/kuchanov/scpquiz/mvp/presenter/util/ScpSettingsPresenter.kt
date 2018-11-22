@@ -95,8 +95,11 @@ class ScpSettingsPresenter @Inject constructor(
         preferences.setRefreshToken(null)
         preferences.setUserPassword(null)
         compositeDisposable.add(appDatabase.userDao().getOneByRole(UserRole.PLAYER)
-                .map { user -> user.score = 0 }
-                .toFlowable()
+                .map { user ->
+                    run { user.score = 0 }
+                    appDatabase.userDao().update(user)
+                    Timber.d("USER : %s", user)
+                }
                 .flatMap { appDatabase.finishedLevelsDao().getAfterFifthByAsc() }
                 .map { finishedLevels ->
                     finishedLevels.forEach { finishedLevel: FinishedLevel ->
@@ -105,14 +108,20 @@ class ScpSettingsPresenter @Inject constructor(
                             finishedLevel.scpNumberFilled = false
                             finishedLevel.nameRedundantCharsRemoved = false
                             finishedLevel.numberRedundantCharsRemoved = false
+
+                            // ушёл в рекурсию
+                            // D/GamePresenter$loadLevel: quiz:173
+                            //    translationTexts:[Секрет Джеки, Каплеглазики]
                         }
+                        appDatabase.finishedLevelsDao().update(finishedLevel)
+                        Timber.d("FinishedLevels : %s", finishedLevels)
                     }
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                        onComplete = { router.newRootScreen(Constants.Screens.ENTER) },
-                        onError = { viewState.showMessage("Error") }
+                        onSuccess = { router.newRootScreen(Constants.Screens.ENTER) },
+                        onError = { Timber.e(it) }
                 ))
     }
 
