@@ -74,6 +74,8 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
                 myPreferenceManager
         )
 
+
+
         //todo move to delegate
         val bitmap = BitmapUtils.fileToBitmap("${activity?.cacheDir}/${Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME}.png")
 

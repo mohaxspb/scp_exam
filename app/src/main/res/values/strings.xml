@@ -110,6 +110,7 @@
     <string name="resetProgress">Reset your game progress?</string>
     <string name="settings_reset_progress">Reset progress</string>
     <string name="reset_progress_user_message">Successfully reset</string>
+    <string name="settings_success_auth">You are successfully logged in</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>
