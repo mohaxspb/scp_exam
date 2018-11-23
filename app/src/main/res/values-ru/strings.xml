@@ -95,6 +95,7 @@
     <string name="settings_reset_progress">Сбросить прогресс</string>
     <string name="reset_progress_user_message">Прогресс сброшен</string>
     <string name="message_auth_suggestion">Прежде чем вы начнете, можете залогиниться. Таким образом, ваш прогресс будет сохранен на нпшем сервере, и вы сможете сравнить свой прогресс с другими игроками. Конечно, вы можете сделать это позже из настроек игры. Пожалуйста, выберите:</string>
+    <string name="settings_success_auth">Вы успешно авторизировались</string>
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>
         <item>Мы получили ваш запрос на повышение квалификации.</item>

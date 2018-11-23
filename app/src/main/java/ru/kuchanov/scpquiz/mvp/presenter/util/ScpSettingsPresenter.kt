@@ -2,6 +2,7 @@ package ru.kuchanov.scpquiz.mvp.presenter.util
 
 import android.annotation.TargetApi
 import android.app.Application
+import android.content.Intent
 import android.os.Build
 import com.arellomobile.mvp.InjectViewState
 import com.google.android.gms.ads.MobileAds
@@ -10,12 +11,16 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.db.UserRole
+import ru.kuchanov.scpquiz.mvp.AuthPresenter
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
+import ru.kuchanov.scpquiz.ui.fragment.util.ScpSettingsFragment
+import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
 import ru.kuchanov.scpquiz.utils.IntentUtils
 import ru.kuchanov.scpquiz.utils.security.CryptoUtils
 import ru.kuchanov.scpquiz.utils.security.FingerprintUtils
@@ -29,12 +34,21 @@ class ScpSettingsPresenter @Inject constructor(
         override var appContext: Application,
         override var preferences: MyPreferenceManager,
         override var router: ScpRouter,
-        override var appDatabase: AppDatabase
-) : BasePresenter<SettingsView>(appContext, preferences, router, appDatabase) {
+        override var appDatabase: AppDatabase,
+        var apiClient: ApiClient
+) : BasePresenter<SettingsView>(appContext, preferences, router, appDatabase), AuthPresenter<ScpSettingsFragment> {
+
+    override fun onAuthSuccess() {
+        preferences.setIntroDialogShown(true)
+        viewState.showMessage(R.string.settings_success_auth)
+    }
+
+    override lateinit var authDelegate: AuthDelegate<ScpSettingsFragment>
+
+    override fun getAuthView(): SettingsView = viewState
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-
         viewState.showLang(preferences.getLang())
         viewState.showSound(preferences.isSoundEnabled())
         viewState.showVibration(preferences.isVibrationEnabled())
@@ -197,5 +211,9 @@ class ScpSettingsPresenter @Inject constructor(
                 viewState.showFingerprint(true)
             }
         }
+    }
+
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        authDelegate.onActivityResult(requestCode, resultCode, data)
     }
 }

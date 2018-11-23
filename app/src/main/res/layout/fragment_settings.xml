@@ -1,197 +1,319 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@android:color/white"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/backgroundImageView"
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/foregroundImageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/bg_grey_transparent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/constraintScrollLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <android.support.constraint.Guideline
-        android:id="@+id/leftGuideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.25" />
+            <ImageView
+                android:id="@+id/backgroundImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
 
-    <android.support.constraint.Guideline
-        android:id="@+id/rightGuideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.75" />
+            <ImageView
+                android:id="@+id/foregroundImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/bg_grey_transparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/coinsLabelTextView"
-        style="@style/SettingsTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:background="?selectableItemBackground"
-        android:padding="@dimen/defaultMarginSmall"
-        android:text="@string/settings_coins"
-        app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
-        app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintTop_toTopOf="parent" />
+            <android.support.constraint.Guideline
+                android:id="@+id/leftGuideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.25" />
 
-    <ImageView
-        android:id="@+id/coinsImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?selectableItemBackgroundBorderless"
-        android:src="@drawable/ic_coin"
-        android:tint="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="@id/coinsLabelTextView"
-        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/coinsLabelTextView"
-        tools:ignore="ContentDescription" />
+            <android.support.constraint.Guideline
+                android:id="@+id/rightGuideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.75" />
 
-    <TextView
-        android:id="@+id/soundLabelTextView"
-        style="@style/SettingsTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:padding="@dimen/defaultMarginSmall"
-        android:text="@string/settings_sound"
-        android:visibility="gone"
-        app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
-        app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintTop_toBottomOf="@+id/coinsLabelTextView"
-        tools:visibility="visible" />
+            <TextView
+                android:id="@+id/coinsLabelTextView"
+                style="@style/SettingsTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="120dp"
+                android:background="?selectableItemBackground"
+                android:padding="@dimen/defaultMarginSmall"
+                android:text="@string/settings_coins"
+                app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+                app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/soundSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/soundLabelTextView"
-        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/soundLabelTextView"
-        tools:visibility="visible" />
+            <ImageView
+                android:id="@+id/coinsImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_coin"
+                android:tint="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="@id/coinsLabelTextView"
+                app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/coinsLabelTextView"
+                tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/languageLabelTextView"
-        style="@style/SettingsTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/defaultMarginSmall"
-        android:padding="@dimen/defaultMarginSmall"
-        android:text="@string/settings_language"
-        app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
-        app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintTop_toBottomOf="@id/soundLabelTextView" />
+            <TextView
+                android:id="@+id/soundLabelTextView"
+                style="@style/SettingsTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:padding="@dimen/defaultMarginSmall"
+                android:text="@string/settings_sound"
+                android:visibility="gone"
+                app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+                app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintTop_toBottomOf="@+id/coinsLabelTextView"
+                tools:visibility="visible" />
 
-    <ImageView
-        android:id="@+id/languageImageView"
-        android:layout_width="60dp"
-        android:layout_height="30dp"
-        android:layout_gravity="center_vertical"
-        android:scaleType="fitXY"
-        android:src="@drawable/ic_en"
-        app:layout_constraintBottom_toBottomOf="@id/languageLabelTextView"
-        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/languageLabelTextView"
-        tools:ignore="ContentDescription" />
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/soundSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/soundLabelTextView"
+                app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/soundLabelTextView"
+                tools:visibility="visible" />
 
-    <TextView
-        android:id="@+id/vibrateLabelTextView"
-        style="@style/SettingsTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/defaultMarginSmall"
-        android:padding="@dimen/defaultMarginSmall"
-        android:text="@string/settings_vibrate"
-        app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
-        app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintTop_toBottomOf="@+id/languageLabelTextView" />
+            <TextView
+                android:id="@+id/languageLabelTextView"
+                style="@style/SettingsTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/defaultMarginSmall"
+                android:padding="@dimen/defaultMarginSmall"
+                android:text="@string/settings_language"
+                app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+                app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintTop_toBottomOf="@id/soundLabelTextView" />
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/vibrateSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="@id/vibrateLabelTextView"
-        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/vibrateLabelTextView" />
+            <ImageView
+                android:id="@+id/languageImageView"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_en"
+                app:layout_constraintBottom_toBottomOf="@id/languageLabelTextView"
+                app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/languageLabelTextView"
+                tools:ignore="ContentDescription" />
 
-    <TextView
-        android:id="@+id/shareLabelTextView"
-        style="@style/SettingsTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/defaultMarginSmall"
-        android:background="?selectableItemBackground"
-        android:padding="@dimen/defaultMarginSmall"
-        android:text="@string/settings_share"
-        app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
-        app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintTop_toBottomOf="@id/vibrateLabelTextView" />
+            <TextView
+                android:id="@+id/vibrateLabelTextView"
+                style="@style/SettingsTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/defaultMarginSmall"
+                android:padding="@dimen/defaultMarginSmall"
+                android:text="@string/settings_vibrate"
+                app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+                app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintTop_toBottomOf="@+id/languageLabelTextView" />
 
-    <ImageView
-        android:id="@+id/shareImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:background="?selectableItemBackground"
-        android:src="@drawable/ic_share_white_24dp"
-        app:layout_constraintBottom_toBottomOf="@id/shareLabelTextView"
-        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/shareLabelTextView"
-        tools:ignore="ContentDescription" />
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/vibrateSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="@id/vibrateLabelTextView"
+                app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/vibrateLabelTextView" />
 
-    <TextView
-        android:id="@+id/fingerprintLabelTextView"
-        style="@style/SettingsTextStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/defaultMarginSmall"
-        android:gravity="center"
-        android:padding="@dimen/defaultMarginSmall"
-        android:text="@string/settings_fingerprint"
-        app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
-        app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintTop_toBottomOf="@+id/shareLabelTextView" />
+            <TextView
+                android:id="@+id/shareLabelTextView"
+                style="@style/SettingsTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/defaultMarginSmall"
+                android:background="?selectableItemBackground"
+                android:padding="@dimen/defaultMarginSmall"
+                android:text="@string/settings_share"
+                app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+                app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintTop_toBottomOf="@id/vibrateLabelTextView" />
 
-    <android.support.v7.widget.SwitchCompat
-        android:id="@+id/fingerprintSwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="@id/fingerprintLabelTextView"
-        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/fingerprintLabelTextView" />
+            <ImageView
+                android:id="@+id/shareImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_share_white_24dp"
+                app:layout_constraintBottom_toBottomOf="@id/shareLabelTextView"
+                app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/shareLabelTextView"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/fingerprintLabelTextView"
+                style="@style/SettingsTextStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/defaultMarginSmall"
+                android:gravity="center"
+                android:padding="@dimen/defaultMarginSmall"
+                android:text="@string/settings_fingerprint"
+                app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+                app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintTop_toBottomOf="@+id/shareLabelTextView" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/fingerprintSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                app:layout_constraintBottom_toBottomOf="@id/fingerprintLabelTextView"
+                app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/fingerprintLabelTextView" />
+
+            <TextView
+                android:id="@+id/logoutLabelTextView"
+                style="@style/SettingsTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/defaultMarginSmall"
+                android:background="?selectableItemBackground"
+                android:gravity="center"
+                android:padding="@dimen/defaultMargin"
+                android:text="@string/settings_logout"
+                app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+                app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintTop_toBottomOf="@+id/resetProgressLabelTextView" />
+
+            <ImageView
+                android:id="@+id/logoutImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_exit_to_app_white_24dp"
+                app:layout_constraintBottom_toBottomOf="@id/logoutLabelTextView"
+                app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/logoutLabelTextView"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/resetProgressLabelTextView"
+                style="@style/SettingsTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/defaultMarginSmall"
+                android:background="?selectableItemBackground"
+                android:gravity="center"
+                android:padding="@dimen/defaultMargin"
+                android:text="@string/settings_reset_progress"
+                app:layout_constraintBottom_toTopOf="@+id/logoutLabelTextView"
+                app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
+                app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintTop_toBottomOf="@+id/fingerprintLabelTextView" />
+
+            <ImageView
+                android:id="@+id/resetProgressImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="?selectableItemBackground"
+                android:src="@drawable/ic_autorenew_white_24dp"
+                app:layout_constraintBottom_toBottomOf="@id/resetProgressLabelTextView"
+                app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/resetProgressLabelTextView"
+                tools:ignore="ContentDescription" />
+
+            <LinearLayout
+                android:id="@+id/authIconsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@android:color/white"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/logoutLabelTextView">
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:id="@+id/vkImage"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_vk_icon"
+                    tools:ignore="ContentDescription" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:id="@+id/googleImage"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_google"
+                    tools:ignore="ContentDescription" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <ImageView
+                    android:id="@+id/faceBookImage"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_fb_icon"
+                    tools:ignore="ContentDescription" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+            </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
 
     <TextView
         android:id="@+id/privacyPolicyLabelTextView"
@@ -202,65 +324,7 @@
         android:background="?selectableItemBackground"
         android:gravity="center"
         android:padding="@dimen/defaultMargin"
-        android:text="@string/settings_privacy_policy"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toRightOf="parent"
-        app:layout_constraintRight_toLeftOf="parent" />
-
-    <TextView
-        android:id="@+id/logoutLabelTextView"
-        style="@style/SettingsTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/defaultMarginSmall"
-        android:background="?selectableItemBackground"
-        android:gravity="center"
-        android:padding="@dimen/defaultMargin"
-        android:text="@string/settings_logout"
-        app:layout_constraintLeft_toRightOf="parent"
-        app:layout_constraintRight_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/resetProgressLabelTextView" />
-
-    <ImageView
-        android:id="@+id/logoutImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:background="?selectableItemBackground"
-        android:src="@drawable/ic_exit_to_app_white_24dp"
-        app:layout_constraintBottom_toBottomOf="@id/logoutLabelTextView"
-        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/logoutLabelTextView"
-        tools:ignore="ContentDescription" />
-
-    <TextView
-        android:id="@+id/resetProgressLabelTextView"
-        style="@style/SettingsTextStyle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/defaultMarginSmall"
-        android:background="?selectableItemBackground"
-        android:gravity="center"
-        android:padding="@dimen/defaultMargin"
-        android:text="@string/settings_reset_progress"
-        app:layout_constraintBottom_toTopOf="@+id/logoutLabelTextView"
-        app:layout_constraintLeft_toRightOf="parent"
-        app:layout_constraintRight_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fingerprintLabelTextView" />
-
-    <ImageView
-        android:id="@+id/resetProgressImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:background="?selectableItemBackground"
-        android:src="@drawable/ic_autorenew_white_24dp"
-        app:layout_constraintBottom_toBottomOf="@id/resetProgressLabelTextView"
-        app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/resetProgressLabelTextView"
-        tools:ignore="ContentDescription" />
+        android:text="@string/settings_privacy_policy" />
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -298,4 +362,4 @@
 
     </FrameLayout>
 
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

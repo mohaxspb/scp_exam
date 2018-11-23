@@ -2,6 +2,7 @@ package ru.kuchanov.scpquiz.ui.fragment.util
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -31,6 +32,7 @@ import ru.kuchanov.scpquiz.di.module.SettingsModule
 import ru.kuchanov.scpquiz.mvp.presenter.util.ScpSettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
 import ru.kuchanov.scpquiz.ui.utils.DialogUtils
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.utils.BitmapUtils
@@ -59,6 +61,8 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
 
     override val modules: Array<Module> = arrayOf(SettingsModule())
 
+    private lateinit var authDelegate: AuthDelegate<ScpSettingsFragment>
+
     @InjectPresenter
     override lateinit var presenter: ScpSettingsPresenter
 
@@ -71,6 +75,15 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        authDelegate = AuthDelegate(
+                this,
+                presenter,
+                presenter.apiClient,
+                presenter.preferences
+        )
+        presenter.authDelegate = authDelegate
+        activity?.let { authDelegate.onViewCreated(it) }
 
         //todo move to delegate
         val bitmap = BitmapUtils.fileToBitmap("${activity?.cacheDir}/${Constants.SETTINGS_BACKGROUND_FILE_NAME}.png")
@@ -113,9 +126,28 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         resetProgressLabelTextView.setOnClickListener(onResetProgressClickListener)
         resetProgressImageView.setOnClickListener(onLogoutClickListener)
 
+        val onVkLoginClickListener: (View) -> Unit = { presenter.onVkLoginClicked() }
+        vkImage.setOnClickListener(onVkLoginClickListener)
+
+        val onFacebookLoginClickListener: (View) -> Unit = { presenter.onFacebookLoginClicked() }
+        faceBookImage.setOnClickListener(onFacebookLoginClickListener)
+
+        val onGoogleLoginClickListener: (View) -> Unit = { presenter.onGoogleLoginClicked() }
+        googleImage.setOnClickListener(onGoogleLoginClickListener)
+
         privacyPolicyLabelTextView.setOnClickListener { presenter.onPrivacyPolicyClicked() }
 
         toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        presenter.onActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        authDelegate.onPause()
     }
 
     @SuppressLint("InflateParams")
