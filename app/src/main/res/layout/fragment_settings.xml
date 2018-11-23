@@ -4,16 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@android:color/white"
+    android:layout_height="match_parent"
     android:clickable="true"
     android:focusable="true"
     android:orientation="vertical">
 
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:fitsSystemWindows="true"
+        app:elevation="0dp"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            app:contentInsetStart="0dp"
+            app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel" />
+
+    </android.support.design.widget.AppBarLayout>
+
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/constraintScrollLayout"
@@ -207,12 +228,12 @@
             <TextView
                 android:id="@+id/logoutLabelTextView"
                 style="@style/SettingsTextStyle"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/defaultMarginSmall"
+                android:layout_marginTop="@dimen/defaultMarginSmall"
                 android:background="?selectableItemBackground"
                 android:gravity="center"
-                android:padding="@dimen/defaultMargin"
+                android:padding="@dimen/defaultMarginSmall"
                 android:text="@string/settings_logout"
                 app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
                 app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
@@ -234,12 +255,12 @@
             <TextView
                 android:id="@+id/resetProgressLabelTextView"
                 style="@style/SettingsTextStyle"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/defaultMarginSmall"
+                android:layout_marginTop="@dimen/defaultMarginSmall"
                 android:background="?selectableItemBackground"
                 android:gravity="center"
-                android:padding="@dimen/defaultMargin"
+                android:padding="@dimen/defaultMarginSmall"
                 android:text="@string/settings_reset_progress"
                 app:layout_constraintBottom_toTopOf="@+id/logoutLabelTextView"
                 app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
@@ -259,93 +280,52 @@
                 app:layout_constraintTop_toTopOf="@+id/resetProgressLabelTextView"
                 tools:ignore="ContentDescription" />
 
-            <LinearLayout
-                android:id="@+id/authIconsLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:background="@android:color/white"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
+            <ImageView
+                android:id="@+id/vkImage"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_vk_icon"
+                app:layout_constraintBottom_toBottomOf="@id/googleImage"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/googleImage"
+                app:layout_constraintTop_toTopOf="@+id/googleImage"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/googleImage"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_google"
+                android:layout_marginTop="@dimen/defaultMarginSmall"
+                android:padding="@dimen/defaultMarginSmall"
+                android:gravity="center"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/logoutLabelTextView">
+                app:layout_constraintTop_toBottomOf="@+id/logoutLabelTextView"
+                tools:ignore="ContentDescription" />
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+            <ImageView
+                android:id="@+id/faceBookImage"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_fb_icon"
+                app:layout_constraintBottom_toBottomOf="@id/googleImage"
+                app:layout_constraintLeft_toRightOf="@+id/googleImage"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/googleImage"
+                tools:ignore="ContentDescription" />
 
-                <ImageView
-                    android:id="@+id/vkImage"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_vk_icon"
-                    tools:ignore="ContentDescription" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <ImageView
-                    android:id="@+id/googleImage"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_google"
-                    tools:ignore="ContentDescription" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <ImageView
-                    android:id="@+id/faceBookImage"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/ic_fb_icon"
-                    tools:ignore="ContentDescription" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-            </LinearLayout>
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 
     <TextView
         android:id="@+id/privacyPolicyLabelTextView"
-        style="@style/SettingsTextStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/defaultMarginSmall"
-        android:background="?selectableItemBackground"
         android:gravity="center"
         android:padding="@dimen/defaultMargin"
         android:text="@string/settings_privacy_policy" />
-
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:fitsSystemWindows="true"
-        app:elevation="0dp"
-        app:layout_constraintLeft_toRightOf="parent"
-        app:layout_constraintRight_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:fitsSystemWindows="true"
-            app:contentInsetStart="0dp"
-            app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel" />
-
-    </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
         android:id="@+id/progressView"

@@ -27,6 +27,7 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.DelegateLang
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LangViewModel
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.SettingsModule
 import ru.kuchanov.scpquiz.mvp.presenter.util.ScpSettingsPresenter
@@ -41,6 +42,7 @@ import ru.kuchanov.scpquiz.utils.security.FingerprintUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
+import javax.inject.Inject
 
 
 class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), SettingsView {
@@ -54,6 +56,9 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
             else -> R.drawable.ic_en
         }
     }
+
+    @Inject
+    lateinit var myPreferenceManager: MyPreferenceManager
 
     override val translucent = true
 
@@ -117,6 +122,20 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         val onShareClickListener: (View) -> Unit = { presenter.onShareClicked() }
         shareImageView.setOnClickListener(onShareClickListener)
         shareLabelTextView.setOnClickListener(onShareClickListener)
+
+        if (myPreferenceManager.getAccessToken() == null) {
+            logoutLabelTextView.visibility = GONE
+            logoutImageView.visibility = GONE
+            vkImage.visibility = VISIBLE
+            faceBookImage.visibility = VISIBLE
+            googleImage.visibility = VISIBLE
+        } else {
+            logoutLabelTextView.visibility = VISIBLE
+            logoutImageView.visibility = VISIBLE
+            vkImage.visibility = GONE
+            faceBookImage.visibility = GONE
+            googleImage.visibility = GONE
+        }
 
         val onLogoutClickListener: (View) -> Unit = { showLogoutDialog() }
         logoutLabelTextView.setOnClickListener(onLogoutClickListener)
