@@ -136,12 +136,13 @@ class GamePresenter @Inject constructor(
     }
 
     private fun showAuthChatActions() {
-        viewState.showChatMessage(appContext.getString(R.string.message_auth_suggestion), doctor)
+        viewState.showChatMessage(appContext.getString(R.string.message_auth_suggestion_game), doctor)
         viewState.showChatActions(generateAuthActions(), ChatActionsGroupType.AUTH)
     }
 
     private fun onSkipAuthAndNeverShowClicked() {
-        TODO()
+        preferences.setNeverShowAuth(true)
+
     }
 
     private fun onActionClicked(text: String, onCompleteAction: () -> Unit): (Int) -> Unit =
@@ -301,6 +302,10 @@ class GamePresenter @Inject constructor(
                     R.drawable.selector_chat_action_green,
                     Constants.SUGGESTION_PRICE_NUMBER
             )
+        }
+
+        if (!preferences.getNeverShowAuth() && preferences.getAccessToken() == null) {
+            showAuthChatActions()
         }
 
         val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_no)
