@@ -30,7 +30,6 @@ import ru.kuchanov.scpquiz.mvp.presenter.game.GamePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.GameView
 import ru.kuchanov.scpquiz.ui.BaseActivity
 import ru.kuchanov.scpquiz.ui.BaseFragment
-import ru.kuchanov.scpquiz.ui.fragment.intro.IntroDialogFragment
 import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
 import ru.kuchanov.scpquiz.ui.utils.ChatDelegate
 import ru.kuchanov.scpquiz.ui.utils.GlideApp

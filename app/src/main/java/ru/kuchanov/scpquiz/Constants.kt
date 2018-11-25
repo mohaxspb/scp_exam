@@ -30,7 +30,6 @@ object Constants {
     const val SKU_INAPP_DISABLE_ADS = "disable_ads_0718"
     const val COINS_FOR_LEVEL_UNLOCK = 5
 
-
     object Screens {
         const val ENTER = "ENTER"
         const val SETTINGS = "SETTINGS"

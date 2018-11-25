@@ -20,7 +20,6 @@ import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase
-import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
@@ -51,13 +50,10 @@ class GamePresenter @Inject constructor(
 
     override fun getAuthView(): GameView = viewState
 
-    private lateinit var doctor: User
-
-    private lateinit var player: User
-
     override fun onAuthSuccess() {
         preferences.setIntroDialogShown(true)
         viewState.showMessage(R.string.settings_success_auth)
+
     }
 
     override lateinit var authDelegate: AuthDelegate<GameFragment>
@@ -67,6 +63,8 @@ class GamePresenter @Inject constructor(
         const val PERIODIC_MESSAGES_PERIOD = 60L
         const val PERIODIC_SUGGESTIONS_INITIAL_DELAY = 90L
         const val PERIODIC_SUGGESTIONS_PERIOD = 180L
+        const val PERIODIC_GAME_AUTH_INITIAL_DELAY = 180L
+        const val PERIODIC_GAME_AUTH_PERIOD = 600L
     }
 
     enum class EnterType {
@@ -136,7 +134,7 @@ class GamePresenter @Inject constructor(
     }
 
     private fun showAuthChatActions() {
-        viewState.showChatMessage(appContext.getString(R.string.message_auth_suggestion_game), doctor)
+        viewState.showChatMessage(appContext.getString(R.string.message_auth_suggestion_game), quizLevelInfo.doctor)
         viewState.showChatActions(generateAuthActions(), ChatActionsGroupType.AUTH)
     }
 
@@ -148,7 +146,7 @@ class GamePresenter @Inject constructor(
     private fun onActionClicked(text: String, onCompleteAction: () -> Unit): (Int) -> Unit =
             { index ->
                 viewState.removeChatAction(index)
-                viewState.showChatMessage(text, player)
+                viewState.showChatMessage(text, quizLevelInfo.player)
 
                 onCompleteAction.invoke()
             }
@@ -199,6 +197,21 @@ class GamePresenter @Inject constructor(
                     viewState.showChatActions(generateSuggestions(), ChatActionsGroupType.SUGGESTIONS)
                 }
         )
+        if (!preferences.getNeverShowAuth() && preferences.getAccessToken() == null) {
+            periodicMessagesCompositeDisposable.add(Flowable.interval(
+                    PERIODIC_GAME_AUTH_INITIAL_DELAY,
+                    PERIODIC_GAME_AUTH_PERIOD,
+                    TimeUnit.SECONDS
+            )
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy {
+                        if (!preferences.getNeverShowAuth() && preferences.getAccessToken() == null) {
+                            showAuthChatActions()
+                        }
+                    }
+            )
+        }
     }
 
     private fun generateSuggestions(): List<ChatAction> {
@@ -302,10 +315,6 @@ class GamePresenter @Inject constructor(
                     R.drawable.selector_chat_action_green,
                     Constants.SUGGESTION_PRICE_NUMBER
             )
-        }
-
-        if (!preferences.getNeverShowAuth() && preferences.getAccessToken() == null) {
-            showAuthChatActions()
         }
 
         val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_no)
