@@ -1,6 +1,7 @@
 package ru.kuchanov.scpquiz.mvp.presenter.game
 
 import android.app.Application
+import android.content.Intent
 import android.graphics.Bitmap
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Completable
@@ -13,6 +14,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
@@ -22,8 +24,11 @@ import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
+import ru.kuchanov.scpquiz.mvp.AuthPresenter
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.GameView
+import ru.kuchanov.scpquiz.ui.fragment.game.GameFragment
+import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
@@ -38,14 +43,28 @@ class GamePresenter @Inject constructor(
         override var preferences: MyPreferenceManager,
         override var router: ScpRouter,
         override var appDatabase: AppDatabase,
-        private var gameInteractor: GameInteractor
-) : BasePresenter<GameView>(appContext, preferences, router, appDatabase) {
+        private var gameInteractor: GameInteractor,
+        var apiClient: ApiClient
+
+) : BasePresenter<GameView>(appContext, preferences, router, appDatabase), AuthPresenter<GameFragment> {
+
+    override fun getAuthView(): GameView = viewState
+
+    override fun onAuthSuccess() {
+        preferences.setIntroDialogShown(true)
+        viewState.showMessage(R.string.settings_success_auth)
+
+    }
+
+    override lateinit var authDelegate: AuthDelegate<GameFragment>
 
     companion object {
         const val PERIODIC_MESSAGES_INITIAL_DELAY = 30L
         const val PERIODIC_MESSAGES_PERIOD = 60L
         const val PERIODIC_SUGGESTIONS_INITIAL_DELAY = 90L
         const val PERIODIC_SUGGESTIONS_PERIOD = 180L
+        const val PERIODIC_GAME_AUTH_INITIAL_DELAY = 180L
+        const val PERIODIC_GAME_AUTH_PERIOD = 600L
     }
 
     enum class EnterType {
@@ -78,6 +97,59 @@ class GamePresenter @Inject constructor(
 
         loadLevel()
     }
+
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        authDelegate.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun generateAuthActions(): List<ChatAction> {
+        val chatActions = mutableListOf<ChatAction>()
+
+        val messageAuthFacebook = appContext.getString(R.string.chat_action_auth_facebook)
+        chatActions += ChatAction(
+                messageAuthFacebook,
+                onActionClicked(messageAuthFacebook) { onFacebookLoginClicked() },
+                R.drawable.selector_chat_action_accent
+        )
+        val messageAuthGoogle = appContext.getString(R.string.chat_action_auth_google)
+        chatActions += ChatAction(
+                messageAuthGoogle,
+                onActionClicked(messageAuthGoogle) { onGoogleLoginClicked() },
+                R.drawable.selector_chat_action_accent
+        )
+        val messageAuthVk = appContext.getString(R.string.chat_action_auth_vk)
+        chatActions += ChatAction(
+                messageAuthVk,
+                onActionClicked(messageAuthVk) { onVkLoginClicked() },
+                R.drawable.selector_chat_action_accent
+        )
+        val messageSkipAuthAndDontShowAgain = appContext.getString(R.string.chat_action_skip_auth_and_dont_show)
+        chatActions += ChatAction(
+                messageSkipAuthAndDontShowAgain,
+                onActionClicked(messageSkipAuthAndDontShowAgain) { onSkipAuthAndNeverShowClicked() },
+                R.drawable.selector_chat_action_accent
+        )
+
+        return chatActions
+    }
+
+    private fun showAuthChatActions() {
+        viewState.showChatMessage(appContext.getString(R.string.message_auth_suggestion_game), quizLevelInfo.doctor)
+        viewState.showChatActions(generateAuthActions(), ChatActionsGroupType.AUTH)
+    }
+
+    private fun onSkipAuthAndNeverShowClicked() {
+        preferences.setNeverShowAuth(true)
+
+    }
+
+    private fun onActionClicked(text: String, onCompleteAction: () -> Unit): (Int) -> Unit =
+            { index ->
+                viewState.removeChatAction(index)
+                viewState.showChatMessage(text, quizLevelInfo.player)
+
+                onCompleteAction.invoke()
+            }
 
     private fun sendPeriodicMessages() {
         if (periodicMessagesCompositeDisposable.isDisposed) {
@@ -125,6 +197,21 @@ class GamePresenter @Inject constructor(
                     viewState.showChatActions(generateSuggestions(), ChatActionsGroupType.SUGGESTIONS)
                 }
         )
+        if (!preferences.getNeverShowAuth() && preferences.getAccessToken() == null) {
+            periodicMessagesCompositeDisposable.add(Flowable.interval(
+                    PERIODIC_GAME_AUTH_INITIAL_DELAY,
+                    PERIODIC_GAME_AUTH_PERIOD,
+                    TimeUnit.SECONDS
+            )
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy {
+                        if (!preferences.getNeverShowAuth() && preferences.getAccessToken() == null) {
+                            showAuthChatActions()
+                        }
+                    }
+            )
+        }
     }
 
     private fun generateSuggestions(): List<ChatAction> {

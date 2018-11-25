@@ -46,6 +46,10 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun isAdsDisabled() = preferences.getBoolean(Key.ADS_DISABLED, false)
 
+    fun setNeverShowAuth(neverShowAuth: Boolean) = preferences.edit().putBoolean(Key.NEVER_SHOW_AUTH, neverShowAuth).apply()
+
+    fun getNeverShowAuth() = preferences.getBoolean(Key.NEVER_SHOW_AUTH, false)
+
     fun getAccessToken(): String? = preferences.getString(Key.ACCESS_TOKEN, null)
 
     fun setAccessToken(accessToken: String?) = preferences.edit().putString(Key.ACCESS_TOKEN, accessToken).apply()
@@ -61,15 +65,15 @@ class MyPreferenceManager @Inject constructor(context: Context) {
     fun isAlreadySuggestRateUs() = preferences.getBoolean(Key.SUGGEST_RATE_US, false)
 
     fun setAlreadySuggestRateUs(alreadySuggestRateUs: Boolean) = preferences.edit().putBoolean(
-        Key.SUGGEST_RATE_US,
-        alreadySuggestRateUs
+            Key.SUGGEST_RATE_US,
+            alreadySuggestRateUs
     ).apply()
 
     fun getLastFinishedLevelsNum() = preferences.getLong(Key.LAST_FINISHED_LEVELS_NUM, 0)
 
     fun setLastFinishedLevelsNum(lastFinishedLevelsNum: Long) = preferences.edit().putLong(
-        Key.LAST_FINISHED_LEVELS_NUM,
-        lastFinishedLevelsNum
+            Key.LAST_FINISHED_LEVELS_NUM,
+            lastFinishedLevelsNum
     ).apply()
 
     fun getUserPassword(): String? = preferences.getString(Key.USER_PASSWORD, null)
@@ -77,8 +81,8 @@ class MyPreferenceManager @Inject constructor(context: Context) {
     fun setUserPassword(password: String?) = preferences.edit().putString(Key.USER_PASSWORD, password).apply()
 
     fun setAppodealDescriptionShown(shown: Boolean) = preferences.edit().putBoolean(
-        Key.APPODEAL_DESCRIPTION_SHOWN,
-        shown
+            Key.APPODEAL_DESCRIPTION_SHOWN,
+            shown
     ).apply()
 
     fun isAppodealDescriptionShown() = preferences.getBoolean(Key.APPODEAL_DESCRIPTION_SHOWN, false)

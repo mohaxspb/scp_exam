@@ -107,6 +107,7 @@ class ScpSettingsPresenter @Inject constructor(
         preferences.setAccessToken(null)
         preferences.setRefreshToken(null)
         preferences.setUserPassword(null)
+        preferences.setNeverShowAuth(false)
         compositeDisposable.add(appDatabase.userDao().getOneByRole(UserRole.PLAYER)
                 .map { user ->
                     user.score = 0
