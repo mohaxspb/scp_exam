@@ -140,7 +140,6 @@ class GamePresenter @Inject constructor(
 
     private fun onSkipAuthAndNeverShowClicked() {
         preferences.setNeverShowAuth(true)
-
     }
 
     private fun onActionClicked(text: String, onCompleteAction: () -> Unit): (Int) -> Unit =
