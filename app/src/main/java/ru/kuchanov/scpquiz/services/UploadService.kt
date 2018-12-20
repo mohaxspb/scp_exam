@@ -21,6 +21,8 @@ import ru.kuchanov.scpquiz.ui.activity.MainActivity
 import timber.log.Timber
 import toothpick.Toothpick
 import javax.inject.Inject
+import android.app.NotificationManager
+import android.content.Context
 
 
 class UploadService : Service() {
@@ -54,7 +56,8 @@ class UploadService : Service() {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Scp quiz")
                 .setContentText("Downloading data")
-                .setContentIntent(pendingIntent).build()
+                .setContentIntent(pendingIntent)
+                .build()
 
         startForeground(1337, notification)
     }
@@ -78,6 +81,8 @@ class UploadService : Service() {
                         onError = { error: Throwable -> Timber.e(error) },
                         onComplete = {
                             Timber.d("onComplete SERVICE")
+                            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                            notificationManager.cancel(1337)
                             stopForeground(true)
                         }
                 )
