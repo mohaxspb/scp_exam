@@ -71,26 +71,45 @@ class UploadService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         Timber.d("Service started")
-        Maybe.fromCallable { if (appDatabase.quizDao().getCount() == 0L) null else true }
+        Maybe
+                .fromCallable {
+                    if (appDatabase.quizDao().getCount() == 0L) {
+                        //null indicates `NO VALUE IN REACTIVE SOURCE`
+                        //so chain will complete with `onComplete` event.
+                        null
+                    } else {
+                        //some value will cause chain to process
+                        //so it will complete with onError or onSuccess event.
+                        //onComplete event will never fired
+                        true
+                    }
+                }
                 .flatMap { apiClient.getNwQuizList().toMaybe() }
                 .map { quizes -> quizes.filter { it.approved } }
-                .map { quizes -> quizes.sortedBy { it.id } }.map { quizes ->
-                    appDatabase.quizDao().insertQuizesWithQuizTranslations(
-                            quizConverter.convertCollection(
-                                    quizes,
-                                    quizConverter::convert
+                .map { quizes -> quizes.sortedBy { it.id } }
+                .map { quizes ->
+                    appDatabase
+                            .quizDao()
+                            .insertQuizesWithQuizTranslations(
+                                    quizConverter.convertCollection(
+                                            quizes,
+                                            quizConverter::convert
+                                    )
                             )
-                    )
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(mainThread())
                 .subscribeBy(
+                        onSuccess = {
+                            Timber.d("onSuccess: ${it.size} quizes inserted")
+                            stopServiceAndRemoveNotification()
+                        },
                         onError = { error: Throwable ->
-                            Timber.e(error)
+                            Timber.e(error, "onError while update quizes from server")
                             stopServiceAndRemoveNotification()
                         },
                         onComplete = {
-                            Timber.d("onComplete SERVICE")
+                            Timber.d("onComplete")
                             stopServiceAndRemoveNotification()
                         }
                 )
