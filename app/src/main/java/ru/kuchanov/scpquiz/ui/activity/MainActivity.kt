@@ -2,8 +2,10 @@ package ru.kuchanov.scpquiz.ui.activity
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
+import android.support.v4.content.ContextCompat
 import com.afollestad.materialdialogs.MaterialDialog
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
@@ -15,6 +17,7 @@ import ru.kuchanov.scpquiz.di.module.MainActivityModule
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.presenter.activity.MainPresenter
 import ru.kuchanov.scpquiz.mvp.view.activity.MainView
+import ru.kuchanov.scpquiz.services.UploadService
 import ru.kuchanov.scpquiz.ui.BaseActivity
 import ru.kuchanov.scpquiz.ui.fragment.game.GameFragment
 import ru.kuchanov.scpquiz.ui.fragment.game.LevelsFragment
@@ -147,5 +150,11 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
     override fun startPurchase() {
         Timber.d("startPurchase")
         billingDelegate.startPurchaseFlow(Constants.SKU_INAPP_DISABLE_ADS)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val serviceIntent = Intent(this, UploadService::class.java)
+        ContextCompat.startForegroundService(this, serviceIntent)
     }
 }

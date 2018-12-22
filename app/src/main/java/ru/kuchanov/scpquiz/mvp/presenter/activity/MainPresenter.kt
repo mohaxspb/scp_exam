@@ -19,12 +19,10 @@ import javax.inject.Inject
 
 @InjectViewState
 class MainPresenter @Inject constructor(
-    private var apiClient: ApiClient,
-    override var appContext: Application,
-    override var preferences: MyPreferenceManager,
-    override var router: ScpRouter,
-    override var appDatabase: AppDatabase,
-    private var quizConverter: QuizConverter
+        override var appContext: Application,
+        override var preferences: MyPreferenceManager,
+        override var router: ScpRouter,
+        override var appDatabase: AppDatabase
 ) : BasePresenter<MainView>(appContext, preferences, router, appDatabase) {
 
     override fun onFirstViewAttach() {
@@ -32,23 +30,5 @@ class MainPresenter @Inject constructor(
 
         router.newRootScreen(Constants.Screens.ENTER)
 
-        Maybe.fromCallable { if (appDatabase.quizDao().getCount() == 0L) null else true }
-                .flatMap { apiClient.getNwQuizList().toMaybe() }
-                .map { quizes -> quizes.filter { it.approved } }
-                .map { quizes -> quizes.sortedBy { it.id } }
-                .map { quizes ->
-                    appDatabase.quizDao().insertQuizesWithQuizTranslations(
-                        quizConverter.convertCollection(
-                            quizes,
-                            quizConverter::convert
-                        )
-                    )
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                    onError = { error: Throwable -> Timber.e(error) },
-                    onComplete = { Timber.d("onComplete") }
-                )
     }
 }

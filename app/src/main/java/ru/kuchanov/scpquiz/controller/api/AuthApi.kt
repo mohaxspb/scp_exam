@@ -15,8 +15,8 @@ interface AuthApi {
     fun getAccessToken(
             @Header("Authorization") testAuthorization: String,
             @Field("grant_type") testGrantType: String,
-            @Field("username") testUser: String,
-            @Field("password") testPassword: String
+            @Field("username") username: String? = null,
+            @Field("password") password: String? = null
     ): Single<TokenResponse>
 
     @FormUrlEncoded

@@ -2,9 +2,9 @@ package ru.kuchanov.scpquiz.di.module
 
 import android.arch.persistence.room.Room
 import android.content.Context
-import com.squareup.moshi.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.CertificatePinner
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
@@ -18,6 +18,7 @@ import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.api.AuthApi
 import ru.kuchanov.scpquiz.controller.api.QuizApi
 import ru.kuchanov.scpquiz.controller.api.ToolsApi
+import ru.kuchanov.scpquiz.controller.api.response.TokenResponse
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.db.migrations.Migrations
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
@@ -112,14 +113,28 @@ class AppModule(context: Context) : Module() {
                     var request = chain.request()
                     var response = chain.proceed(request)
                     if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                        val tokenResponse = authApi.getAccessTokenByRefreshToken(
-                                Credentials.basic(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_SECRET),
-                                Constants.Api.GRANT_TYPE_REFRESH_TOKEN,
-                                preferenceManager.getRefreshToken()!!
-                        )
-                                .blockingGet()
-                        preferenceManager.setAccessToken(tokenResponse.accessToken)
-                        preferenceManager.setRefreshToken(tokenResponse.refreshToken)
+                        val tokenResponse: TokenResponse
+                        //use implicit grant flow if there is no refresh token
+                        if (preferenceManager.getRefreshToken().isNullOrEmpty()) {
+                            tokenResponse = authApi
+                                    .getAccessToken(
+                                            Credentials.basic(BuildConfig.USER, BuildConfig.PASSWORD),
+                                            Constants.Api.GRANT_TYPE_CLIENT_CREDENTIALS
+                                    )
+                                    .blockingGet()
+                            preferenceManager.setAccessToken(tokenResponse.accessToken)
+                        } else {
+                            tokenResponse = authApi
+                                    .getAccessTokenByRefreshToken(
+                                            Credentials.basic(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_SECRET),
+                                            Constants.Api.GRANT_TYPE_REFRESH_TOKEN,
+                                            preferenceManager.getRefreshToken()!!
+                                    )
+                                    .blockingGet()
+                            preferenceManager.setAccessToken(tokenResponse.accessToken)
+                            preferenceManager.setRefreshToken(tokenResponse.refreshToken)
+                        }
+
                         request = request
                                 .newBuilder()
                                 .header(
