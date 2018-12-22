@@ -99,19 +99,11 @@ class UploadService : Service() {
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(mainThread())
+                .doFinally { stopServiceAndRemoveNotification() }
                 .subscribeBy(
-                        onSuccess = {
-                            Timber.d("onSuccess: ${it.size} quizes inserted")
-                            stopServiceAndRemoveNotification()
-                        },
-                        onError = { error: Throwable ->
-                            Timber.e(error, "onError while update quizes from server")
-                            stopServiceAndRemoveNotification()
-                        },
-                        onComplete = {
-                            Timber.d("onComplete")
-                            stopServiceAndRemoveNotification()
-                        }
+                        onSuccess = { Timber.d("onSuccess: ${it.size} quizes inserted") },
+                        onError = { Timber.e(it, "onError while update quizes from server") },
+                        onComplete = { Timber.d("onComplete") }
                 )
         return Service.START_NOT_STICKY
     }
