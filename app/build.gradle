@@ -15,8 +15,6 @@ apply from: '../versioning.gradle'
 android {
     compileSdkVersion 28
 
-    testOptions.unitTests.includeAndroidResources = true
-
     defaultConfig {
         applicationId "ru.kuchanov.scpquiz"
         minSdkVersion 19
@@ -35,8 +33,6 @@ android {
                 arg("room.schemaLocation", "$projectDir/schemas".toString())
             }
         }
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -286,20 +282,14 @@ dependencies {
     //google
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
     //facebook
-//    implementation 'com.facebook.android:facebook-android-sdk:4.24.0'
     implementation 'com.facebook.android:facebook-login:4.38.1'
     //vk
     implementation 'com.vk:androidsdk:1.6.9'
 
     //testing
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-core:2.8.9'
-
-    testImplementation "org.robolectric:robolectric:4.0.1"
-    testImplementation "org.robolectric:multidex:3.4.2"
-
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation "com.android.support:support-annotations:$supportLibraryVersion"
+    testImplementation('com.android.support.test:runner:1.0.2')
+    testImplementation('com.android.support.test:rules:1.0.2')
 }
 //google
 apply plugin: 'com.google.gms.google-services'

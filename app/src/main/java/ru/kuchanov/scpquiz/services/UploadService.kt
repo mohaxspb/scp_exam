@@ -19,8 +19,8 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.di.Di
-import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.QuizConverter
+import ru.kuchanov.scpquiz.model.util.QuizFilter
 import ru.kuchanov.scpquiz.ui.activity.MainActivity
 import ru.kuchanov.scpquiz.utils.createNotificationChannel
 import timber.log.Timber
@@ -42,8 +42,10 @@ class UploadService : Service() {
     lateinit var apiClient: ApiClient
     @Inject
     lateinit var quizConverter: QuizConverter
+    @Inject
+    lateinit var quizFilter: QuizFilter
 
-    lateinit var notificationManager: NotificationManager
+    private lateinit var notificationManager: NotificationManager
 
     override fun onBind(intent: Intent): IBinder {
         throw UnsupportedOperationException("Not yet implemented")
@@ -86,49 +88,8 @@ class UploadService : Service() {
                     }
                 }
                 .flatMap { apiClient.getNwQuizList().toMaybe() }
-//                //remove not approved quizes
-//                .map { quizes -> quizes.filter { it.approved } }
-//                //remove quizes with no approved translations
-//                .map { quizes ->
-//                    quizes.filter { quiz ->
-//                        quiz.quizTranslations.any { it.approved }
-//                    }
-//                }
-//                //remove not approved translations
-//                .map { quizes ->
-//                    quizes.map { quiz ->
-//                        quiz.apply {
-//                            quizTranslations = quizTranslations
-//                                    .filter { it.approved }
-//                                    .toMutableList()
-//                        }
-//                    }
-//                }
-
-//                ////test...
-//                //remove not approved phrases
-//                .map { quizes ->
-//                    quizes.map { quiz ->
-//                        quiz.apply {
-//                            quizTranslations.map {
-//
-//                            }
-//                        }
-//                    }
-//                }
-
-                .map { filterQuizes(it) }
-
+                .map { quizFilter.filterQuizes(it) }
                 .map { quizes -> quizes.sortedBy { it.id } }
-
-//                .flatMap { quizes -> Maybe.from }
-//                .flatMap {
-//                    Observable
-//                            .fromIterable(it)
-//                            .flatMap { Observable.fromIterable(it.quizTranslations) }
-//                            .flatMap { Observable.fromIterable(it.quizTranslationPhrases) }
-//                }
-
                 .doOnSuccess { quizes ->
                     appDatabase
                             .quizDao()
@@ -148,47 +109,6 @@ class UploadService : Service() {
                         onComplete = { Timber.d("onComplete") }
                 )
         return Service.START_NOT_STICKY
-    }
-
-    /**
-     * remove all quizes which not approved
-     * remove all quizes with no approved translations
-     * remove all translation which not approved
-     * remove all translations with no approved phrases
-     * remove all phrases which not approved
-     */
-    private fun filterQuizes(quizes: List<NwQuiz>): List<NwQuiz> {
-        var filteredQuizes = quizes.toMutableList()
-
-        //remove all phrases which not approved
-        filteredQuizes.forEach { quiz ->
-            quiz.quizTranslations.map { translation ->
-                translation.apply {
-                    quizTranslationPhrases = quizTranslationPhrases
-                            .filter { it.approved }
-                            .toMutableList()
-                }
-            }
-        }
-        //remove all translations with no approved phrases
-        filteredQuizes.forEach { quiz ->
-            quiz.quizTranslations = quiz.quizTranslations
-                    .filter { it.quizTranslationPhrases.isNotEmpty() }
-                    .toMutableList()
-        }
-        //remove all translation which not approved
-        filteredQuizes.forEach { quiz ->
-            quiz.quizTranslations = quiz.quizTranslations
-                    .filter { it.approved }
-                    .toMutableList()
-        }
-        //remove all quizes with no approved translations
-        filteredQuizes = filteredQuizes.filter { it.quizTranslations.isNotEmpty() }.toMutableList()
-
-        //remove all quizes which not approved
-        filteredQuizes = filteredQuizes.filter { it.approved }.toMutableList()
-
-        return filteredQuizes
     }
 
     private fun stopServiceAndRemoveNotification() {

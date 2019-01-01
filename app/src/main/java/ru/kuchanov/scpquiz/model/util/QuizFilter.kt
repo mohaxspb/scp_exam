@@ -37,10 +37,14 @@ class QuizFilter {
                     .toMutableList()
         }
         //remove all quizes with no approved translations
-        filteredQuizes = filteredQuizes.filter { it.quizTranslations.isNotEmpty() }.toMutableList()
+        filteredQuizes = filteredQuizes
+                .filter { it.quizTranslations.isNotEmpty() }
+                .toMutableList()
 
         //remove all quizes which not approved
-        filteredQuizes = filteredQuizes.filter { it.approved }.toMutableList()
+        filteredQuizes = filteredQuizes
+                .filter { it.approved }
+                .toMutableList()
 
         return filteredQuizes
     }
