@@ -20,6 +20,7 @@ import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.model.api.QuizConverter
+import ru.kuchanov.scpquiz.model.util.QuizFilter
 import ru.kuchanov.scpquiz.ui.activity.MainActivity
 import ru.kuchanov.scpquiz.utils.createNotificationChannel
 import timber.log.Timber
@@ -41,8 +42,10 @@ class UploadService : Service() {
     lateinit var apiClient: ApiClient
     @Inject
     lateinit var quizConverter: QuizConverter
+    @Inject
+    lateinit var quizFilter: QuizFilter
 
-    lateinit var notificationManager: NotificationManager
+    private lateinit var notificationManager: NotificationManager
 
     override fun onBind(intent: Intent): IBinder {
         throw UnsupportedOperationException("Not yet implemented")
@@ -85,9 +88,9 @@ class UploadService : Service() {
                     }
                 }
                 .flatMap { apiClient.getNwQuizList().toMaybe() }
-                .map { quizes -> quizes.filter { it.approved } }
+                .map { quizFilter.filterQuizes(it) }
                 .map { quizes -> quizes.sortedBy { it.id } }
-                .map { quizes ->
+                .doOnSuccess { quizes ->
                     appDatabase
                             .quizDao()
                             .insertQuizesWithQuizTranslations(

@@ -24,6 +24,7 @@ import ru.kuchanov.scpquiz.controller.db.migrations.Migrations
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.api.QuizConverter
+import ru.kuchanov.scpquiz.model.util.QuizFilter
 import ru.terrakok.cicerone.Cicerone
 import ru.terrakok.cicerone.NavigatorHolder
 import timber.log.Timber
@@ -50,8 +51,9 @@ class AppModule(context: Context) : Module() {
                         .build()
         )
 
-        //models converter
+        //models utils
         bind(QuizConverter::class.java)
+        bind(QuizFilter::class.java)
 
         //json
         val moshi = Moshi.Builder()
