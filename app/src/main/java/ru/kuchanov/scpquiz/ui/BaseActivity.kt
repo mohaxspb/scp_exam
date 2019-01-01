@@ -79,6 +79,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
                     fragment.onActivityResult(requestCode, resultCode, data)
                 }
             }
+
             override fun onError(error: VKError) {}
         })
         super.onActivityResult(requestCode, resultCode, data)
@@ -97,6 +98,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
      * and contains installed [modules]
      */
     val scope: Scope by lazy {
+        @Suppress("LocalVariableName")
         val _scope = Toothpick.openScopes(Di.Scope.APP, *scopes)
         _scope.installModules(SmoothieSupportActivityModule(this), *modules)
         _scope
@@ -168,11 +170,6 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 
         Appodeal.muteVideosIfCallsMuted(true)
         Appodeal.setRewardedVideoCallbacks(object : MyRewardedVideoCallbacks() {
-//            override fun onRewardedVideoFinished(p0: Double, p1: String?) {
-//                super.onRewardedVideoFinished(p0, p1)
-//                Timber.d("onRewardedVideoFinished: $p0, $p1")
-//                presenter.onRewardedVideoFinished()
-//            }
 
             override fun onRewardedVideoClosed(p0: Boolean) {
                 super.onRewardedVideoClosed(p0)

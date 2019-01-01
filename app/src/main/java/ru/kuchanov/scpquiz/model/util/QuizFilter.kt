@@ -1,8 +1,9 @@
 package ru.kuchanov.scpquiz.model.util
 
 import ru.kuchanov.scpquiz.model.api.NwQuiz
+import javax.inject.Inject
 
-class QuizFilter {
+class QuizFilter @Inject constructor() {
 
     /**
      * remove all quizes which not approved
