@@ -4,6 +4,7 @@ import com.appodeal.ads.RewardedVideoCallbacks
 import timber.log.Timber
 
 open class MyRewardedVideoCallbacks : RewardedVideoCallbacks {
+
     override fun onRewardedVideoFinished(p0: Double, p1: String?) {
         Timber.d("onRewardedVideoFinished: $p0, $p1")
         //nothing to do
@@ -25,5 +26,9 @@ open class MyRewardedVideoCallbacks : RewardedVideoCallbacks {
     override fun onRewardedVideoShown() {
         Timber.d("onRewardedVideoShown")
         //nothing to do
+    }
+
+    override fun onRewardedVideoExpired() {
+        Timber.d("onRewardedVideoExpired")
     }
 }
