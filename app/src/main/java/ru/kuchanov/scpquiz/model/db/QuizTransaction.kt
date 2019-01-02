@@ -4,13 +4,15 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 
 @Entity
-data class Transaction(
+data class QuizTransaction(
+        //db
         @PrimaryKey
         val id: Long,
-        var quizId: Long,
+        //content
+        var quizId: Long? = null,
         val externalId: Long? = null,
-        val transactionType: TransactionType
-
+        val transactionType: TransactionType,
+        val coinsAmount: Long? = null
 )
 
 enum class TransactionType {
@@ -20,7 +22,7 @@ enum class TransactionType {
     NUMBER_WITH_PRICE,
     NUMBER_NO_PRICE,
     NUMBER_CHARS_REMOVED,
-    LEVEL_PASSED_FOR_COINS,
+    LEVEL_ENABLE_FOR_COINS,
     ADV_WATCHED,
     ADV_BUY_NEVER_SHOW
 }

@@ -4,6 +4,7 @@ import android.arch.persistence.room.Database
 import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import ru.kuchanov.scpquiz.controller.db.converter.MyDateConverter
+import ru.kuchanov.scpquiz.controller.db.converter.TransactionTypeConverter
 import ru.kuchanov.scpquiz.controller.db.converter.UserRoleConverter
 import ru.kuchanov.scpquiz.controller.db.dao.*
 import ru.kuchanov.scpquiz.model.db.*
@@ -16,13 +17,14 @@ import ru.kuchanov.scpquiz.model.db.*
             QuizTranslationPhrase::class,
             User::class,
             FinishedLevel::class,
-            Transaction::class
+            QuizTransaction::class
         ],
-        version = 2
+        version = 3
 )
 @TypeConverters(
         MyDateConverter::class,
-        UserRoleConverter::class
+        UserRoleConverter::class,
+        TransactionTypeConverter::class
 )
 abstract class AppDatabase : RoomDatabase() {
 

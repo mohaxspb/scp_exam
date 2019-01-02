@@ -2,20 +2,20 @@ package ru.kuchanov.scpquiz.controller.db.dao
 
 import android.arch.persistence.room.*
 import io.reactivex.Flowable
-import ru.kuchanov.scpquiz.model.db.Transaction
+import ru.kuchanov.scpquiz.model.db.QuizTransaction
 
 @Dao
 interface TransactionDao {
 
-    @Query("SELECT * FROM Transaction")
-    fun getAll(): Flowable<List<Transaction>>
+    @Query("SELECT * FROM QuizTransaction")
+    fun getAll(): Flowable<List<QuizTransaction>>
 
     @Insert
-    fun insert(transaction: Transaction): Long
+    fun insert(quizTransaction: QuizTransaction): Long
 
     @Update
-    fun update(transaction: Transaction): Int
+    fun update(quizTransaction: QuizTransaction): Int
 
     @Delete
-    fun delete(transaction: Transaction): Int
+    fun delete(quizTransaction: QuizTransaction): Int
 }

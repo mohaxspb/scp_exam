@@ -46,6 +46,7 @@ class AppModule(context: Context) : Module() {
                         "database"
                 )
                         .addMigrations(Migrations.MIGRATION_1_2)
+                        .addMigrations(Migrations.MIGRATION_2_3)
                         .build()
         )
 
