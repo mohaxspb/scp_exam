@@ -12,7 +12,7 @@ data class NwQuiz(
     //content
     val scpNumber: String,
     val imageUrl: String,
-    val quizTranslations: MutableList<NwQuizTranslation>,
+    var quizTranslations: MutableList<NwQuizTranslation>,
     //status
     val authorId: Long,
     val approved: Boolean,

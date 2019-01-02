@@ -167,30 +167,29 @@ dependencies {
     //google libs
     //WARNING!!!!!!!!111
     //do not update to 16.0.5!!!
-    implementation 'com.google.firebase:firebase-core:16.0.4'
-    implementation 'com.google.firebase:firebase-analytics:16.0.4'
-    implementation 'com.google.firebase:firebase-invites:16.0.4'
-    implementation 'com.google.firebase:firebase-ads:17.1.0'
+    implementation 'com.google.firebase:firebase-core:16.0.6'
+    implementation 'com.google.firebase:firebase-analytics:16.0.6'
+    implementation 'com.google.firebase:firebase-invites:16.0.6'
+    implementation 'com.google.firebase:firebase-ads:17.1.2'
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
 
     //appodeal
     implementation 'com.squareup.picasso:picasso:2.5.2'
-
     //for Inmobi
-    implementation name: 'adcolony-3.3.4', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-alphab', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-common', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-interstitial', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-interstitialvideo', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-mvdownloads', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-mvjscommon', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-mvnative', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-nativeex', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-playercommon', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-reward', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-videocommon', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-videofeeds', ext: 'aar'
-    implementation name: 'mobvista-8.11.0-videojs', ext: 'aar'
+    implementation name: 'adcolony-3.3.5', ext: 'aar'
+    implementation name: 'mobvista-9.0.0-alphab', ext: 'aar'
+    implementation name: 'mobvista-9.0.0-common', ext: 'aar'
+    implementation name: 'mobvista-9.0.0-interstitial', ext: 'aar'
+    implementation name: 'mobvista-9.0.0-interstitialvideo', ext: 'aar'
+    implementation name: 'mobvista-9.0.0-mtgdownloads', ext: 'aar'
+    implementation name: 'mobvista-9.0.0-mtgjscommon', ext: 'aar'
+    implementation name: 'mobvista-9.0.0-mtgnative', ext: 'aar'
+    implementation name: 'mobvista-9.0.0-nativeex', ext: 'aar'
+    implementation name: 'mobvista-9.0.0-playercommon', ext: 'aar'
+    implementation name: 'mobvista-9.0.0-reward', ext: 'aar'
+    implementation name: 'mobvista-9.0.0-videocommon', ext: 'aar'
+    implementation name: 'mobvista-9.0.0-videojs', ext: 'aar'
+    implementation name: 'ogury-3.0.22', ext: 'aar'
 
     // AppMetrica
     //we add it here and delete jar from appodeal
@@ -198,7 +197,7 @@ dependencies {
 
     //need for appodeal
     implementation 'com.google.android.gms:play-services-location:16.0.0'
-    implementation 'com.google.android.gms:play-services-ads:17.1.0'
+    implementation 'com.google.android.gms:play-services-ads:17.1.2'
 
     //fix evernote crash
     implementation 'com.google.android.gms:play-services-gcm:16.0.0'
@@ -226,7 +225,7 @@ dependencies {
 
     //rx
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.2'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.4'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
 
     //db
@@ -239,8 +238,8 @@ dependencies {
 
     // Retrofit
     implementation('com.squareup.retrofit2:retrofit:2.3.0') { exclude module: 'okhttp' }
-    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.11.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.4.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
 
@@ -252,7 +251,7 @@ dependencies {
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion"
 
     //adapter delegate
-    implementation 'com.hannesdorfmann:adapterdelegates3:3.0.1'
+    implementation 'com.hannesdorfmann:adapterdelegates3:3.1.0'
 
     //logs
     implementation 'com.jakewharton.timber:timber:4.7.1'
@@ -268,9 +267,6 @@ dependencies {
     implementation 'com.google.android:flexbox:1.0.0'
     implementation 'jp.wasabeef:blurry:2.1.1'
 
-    //adapter delegates
-    implementation 'com.hannesdorfmann:adapterdelegates3:3.0.1'
-
     // Optional. Play Install Referrer library for better attribution.
     implementation 'com.android.installreferrer:installreferrer:1.0'
 
@@ -284,10 +280,14 @@ dependencies {
     //google
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
     //facebook
-//    implementation 'com.facebook.android:facebook-android-sdk:4.24.0'
-    implementation 'com.facebook.android:facebook-login:4.38.0'
+    implementation 'com.facebook.android:facebook-login:4.38.1'
     //vk
     implementation 'com.vk:androidsdk:1.6.9'
+
+    //testing
+    testImplementation 'junit:junit:4.12'
+    testImplementation('com.android.support.test:runner:1.0.2')
+    testImplementation('com.android.support.test:rules:1.0.2')
 }
 //google
 apply plugin: 'com.google.gms.google-services'
