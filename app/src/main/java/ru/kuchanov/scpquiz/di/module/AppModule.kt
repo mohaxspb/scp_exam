@@ -97,7 +97,7 @@ class AppModule(context: Context) : Module() {
                 .certificatePinner(certPinner)
                 .addInterceptor(
                         HttpLoggingInterceptor { log -> Timber.tag("OkHttp").d(log) }
-                                .setLevel(HttpLoggingInterceptor.Level.NONE)
+                                .setLevel(HttpLoggingInterceptor.Level.BODY)
                 )
                 .addInterceptor { chain ->
                     var request = chain.request()
