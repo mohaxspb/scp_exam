@@ -7,7 +7,7 @@ import android.arch.persistence.room.PrimaryKey
 data class QuizTransaction(
         //db
         @PrimaryKey
-        val id: Long,
+        val id: Long? = null,
         //content
         var quizId: Long? = null,
         val externalId: Long? = null,

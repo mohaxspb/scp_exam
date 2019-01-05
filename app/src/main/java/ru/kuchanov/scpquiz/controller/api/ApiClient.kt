@@ -8,6 +8,9 @@ import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.api.response.TokenResponse
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.api.NwQuiz
+import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
+import ru.kuchanov.scpquiz.model.db.QuizTransaction
+import ru.kuchanov.scpquiz.model.db.TransactionType
 import java.net.HttpURLConnection
 import javax.inject.Inject
 
@@ -16,6 +19,7 @@ class ApiClient @Inject constructor(
         private val toolsApi: ToolsApi,
         private val quizApi: QuizApi,
         private val authApi: AuthApi,
+        private val transactionApi: TransactionApi,
         private val preferences: MyPreferenceManager
 ) {
 
@@ -65,4 +69,27 @@ class ApiClient @Inject constructor(
                             BuildConfig.CLIENT_SECRET,
                             Constants.GAME
                     )
+
+    fun getNwQuizTransactionById(transactionId: Long): Single<NwQuizTransaction> =
+            transactionApi.getNwQuizTransactionById(
+                    Constants.Api.HEADER_PART_BEARER + preferences.getAccessToken(),
+                    transactionId
+            )
+
+    fun getNwQuizTransactionList(): Single<List<NwQuizTransaction>> =
+            transactionApi.getNwQuizTransactionList(Constants.Api.HEADER_PART_BEARER + preferences.getAccessToken())
+
+    fun addTransaction(quizId: Long?, typeTransaction: TransactionType, coinsAmount: Long?): Single<QuizTransaction> =
+            transactionApi.addTransaction(
+                    Constants.Api.HEADER_PART_BEARER + preferences.getAccessToken(),
+                    quizId,
+                    typeTransaction,
+                    coinsAmount
+            )
+
+    fun addAllTransactions(transactions: List<QuizTransaction>): Single<List<QuizTransaction>> =
+            transactionApi.addAllTransactions(
+                    Constants.Api.HEADER_PART_BEARER + preferences.getAccessToken(),
+                    transactions
+            )
 }
