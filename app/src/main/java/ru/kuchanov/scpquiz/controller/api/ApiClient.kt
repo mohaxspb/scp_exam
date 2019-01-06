@@ -78,14 +78,14 @@ class ApiClient @Inject constructor(
     fun getNwQuizTransactionList(): Single<List<NwQuizTransaction>> =
             transactionApi.getNwQuizTransactionList()
 
-    fun addTransaction(quizId: Long?, typeTransaction: TransactionType, coinsAmount: Int?): Single<QuizTransaction> =
+    fun addTransaction(quizId: Long?, typeTransaction: TransactionType, coinsAmount: Int?): Single<NwQuizTransaction> =
             transactionApi.addTransaction(
                     quizId,
                     typeTransaction,
                     coinsAmount
             )
 
-    fun addAllTransactions(transactions: List<QuizTransaction>): Single<List<QuizTransaction>> =
+    fun addAllTransactions(transactions: List<QuizTransaction>): Single<List<NwQuizTransaction>> =
             transactionApi.addAllTransactions(
                     transactions
             )

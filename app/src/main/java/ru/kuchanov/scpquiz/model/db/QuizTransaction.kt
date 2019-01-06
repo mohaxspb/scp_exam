@@ -24,7 +24,9 @@ enum class TransactionType {
     NUMBER_CHARS_REMOVED,
     LEVEL_ENABLE_FOR_COINS,
     ADV_WATCHED,
-    ADV_BUY_NEVER_SHOW
+    ADV_BUY_NEVER_SHOW,
+    UPDATE_SYNC
+    // енум для синхронизации всех очков юзера при скачивании новой версии
 }
 
 

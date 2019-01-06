@@ -22,11 +22,11 @@ interface TransactionApi {
             @Field("quizId") quizId: Long?,
             @Field("typeTransaction") typeTransaction: TransactionType,
             @Field("coinsAmount") coinsAmount: Int?
-    ): Single<QuizTransaction>
+    ): Single<NwQuizTransaction>
 
     @FormUrlEncoded
     @POST("transactions/addAll")
     fun addAllTransactions(
             @Field("transactions") transactions: List<QuizTransaction>
-    ): Single<List<QuizTransaction>>
+    ): Single<List<NwQuizTransaction>>
 }

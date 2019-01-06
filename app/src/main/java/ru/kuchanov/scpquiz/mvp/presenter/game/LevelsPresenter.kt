@@ -17,6 +17,7 @@ import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
+import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
 import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -168,17 +169,32 @@ class LevelsPresenter @Inject constructor(
                                 transactionType = TransactionType.LEVEL_ENABLE_FOR_COINS,
                                 coinsAmount = Constants.COINS_FOR_LEVEL_UNLOCK
                         )
-                        appDatabase.transactionDao().insert(quizTransaction)
-                        Timber.d("Transaction local DB: %s", quizTransaction)
+                        return@map appDatabase.transactionDao().insert(quizTransaction)
+                    }
+                    .flatMapCompletable { quizTransactionId ->
                         apiClient.addTransaction(
                                 levelViewModel.quiz.id,
                                 TransactionType.LEVEL_ENABLE_FOR_COINS,
                                 Constants.COINS_FOR_LEVEL_UNLOCK
                         )
+                                .doOnSuccess { nwQuizTransaction ->
+                                    appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                            quizTransactionId = quizTransactionId,
+                                            quizTransactionExternalId = nwQuizTransaction.id)
+                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                }
+                                .ignoreElement()
+                                .onErrorComplete()
                     }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe()
+                    .subscribeBy(
+                            onError = {
+                                Timber.e(it)
+                                viewState.showMessage(it.message ?: "Unexpected error")
+                            },
+                            onComplete = { Timber.d("Success transaction from Level Presenter") }
+                    )
         } else {
             viewState.showMessage(R.string.message_not_enough_coins_level_unlock)
         }
