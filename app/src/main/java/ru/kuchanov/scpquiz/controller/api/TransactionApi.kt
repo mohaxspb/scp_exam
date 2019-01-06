@@ -8,21 +8,17 @@ import ru.kuchanov.scpquiz.model.db.TransactionType
 
 interface TransactionApi {
 
-    @FormUrlEncoded
     @GET("transactions/{id}")
     fun getNwQuizTransactionById(
-            @Header("Authorization") authorization: String,
             @Path("id") transactionId: Long
     ): Single<NwQuizTransaction>
 
-    @FormUrlEncoded
     @GET("transactions/allByUserId")
-    fun getNwQuizTransactionList(@Header("Authorization") authorization: String): Single<List<NwQuizTransaction>>
+    fun getNwQuizTransactionList(): Single<List<NwQuizTransaction>>
 
     @FormUrlEncoded
     @POST("transactions/add")
     fun addTransaction(
-            @Header("Authorization") authorization: String,
             @Field("quizId") quizId: Long?,
             @Field("typeTransaction") typeTransaction: TransactionType,
             @Field("coinsAmount") coinsAmount: Long?
@@ -31,7 +27,6 @@ interface TransactionApi {
     @FormUrlEncoded
     @POST("transactions/addAll")
     fun addAllTransactions(
-            @Header("Authorization") authorization: String,
             @Field("transactions") transactions: List<QuizTransaction>
     ): Single<List<QuizTransaction>>
 }
