@@ -11,7 +11,7 @@ data class User(
     //content
     val name: String,
     val avatarUrl: String? = null,
-    var score: Int = 0,
+    var score: Int = 500,
     val role: UserRole
 )
 

@@ -12,7 +12,7 @@ data class QuizTransaction(
         var quizId: Long? = null,
         val externalId: Long? = null,
         val transactionType: TransactionType,
-        val coinsAmount: Long? = null
+        val coinsAmount: Int? = null
 )
 
 enum class TransactionType {

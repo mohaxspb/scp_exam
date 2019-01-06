@@ -21,7 +21,7 @@ interface TransactionApi {
     fun addTransaction(
             @Field("quizId") quizId: Long?,
             @Field("typeTransaction") typeTransaction: TransactionType,
-            @Field("coinsAmount") coinsAmount: Long?
+            @Field("coinsAmount") coinsAmount: Int?
     ): Single<QuizTransaction>
 
     @FormUrlEncoded

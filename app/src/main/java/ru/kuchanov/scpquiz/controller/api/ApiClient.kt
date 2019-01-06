@@ -46,7 +46,7 @@ class ApiClient @Inject constructor(
                             ),
                             Constants.Api.GRANT_TYPE_CLIENT_CREDENTIALS
                     )
-                    .doOnSuccess { (accessToken) -> preferences.setAccessToken(accessToken!!) }
+                    .doOnSuccess { (accessToken) -> preferences.setAccessToken(accessToken) }
 
     fun getNwQuizList(): Single<List<NwQuiz>> =
             quizApi
@@ -78,7 +78,7 @@ class ApiClient @Inject constructor(
     fun getNwQuizTransactionList(): Single<List<NwQuizTransaction>> =
             transactionApi.getNwQuizTransactionList()
 
-    fun addTransaction(quizId: Long?, typeTransaction: TransactionType, coinsAmount: Long?): Single<QuizTransaction> =
+    fun addTransaction(quizId: Long?, typeTransaction: TransactionType, coinsAmount: Int?): Single<QuizTransaction> =
             transactionApi.addTransaction(
                     quizId,
                     typeTransaction,

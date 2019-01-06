@@ -35,8 +35,8 @@ class IntroDialogPresenter @Inject constructor(
         override var preferences: MyPreferenceManager,
         override var router: ScpRouter,
         override var appDatabase: AppDatabase,
-        var apiClient: ApiClient
-) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase), AuthPresenter<IntroDialogFragment> {
+        public override var apiClient: ApiClient
+) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase, apiClient), AuthPresenter<IntroDialogFragment> {
 
     override fun onAuthSuccess() {
         preferences.setIntroDialogShown(true)
