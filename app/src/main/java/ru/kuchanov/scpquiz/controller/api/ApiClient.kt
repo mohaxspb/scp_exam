@@ -72,16 +72,14 @@ class ApiClient @Inject constructor(
 
     fun getNwQuizTransactionById(transactionId: Long): Single<NwQuizTransaction> =
             transactionApi.getNwQuizTransactionById(
-                    Constants.Api.HEADER_PART_BEARER + preferences.getAccessToken(),
                     transactionId
             )
 
     fun getNwQuizTransactionList(): Single<List<NwQuizTransaction>> =
-            transactionApi.getNwQuizTransactionList(Constants.Api.HEADER_PART_BEARER + preferences.getAccessToken())
+            transactionApi.getNwQuizTransactionList()
 
     fun addTransaction(quizId: Long?, typeTransaction: TransactionType, coinsAmount: Long?): Single<QuizTransaction> =
             transactionApi.addTransaction(
-                    Constants.Api.HEADER_PART_BEARER + preferences.getAccessToken(),
                     quizId,
                     typeTransaction,
                     coinsAmount
@@ -89,7 +87,6 @@ class ApiClient @Inject constructor(
 
     fun addAllTransactions(transactions: List<QuizTransaction>): Single<List<QuizTransaction>> =
             transactionApi.addAllTransactions(
-                    Constants.Api.HEADER_PART_BEARER + preferences.getAccessToken(),
                     transactions
             )
 }
