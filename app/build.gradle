@@ -82,6 +82,8 @@ android {
             aaptOptions.cruncherEnabled = false
             resConfigs("ru", "xxhdpi")
         }
+        localUra{dimension "mode"}
+        localHome{dimension "mode"}
 
         applicationVariants.all { variant ->
             println("variantCore: " + variant.productFlavors[0].name)

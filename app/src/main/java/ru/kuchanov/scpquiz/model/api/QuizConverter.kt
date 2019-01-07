@@ -1,6 +1,7 @@
 package ru.kuchanov.scpquiz.model.api
 
 import ru.kuchanov.scpquiz.model.db.Quiz
+import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.QuizTranslation
 import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase
 import javax.inject.Inject
@@ -49,6 +50,13 @@ class QuizConverter @Inject constructor() {
         approverId = source.approverId,
         created = source.created,
         updated = source.updated
+    )
+
+    private fun convert(source:NwQuizTransaction) = QuizTransaction(
+            quizId = source.quizId,
+            externalId = source.id,
+            transactionType = source.quizTransactionType,
+            coinsAmount = source.coinsAmount
     )
 
 //    fun <T, W> convertCollection(collection: Iterable<T>, convertFunction: Function1<T, W>): List<W> {

@@ -111,9 +111,9 @@ class GameInteractor @Inject constructor(
             .onErrorReturn { Pair(null, null) }
             .toFlowable()
 
-    fun increaseScore(scoreToDecrease: Int): Completable = Completable.fromAction {
+    fun increaseScore(score: Int): Completable = Completable.fromAction {
         with(appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet()) {
-            score += scoreToDecrease
+            this.score += score
             appDatabase.userDao().update(this).toLong()
         }
     }

@@ -1,10 +1,13 @@
 package ru.kuchanov.scpquiz.controller.manager.monetization
 
+import android.arch.persistence.room.Database
 import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import com.android.billingclient.api.*
 import io.reactivex.BackpressureStrategy
+import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -14,8 +17,11 @@ import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.api.response.GOOGLE_SERVER_ERROR
 import ru.kuchanov.scpquiz.controller.api.response.INVALID
 import ru.kuchanov.scpquiz.controller.api.response.VALID
+import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
+import ru.kuchanov.scpquiz.model.db.QuizTransaction
+import ru.kuchanov.scpquiz.model.db.TransactionType
 import ru.kuchanov.scpquiz.mvp.presenter.monetization.MonetizationPresenter
 import ru.kuchanov.scpquiz.mvp.view.monetization.MonetizationView
 import timber.log.Timber
@@ -24,9 +30,9 @@ import javax.inject.Inject
 
 @SuppressWarnings("Injectable")
 class BillingDelegate(
-    val activity: AppCompatActivity?,
-    val view: MonetizationView?,
-    val presenter: MonetizationPresenter?
+        val activity: AppCompatActivity?,
+        val view: MonetizationView?,
+        val presenter: MonetizationPresenter?
 ) : PurchasesUpdatedListener {
 
     @Inject
@@ -37,6 +43,9 @@ class BillingDelegate(
 
     @Inject
     lateinit var context: Context
+
+    @Inject
+    lateinit var appDatabase: AppDatabase
 
     private var billingClient: BillingClient = BillingClient.newBuilder(activity!!).setListener(this).build()
 
@@ -86,38 +95,58 @@ class BillingDelegate(
         if (responseCode == BillingClient.BillingResponse.OK && purchases != null) {
             for (purchase in purchases) {
                 apiClient.validateInApp(purchase.sku, purchase.purchaseToken)
+                        .flatMap {
+                            when (it) {
+                                VALID -> return@flatMap Single.just(it)
+                                INVALID -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.purchase_not_valid)))
+                                GOOGLE_SERVER_ERROR -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.purchase_validation_google_error)))
+                                else -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.error_buy)))
+                            }
+                        }
+                        .map {
+                            val quizTransaction = QuizTransaction(
+                                    quizId = null,
+                                    transactionType = TransactionType.ADV_BUY_NEVER_SHOW,
+                                    coinsAmount = Constants.COINS_FOR_ADS_DISABLE
+                            )
+                            return@map appDatabase.transactionDao().insert(quizTransaction)
+                        }
+                        .flatMapCompletable { quizTransactionId ->
+                            apiClient.addTransaction(
+                                    null,
+                                    TransactionType.ADV_BUY_NEVER_SHOW,
+                                    Constants.COINS_FOR_ADS_DISABLE
+                            )
+                                    .doOnSuccess { nwQuizTransaction ->
+                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                quizTransactionId = quizTransactionId,
+                                                quizTransactionExternalId = nwQuizTransaction.id)
+                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                    }
+                                    .ignoreElement()
+                                    .onErrorComplete()
+                        }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeBy(
-                            onSuccess = {
-                                Timber.d("validation request response: $it")
-
-                                when (it) {
-                                    VALID -> {
-                                        preferencesManager.disableAds(true)
-                                        view?.showMessage(R.string.ads_disabled)
-                                    }
-                                    INVALID -> {
-                                        view?.showMessage(R.string.purchase_not_valid)
-                                    }
-                                    GOOGLE_SERVER_ERROR -> {
-                                        view?.showMessage(R.string.purchase_validation_google_error)
-                                    }
+                                onComplete = {
+                                    Timber.d("on Complete purchase")
+                                    preferencesManager.disableAds(true)
+                                    view?.showMessage(R.string.ads_disabled)
+                                },
+                                onError = {
+                                    Timber.e(it)
+                                    view?.showMessage(it.message.toString())
                                 }
-                            },
-                            onError = {
-                                Timber.e(it)
-                                view?.showMessage(R.string.error_buy)
-                            }
                         )
-
             }
         } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
             // Handle an error caused by a user cancelling the purchase flow.
             //nothing to do
         } else {
             // Handle any other error codes.
-            view?.showMessage(context.getString(R.string.error_purchase, responseCode.toString()) ?: "Error")
+            view?.showMessage(context.getString(R.string.error_purchase, responseCode.toString())
+                    ?: "Error")
         }
     }
 

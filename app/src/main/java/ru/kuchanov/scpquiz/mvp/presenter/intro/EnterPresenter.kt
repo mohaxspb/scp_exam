@@ -14,6 +14,7 @@ import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
@@ -40,7 +41,8 @@ class EnterPresenter @Inject constructor(
         override var router: ScpRouter,
         override var appDatabase: AppDatabase,
         private val moshi: Moshi,
-        private var quizConverter: QuizConverter
+        private var quizConverter: QuizConverter,
+        public override var apiClient: ApiClient
 ) : BasePresenter<EnterView>(appContext, preferences, router, appDatabase) {
 
     private var dbFilled: Boolean = false

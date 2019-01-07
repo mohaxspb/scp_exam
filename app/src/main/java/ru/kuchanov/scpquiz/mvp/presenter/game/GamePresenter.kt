@@ -19,7 +19,9 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
+import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase
+import ru.kuchanov.scpquiz.model.db.TransactionType
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
@@ -44,9 +46,9 @@ class GamePresenter @Inject constructor(
         override var router: ScpRouter,
         override var appDatabase: AppDatabase,
         private var gameInteractor: GameInteractor,
-        var apiClient: ApiClient
+        public override var apiClient: ApiClient
 
-) : BasePresenter<GameView>(appContext, preferences, router, appDatabase), AuthPresenter<GameFragment> {
+) : BasePresenter<GameView>(appContext, preferences, router, appDatabase, apiClient), AuthPresenter<GameFragment> {
 
     override fun getAuthView(): GameView = viewState
 
@@ -140,7 +142,6 @@ class GamePresenter @Inject constructor(
 
     private fun onSkipAuthAndNeverShowClicked() {
         preferences.setNeverShowAuth(true)
-
     }
 
     private fun onActionClicked(text: String, onCompleteAction: () -> Unit): (Int) -> Unit =
@@ -264,16 +265,54 @@ class GamePresenter @Inject constructor(
                             }
                             chars?.let { viewState.setKeyboardChars(it) }
 
-                            Single.merge(
-                                    gameInteractor.updateFinishedLevel(
-                                            quizLevelInfo.quiz.id,
-                                            nameRedundantCharsRemoved = nameRedundantCharsRemoved,
-                                            numberRedundantCharsRemoved = numberRedundantCharsRemoved
-                                    ),
-                                    gameInteractor.increaseScore(-price).toSingleDefault(-price)
+                            gameInteractor.updateFinishedLevel(
+                                    quizLevelInfo.quiz.id,
+                                    nameRedundantCharsRemoved = nameRedundantCharsRemoved,
+                                    numberRedundantCharsRemoved = numberRedundantCharsRemoved
                             )
+                                    .observeOn(Schedulers.io())
+                                    .flatMap { gameInteractor.increaseScore(-price).toSingleDefault(-price) }
+                                    .map {
+                                        val quizTransaction = QuizTransaction(
+                                                quizId = quizLevelInfo.quiz.id,
+                                                transactionType = if (currentEnterType == EnterType.NAME) {
+                                                    TransactionType.NAME_CHARS_REMOVED
+                                                } else {
+                                                    TransactionType.NUMBER_CHARS_REMOVED
+                                                },
+                                                coinsAmount = -Constants.SUGGESTION_PRICE_REMOVE_CHARS
+                                        )
+                                        return@map appDatabase.transactionDao().insert(quizTransaction)
+                                    }
+                                    .flatMapCompletable { quizTransactionId ->
+                                        apiClient.addTransaction(
+                                                quizLevelInfo.quiz.id,
+                                                if (currentEnterType == EnterType.NAME) {
+                                                    TransactionType.NAME_CHARS_REMOVED
+                                                } else {
+                                                    TransactionType.NUMBER_CHARS_REMOVED
+                                                },
+                                                -Constants.SUGGESTION_PRICE_REMOVE_CHARS
+                                        )
+                                                .doOnSuccess { nwQuizTransaction ->
+                                                    appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                            quizTransactionId = quizTransactionId,
+                                                            quizTransactionExternalId = nwQuizTransaction.id)
+                                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                                }
+                                                .ignoreElement()
+                                                .onErrorComplete()
+                                    }
                                     .subscribeOn(Schedulers.io())
-                                    .subscribe()
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribeBy(
+                                            onError = {
+                                                Timber.e(it)
+                                                viewState.showMessage(it.message
+                                                        ?: "Unexpected error")
+                                            },
+                                            onComplete = { Timber.d("Success transaction from Game Presenter") }
+                                    )
                         }
                     },
                     R.drawable.selector_chat_action_green,
@@ -710,15 +749,46 @@ class GamePresenter @Inject constructor(
                         if (checkCoins.invoke(Constants.COINS_FOR_LEVEL_UNLOCK, index)) {
                             viewState.removeChatAction(index)
                             viewState.showChatMessage(nextLevelMessageText, quizLevelInfo.player)
-                            gameInteractor.increaseScore(-Constants.COINS_FOR_LEVEL_UNLOCK)
+                            Single.fromCallable { gameInteractor.increaseScore(-Constants.COINS_FOR_LEVEL_UNLOCK) }
+                                    .map {
+                                        val quizTransaction = QuizTransaction(
+                                                quizId = quizLevelInfo.quiz.id,
+                                                transactionType = TransactionType.LEVEL_ENABLE_FOR_COINS,
+                                                coinsAmount = -Constants.COINS_FOR_LEVEL_UNLOCK
+                                        )
+                                        return@map appDatabase.transactionDao().insert(quizTransaction)
+                                    }
+                                    .flatMapCompletable { quizTransactionId ->
+                                        apiClient.addTransaction(
+                                                quizLevelInfo.quiz.id,
+                                                TransactionType.LEVEL_ENABLE_FOR_COINS,
+                                                -Constants.COINS_FOR_LEVEL_UNLOCK
+                                        )
+                                                .doOnSuccess { nwQuizTransaction ->
+                                                    appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                            quizTransactionId = quizTransactionId,
+                                                            quizTransactionExternalId = nwQuizTransaction.id)
+                                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                                }
+                                                .ignoreElement()
+                                                .onErrorComplete()
+                                    }
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
-                                    .subscribe {
-                                        router.replaceScreen(
-                                                Constants.Screens.QUIZ,
-                                                QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
-                                        )
-                                    }
+                                    .subscribeBy(
+                                            onError = {
+                                                Timber.e(it)
+                                                viewState.showMessage(it.message
+                                                        ?: "Unexpected error")
+                                            },
+                                            onComplete = {
+                                                router.replaceScreen(
+                                                        Constants.Screens.QUIZ,
+                                                        QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
+                                                )
+                                                Timber.d("Success transaction from Game Presenter")
+                                            }
+                                    )
                         }
                     }
                 },
@@ -862,10 +932,42 @@ class GamePresenter @Inject constructor(
                         appContext.getString(R.string.message_after_suggestion_of_name),
                         quizLevelInfo.player
                 )
-
                 gameInteractor.increaseScore(-Constants.SUGGESTION_PRICE_NAME)
+                        .toSingle {
+                            val quizTransaction = QuizTransaction(
+                                    quizId = quizLevelInfo.quiz.id,
+                                    transactionType = TransactionType.NAME_NO_PRICE,
+                                    coinsAmount = -Constants.SUGGESTION_PRICE_NAME
+                            )
+                            return@toSingle appDatabase.transactionDao().insert(quizTransaction)
+                        }
+                        .flatMapCompletable { quizTransactionId ->
+                            apiClient.addTransaction(
+                                    quizLevelInfo.quiz.id,
+                                    TransactionType.NAME_NO_PRICE,
+                                    -Constants.SUGGESTION_PRICE_NAME
+                            )
+                                    .doOnSuccess { nwQuizTransaction ->
+                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                quizTransactionId = quizTransactionId,
+                                                quizTransactionExternalId = nwQuizTransaction.id)
+                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                    }
+                                    .ignoreElement()
+                                    .onErrorComplete()
+                        }
                         .subscribeOn(Schedulers.io())
-                        .subscribe()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeBy(
+                                onError = {
+                                    Timber.e(it)
+                                    viewState.showMessage(it.message
+                                            ?: "Unexpected error")
+                                },
+                                onComplete = {
+                                    Timber.d("Success transaction from Game Presenter")
+                                }
+                        )
             } else {
                 showChatMessage(
                         quizTranslation.translation,
@@ -876,8 +978,41 @@ class GamePresenter @Inject constructor(
                         quizLevelInfo.doctor
                 )
                 gameInteractor.increaseScore(Constants.COINS_FOR_NAME)
+                        .toSingle {
+                            val quizTransaction = QuizTransaction(
+                                    quizId = quizLevelInfo.quiz.id,
+                                    transactionType = TransactionType.NAME_WITH_PRICE,
+                                    coinsAmount = Constants.COINS_FOR_NAME
+                            )
+                            return@toSingle appDatabase.transactionDao().insert(quizTransaction)
+                        }
+                        .flatMapCompletable { quizTransactionId ->
+                            apiClient.addTransaction(
+                                    quizLevelInfo.quiz.id,
+                                    TransactionType.NAME_WITH_PRICE,
+                                    Constants.COINS_FOR_NAME
+                            )
+                                    .doOnSuccess { nwQuizTransaction ->
+                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                quizTransactionId = quizTransactionId,
+                                                quizTransactionExternalId = nwQuizTransaction.id)
+                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                    }
+                                    .ignoreElement()
+                                    .onErrorComplete()
+                        }
                         .subscribeOn(Schedulers.io())
-                        .subscribe()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeBy(
+                                onError = {
+                                    Timber.e(it)
+                                    viewState.showMessage(it.message
+                                            ?: "Unexpected error")
+                                },
+                                onComplete = {
+                                    Timber.d("Success transaction from Game Presenter")
+                                }
+                        )
             }
 
             showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
@@ -916,8 +1051,41 @@ class GamePresenter @Inject constructor(
                 )
 
                 gameInteractor.increaseScore(-Constants.SUGGESTION_PRICE_NUMBER)
+                        .toSingle {
+                            val quizTransaction = QuizTransaction(
+                                    quizId = quizLevelInfo.quiz.id,
+                                    transactionType = TransactionType.NUMBER_NO_PRICE,
+                                    coinsAmount = -Constants.SUGGESTION_PRICE_NUMBER
+                            )
+                            return@toSingle appDatabase.transactionDao().insert(quizTransaction)
+                        }
+                        .flatMapCompletable { quizTransactionId ->
+                            apiClient.addTransaction(
+                                    quizLevelInfo.quiz.id,
+                                    TransactionType.NUMBER_NO_PRICE,
+                                    -Constants.SUGGESTION_PRICE_NUMBER
+                            )
+                                    .doOnSuccess { nwQuizTransaction ->
+                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                quizTransactionId = quizTransactionId,
+                                                quizTransactionExternalId = nwQuizTransaction.id)
+                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                    }
+                                    .ignoreElement()
+                                    .onErrorComplete()
+                        }
                         .subscribeOn(Schedulers.io())
-                        .subscribe()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeBy(
+                                onError = {
+                                    Timber.e(it)
+                                    viewState.showMessage(it.message
+                                            ?: "Unexpected error")
+                                },
+                                onComplete = {
+                                    Timber.d("Success transaction from Game Presenter")
+                                }
+                        )
             } else {
                 showChatMessage(
                         appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NUMBER),
@@ -927,10 +1095,42 @@ class GamePresenter @Inject constructor(
                         appContext.getString(R.string.message_level_comleted, quizLevelInfo.player.name),
                         quizLevelInfo.doctor
                 )
-
                 gameInteractor.increaseScore(Constants.COINS_FOR_NUMBER)
+                        .toSingle {
+                            val quizTransaction = QuizTransaction(
+                                    quizId = quizLevelInfo.quiz.id,
+                                    transactionType = TransactionType.NUMBER_WITH_PRICE,
+                                    coinsAmount = Constants.COINS_FOR_NUMBER
+                            )
+                            return@toSingle appDatabase.transactionDao().insert(quizTransaction)
+                        }
+                        .flatMapCompletable { quizTransactionId ->
+                            apiClient.addTransaction(
+                                    quizLevelInfo.quiz.id,
+                                    TransactionType.NUMBER_WITH_PRICE,
+                                    Constants.COINS_FOR_NUMBER
+                            )
+                                    .doOnSuccess { nwQuizTransaction ->
+                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                quizTransactionId = quizTransactionId,
+                                                quizTransactionExternalId = nwQuizTransaction.id)
+                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                    }
+                                    .ignoreElement()
+                                    .onErrorComplete()
+                        }
                         .subscribeOn(Schedulers.io())
-                        .subscribe()
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeBy(
+                                onError = {
+                                    Timber.e(it)
+                                    viewState.showMessage(it.message
+                                            ?: "Unexpected error")
+                                },
+                                onComplete = {
+                                    Timber.d("Success transaction from Game Presenter")
+                                }
+                        )
             }
 
             showNumber(quizLevelInfo.quiz.scpNumber.toList())

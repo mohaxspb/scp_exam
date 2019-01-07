@@ -50,13 +50,9 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun setAccessToken(accessToken: String?) = preferences.edit().putString(Key.ACCESS_TOKEN, accessToken).apply()
 
-    fun setRefreshToken(testRefreshToken: String?) {
-        preferences.edit().putString(Key.REFRESH_TOKEN, testRefreshToken).apply()
-    }
+    fun setRefreshToken(testRefreshToken: String?) = preferences.edit().putString(Key.REFRESH_TOKEN, testRefreshToken).apply()
 
-    fun getRefreshToken(): String? {
-        return preferences.getString(Key.REFRESH_TOKEN, null)
-    }
+    fun getRefreshToken(): String? = preferences.getString(Key.REFRESH_TOKEN, null)
 
     fun isAlreadySuggestRateUs() = preferences.getBoolean(Key.SUGGEST_RATE_US, false)
 

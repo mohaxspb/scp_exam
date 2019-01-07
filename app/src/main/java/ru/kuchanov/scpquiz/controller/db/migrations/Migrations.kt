@@ -12,16 +12,38 @@ object Migrations {
             //add column for available property with true as default
             try {
                 database.execSQL(
-                    "ALTER TABLE FinishedLevel "
-                            + " ADD COLUMN isLevelAvailable INTEGER NOT NULL DEFAULT 1")
+                        "ALTER TABLE FinishedLevel "
+                                + " ADD COLUMN isLevelAvailable INTEGER NOT NULL DEFAULT 1")
                 //disable all except of first 5
                 database.execSQL(
-                    "UPDATE FinishedLevel SET isLevelAvailable=0 WHERE quizId IN "
-                            + "(SELECT id from Quiz ORDER BY id ASC LIMIT -1 OFFSET 5)")
+                        "UPDATE FinishedLevel SET isLevelAvailable=0 WHERE quizId IN "
+                                + "(SELECT id from Quiz ORDER BY id ASC LIMIT -1 OFFSET 5)")
                 //enable all, which has name or number entered or some chars removed
                 database.execSQL(
-                    "UPDATE FinishedLevel SET isLevelAvailable=1 "
-                            + "WHERE scpNameFilled=1 OR scpNumberFilled=1 OR nameRedundantCharsRemoved=1 OR numberRedundantCharsRemoved=1")
+                        "UPDATE FinishedLevel SET isLevelAvailable=1 "
+                                + "WHERE scpNameFilled=1 OR scpNumberFilled=1 OR nameRedundantCharsRemoved=1 OR numberRedundantCharsRemoved=1")
+
+            } catch (e: Throwable) {
+                Timber.e(e)
+            }
+        }
+    }
+    val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            Timber.d("executeMigration 2_3")
+            //add column for available property with true as default
+            try {
+                database.execSQL(
+                        """
+                            CREATE TABLE QuizTransaction(
+                                 id INTEGER NOT NULL,
+                                 quizId INTEGER ,
+                                 externalId INTEGER ,
+                                 transactionType TEXT NOT NULL,
+                                 coinsAmount INTEGER,
+                                 PRIMARY KEY (id)
+                            )
+     """)
             } catch (e: Throwable) {
                 Timber.e(e)
             }

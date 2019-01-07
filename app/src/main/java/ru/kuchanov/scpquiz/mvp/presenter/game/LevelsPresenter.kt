@@ -13,13 +13,12 @@ import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
+import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
-import ru.kuchanov.scpquiz.model.db.FinishedLevel
-import ru.kuchanov.scpquiz.model.db.Quiz
-import ru.kuchanov.scpquiz.model.db.User
-import ru.kuchanov.scpquiz.model.db.UserRole
+import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
+import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
@@ -29,11 +28,12 @@ import javax.inject.Inject
 
 @InjectViewState
 class LevelsPresenter @Inject constructor(
-    override var appContext: Application,
-    override var preferences: MyPreferenceManager,
-    override var router: ScpRouter,
-    override var appDatabase: AppDatabase
-) : BasePresenter<LevelsView>(appContext, preferences, router, appDatabase) {
+        override var appContext: Application,
+        override var preferences: MyPreferenceManager,
+        override var router: ScpRouter,
+        override var appDatabase: AppDatabase,
+        public override var apiClient: ApiClient
+) : BasePresenter<LevelsView>(appContext, preferences, router, appDatabase, apiClient) {
 
     lateinit var player: User
 
@@ -49,10 +49,10 @@ class LevelsPresenter @Inject constructor(
                 && preferences.isNeedToShowInterstitial()
                 && (!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled)
         Timber.d(
-            "!preferences.isAdsDisabled()\npreferences.isNeedToShowInterstitial()\n(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
-            !preferences.isAdsDisabled(),
-            preferences.isNeedToShowInterstitial(),
-            !levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled
+                "!preferences.isAdsDisabled()\npreferences.isNeedToShowInterstitial()\n(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
+                !preferences.isAdsDisabled(),
+                preferences.isNeedToShowInterstitial(),
+                !levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled
         )
         Timber.d("showAds: $showAds")
         router.navigateTo(Constants.Screens.QUIZ, QuizScreenLaunchData(levelViewModel.quiz.id, !showAds))
@@ -63,14 +63,14 @@ class LevelsPresenter @Inject constructor(
     fun openCoins(bitmap: Bitmap) {
         Completable.fromAction {
             BitmapUtils.persistImage(
-                appContext,
-                bitmap,
-                Constants.SETTINGS_BACKGROUND_FILE_NAME)
+                    appContext,
+                    bitmap,
+                    Constants.SETTINGS_BACKGROUND_FILE_NAME)
         }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onComplete = { router.navigateTo(Constants.Screens.MONETIZATION) }
+                        onComplete = { router.navigateTo(Constants.Screens.MONETIZATION) }
                 )
     }
 
@@ -79,29 +79,29 @@ class LevelsPresenter @Inject constructor(
     fun openSettings(bitmap: Bitmap) {
         Completable.fromAction {
             BitmapUtils.persistImage(
-                appContext,
-                bitmap,
-                Constants.SETTINGS_BACKGROUND_FILE_NAME)
+                    appContext,
+                    bitmap,
+                    Constants.SETTINGS_BACKGROUND_FILE_NAME)
         }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onComplete = { router.navigateTo(Constants.Screens.SETTINGS) }
+                        onComplete = { router.navigateTo(Constants.Screens.SETTINGS) }
                 )
     }
 
     private fun loadLevels() {
         Flowable.combineLatest(
-            appDatabase.quizDao().getAll(),
-            appDatabase.finishedLevelsDao().getAll(),
-            appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
-            Function3 { quizes: List<Quiz>, finishedLevels: List<FinishedLevel>, player: User ->
-                Triple(
-                    quizes,
-                    finishedLevels,
-                    player
-                )
-            }
+                appDatabase.quizDao().getAll(),
+                appDatabase.finishedLevelsDao().getAll(),
+                appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
+                Function3 { quizes: List<Quiz>, finishedLevels: List<FinishedLevel>, player: User ->
+                    Triple(
+                            quizes,
+                            finishedLevels,
+                            player
+                    )
+                }
         )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -115,10 +115,10 @@ class LevelsPresenter @Inject constructor(
                         val finishedLevel = triple.second.find { it.quizId == quiz.id }
                                 ?: throw IllegalStateException("level not found for quizId: ${quiz.id}")
                         LevelViewModel(
-                            quiz = quiz,
-                            scpNameFilled = finishedLevel.scpNameFilled,
-                            scpNumberFilled = finishedLevel.scpNumberFilled,
-                            isLevelAvailable = finishedLevel.isLevelAvailable
+                                quiz = quiz,
+                                scpNameFilled = finishedLevel.scpNameFilled,
+                                scpNumberFilled = finishedLevel.scpNumberFilled,
+                                isLevelAvailable = finishedLevel.isLevelAvailable
                         )
                     }
 
@@ -126,12 +126,12 @@ class LevelsPresenter @Inject constructor(
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onNext = {
-                        Timber.d("loadLevels onNext")
-                        viewState.showLevels(it.first)
-                        player = it.second
-                        viewState.showCoins(it.second.score)
-                    }
+                        onNext = {
+                            Timber.d("loadLevels onNext")
+                            viewState.showLevels(it.first)
+                            player = it.second
+                            viewState.showCoins(it.second.score)
+                        }
                 )
     }
 
@@ -164,10 +164,37 @@ class LevelsPresenter @Inject constructor(
                     .map {
                         it.score -= Constants.COINS_FOR_LEVEL_UNLOCK
                         appDatabase.userDao().update(it)
+                        val quizTransaction = QuizTransaction(
+                                quizId = levelViewModel.quiz.id,
+                                transactionType = TransactionType.LEVEL_ENABLE_FOR_COINS,
+                                coinsAmount = -Constants.COINS_FOR_LEVEL_UNLOCK
+                        )
+                        return@map appDatabase.transactionDao().insert(quizTransaction)
+                    }
+                    .flatMapCompletable { quizTransactionId ->
+                        apiClient.addTransaction(
+                                levelViewModel.quiz.id,
+                                TransactionType.LEVEL_ENABLE_FOR_COINS,
+                                -Constants.COINS_FOR_LEVEL_UNLOCK
+                        )
+                                .doOnSuccess { nwQuizTransaction ->
+                                    appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                            quizTransactionId = quizTransactionId,
+                                            quizTransactionExternalId = nwQuizTransaction.id)
+                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                }
+                                .ignoreElement()
+                                .onErrorComplete()
                     }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe()
+                    .subscribeBy(
+                            onError = {
+                                Timber.e(it)
+                                viewState.showMessage(it.message ?: "Unexpected error")
+                            },
+                            onComplete = { Timber.d("Success transaction from Level Presenter") }
+                    )
         } else {
             viewState.showMessage(R.string.message_not_enough_coins_level_unlock)
         }
