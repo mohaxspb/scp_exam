@@ -1,9 +1,7 @@
 package ru.kuchanov.scpquiz.ui.fragment.util
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -34,11 +32,9 @@ import ru.kuchanov.scpquiz.mvp.presenter.util.ScpSettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
-import ru.kuchanov.scpquiz.ui.utils.DialogUtils
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
-import ru.kuchanov.scpquiz.utils.security.FingerprintUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -110,15 +106,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
 
         soundSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onSoundEnabled(isChecked) }
         vibrateSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onVibrationEnabled(isChecked) }
-        Timber.d("FingerprintUtils.isFingerprintSupported(): ${FingerprintUtils.isFingerprintSupported()}")
-        if (FingerprintUtils.isFingerprintSupported()) {
-            fingerprintLabelTextView.visibility = VISIBLE
-            fingerprintSwitch.visibility = VISIBLE
-            fingerprintSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onFingerPrintEnabled(isChecked) }
-        } else {
-            fingerprintLabelTextView.visibility = GONE
-            fingerprintSwitch.visibility = GONE
-        }
+
         val onShareClickListener: (View) -> Unit = { presenter.onShareClicked() }
         shareImageView.setOnClickListener(onShareClickListener)
         shareLabelTextView.setOnClickListener(onShareClickListener)
@@ -274,25 +262,6 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
                 }
                 presenter.onVibrationEnabled(isChecked)
             }
-        }
-    }
-
-    override fun showFingerprint(enabled: Boolean) {
-        fingerprintSwitch.setOnCheckedChangeListener(null)
-        fingerprintSwitch.isChecked = enabled
-        fingerprintSwitch.setOnCheckedChangeListener { _, isChecked -> presenter.onFingerPrintEnabled(isChecked) }
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    override fun showFingerprintDialog(enableFingerprintLogin: Boolean) {
-        if (isAdded) {
-            DialogUtils.showFingerprintDialog(
-                    context = activity!!,
-                    title = if (enableFingerprintLogin) R.string.dialog_fingerprint_enable_title else R.string.dialog_fingerprint_disable_title,
-                    onErrorAction = { showMessage(R.string.error_fingerprint_auth_failed_try_again) },
-                    onCipherErrorAction = { showMessage(R.string.error_get_chipher) },
-                    onSuccessAction = { presenter.onFingerprintAuthSucceeded(enableFingerprintLogin, it) }
-            )
         }
     }
 }

@@ -207,29 +207,6 @@
                     tools:ignore="ContentDescription" />
 
                 <TextView
-                    android:id="@+id/fingerprintLabelTextView"
-                    style="@style/SettingsTextStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/defaultMarginSmall"
-                    android:gravity="center"
-                    android:padding="@dimen/defaultMarginSmall"
-                    android:text="@string/settings_fingerprint"
-                    app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
-                    app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
-                    app:layout_constraintTop_toBottomOf="@+id/shareLabelTextView" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/fingerprintSwitch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    app:layout_constraintBottom_toBottomOf="@id/fingerprintLabelTextView"
-                    app:layout_constraintLeft_toLeftOf="@+id/rightGuideline"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/fingerprintLabelTextView" />
-
-                <TextView
                     android:id="@+id/logoutLabelTextView"
                     style="@style/SettingsTextStyle"
                     android:layout_width="0dp"
@@ -239,9 +216,10 @@
                     android:gravity="center"
                     android:padding="@dimen/defaultMarginSmall"
                     android:text="@string/settings_logout"
+                    app:layout_constraintBottom_toTopOf="@+id/resetProgressLabelTextView"
                     app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
                     app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
-                    app:layout_constraintTop_toBottomOf="@+id/resetProgressLabelTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/shareLabelTextView" />
 
                 <ImageView
                     android:id="@+id/logoutImageView"
@@ -266,10 +244,10 @@
                     android:gravity="center"
                     android:padding="@dimen/defaultMarginSmall"
                     android:text="@string/settings_reset_progress"
-                    app:layout_constraintBottom_toTopOf="@+id/logoutLabelTextView"
+                    app:layout_constraintBottom_toTopOf="@+id/googleImage"
                     app:layout_constraintLeft_toRightOf="@+id/leftGuideline"
                     app:layout_constraintRight_toLeftOf="@+id/rightGuideline"
-                    app:layout_constraintTop_toBottomOf="@+id/fingerprintLabelTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/logoutLabelTextView" />
 
                 <ImageView
                     android:id="@+id/resetProgressImageView"
@@ -299,13 +277,15 @@
                     android:id="@+id/googleImage"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:layout_marginTop="@dimen/defaultMarginSmall"
+                    android:layout_marginTop="@dimen/defaultMargin"
+                    android:layout_marginBottom="@dimen/defaultMargin"
                     android:gravity="center"
                     android:padding="@dimen/defaultMarginSmall"
                     android:src="@drawable/ic_google"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/logoutLabelTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/resetProgressLabelTextView"
                     tools:ignore="ContentDescription" />
 
                 <ImageView

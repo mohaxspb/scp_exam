@@ -2,8 +2,6 @@ package ru.kuchanov.scpquiz.mvp.presenter.intro
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.os.Build
-import android.support.annotation.RequiresApi
 import com.arellomobile.mvp.InjectViewState
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -30,21 +28,19 @@ import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.EnterView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.StorageUtils
-import ru.kuchanov.scpquiz.utils.security.CryptoUtils
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.crypto.Cipher
 import javax.inject.Inject
 
 @InjectViewState
 class EnterPresenter @Inject constructor(
-    override var appContext: Application,
-    override var preferences: MyPreferenceManager,
-    override var router: ScpRouter,
-    override var appDatabase: AppDatabase,
-    private val moshi: Moshi,
-    private var quizConverter: QuizConverter
+        override var appContext: Application,
+        override var preferences: MyPreferenceManager,
+        override var router: ScpRouter,
+        override var appDatabase: AppDatabase,
+        private val moshi: Moshi,
+        private var quizConverter: QuizConverter
 ) : BasePresenter<EnterView>(appContext, preferences, router, appDatabase) {
 
     private var dbFilled: Boolean = false
@@ -59,11 +55,11 @@ class EnterPresenter @Inject constructor(
         readProgressPhrases()
 
         val timerObservable = Flowable.intervalRange(
-            0,
-            10,
-            0,
-            1050,
-            TimeUnit.MILLISECONDS
+                0,
+                10,
+                0,
+                1050,
+                TimeUnit.MILLISECONDS
         )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -81,29 +77,29 @@ class EnterPresenter @Inject constructor(
 
                     Timber.d("write users:")
                     val doctorUser = User(
-                        name = appContext.getString(R.string.doctor_name),
-                        role = UserRole.DOCTOR
+                            name = appContext.getString(R.string.doctor_name),
+                            role = UserRole.DOCTOR
                     )
                     appDatabase.userDao().insert(doctorUser)
 
                     val playerUser = User(
-                        name = appContext.getString(R.string.player_name, Random().nextInt(10000)),
-                        role = UserRole.PLAYER
+                            name = appContext.getString(R.string.player_name, Random().nextInt(10000)),
+                            role = UserRole.PLAYER
                     )
                     appDatabase.userDao().insert(playerUser)
 
                     Timber.d("write quizes")
                     appDatabase.quizDao().insertQuizesWithQuizTranslations(
-                        quizConverter.convertCollection(
-                            initialQuizes,
-                            quizConverter::convert
-                        ))
+                            quizConverter.convertCollection(
+                                    initialQuizes,
+                                    quizConverter::convert
+                            ))
                     appDatabase.finishedLevelsDao().insert(initialQuizes.mapIndexed { index, nwQuiz ->
                         Timber.d("initialQuizes: $index, ${nwQuiz.id}")
                         FinishedLevel(
-                            nwQuiz.id,
-                            //first 5 levels must be available always
-                            isLevelAvailable = index < 5
+                                nwQuiz.id,
+                                //first 5 levels must be available always
+                                isLevelAvailable = index < 5
                         )
                     })
 
@@ -139,30 +135,25 @@ class EnterPresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onNext = {
-                        Timber.d("onNext: $it")
-                        if (it == -1L) {
-                            dbFilled = true
-                        } else {
-                            viewState.showProgressText(progressPhrases[Random().nextInt(progressPhrases.size)].translation)
-                            viewState.showProgressAnimation()
-                            viewState.showImage(it.toInt())
-                        }
-                    },
-                    onComplete = {
-                        Timber.d("onComplete")
-                        if (preferences.isIntroDialogShown()) {
-                            if (preferences.isFingerprintEnabled()) {
-                                viewState.showFingerprintButton(true)
-                                viewState.showFingerprintDialog()
+                        onNext = {
+                            Timber.d("onNext: $it")
+                            if (it == -1L) {
+                                dbFilled = true
                             } else {
-                                router.newRootScreen(Constants.Screens.QUIZ_LIST)
+                                viewState.showProgressText(progressPhrases[Random().nextInt(progressPhrases.size)].translation)
+                                viewState.showProgressAnimation()
+                                viewState.showImage(it.toInt())
                             }
-                        } else {
-                            viewState.onNeedToOpenIntroDialogFragment()
-                        }
-                    },
-                    onError = Timber::e
+                        },
+                        onComplete = {
+                            Timber.d("onComplete")
+                            if (preferences.isIntroDialogShown()) {
+                                router.newRootScreen(Constants.Screens.QUIZ_LIST)
+                            } else {
+                                viewState.onNeedToOpenIntroDialogFragment()
+                            }
+                        },
+                        onError = Timber::e
                 )
     }
 
@@ -179,14 +170,14 @@ class EnterPresenter @Inject constructor(
     fun openIntroDialogScreen(bitmap: Bitmap) {
         Completable.fromAction {
             BitmapUtils.persistImage(
-                appContext,
-                bitmap,
-                Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME)
+                    appContext,
+                    bitmap,
+                    Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME)
         }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onComplete = { router.newRootScreen(Constants.Screens.INTRO_DIALOG) }
+                        onComplete = { router.newRootScreen(Constants.Screens.INTRO_DIALOG) }
                 )
     }
 
@@ -216,19 +207,6 @@ class EnterPresenter @Inject constructor(
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe()
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    fun onFingerprintAuthSuccess(cipherForDecoding: Cipher) {
-        val encodedPassword = preferences.getUserPassword()
-        val decodedPassword = encodedPassword?.let { CryptoUtils.decode(it, cipherForDecoding) }
-        if (decodedPassword != null) {
-            //OK
-            router.newRootScreen(Constants.Screens.QUIZ_LIST)
-        } else {
-            //some error occurred while decode password
-            viewState.showMessage(R.string.error_decode_password)
         }
     }
 }
