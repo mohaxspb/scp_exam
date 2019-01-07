@@ -924,14 +924,14 @@ class GamePresenter @Inject constructor(
                         appContext.getString(R.string.message_after_suggestion_of_name),
                         quizLevelInfo.player
                 )
-                Single.fromCallable { gameInteractor.increaseScore(-Constants.SUGGESTION_PRICE_NAME) }
-                        .map {
+                gameInteractor.increaseScore(-Constants.SUGGESTION_PRICE_NAME)
+                        .toSingle {
                             val quizTransaction = QuizTransaction(
                                     quizId = quizLevelInfo.quiz.id,
                                     transactionType = TransactionType.NAME_NO_PRICE,
                                     coinsAmount = -Constants.SUGGESTION_PRICE_NAME
                             )
-                            return@map appDatabase.transactionDao().insert(quizTransaction)
+                            return@toSingle appDatabase.transactionDao().insert(quizTransaction)
                         }
                         .flatMapCompletable { quizTransactionId ->
                             apiClient.addTransaction(
@@ -969,14 +969,14 @@ class GamePresenter @Inject constructor(
                         appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NAME),
                         quizLevelInfo.doctor
                 )
-                Single.fromCallable { gameInteractor.increaseScore(Constants.COINS_FOR_NAME) }
-                        .map {
+                gameInteractor.increaseScore(Constants.COINS_FOR_NAME)
+                        .toSingle {
                             val quizTransaction = QuizTransaction(
                                     quizId = quizLevelInfo.quiz.id,
                                     transactionType = TransactionType.NAME_WITH_PRICE,
                                     coinsAmount = Constants.COINS_FOR_NAME
                             )
-                            return@map appDatabase.transactionDao().insert(quizTransaction)
+                            return@toSingle appDatabase.transactionDao().insert(quizTransaction)
                         }
                         .flatMapCompletable { quizTransactionId ->
                             apiClient.addTransaction(
@@ -1042,14 +1042,14 @@ class GamePresenter @Inject constructor(
                         quizLevelInfo.player
                 )
 
-                Single.fromCallable { gameInteractor.increaseScore(-Constants.SUGGESTION_PRICE_NUMBER) }
-                        .map {
+                gameInteractor.increaseScore(-Constants.SUGGESTION_PRICE_NUMBER)
+                        .toSingle {
                             val quizTransaction = QuizTransaction(
                                     quizId = quizLevelInfo.quiz.id,
                                     transactionType = TransactionType.NUMBER_NO_PRICE,
                                     coinsAmount = -Constants.SUGGESTION_PRICE_NUMBER
                             )
-                            return@map appDatabase.transactionDao().insert(quizTransaction)
+                            return@toSingle appDatabase.transactionDao().insert(quizTransaction)
                         }
                         .flatMapCompletable { quizTransactionId ->
                             apiClient.addTransaction(
@@ -1087,43 +1087,42 @@ class GamePresenter @Inject constructor(
                         appContext.getString(R.string.message_level_comleted, quizLevelInfo.player.name),
                         quizLevelInfo.doctor
                 )
-
-               Single.fromCallable {gameInteractor.increaseScore(Constants.COINS_FOR_NUMBER)}
-                       .map {
-                           val quizTransaction = QuizTransaction(
-                                   quizId = quizLevelInfo.quiz.id,
-                                   transactionType = TransactionType.NUMBER_WITH_PRICE,
-                                   coinsAmount = Constants.COINS_FOR_NUMBER
-                           )
-                           return@map appDatabase.transactionDao().insert(quizTransaction)
-                       }
-                       .flatMapCompletable { quizTransactionId ->
-                           apiClient.addTransaction(
-                                   quizLevelInfo.quiz.id,
-                                   TransactionType.NUMBER_WITH_PRICE,
-                                   Constants.COINS_FOR_NUMBER
-                           )
-                                   .doOnSuccess { nwQuizTransaction ->
-                                       appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                               quizTransactionId = quizTransactionId,
-                                               quizTransactionExternalId = nwQuizTransaction.id)
-                                       Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
-                                   }
-                                   .ignoreElement()
-                                   .onErrorComplete()
-                       }
-                       .subscribeOn(Schedulers.io())
-                       .observeOn(AndroidSchedulers.mainThread())
-                       .subscribeBy(
-                               onError = {
-                                   Timber.e(it)
-                                   viewState.showMessage(it.message
-                                           ?: "Unexpected error")
-                               },
-                               onComplete = {
-                                   Timber.d("Success transaction from Game Presenter")
-                               }
-                       )
+                gameInteractor.increaseScore(Constants.COINS_FOR_NUMBER)
+                        .toSingle {
+                            val quizTransaction = QuizTransaction(
+                                    quizId = quizLevelInfo.quiz.id,
+                                    transactionType = TransactionType.NUMBER_WITH_PRICE,
+                                    coinsAmount = Constants.COINS_FOR_NUMBER
+                            )
+                            return@toSingle appDatabase.transactionDao().insert(quizTransaction)
+                        }
+                        .flatMapCompletable { quizTransactionId ->
+                            apiClient.addTransaction(
+                                    quizLevelInfo.quiz.id,
+                                    TransactionType.NUMBER_WITH_PRICE,
+                                    Constants.COINS_FOR_NUMBER
+                            )
+                                    .doOnSuccess { nwQuizTransaction ->
+                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                quizTransactionId = quizTransactionId,
+                                                quizTransactionExternalId = nwQuizTransaction.id)
+                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                    }
+                                    .ignoreElement()
+                                    .onErrorComplete()
+                        }
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeBy(
+                                onError = {
+                                    Timber.e(it)
+                                    viewState.showMessage(it.message
+                                            ?: "Unexpected error")
+                                },
+                                onComplete = {
+                                    Timber.d("Success transaction from Game Presenter")
+                                }
+                        )
             }
 
             showNumber(quizLevelInfo.quiz.scpNumber.toList())
