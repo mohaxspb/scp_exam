@@ -1,12 +1,6 @@
 package ru.kuchanov.scpquiz.ui.fragment.intro
 
 import android.animation.ObjectAnimator
-import android.annotation.TargetApi
-import android.os.Build
-import android.os.Bundle
-import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.animation.AccelerateDecelerateInterpolator
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
@@ -17,7 +11,6 @@ import ru.kuchanov.scpquiz.di.module.EnterModule
 import ru.kuchanov.scpquiz.mvp.presenter.intro.EnterPresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.EnterView
 import ru.kuchanov.scpquiz.ui.BaseFragment
-import ru.kuchanov.scpquiz.ui.utils.DialogUtils
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
 import toothpick.Toothpick
@@ -45,16 +38,6 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
 
     override fun getLayoutResId() = R.layout.fragment_enter
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        fingerprintImageView.setOnClickListener { showFingerprintDialog() }
-    }
-
-    override fun showFingerprintButton(show: Boolean) {
-        fingerprintImageView.visibility = if (show) VISIBLE else GONE
-    }
-
     override fun showProgressText(text: String) {
         progressTextView.text = text
         progressTextView.setOnClickListener { presenter.onProgressTextClicked() }
@@ -62,10 +45,10 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
 
     override fun showProgressAnimation() {
         val progressAnimator = ObjectAnimator.ofInt(
-            progressBar,
-            "progress",
-            0,
-            1000
+                progressBar,
+                "progress",
+                0,
+                1000
         )
         progressAnimator.duration = 1000
         progressAnimator.interpolator = AccelerateDecelerateInterpolator()
@@ -82,10 +65,10 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
         }
 
         val progressAnimator = ObjectAnimator.ofFloat(
-            imageView,
-            "alpha",
-            0f,
-            1f
+                imageView,
+                "alpha",
+                0f,
+                1f
         )
         progressAnimator.duration = 800
         progressAnimator.interpolator = AccelerateDecelerateInterpolator()
@@ -94,19 +77,5 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
 
     override fun onNeedToOpenIntroDialogFragment() {
         BitmapUtils.loadBitmapFromView(root)?.let { presenter.openIntroDialogScreen(it) }
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    override fun showFingerprintDialog() {
-        if (isAdded) {
-            DialogUtils.showFingerprintDialog(
-                activity!!,
-                R.string.dialog_fingerprints_title,
-                false,
-                { showMessage(R.string.error_fingerprint_auth_failed_try_again) },
-                { showMessage(R.string.error_get_chipher) },
-                { presenter.onFingerprintAuthSuccess(it) }
-            )
-        }
     }
 }

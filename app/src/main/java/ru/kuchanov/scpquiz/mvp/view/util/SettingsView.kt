@@ -9,6 +9,4 @@ interface SettingsView : BaseView, AuthView {
     fun showLangsChooser(langs: Set<String>, lang: String)
     fun showSound(enabled: Boolean)
     fun showVibration(enabled: Boolean)
-    fun showFingerprint(enabled: Boolean)
-    fun showFingerprintDialog(enableFingerprintLogin: Boolean)
 }

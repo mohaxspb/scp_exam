@@ -7,6 +7,4 @@ interface EnterView : BaseView {
     fun showProgressText(text: String)
     fun showImage(imageNumber: Int)
     fun onNeedToOpenIntroDialogFragment()
-    fun showFingerprintDialog()
-    fun showFingerprintButton(show: Boolean)
 }
