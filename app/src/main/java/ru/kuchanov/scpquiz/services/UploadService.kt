@@ -104,9 +104,9 @@ class UploadService : Service() {
                 .observeOn(mainThread())
                 .doFinally { stopServiceAndRemoveNotification() }
                 .subscribeBy(
-                        onSuccess = { Timber.d("onSuccess: ${it.size} quizes inserted") },
-                        onError = { Timber.e(it, "onError while update quizes from server") },
-                        onComplete = { Timber.d("onComplete") }
+                        onSuccess = { Timber.d("onSuccess service: ${it.size} quizzes inserted") },
+                        onError = { Timber.e(it, "onError service while update quizzes from server") },
+                        onComplete = { Timber.d("onComplete service") }
                 )
         return Service.START_NOT_STICKY
     }

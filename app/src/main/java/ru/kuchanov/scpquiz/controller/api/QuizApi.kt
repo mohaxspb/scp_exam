@@ -22,5 +22,6 @@ interface QuizApi {
      */
     @GET("quiz/all")
     fun getNwQuizList(@Header("Authorization") authorization: String): Single<List<NwQuiz>>
+
 }
 

@@ -22,8 +22,9 @@ class MainPresenter @Inject constructor(
         override var appContext: Application,
         override var preferences: MyPreferenceManager,
         override var router: ScpRouter,
-        override var appDatabase: AppDatabase
-) : BasePresenter<MainView>(appContext, preferences, router, appDatabase) {
+        override var appDatabase: AppDatabase,
+        public override var apiClient: ApiClient
+) : BasePresenter<MainView>(appContext, preferences, router, appDatabase,apiClient) {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()

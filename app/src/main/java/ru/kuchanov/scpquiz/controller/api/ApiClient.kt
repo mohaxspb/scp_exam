@@ -8,6 +8,9 @@ import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.api.response.TokenResponse
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.api.NwQuiz
+import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
+import ru.kuchanov.scpquiz.model.db.QuizTransaction
+import ru.kuchanov.scpquiz.model.db.TransactionType
 import java.net.HttpURLConnection
 import javax.inject.Inject
 
@@ -16,6 +19,7 @@ class ApiClient @Inject constructor(
         private val toolsApi: ToolsApi,
         private val quizApi: QuizApi,
         private val authApi: AuthApi,
+        private val transactionApi: TransactionApi,
         private val preferences: MyPreferenceManager
 ) {
 
@@ -42,7 +46,7 @@ class ApiClient @Inject constructor(
                             ),
                             Constants.Api.GRANT_TYPE_CLIENT_CREDENTIALS
                     )
-                    .doOnSuccess { (accessToken) -> preferences.setAccessToken(accessToken!!) }
+                    .doOnSuccess { (accessToken) -> preferences.setAccessToken(accessToken) }
 
     fun getNwQuizList(): Single<List<NwQuiz>> =
             quizApi
@@ -65,4 +69,24 @@ class ApiClient @Inject constructor(
                             BuildConfig.CLIENT_SECRET,
                             Constants.GAME
                     )
+
+    fun getNwQuizTransactionById(transactionId: Long): Single<NwQuizTransaction> =
+            transactionApi.getNwQuizTransactionById(
+                    transactionId
+            )
+
+    fun getNwQuizTransactionList(): Single<List<NwQuizTransaction>> =
+            transactionApi.getNwQuizTransactionList()
+
+    fun addTransaction(quizId: Long?, typeTransaction: TransactionType, coinsAmount: Int?): Single<NwQuizTransaction> =
+            transactionApi.addTransaction(
+                    quizId,
+                    typeTransaction,
+                    coinsAmount
+            )
+
+    fun addAllTransactions(transactions: List<QuizTransaction>): Single<List<NwQuizTransaction>> =
+            transactionApi.addAllTransactions(
+                    transactions
+            )
 }

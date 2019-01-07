@@ -14,10 +14,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
-import ru.kuchanov.scpquiz.controller.api.ApiClient
-import ru.kuchanov.scpquiz.controller.api.AuthApi
-import ru.kuchanov.scpquiz.controller.api.QuizApi
-import ru.kuchanov.scpquiz.controller.api.ToolsApi
+import ru.kuchanov.scpquiz.controller.api.*
 import ru.kuchanov.scpquiz.controller.api.response.TokenResponse
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.db.migrations.Migrations
@@ -48,6 +45,7 @@ class AppModule(context: Context) : Module() {
                         "database"
                 )
                         .addMigrations(Migrations.MIGRATION_1_2)
+                        .addMigrations(Migrations.MIGRATION_2_3)
                         .build()
         )
 
@@ -96,7 +94,7 @@ class AppModule(context: Context) : Module() {
                 .certificatePinner(certPinner)
                 .addInterceptor(
                         HttpLoggingInterceptor { log -> Timber.tag("OkHttp").d(log) }
-                                .setLevel(HttpLoggingInterceptor.Level.NONE)
+                                .setLevel(HttpLoggingInterceptor.Level.BODY)
                 )
                 .addInterceptor { chain ->
                     var request = chain.request()
@@ -165,6 +163,14 @@ class AppModule(context: Context) : Module() {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
         bind(ToolsApi::class.java).toInstance(toolsRetrofit.create(ToolsApi::class.java))
+
+        val transactionRetrofit = Retrofit.Builder()
+                .baseUrl(BuildConfig.QUIZ_API_URL)
+                .addConverterFactory(MoshiConverterFactory.create(moshi))
+                .client(quizOkHttpClient)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
+        bind(TransactionApi::class.java).toInstance(transactionRetrofit.create(TransactionApi::class.java))
 
         bind(ApiClient::class.java)
     }
