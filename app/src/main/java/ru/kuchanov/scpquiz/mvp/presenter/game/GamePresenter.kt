@@ -265,18 +265,21 @@ class GamePresenter @Inject constructor(
                             }
                             chars?.let { viewState.setKeyboardChars(it) }
 
-                            Single.merge(
-                                    gameInteractor.updateFinishedLevel(
-                                            quizLevelInfo.quiz.id,
-                                            nameRedundantCharsRemoved = nameRedundantCharsRemoved,
-                                            numberRedundantCharsRemoved = numberRedundantCharsRemoved
-                                    ),
-                                    gameInteractor.increaseScore(-price).toSingleDefault(-price)
+                            gameInteractor.updateFinishedLevel(
+                                    quizLevelInfo.quiz.id,
+                                    nameRedundantCharsRemoved = nameRedundantCharsRemoved,
+                                    numberRedundantCharsRemoved = numberRedundantCharsRemoved
                             )
+                                    .observeOn(Schedulers.io())
+                                    .flatMap { gameInteractor.increaseScore(-price).toSingleDefault(-price) }
                                     .map {
                                         val quizTransaction = QuizTransaction(
                                                 quizId = quizLevelInfo.quiz.id,
-                                                transactionType = TransactionType.NAME_CHARS_REMOVED,
+                                                transactionType = if (currentEnterType == EnterType.NAME) {
+                                                    TransactionType.NAME_CHARS_REMOVED
+                                                } else {
+                                                    TransactionType.NUMBER_CHARS_REMOVED
+                                                },
                                                 coinsAmount = -Constants.SUGGESTION_PRICE_REMOVE_CHARS
                                         )
                                         return@map appDatabase.transactionDao().insert(quizTransaction)
@@ -284,7 +287,11 @@ class GamePresenter @Inject constructor(
                                     .flatMapCompletable { quizTransactionId ->
                                         apiClient.addTransaction(
                                                 quizLevelInfo.quiz.id,
-                                                TransactionType.NAME_CHARS_REMOVED,
+                                                if (currentEnterType == EnterType.NAME) {
+                                                    TransactionType.NAME_CHARS_REMOVED
+                                                } else {
+                                                    TransactionType.NUMBER_CHARS_REMOVED
+                                                },
                                                 -Constants.SUGGESTION_PRICE_REMOVE_CHARS
                                         )
                                                 .doOnSuccess { nwQuizTransaction ->
@@ -297,6 +304,7 @@ class GamePresenter @Inject constructor(
                                                 .onErrorComplete()
                                     }
                                     .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
                                     .subscribeBy(
                                             onError = {
                                                 Timber.e(it)

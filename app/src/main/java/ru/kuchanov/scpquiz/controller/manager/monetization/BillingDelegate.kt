@@ -5,7 +5,9 @@ import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import com.android.billingclient.api.*
 import io.reactivex.BackpressureStrategy
+import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -93,32 +95,50 @@ class BillingDelegate(
         if (responseCode == BillingClient.BillingResponse.OK && purchases != null) {
             for (purchase in purchases) {
                 apiClient.validateInApp(purchase.sku, purchase.purchaseToken)
-                        //TODO transaction
+                        .flatMap {
+                            when (it) {
+                                VALID -> return@flatMap Single.just(it)
+                                INVALID -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.purchase_not_valid)))
+                                GOOGLE_SERVER_ERROR -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.purchase_validation_google_error)))
+                                else -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.error_buy)))
+                            }
+                        }
+                        .map {
+                            val quizTransaction = QuizTransaction(
+                                    quizId = null,
+                                    transactionType = TransactionType.ADV_BUY_NEVER_SHOW,
+                                    coinsAmount = Constants.COINS_FOR_ADS_DISABLE
+                            )
+                            return@map appDatabase.transactionDao().insert(quizTransaction)
+                        }
+                        .flatMapCompletable { quizTransactionId ->
+                            apiClient.addTransaction(
+                                    null,
+                                    TransactionType.ADV_WATCHED,
+                                    Constants.REWARD_VIDEO_ADS
+                            )
+                                    .doOnSuccess { nwQuizTransaction ->
+                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                quizTransactionId = quizTransactionId,
+                                                quizTransactionExternalId = nwQuizTransaction.id)
+                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                    }
+                                    .ignoreElement()
+                                    .onErrorComplete()
+                        }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeBy(
-                                onSuccess = {
-                                    Timber.d("validation request response: $it")
-
-                                    when (it) {
-                                        VALID -> {
-                                            preferencesManager.disableAds(true)
-                                            view?.showMessage(R.string.ads_disabled)
-                                        }
-                                        INVALID -> {
-                                            view?.showMessage(R.string.purchase_not_valid)
-                                        }
-                                        GOOGLE_SERVER_ERROR -> {
-                                            view?.showMessage(R.string.purchase_validation_google_error)
-                                        }
-                                    }
+                                onComplete = {
+                                    Timber.d("on Complete purchase")
+                                    preferencesManager.disableAds(true)
+                                    view?.showMessage(R.string.ads_disabled)
                                 },
                                 onError = {
                                     Timber.e(it)
-                                    view?.showMessage(R.string.error_buy)
+                                    view?.showMessage(it.message.toString())
                                 }
                         )
-
             }
         } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
             // Handle an error caused by a user cancelling the purchase flow.
