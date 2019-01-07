@@ -167,7 +167,7 @@ class LevelsPresenter @Inject constructor(
                         val quizTransaction = QuizTransaction(
                                 quizId = levelViewModel.quiz.id,
                                 transactionType = TransactionType.LEVEL_ENABLE_FOR_COINS,
-                                coinsAmount = Constants.COINS_FOR_LEVEL_UNLOCK
+                                coinsAmount = -Constants.COINS_FOR_LEVEL_UNLOCK
                         )
                         return@map appDatabase.transactionDao().insert(quizTransaction)
                     }
@@ -175,7 +175,7 @@ class LevelsPresenter @Inject constructor(
                         apiClient.addTransaction(
                                 levelViewModel.quiz.id,
                                 TransactionType.LEVEL_ENABLE_FOR_COINS,
-                                Constants.COINS_FOR_LEVEL_UNLOCK
+                                -Constants.COINS_FOR_LEVEL_UNLOCK
                         )
                                 .doOnSuccess { nwQuizTransaction ->
                                     appDatabase.transactionDao().updateQuizTransactionExternalId(

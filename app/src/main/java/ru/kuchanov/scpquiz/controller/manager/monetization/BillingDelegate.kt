@@ -114,8 +114,8 @@ class BillingDelegate(
                         .flatMapCompletable { quizTransactionId ->
                             apiClient.addTransaction(
                                     null,
-                                    TransactionType.ADV_WATCHED,
-                                    Constants.REWARD_VIDEO_ADS
+                                    TransactionType.ADV_BUY_NEVER_SHOW,
+                                    Constants.COINS_FOR_ADS_DISABLE
                             )
                                     .doOnSuccess { nwQuizTransaction ->
                                         appDatabase.transactionDao().updateQuizTransactionExternalId(
