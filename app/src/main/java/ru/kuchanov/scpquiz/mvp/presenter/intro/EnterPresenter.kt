@@ -20,9 +20,7 @@ import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.QuizConverter
-import ru.kuchanov.scpquiz.model.db.FinishedLevel
-import ru.kuchanov.scpquiz.model.db.User
-import ru.kuchanov.scpquiz.model.db.UserRole
+import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.ProgressPhrase
 import ru.kuchanov.scpquiz.model.ui.ProgressPhrasesJson
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -43,7 +41,7 @@ class EnterPresenter @Inject constructor(
         private val moshi: Moshi,
         private var quizConverter: QuizConverter,
         public override var apiClient: ApiClient
-) : BasePresenter<EnterView>(appContext, preferences, router, appDatabase) {
+) : BasePresenter<EnterView>(appContext, preferences, router, appDatabase, apiClient) {
 
     private var dbFilled: Boolean = false
 
@@ -156,6 +154,47 @@ class EnterPresenter @Inject constructor(
                             }
                         },
                         onError = Timber::e
+                )
+
+        syncScoreWithServer()
+    }
+
+    private fun syncScoreWithServer() {
+        Single.fromCallable {
+            val quizTransaction = QuizTransaction(
+                    quizId = null,
+                    transactionType = TransactionType.UPDATE_SYNC,
+                    coinsAmount = appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet().score
+            )
+            appDatabase.transactionDao().insert(quizTransaction)
+        }
+                .flatMapCompletable { quizTransactionId ->
+                    apiClient.addTransaction(
+                            null,
+                            TransactionType.UPDATE_SYNC,
+                            appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet().score
+                    )
+                            .doOnSuccess { nwQuizTransaction ->
+                                appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                        quizTransactionId = quizTransactionId,
+                                        quizTransactionExternalId = nwQuizTransaction.id)
+                                Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                            }
+                            .ignoreElement()
+                            .onErrorComplete()
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onError = {
+                            Timber.e(it)
+                            viewState.showMessage(it.message
+                                    ?: "Unexpected error")
+                        },
+                        onComplete = {
+                            viewState.showMessage("Sync score succeed")
+                            Timber.d("Sync score succeed")
+                        }
                 )
     }
 
