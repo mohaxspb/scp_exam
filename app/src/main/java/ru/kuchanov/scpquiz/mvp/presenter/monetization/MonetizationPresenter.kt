@@ -28,14 +28,20 @@ import javax.inject.Inject
 
 @InjectViewState
 class MonetizationPresenter @Inject constructor(
-    override var appContext: Application,
-    override var preferences: MyPreferenceManager,
-    override var router: ScpRouter,
-    override var appDatabase: AppDatabase,
-    public override var apiClient: ApiClient
-) : BasePresenter<MonetizationView>(appContext, preferences, router, appDatabase,apiClient) {
+        override var appContext: Application,
+        override var preferences: MyPreferenceManager,
+        override var router: ScpRouter,
+        override var appDatabase: AppDatabase,
+        public override var apiClient: ApiClient
+) : BasePresenter<MonetizationView>(appContext, preferences, router, appDatabase, apiClient) {
 
     var billingDelegate: BillingDelegate? = null
+
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+
+        loadInAppsToBuy()
+    }
 
     private fun buyNoAdsInApp() {
         Timber.d("buyNoAdsInApp")
@@ -53,49 +59,50 @@ class MonetizationPresenter @Inject constructor(
 
     fun onBillingClientReady() = billingDelegate?.apply {
         Flowable.combineLatest(
-            appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
-            this.loadInAppsToBuy(),
-            isHasDisableAdsInApp(),
-            Function3 { player: User, disableAdsSkuDetails: SkuDetails, isHasDisableAds: Boolean ->
-                Triple(player, disableAdsSkuDetails, isHasDisableAds)
-            }
+                appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
+                this.loadInAppsToBuy(),
+                isHasDisableAdsInApp(),
+                Function3 { player: User, disableAdsSkuDetails: SkuDetails, isHasDisableAds: Boolean ->
+                    Triple(player, disableAdsSkuDetails, isHasDisableAds)
+                }
         )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onNext = {
-                        viewState.showProgress(false)
+                        onNext = {
+                            viewState.showProgress(false)
 
-                        val hasDisableAdsInApp = it.third
-                        preferencesManager.disableAds(hasDisableAdsInApp)
+                            val hasDisableAdsInApp = it.third
+                            preferencesManager.disableAds(hasDisableAdsInApp)
 
-                        val actions = mutableListOf<MyListItem>()
-                        actions += MonetizationHeaderViewModel(it.first)
-                        actions += MonetizationViewModel(
-                            R.drawable.ic_no_money,
-                            appContext.getString(R.string.monetization_action_appodeal_title),
-                            appContext.getString(R.string.monetization_action_appodeal_description, Constants.REWARD_VIDEO_ADS),
-                            "FREE",
-                            false
-                        ) { showAppodealAds() }
-                        actions += MonetizationViewModel(
-                            R.drawable.ic_adblock,
-                            appContext.getString(R.string.monetization_action_noads_title),
-                            appContext.getString(R.string.monetization_action_noads_description),
-                            it.second.price,
-                            hasDisableAdsInApp
-                        ) { buyNoAdsInApp() }
+                            val actions = mutableListOf<MyListItem>()
+                            actions += MonetizationHeaderViewModel(it.first)
+                            actions += MonetizationViewModel(
+                                    R.drawable.ic_no_money,
+                                    appContext.getString(R.string.monetization_action_appodeal_title),
+                                    appContext.getString(R.string.monetization_action_appodeal_description, Constants.REWARD_VIDEO_ADS),
+                                    "FREE",
+                                    false
+                            ) { showAppodealAds() }
+                            actions += MonetizationViewModel(
+                                    R.drawable.ic_adblock,
+                                    appContext.getString(R.string.monetization_action_noads_title),
+                                    appContext.getString(R.string.monetization_action_noads_description),
+                                    it.second.price,
+                                    hasDisableAdsInApp
+                            ) { buyNoAdsInApp() }
 
-                        viewState.showMonetizationActions(actions)
+                            viewState.showMonetizationActions(actions)
 
-                        viewState.showRefreshFab(true)
-                    },
-                    onError = {
-                        Timber.e(it)
-                        viewState.showProgress(false)
-                        viewState.showMessage(it.message ?: appContext.getString(R.string.error_unknown))
-                        viewState.showRefreshFab(true)
-                    }
+                            viewState.showRefreshFab(true)
+                        },
+                        onError = {
+                            Timber.e(it)
+                            viewState.showProgress(false)
+                            viewState.showMessage(it.message
+                                    ?: appContext.getString(R.string.error_unknown))
+                            viewState.showRefreshFab(true)
+                        }
                 )
     }
 

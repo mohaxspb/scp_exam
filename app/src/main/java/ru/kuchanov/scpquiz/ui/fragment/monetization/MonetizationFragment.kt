@@ -75,8 +75,6 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         renewFab.setOnClickListener { presenter.loadInAppsToBuy() }
 
         presenter.billingDelegate = BillingDelegate(activity as AppCompatActivity, this, presenter)
-
-        presenter.loadInAppsToBuy()
     }
 
     override fun onDestroyView() {
