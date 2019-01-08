@@ -14,7 +14,7 @@ data class NwQuiz(
     val imageUrl: String,
     var quizTranslations: MutableList<NwQuizTranslation>,
     //status
-    val authorId: Long,
+    val authorId: Long?,
     val approved: Boolean,
     val approverId: Long?,
     //dates

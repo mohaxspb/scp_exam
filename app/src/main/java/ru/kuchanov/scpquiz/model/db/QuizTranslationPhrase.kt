@@ -14,7 +14,7 @@ data class QuizTranslationPhrase(
     val translation: String,
     //status
     val approved: Boolean,
-    val authorId: Long,
+    val authorId: Long?,
     val approverId: Long?,
     //dates
     val created: Date,
