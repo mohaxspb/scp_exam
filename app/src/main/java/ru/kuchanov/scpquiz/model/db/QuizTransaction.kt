@@ -25,8 +25,14 @@ enum class TransactionType {
     LEVEL_ENABLE_FOR_COINS,
     ADV_WATCHED,
     ADV_BUY_NEVER_SHOW,
-    UPDATE_SYNC
+    UPDATE_SYNC,
     // енум для синхронизации всех очков юзера при скачивании новой версии
+    NAME_ENTERED_MIGRATION,
+    NUMBER_ENTERED_MIGRATION,
+    NAME_CHARS_REMOVED_MIGRATION,
+    NUMBER_CHARS_REMOVED_MIGRATION,
+    LEVEL_AVAILABLE_MIGRATION
+    // енумы только для синхронизации с новой версией
 }
 
 

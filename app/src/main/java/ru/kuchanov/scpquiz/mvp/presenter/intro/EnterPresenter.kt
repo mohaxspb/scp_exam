@@ -155,8 +155,11 @@ class EnterPresenter @Inject constructor(
                         },
                         onError = Timber::e
                 )
+        if (appDatabase.transactionDao().getTransactionsCount() == 0) {
+            syncScoreWithServer()
+        }
 
-        syncScoreWithServer()
+        syncFinishedLevels()
     }
 
     private fun syncScoreWithServer() {
@@ -196,6 +199,25 @@ class EnterPresenter @Inject constructor(
                             Timber.d("Sync score succeed")
                         }
                 )
+    }
+
+    /**
+     * получаем все finishedLevel() ,  getAll()
+     * отфильтровываем все с levelAviable = true ,  filter()
+     * преобразовываем список finishedLevel в список transactions, map()
+     * пишем в БД, map()
+     * отправляем на сервер, flatmap()
+     * обновляем externalId doOnSuccess()
+     */
+    private fun syncFinishedLevels() {
+//
+//        appDatabase.finishedLevelsDao().getAll()
+//                .flatMapCompletable { finishedLevels ->
+//
+//                    finishedLevels.forEach { finishedLevel ->
+//
+//                    }
+//                }
     }
 
     private fun readProgressPhrases() {

@@ -25,4 +25,7 @@ interface TransactionDao {
 
     @Query("UPDATE QuizTransaction SET externalId = :quizTransactionExternalId WHERE id = :quizTransactionId")
     fun updateQuizTransactionExternalId(quizTransactionId: Long, quizTransactionExternalId: Long)
+
+    @Query("SELECT COUNT(*) FROM quiztransaction")
+    fun getTransactionsCount(): Int
 }
