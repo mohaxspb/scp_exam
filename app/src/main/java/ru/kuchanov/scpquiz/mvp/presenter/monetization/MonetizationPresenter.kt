@@ -66,6 +66,7 @@ class MonetizationPresenter @Inject constructor(
                         .doOnEvent { _, _ -> view?.showProgress(false) }
                         .subscribeBy(
                                 onSuccess = {
+                                    Timber.d("loadInAppsToBuy force: $it")
                                     onBillingClientReady()
                                 },
                                 onError = {
@@ -150,6 +151,8 @@ class MonetizationPresenter @Inject constructor(
                     .subscribeBy(
                             onComplete = {
                                 Timber.d("Successfully consume in app")
+                                view?.showMessage("Successfully consume inApp!")
+                                loadInAppsToBuy(true)
                             },
                             onError = {
                                 Timber.e(it, "Error while consume inApp")

@@ -130,6 +130,7 @@ class BillingDelegate(
                                     Timber.d("on Complete purchase")
                                     preferencesManager.disableAds(true)
                                     view?.showMessage(R.string.ads_disabled)
+                                    presenter?.loadInAppsToBuy(true)
                                 },
                                 onError = {
                                     Timber.e(it)
@@ -142,8 +143,9 @@ class BillingDelegate(
             //nothing to do
         } else {
             // Handle any other error codes.
+            Timber.e("Error while onPurchasesUpdated: $responseCode")
             view?.showMessage(context.getString(R.string.error_purchase, responseCode.toString())
-                    ?: "Error")
+                    ?: "Unexpected error")
         }
     }
 
