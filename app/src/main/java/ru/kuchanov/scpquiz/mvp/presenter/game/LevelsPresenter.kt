@@ -131,6 +131,9 @@ class LevelsPresenter @Inject constructor(
                             viewState.showLevels(it.first)
                             player = it.second
                             viewState.showCoins(it.second.score)
+                        },
+                        onError = {
+                            Timber.e(it, "error while load levels")
                         }
                 )
     }

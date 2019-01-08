@@ -1,7 +1,9 @@
 package ru.kuchanov.scpquiz.mvp.presenter.intro
 
 import android.app.Application
+import android.content.Intent
 import android.graphics.Bitmap
+import android.support.v4.content.ContextCompat
 import com.arellomobile.mvp.InjectViewState
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -25,6 +27,7 @@ import ru.kuchanov.scpquiz.model.ui.ProgressPhrase
 import ru.kuchanov.scpquiz.model.ui.ProgressPhrasesJson
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.EnterView
+import ru.kuchanov.scpquiz.services.UploadService
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.StorageUtils
 import timber.log.Timber
@@ -64,13 +67,14 @@ class EnterPresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
 
-        val dbFillObservable = Single.fromCallable {
-            Timber.d("read initial data from json")
-            val json = StorageUtils.readFromAssets(appContext, "baseData.json")
-            val type = Types.newParameterizedType(List::class.java, NwQuiz::class.java)
-            val adapter = moshi.adapter<List<NwQuiz>>(type)
-            adapter.fromJson(json)
-        }
+        val dbFillObservable = Single
+                .fromCallable {
+                    Timber.d("read initial data from json")
+                    val json = StorageUtils.readFromAssets(appContext, "baseData.json")
+                    val type = Types.newParameterizedType(List::class.java, NwQuiz::class.java)
+                    val adapter = moshi.adapter<List<NwQuiz>>(type)
+                    adapter.fromJson(json)
+                }
                 .map { initialQuizes -> initialQuizes.sortedBy { it.id } }
                 .map { initialQuizes ->
                     Timber.d("write initial data to DB")
@@ -111,7 +115,8 @@ class EnterPresenter @Inject constructor(
                     -1L
                 }
 
-        val dbFillIfEmptyObservable = Single.fromCallable { appDatabase.quizDao().getCount() }
+        val dbFillIfEmptyObservable = Single
+                .fromCallable { appDatabase.quizDao().getCount() }
                 .flatMap {
                     if (it != 0L) {
                         Timber.d("data in DB already exists")
@@ -129,9 +134,16 @@ class EnterPresenter @Inject constructor(
                     }
                 }
                 .flatMap {
-                    if (dbFilled && secondsPast > 2) Flowable.error(IllegalStateException()) else Flowable.just(it)
+                    if (dbFilled && secondsPast > 2) {
+                        Flowable.error(IllegalStateException("Stop condition is true"))
+                    } else {
+                        Flowable.just(it)
+                    }
                 }
-                .onErrorResumeNext { _: Throwable -> Flowable.empty() }
+                .onErrorResumeNext { error: Throwable ->
+                    Timber.d("onErrorResumeNext: $error")
+                    Flowable.empty()
+                }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
@@ -147,6 +159,9 @@ class EnterPresenter @Inject constructor(
                         },
                         onComplete = {
                             Timber.d("onComplete")
+                            val serviceIntent = Intent(appContext, UploadService::class.java)
+                            ContextCompat.startForegroundService(appContext, serviceIntent)
+
                             if (preferences.isIntroDialogShown()) {
                                 router.newRootScreen(Constants.Screens.QUIZ_LIST)
                             } else {

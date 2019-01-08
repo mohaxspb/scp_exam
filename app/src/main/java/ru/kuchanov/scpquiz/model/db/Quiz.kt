@@ -14,7 +14,7 @@ data class Quiz(
         val scpNumber: String,
         val imageUrl: String,
         //status
-        val authorId: Long,
+        val authorId: Long?,
         val approved: Boolean,
         val approverId: Long?,
         //dates

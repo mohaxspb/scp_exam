@@ -7,6 +7,7 @@ import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function3
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
@@ -40,7 +41,7 @@ class MonetizationPresenter @Inject constructor(
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
-        loadInAppsToBuy()
+        billingDelegate?.startConnection()
     }
 
     private fun buyNoAdsInApp() {
@@ -55,44 +56,71 @@ class MonetizationPresenter @Inject constructor(
 
     fun onNavigationIconClicked() = router.exit()
 
-    fun loadInAppsToBuy() = billingDelegate?.startConnection()
+    fun loadInAppsToBuy(force: Boolean) {
+        if (force) {
+            billingDelegate?.apply {
+                userInAppHistory()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe { view?.showProgress(true) }
+                        .doOnEvent { _, _ -> view?.showProgress(false) }
+                        .subscribeBy(
+                                onSuccess = {
+                                    Timber.d("loadInAppsToBuy force: $it")
+                                    onBillingClientReady()
+                                },
+                                onError = {
+                                    Timber.e(it, "error while force update users purchases")
+                                    view?.showMessage(it.message
+                                            ?: context.getString(R.string.error_unexpected))
+                                }
+                        )
+                        .addTo(compositeDisposable)
+            }
+        } else {
+            onBillingClientReady()
+        }
+    }
 
-    fun onBillingClientReady() = billingDelegate?.apply {
-        Flowable.combineLatest(
-                appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
-                this.loadInAppsToBuy(),
-                isHasDisableAdsInApp(),
-                Function3 { player: User, disableAdsSkuDetails: SkuDetails, isHasDisableAds: Boolean ->
-                    Triple(player, disableAdsSkuDetails, isHasDisableAds)
-                }
-        )
+    fun onBillingClientReady() {
+        Flowable
+                .combineLatest(
+                        appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
+                        billingDelegate!!.loadInAppsToBuy().toFlowable(),
+                        billingDelegate!!.isHasDisableAdsInApp().toFlowable(),
+                        Function3 { player: User, disableAdsSkuDetails: SkuDetails, isHasDisableAds: Boolean ->
+                            Triple(player, disableAdsSkuDetails, isHasDisableAds)
+                        }
+                )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { viewState?.showProgress(true) }
+                .doOnNext { viewState.showProgress(false) }
                 .subscribeBy(
                         onNext = {
-                            viewState.showProgress(false)
-
                             val hasDisableAdsInApp = it.third
-                            preferencesManager.disableAds(hasDisableAdsInApp)
+                            preferences.disableAds(hasDisableAdsInApp)
 
-                            val actions = mutableListOf<MyListItem>()
-                            actions += MonetizationHeaderViewModel(it.first)
-                            actions += MonetizationViewModel(
+                            val items = mutableListOf<MyListItem>()
+                            items += MonetizationHeaderViewModel(it.first)
+                            items += MonetizationViewModel(
                                     R.drawable.ic_no_money,
                                     appContext.getString(R.string.monetization_action_appodeal_title),
                                     appContext.getString(R.string.monetization_action_appodeal_description, Constants.REWARD_VIDEO_ADS),
                                     "FREE",
+                                    null,
                                     false
                             ) { showAppodealAds() }
-                            actions += MonetizationViewModel(
+                            items += MonetizationViewModel(
                                     R.drawable.ic_adblock,
                                     appContext.getString(R.string.monetization_action_noads_title),
                                     appContext.getString(R.string.monetization_action_noads_description),
                                     it.second.price,
+                                    it.second.sku,
                                     hasDisableAdsInApp
                             ) { buyNoAdsInApp() }
 
-                            viewState.showMonetizationActions(actions)
+                            viewState.showMonetizationActions(items)
 
                             viewState.showRefreshFab(true)
                         },
@@ -104,11 +132,34 @@ class MonetizationPresenter @Inject constructor(
                             viewState.showRefreshFab(true)
                         }
                 )
+                .addTo(compositeDisposable)
     }
 
     fun onBillingClientFailedToStart(@BillingClient.BillingResponse billingResponseCode: Int) {
         viewState.showProgress(false)
         viewState.showMessage(appContext.getString(R.string.error_billing_client_connection, billingResponseCode))
         viewState.showRefreshFab(true)
+    }
+
+    fun onOwnedItemClicked(sku: String) {
+        billingDelegate?.apply {
+            consumeInAppIfUserHasIt(sku)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe { view?.showProgress(true) }
+                    .doOnEvent { view?.showProgress(false) }
+                    .subscribeBy(
+                            onComplete = {
+                                Timber.d("Successfully consume in app")
+                                view?.showMessage("Successfully consume inApp!")
+                                loadInAppsToBuy(true)
+                            },
+                            onError = {
+                                Timber.e(it, "Error while consume inApp")
+                                view?.showMessage("Error while consume inApp: ${it.message}")
+                            }
+                    )
+                    .addTo(compositeDisposable)
+        }
     }
 }

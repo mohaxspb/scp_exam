@@ -16,7 +16,7 @@ data class NwQuizTranslation(
     var quizTranslationPhrases: MutableList<NwQuizTranslationPhrase>,
     //status
     val approved: Boolean,
-    val authorId: Long,
+    val authorId: Long?,
     val approverId: Long?,
     //dates
     val created: Date,

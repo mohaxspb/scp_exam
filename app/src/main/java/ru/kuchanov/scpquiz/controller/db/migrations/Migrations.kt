@@ -36,14 +36,100 @@ object Migrations {
                 database.execSQL(
                         """
                             CREATE TABLE QuizTransaction(
-                                 id INTEGER NOT NULL,
-                                 quizId INTEGER ,
-                                 externalId INTEGER ,
+                                 id INTEGER,
+                                 quizId INTEGER,
+                                 externalId INTEGER,
                                  transactionType TEXT NOT NULL,
                                  coinsAmount INTEGER,
                                  PRIMARY KEY (id)
                             )
-     """)
+                            """)
+            } catch (e: Throwable) {
+                Timber.e(e)
+            }
+        }
+    }
+
+    val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            Timber.d("executeMigration 3_4")
+            try {
+                //set quiz.authorId be nullable
+                database.execSQL(
+                        """
+                            CREATE TABLE QuizTemp(
+                                id INTEGER NOT NULL,
+                                scpNumber TEXT NOT NULL,
+                                imageUrl TEXT NOT NULL,
+                                authorId INTEGER,
+                                approved INTEGER NOT NULL,
+                                approverId INTEGER,
+                                created INTEGER NOT NULL,
+                                updated INTEGER NOT NULL,
+                                PRIMARY KEY(id)
+                            )
+                            """)
+                database.execSQL("""
+                    INSERT INTO QuizTemp SELECT * FROM Quiz
+                    """)
+                database.execSQL("""
+                    DROP TABLE Quiz;
+                    """)
+                database.execSQL("""
+                    ALTER TABLE QuizTemp RENAME TO Quiz;
+                    """)
+
+                //set quizTranslation.authorId be nullable
+                database.execSQL(
+                        """
+                            CREATE TABLE QuizTranslationTemp(
+                                id INTEGER NOT NULL,
+                                quizId INTEGER NOT NULL,
+                                langCode TEXT NOT NULL,
+                                translation TEXT NOT NULL,
+                                description TEXT NOT NULL,
+                                approved INTEGER NOT NULL,
+                                authorId INTEGER,
+                                approverId INTEGER,
+                                created INTEGER NOT NULL,
+                                updated INTEGER NOT NULL,
+                                PRIMARY KEY(id)
+                            )
+                            """)
+                database.execSQL("""
+                    INSERT INTO QuizTranslationTemp SELECT * FROM QuizTranslation
+                    """)
+                database.execSQL("""
+                    DROP TABLE QuizTranslation;
+                    """)
+                database.execSQL("""
+                    ALTER TABLE QuizTranslationTemp RENAME TO QuizTranslation;
+                    """)
+
+                //set quizTranslationPhrase.authorId be nullable
+                database.execSQL(
+                        """
+                            CREATE TABLE QuizTranslationPhraseTemp(
+                                id INTEGER NOT NULL,
+                                quizTranslationId INTEGER NOT NULL,
+                                translation TEXT NOT NULL,
+                                approved INTEGER NOT NULL,
+                                authorId INTEGER,
+                                approverId INTEGER,
+                                created INTEGER NOT NULL,
+                                updated INTEGER NOT NULL,
+                                PRIMARY KEY(id)
+                            )
+                            """)
+                database.execSQL("""
+                    INSERT INTO QuizTranslationPhraseTemp SELECT * FROM QuizTranslationPhrase
+                    """)
+                database.execSQL("""
+                    DROP TABLE QuizTranslationPhrase;
+                    """)
+                database.execSQL("""
+                    ALTER TABLE QuizTranslationPhraseTemp RENAME TO QuizTranslationPhrase;
+                    """)
             } catch (e: Throwable) {
                 Timber.e(e)
             }
