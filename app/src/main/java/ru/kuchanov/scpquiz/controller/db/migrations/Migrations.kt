@@ -36,9 +36,9 @@ object Migrations {
                 database.execSQL(
                         """
                             CREATE TABLE QuizTransaction(
-                                 id INTEGER NOT NULL,
-                                 quizId INTEGER ,
-                                 externalId INTEGER ,
+                                 id INTEGER,
+                                 quizId INTEGER,
+                                 externalId INTEGER,
                                  transactionType TEXT NOT NULL,
                                  coinsAmount INTEGER,
                                  PRIMARY KEY (id)
