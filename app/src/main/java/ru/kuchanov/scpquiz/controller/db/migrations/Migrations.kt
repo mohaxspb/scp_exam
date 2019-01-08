@@ -43,7 +43,26 @@ object Migrations {
                                  coinsAmount INTEGER,
                                  PRIMARY KEY (id)
                             )
-     """)
+                            """)
+            } catch (e: Throwable) {
+                Timber.e(e)
+            }
+        }
+    }
+
+    val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            Timber.d("executeMigration 2_3")
+            //add column for available property with true as default
+            try {
+                database.execSQL(
+                        //todo quiz, translation, phrase. Get sql from /schemas
+                        """
+                            CREATE TABLE Quiz(..., JOB_TYPES NULL, ...);
+                            INSERT INTO Jobs2 SELECT * FROM Jobs;
+                            DROP TABLE Jobs;
+                            ALTER TABLE Jobs2 RENAME TO Jobs;
+                            """)
             } catch (e: Throwable) {
                 Timber.e(e)
             }

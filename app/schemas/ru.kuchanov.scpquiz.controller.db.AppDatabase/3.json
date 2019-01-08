@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "58902d573d7140210b9017fcb1037f52",
+    "identityHash": "49c58f7766a325ca3d7cecbf1d8dea14",
     "entities": [
       {
         "tableName": "Quiz",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `scpNumber` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `authorId` INTEGER NOT NULL, `approved` INTEGER NOT NULL, `approverId` INTEGER, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `scpNumber` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `authorId` INTEGER, `approved` INTEGER NOT NULL, `approverId` INTEGER, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -30,7 +30,7 @@
             "fieldPath": "authorId",
             "columnName": "authorId",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "approved",
@@ -68,7 +68,7 @@
       },
       {
         "tableName": "QuizTranslation",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `quizId` INTEGER NOT NULL, `langCode` TEXT NOT NULL, `translation` TEXT NOT NULL, `description` TEXT NOT NULL, `approved` INTEGER NOT NULL, `authorId` INTEGER NOT NULL, `approverId` INTEGER, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `quizId` INTEGER NOT NULL, `langCode` TEXT NOT NULL, `translation` TEXT NOT NULL, `description` TEXT NOT NULL, `approved` INTEGER NOT NULL, `authorId` INTEGER, `approverId` INTEGER, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -110,7 +110,7 @@
             "fieldPath": "authorId",
             "columnName": "authorId",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "approverId",
@@ -142,7 +142,7 @@
       },
       {
         "tableName": "QuizTranslationPhrase",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `quizTranslationId` INTEGER NOT NULL, `translation` TEXT NOT NULL, `approved` INTEGER NOT NULL, `authorId` INTEGER NOT NULL, `approverId` INTEGER, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `quizTranslationId` INTEGER NOT NULL, `translation` TEXT NOT NULL, `approved` INTEGER NOT NULL, `authorId` INTEGER, `approverId` INTEGER, `created` INTEGER NOT NULL, `updated` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -172,7 +172,7 @@
             "fieldPath": "authorId",
             "columnName": "authorId",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "approverId",
@@ -343,7 +343,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"58902d573d7140210b9017fcb1037f52\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"49c58f7766a325ca3d7cecbf1d8dea14\")"
     ]
   }
 }

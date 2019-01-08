@@ -72,7 +72,7 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
 
         toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
 
-        renewFab.setOnClickListener { presenter.loadInAppsToBuy() }
+        renewFab.setOnClickListener { presenter.loadInAppsToBuy(true) }
 
         presenter.billingDelegate = BillingDelegate(activity as AppCompatActivity, this, presenter)
     }
@@ -91,7 +91,7 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         recyclerView.layoutManager = LinearLayoutManager(activity)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
         delegateManager.addDelegate(MonetizationHeaderDelegate())
-        delegateManager.addDelegate(MonetizationDelegate())
+        delegateManager.addDelegate(MonetizationDelegate {presenter.onOwnedItemClicked(it)})
         adapter = ListDelegationAdapter(delegateManager)
         recyclerView.adapter = adapter
     }

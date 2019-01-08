@@ -1,12 +1,9 @@
 package ru.kuchanov.scpquiz.controller.manager.monetization
 
-import android.arch.persistence.room.Database
 import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import com.android.billingclient.api.*
-import io.reactivex.BackpressureStrategy
 import io.reactivex.Completable
-import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -150,52 +147,100 @@ class BillingDelegate(
         }
     }
 
-    fun loadInAppsToBuy(): Flowable<SkuDetails> = Flowable.create<SkuDetails>({
-        val skuList = listOf(Constants.SKU_INAPP_DISABLE_ADS)
-        val params = SkuDetailsParams.newBuilder()
-                .setSkusList(skuList)
-                .setType(BillingClient.SkuType.INAPP)
-                .build()
-        billingClient.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
-            Timber.d("inapps: $responseCode, $skuDetailsList")
-            if (responseCode == BillingClient.BillingResponse.OK && skuDetailsList != null) {
-                val disableAdsInapp = skuDetailsList.firstOrNull { it.sku == Constants.SKU_INAPP_DISABLE_ADS }
-                if (disableAdsInapp != null) {
-                    it.onNext(disableAdsInapp)
-                    it.onComplete()
+    fun loadInAppsToBuy(): Single<SkuDetails> =
+            Single
+                    .create<SkuDetails> { emitter ->
+                        val skuList = listOf(Constants.SKU_INAPP_DISABLE_ADS)
+                        val params = SkuDetailsParams.newBuilder()
+                                .setSkusList(skuList)
+                                .setType(BillingClient.SkuType.INAPP)
+                                .build()
+                        if (clientReady) {
+                            billingClient.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
+                                Timber.d("inapps: $responseCode, $skuDetailsList")
+                                if (responseCode == BillingClient.BillingResponse.OK && skuDetailsList != null) {
+                                    val disableAdsInapp = skuDetailsList.firstOrNull {
+                                        it.sku == Constants.SKU_INAPP_DISABLE_ADS
+                                    }
+                                    if (disableAdsInapp != null) {
+                                        emitter.onSuccess(disableAdsInapp)
+                                    } else {
+                                        emitter.onError(IllegalStateException("skuDetail with sku not found"))
+                                    }
+                                }
+                            }
+                        } else {
+                            emitter.onError(IllegalStateException(context.getString(R.string.error_billing_client_not_ready)))
+                        }
+                    }
+
+    fun startPurchaseFlow(sku: String): Boolean =
+            if (clientReady) {
+                val flowParams = BillingFlowParams.newBuilder()
+                        .setSku(sku)
+                        .setType(BillingClient.SkuType.INAPP)
+                        .build()
+                val responseCode = billingClient.launchBillingFlow(activity, flowParams)
+                Timber.d("startPurchaseFlow responseCode $responseCode")
+
+                responseCode == BillingClient.BillingResponse.OK
+            } else {
+                view?.showMessage(R.string.error_billing_client_not_ready)
+                false
+            }
+
+    fun isHasDisableAdsInApp(): Single<Boolean> =
+            Single
+                    .fromCallable {
+                        if (clientReady) {
+                            billingClient.queryPurchases(BillingClient.SkuType.INAPP)
+                        } else {
+                            throw IllegalStateException(context.getString(R.string.error_billing_client_not_ready))
+                        }
+                    }
+                    .flatMap { purchasesResult ->
+                        val disableAdsInApp = purchasesResult
+                                .purchasesList
+                                ?.firstOrNull { it.sku == Constants.SKU_INAPP_DISABLE_ADS }
+                        if (disableAdsInApp == null) {
+                            Single.just(false)
+                        } else {
+                            apiClient
+                                    .validateInApp(disableAdsInApp.sku, disableAdsInApp.purchaseToken)
+                                    .map { it == VALID }
+                        }
+                    }
+
+    fun consumeInAppIfUserHasIt(sku: String): Completable =
+            userInAppHistory()
+                    .map { inApps -> inApps.first { it.sku == sku }.purchaseToken }
+                    .flatMapCompletable { consumeInApp(it) }
+
+    private fun consumeInApp(purchaseTokenToConsume: String): Completable =
+            Completable.create {
+                if (clientReady) {
+                    billingClient.consumeAsync(purchaseTokenToConsume) { responseCode, purchaseToken ->
+                        when (responseCode) {
+                            BillingClient.BillingResponse.OK -> it.onComplete()
+                            else -> it.onError(IllegalStateException("Error while consume inapp. Code: $responseCode"))
+                        }
+                    }
                 } else {
-                    it.onError(IllegalStateException("skuDetail with sku not found"))
+                    throw IllegalStateException(context.getString(R.string.error_billing_client_not_ready))
                 }
             }
-        }
-    }, BackpressureStrategy.BUFFER)
 
-    fun startPurchaseFlow(sku: String): Boolean {
-        return if (clientReady) {
-            val flowParams = BillingFlowParams.newBuilder()
-                    .setSku(sku)
-                    .setType(BillingClient.SkuType.INAPP)
-                    .build()
-            val responseCode = billingClient.launchBillingFlow(activity, flowParams)
-            Timber.d("startPurchaseFlow responseCode $responseCode")
-
-            responseCode == BillingClient.BillingResponse.OK
-        } else {
-            view?.showMessage(R.string.error_billing_client_not_ready)
-            false
-        }
-    }
-
-    fun isHasDisableAdsInApp(): Flowable<Boolean> = Flowable.fromCallable { billingClient.queryPurchases(BillingClient.SkuType.INAPP) }
-            .flatMap { purchasesResult ->
-                val disableAdsInApp = purchasesResult.purchasesList?.firstOrNull { it.sku == Constants.SKU_INAPP_DISABLE_ADS }
-                if (disableAdsInApp == null) {
-                    Flowable.just(false)
+    fun userInAppHistory(): Single<List<Purchase>> =
+            Single.create {
+                if (clientReady) {
+                    billingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.INAPP) { responseCode, purchasesList ->
+                        when (responseCode) {
+                            BillingClient.BillingResponse.OK -> it.onSuccess(purchasesList)
+                            else -> it.onError(IllegalStateException("Error while get userInAppHistory. Code: $responseCode"))
+                        }
+                    }
                 } else {
-                    apiClient
-                            .validateInApp(disableAdsInApp.sku, disableAdsInApp.purchaseToken)
-                            .map { it == VALID }
-                            .toFlowable()
+                    throw IllegalStateException(context.getString(R.string.error_billing_client_not_ready))
                 }
             }
 }
