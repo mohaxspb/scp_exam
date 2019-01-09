@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.mvp.presenter.intro
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
 import android.graphics.Bitmap
@@ -21,6 +22,7 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.api.NwQuiz
+import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
 import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.ProgressPhrase
@@ -52,6 +54,7 @@ class EnterPresenter @Inject constructor(
 
     private lateinit var progressPhrases: List<ProgressPhrase>
 
+    @SuppressLint("CheckResult")
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
@@ -160,7 +163,7 @@ class EnterPresenter @Inject constructor(
                         onComplete = {
                             Timber.d("onComplete")
                             val serviceIntent = Intent(appContext, UploadService::class.java)
-                            ContextCompat.startForegroundService(appContext, serviceIntent)
+//                            ContextCompat.startForegroundService(appContext, serviceIntent)
 
                             if (preferences.isIntroDialogShown()) {
                                 router.newRootScreen(Constants.Screens.QUIZ_LIST)
@@ -170,10 +173,12 @@ class EnterPresenter @Inject constructor(
                         },
                         onError = Timber::e
                 )
-        if (appDatabase.transactionDao().getTransactionsCount() == 0) {
-            syncScoreWithServer()
-        }
 
+        Single.fromCallable {
+            if (appDatabase.transactionDao().getTransactionsCount() == 0) {
+                syncScoreWithServer()
+            }
+        }
         syncFinishedLevels()
     }
 
@@ -218,22 +223,82 @@ class EnterPresenter @Inject constructor(
 
     /**
      * получаем все finishedLevel() ,  getAll()
-     * отфильтровываем все с levelAviable = true ,  filter()
+     * отфильтровываем все с levelAvailable = true ,  filter()
      * преобразовываем список finishedLevel в список transactions, map()
      * пишем в БД, map()
      * отправляем на сервер, flatmap()
      * обновляем externalId doOnSuccess()
      */
     private fun syncFinishedLevels() {
-//
-//        appDatabase.finishedLevelsDao().getAll()
-//                .flatMapCompletable { finishedLevels ->
-//
-//                    finishedLevels.forEach { finishedLevel ->
-//
-//                    }
-//                }
+        Timber.d("start Sync FinishedLevels")
+        appDatabase.finishedLevelsDao().getAll()
+                .map { finishedLevels -> finishedLevels.filter { it.isLevelAvailable } }
+                .map { levelsAvailableTrue ->
+                    val finishedLevelsToTransactions = arrayListOf<QuizTransaction>()
+                    levelsAvailableTrue.forEach { levelAvailable ->
+                        val quizId = levelAvailable.quizId
+                        if (levelAvailable.nameRedundantCharsRemoved) {
+                            finishedLevelsToTransactions.add(quizTransactionForMigration(quizId, TransactionType.NAME_CHARS_REMOVED_MIGRATION))
+                        }
+                        if (levelAvailable.numberRedundantCharsRemoved) {
+                            finishedLevelsToTransactions.add(quizTransactionForMigration(quizId, TransactionType.NUMBER_CHARS_REMOVED_MIGRATION))
+                        }
+                        if (levelAvailable.scpNameFilled) {
+                            finishedLevelsToTransactions.add(quizTransactionForMigration(quizId, TransactionType.NAME_ENTERED_MIGRATION))
+                        }
+                        if (levelAvailable.scpNumberFilled) {
+                            finishedLevelsToTransactions.add(quizTransactionForMigration(quizId, TransactionType.NUMBER_ENTERED_MIGRATION))
+                        } else {
+                            finishedLevelsToTransactions.add(quizTransactionForMigration(quizId, TransactionType.LEVEL_AVAILABLE_MIGRATION))
+                        }
+                    }
+                    Timber.d("finishedLevelsToTransactions.toList() : %s", finishedLevelsToTransactions.toList())
+                    return@map finishedLevelsToTransactions.toList()
+                }
+                .map { quizTransactionList ->
+                    Timber.d("quizTransactionList :%s", quizTransactionList)
+                    appDatabase.transactionDao().insertQuizTransactionList(quizTransactionList)
+
+                }
+                .flatMapIterable { it }
+                .flatMapSingle { localId ->
+                    Timber.d("Local IDS :%s", localId)
+
+                    return@flatMapSingle apiClient.addTransaction(
+                            quizId = appDatabase.transactionDao().getOneById(localId).quizId,
+                            typeTransaction = appDatabase.transactionDao().getOneById(localId).transactionType,
+                            coinsAmount = appDatabase.transactionDao().getOneById(localId).coinsAmount
+                    )
+                            .doOnSuccess { nwQuizTransaction ->
+                                Timber.d("OnSuccess :%s", nwQuizTransaction)
+                                appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                        quizTransactionId = localId,
+                                        quizTransactionExternalId = nwQuizTransaction.id)
+                                Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(localId))
+                            }
+                }
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onError = {
+                            Timber.e(it,"Error Finished Levels")
+                            viewState.showMessage(it.message
+                                    ?: "Unexpected error")
+                        },
+                        onSuccess = {
+                            Timber.d("Finished Levels into transactions succeed: $it")
+                            viewState.showMessage("Finished Levels into transactions succeed")
+                        }
+                )
     }
+
+    private fun quizTransactionForMigration(quizId: Long, transactionType: TransactionType): QuizTransaction =
+            QuizTransaction(
+                    coinsAmount = 0,
+                    quizId = quizId,
+                    transactionType = transactionType
+            )
 
     private fun readProgressPhrases() {
         val json = StorageUtils.readFromAssets(appContext, "progressPhrases.json")

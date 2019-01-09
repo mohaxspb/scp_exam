@@ -11,11 +11,20 @@ interface TransactionDao {
     @Query("SELECT * FROM QuizTransaction")
     fun getAll(): Flowable<List<QuizTransaction>>
 
+    @Query("SELECT * FROM QuizTransaction WHERE id IN (:ids)")
+    fun getAllByIds(ids: List<Long>): Single<List<QuizTransaction>>
+
     @Query("SELECT * FROM QuizTransaction WHERE id = :id")
     fun getOneById(id: Long): QuizTransaction
 
+//    @Query("SELECT * FROM QuizTransaction WHERE id = :id")
+//    fun getQuizIdById(id: Long): Long?
+
     @Insert
     fun insert(quizTransaction: QuizTransaction): Long
+
+    @Insert
+    fun insertQuizTransactionList(quizTransactionList: List<QuizTransaction>): List<Long>
 
     @Update
     fun update(quizTransaction: QuizTransaction): Int
