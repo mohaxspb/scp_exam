@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "49c58f7766a325ca3d7cecbf1d8dea14",
+    "identityHash": "4bf7d2641337b4fdb3b8a3f208e094df",
     "entities": [
       {
         "tableName": "Quiz",
@@ -298,7 +298,7 @@
       },
       {
         "tableName": "QuizTransaction",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `quizId` INTEGER, `externalId` INTEGER, `transactionType` TEXT NOT NULL, `coinsAmount` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `quizId` INTEGER, `externalId` INTEGER, `transactionType` TEXT NOT NULL, `coinsAmount` INTEGER, `created` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -329,6 +329,12 @@
             "columnName": "coinsAmount",
             "affinity": "INTEGER",
             "notNull": false
+          },
+          {
+            "fieldPath": "created",
+            "columnName": "created",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -343,7 +349,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"49c58f7766a325ca3d7cecbf1d8dea14\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"4bf7d2641337b4fdb3b8a3f208e094df\")"
     ]
   }
 }

@@ -82,7 +82,8 @@ class ApiClient @Inject constructor(
             transactionApi.addTransaction(
                     quizId,
                     typeTransaction,
-                    coinsAmount
+                    coinsAmount,
+                    System.currentTimeMillis().toString()
             )
 
     fun addAllTransactions(transactions: List<QuizTransaction>): Single<List<NwQuizTransaction>> =

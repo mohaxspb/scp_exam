@@ -17,9 +17,6 @@ interface TransactionDao {
     @Query("SELECT * FROM QuizTransaction WHERE id = :id")
     fun getOneById(id: Long): QuizTransaction
 
-//    @Query("SELECT * FROM QuizTransaction WHERE id = :id")
-//    fun getQuizIdById(id: Long): Long?
-
     @Insert
     fun insert(quizTransaction: QuizTransaction): Long
 

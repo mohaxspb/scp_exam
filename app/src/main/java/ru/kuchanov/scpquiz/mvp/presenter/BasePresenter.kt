@@ -18,6 +18,7 @@ import ru.kuchanov.scpquiz.model.db.TransactionType
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.BaseView
 import timber.log.Timber
+import java.util.*
 
 abstract class BasePresenter<V : BaseView>(
         protected open var appContext: Application,

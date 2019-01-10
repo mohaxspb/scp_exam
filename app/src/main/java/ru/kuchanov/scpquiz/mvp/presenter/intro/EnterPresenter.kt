@@ -22,7 +22,6 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.api.NwQuiz
-import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
 import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.ProgressPhrase
@@ -163,7 +162,7 @@ class EnterPresenter @Inject constructor(
                         onComplete = {
                             Timber.d("onComplete")
                             val serviceIntent = Intent(appContext, UploadService::class.java)
-//                            ContextCompat.startForegroundService(appContext, serviceIntent)
+                            ContextCompat.startForegroundService(appContext, serviceIntent)
 
                             if (preferences.isIntroDialogShown()) {
                                 router.newRootScreen(Constants.Screens.QUIZ_LIST)
@@ -173,12 +172,15 @@ class EnterPresenter @Inject constructor(
                         },
                         onError = Timber::e
                 )
-
         Single.fromCallable {
             if (appDatabase.transactionDao().getTransactionsCount() == 0) {
                 syncScoreWithServer()
             }
         }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe()
+
         syncFinishedLevels()
     }
 
@@ -190,6 +192,7 @@ class EnterPresenter @Inject constructor(
                     coinsAmount = appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet().score
             )
             appDatabase.transactionDao().insert(quizTransaction)
+
         }
                 .flatMapCompletable { quizTransactionId ->
                     apiClient.addTransaction(
@@ -282,7 +285,7 @@ class EnterPresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onError = {
-                            Timber.e(it,"Error Finished Levels")
+                            Timber.e(it, "Error Finished Levels")
                             viewState.showMessage(it.message
                                     ?: "Unexpected error")
                         },
