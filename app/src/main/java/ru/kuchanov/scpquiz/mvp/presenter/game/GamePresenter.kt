@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -17,9 +16,9 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.interactor.GameInteractor
+import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
-import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.QuizTranslationPhrase
 import ru.kuchanov.scpquiz.model.db.TransactionType
 import ru.kuchanov.scpquiz.model.ui.ChatAction
@@ -46,9 +45,10 @@ class GamePresenter @Inject constructor(
         override var router: ScpRouter,
         override var appDatabase: AppDatabase,
         private var gameInteractor: GameInteractor,
+        override var transactionInteractor: TransactionInteractor,
         public override var apiClient: ApiClient
 
-) : BasePresenter<GameView>(appContext, preferences, router, appDatabase, apiClient), AuthPresenter<GameFragment> {
+) : BasePresenter<GameView>(appContext, preferences, router, appDatabase, apiClient,transactionInteractor), AuthPresenter<GameFragment> {
 
     override fun getAuthView(): GameView = viewState
 
@@ -254,17 +254,20 @@ class GamePresenter @Inject constructor(
                             )
                             var nameRedundantCharsRemoved: Boolean? = null
                             var numberRedundantCharsRemoved: Boolean? = null
-                            var chars: List<Char>? = null
+                            val chars: List<Char>?
+                            val transactionType: TransactionType
+                            val coinsAmount: Int = -Constants.SUGGESTION_PRICE_REMOVE_CHARS
                             if (currentEnterType == EnterType.NAME) {
                                 nameRedundantCharsRemoved = true
+                                transactionType = TransactionType.NAME_CHARS_REMOVED
                                 chars = quizLevelInfo.quiz.quizTranslations?.first()?.translation?.toList()
                                         ?: throw IllegalStateException("no chars for keyboard")
-                            } else if (currentEnterType == EnterType.NUMBER) {
+                            } else {
                                 numberRedundantCharsRemoved = true
+                                transactionType = TransactionType.NUMBER_CHARS_REMOVED
                                 chars = quizLevelInfo.quiz.scpNumber.toList()
                             }
-                            chars?.let { viewState.setKeyboardChars(it) }
-
+                            chars.let { viewState.setKeyboardChars(it) }
                             gameInteractor.updateFinishedLevel(
                                     quizLevelInfo.quiz.id,
                                     nameRedundantCharsRemoved = nameRedundantCharsRemoved,
@@ -272,37 +275,7 @@ class GamePresenter @Inject constructor(
                             )
                                     .observeOn(Schedulers.io())
                                     .flatMap { gameInteractor.increaseScore(-price).toSingleDefault(-price) }
-                                    .map {
-                                        val quizTransaction = QuizTransaction(
-                                                quizId = quizLevelInfo.quiz.id,
-                                                transactionType = if (currentEnterType == EnterType.NAME) {
-                                                    TransactionType.NAME_CHARS_REMOVED
-                                                } else {
-                                                    TransactionType.NUMBER_CHARS_REMOVED
-                                                },
-                                                coinsAmount = -Constants.SUGGESTION_PRICE_REMOVE_CHARS
-                                        )
-                                        return@map appDatabase.transactionDao().insert(quizTransaction)
-                                    }
-                                    .flatMapCompletable { quizTransactionId ->
-                                        apiClient.addTransaction(
-                                                quizLevelInfo.quiz.id,
-                                                if (currentEnterType == EnterType.NAME) {
-                                                    TransactionType.NAME_CHARS_REMOVED
-                                                } else {
-                                                    TransactionType.NUMBER_CHARS_REMOVED
-                                                },
-                                                -Constants.SUGGESTION_PRICE_REMOVE_CHARS
-                                        )
-                                                .doOnSuccess { nwQuizTransaction ->
-                                                    appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                                            quizTransactionId = quizTransactionId,
-                                                            quizTransactionExternalId = nwQuizTransaction.id)
-                                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
-                                                }
-                                                .ignoreElement()
-                                                .onErrorComplete()
-                                    }
+                                    .flatMapCompletable { transactionInteractor.makeTransaction(quizLevelInfo.quiz.id, transactionType, coinsAmount) }
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribeBy(
@@ -749,30 +722,9 @@ class GamePresenter @Inject constructor(
                         if (checkCoins.invoke(Constants.COINS_FOR_LEVEL_UNLOCK, index)) {
                             viewState.removeChatAction(index)
                             viewState.showChatMessage(nextLevelMessageText, quizLevelInfo.player)
-                            Single.fromCallable { gameInteractor.increaseScore(-Constants.COINS_FOR_LEVEL_UNLOCK) }
-                                    .map {
-                                        val quizTransaction = QuizTransaction(
-                                                quizId = quizLevelInfo.quiz.id,
-                                                transactionType = TransactionType.LEVEL_ENABLE_FOR_COINS,
-                                                coinsAmount = -Constants.COINS_FOR_LEVEL_UNLOCK
-                                        )
-                                        return@map appDatabase.transactionDao().insert(quizTransaction)
-                                    }
-                                    .flatMapCompletable { quizTransactionId ->
-                                        apiClient.addTransaction(
-                                                quizLevelInfo.quiz.id,
-                                                TransactionType.LEVEL_ENABLE_FOR_COINS,
-                                                -Constants.COINS_FOR_LEVEL_UNLOCK
-                                        )
-                                                .doOnSuccess { nwQuizTransaction ->
-                                                    appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                                            quizTransactionId = quizTransactionId,
-                                                            quizTransactionExternalId = nwQuizTransaction.id)
-                                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
-                                                }
-                                                .ignoreElement()
-                                                .onErrorComplete()
-                                    }
+                            gameInteractor
+                                    .increaseScore(-Constants.COINS_FOR_LEVEL_UNLOCK)
+                                    .andThen(transactionInteractor.makeTransaction(quizLevelInfo.quiz.id, TransactionType.LEVEL_ENABLE_FOR_COINS, -Constants.COINS_FOR_LEVEL_UNLOCK))
                                     .subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribeBy(
@@ -932,30 +884,9 @@ class GamePresenter @Inject constructor(
                         appContext.getString(R.string.message_after_suggestion_of_name),
                         quizLevelInfo.player
                 )
-                gameInteractor.increaseScore(-Constants.SUGGESTION_PRICE_NAME)
-                        .toSingle {
-                            val quizTransaction = QuizTransaction(
-                                    quizId = quizLevelInfo.quiz.id,
-                                    transactionType = TransactionType.NAME_NO_PRICE,
-                                    coinsAmount = -Constants.SUGGESTION_PRICE_NAME
-                            )
-                            return@toSingle appDatabase.transactionDao().insert(quizTransaction)
-                        }
-                        .flatMapCompletable { quizTransactionId ->
-                            apiClient.addTransaction(
-                                    quizLevelInfo.quiz.id,
-                                    TransactionType.NAME_NO_PRICE,
-                                    -Constants.SUGGESTION_PRICE_NAME
-                            )
-                                    .doOnSuccess { nwQuizTransaction ->
-                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                                quizTransactionId = quizTransactionId,
-                                                quizTransactionExternalId = nwQuizTransaction.id)
-                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
-                                    }
-                                    .ignoreElement()
-                                    .onErrorComplete()
-                        }
+                gameInteractor
+                        .increaseScore(-Constants.SUGGESTION_PRICE_NAME)
+                        .andThen(transactionInteractor.makeTransaction(quizLevelInfo.quiz.id, TransactionType.NAME_NO_PRICE, -Constants.SUGGESTION_PRICE_NAME))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeBy(
@@ -977,30 +908,9 @@ class GamePresenter @Inject constructor(
                         appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NAME),
                         quizLevelInfo.doctor
                 )
-                gameInteractor.increaseScore(Constants.COINS_FOR_NAME)
-                        .toSingle {
-                            val quizTransaction = QuizTransaction(
-                                    quizId = quizLevelInfo.quiz.id,
-                                    transactionType = TransactionType.NAME_WITH_PRICE,
-                                    coinsAmount = Constants.COINS_FOR_NAME
-                            )
-                            return@toSingle appDatabase.transactionDao().insert(quizTransaction)
-                        }
-                        .flatMapCompletable { quizTransactionId ->
-                            apiClient.addTransaction(
-                                    quizLevelInfo.quiz.id,
-                                    TransactionType.NAME_WITH_PRICE,
-                                    Constants.COINS_FOR_NAME
-                            )
-                                    .doOnSuccess { nwQuizTransaction ->
-                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                                quizTransactionId = quizTransactionId,
-                                                quizTransactionExternalId = nwQuizTransaction.id)
-                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
-                                    }
-                                    .ignoreElement()
-                                    .onErrorComplete()
-                        }
+                gameInteractor
+                        .increaseScore(Constants.COINS_FOR_NAME)
+                        .andThen(transactionInteractor.makeTransaction(quizLevelInfo.quiz.id, TransactionType.NAME_WITH_PRICE, Constants.COINS_FOR_NAME))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeBy(
@@ -1014,7 +924,6 @@ class GamePresenter @Inject constructor(
                                 }
                         )
             }
-
             showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
             showBackspaceButton(false)
 
@@ -1050,30 +959,9 @@ class GamePresenter @Inject constructor(
                         quizLevelInfo.player
                 )
 
-                gameInteractor.increaseScore(-Constants.SUGGESTION_PRICE_NUMBER)
-                        .toSingle {
-                            val quizTransaction = QuizTransaction(
-                                    quizId = quizLevelInfo.quiz.id,
-                                    transactionType = TransactionType.NUMBER_NO_PRICE,
-                                    coinsAmount = -Constants.SUGGESTION_PRICE_NUMBER
-                            )
-                            return@toSingle appDatabase.transactionDao().insert(quizTransaction)
-                        }
-                        .flatMapCompletable { quizTransactionId ->
-                            apiClient.addTransaction(
-                                    quizLevelInfo.quiz.id,
-                                    TransactionType.NUMBER_NO_PRICE,
-                                    -Constants.SUGGESTION_PRICE_NUMBER
-                            )
-                                    .doOnSuccess { nwQuizTransaction ->
-                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                                quizTransactionId = quizTransactionId,
-                                                quizTransactionExternalId = nwQuizTransaction.id)
-                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
-                                    }
-                                    .ignoreElement()
-                                    .onErrorComplete()
-                        }
+                gameInteractor
+                        .increaseScore(-Constants.SUGGESTION_PRICE_NUMBER)
+                        .andThen(transactionInteractor.makeTransaction(quizLevelInfo.quiz.id, TransactionType.NUMBER_NO_PRICE, -Constants.SUGGESTION_PRICE_NUMBER))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeBy(
@@ -1095,30 +983,9 @@ class GamePresenter @Inject constructor(
                         appContext.getString(R.string.message_level_comleted, quizLevelInfo.player.name),
                         quizLevelInfo.doctor
                 )
-                gameInteractor.increaseScore(Constants.COINS_FOR_NUMBER)
-                        .toSingle {
-                            val quizTransaction = QuizTransaction(
-                                    quizId = quizLevelInfo.quiz.id,
-                                    transactionType = TransactionType.NUMBER_WITH_PRICE,
-                                    coinsAmount = Constants.COINS_FOR_NUMBER
-                            )
-                            return@toSingle appDatabase.transactionDao().insert(quizTransaction)
-                        }
-                        .flatMapCompletable { quizTransactionId ->
-                            apiClient.addTransaction(
-                                    quizLevelInfo.quiz.id,
-                                    TransactionType.NUMBER_WITH_PRICE,
-                                    Constants.COINS_FOR_NUMBER
-                            )
-                                    .doOnSuccess { nwQuizTransaction ->
-                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                                quizTransactionId = quizTransactionId,
-                                                quizTransactionExternalId = nwQuizTransaction.id)
-                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
-                                    }
-                                    .ignoreElement()
-                                    .onErrorComplete()
-                        }
+                gameInteractor
+                        .increaseScore(Constants.COINS_FOR_NUMBER)
+                        .andThen(transactionInteractor.makeTransaction(quizLevelInfo.quiz.id, TransactionType.NUMBER_WITH_PRICE, Constants.COINS_FOR_NUMBER))
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeBy(

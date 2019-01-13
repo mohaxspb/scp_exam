@@ -17,6 +17,7 @@ import ru.kuchanov.scpquiz.controller.adapter.viewmodel.MonetizationHeaderViewMo
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.MonetizationViewModel
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.monetization.BillingDelegate
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
@@ -33,8 +34,9 @@ class MonetizationPresenter @Inject constructor(
         override var preferences: MyPreferenceManager,
         override var router: ScpRouter,
         override var appDatabase: AppDatabase,
-        public override var apiClient: ApiClient
-) : BasePresenter<MonetizationView>(appContext, preferences, router, appDatabase, apiClient) {
+        public override var apiClient: ApiClient,
+        override var transactionInteractor: TransactionInteractor
+) : BasePresenter<MonetizationView>(appContext, preferences, router, appDatabase, apiClient,transactionInteractor) {
 
     var billingDelegate: BillingDelegate? = null
 

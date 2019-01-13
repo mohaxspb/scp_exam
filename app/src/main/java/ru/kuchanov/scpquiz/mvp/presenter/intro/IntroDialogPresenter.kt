@@ -13,6 +13,7 @@ import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.db.Quiz
@@ -35,8 +36,9 @@ class IntroDialogPresenter @Inject constructor(
         override var preferences: MyPreferenceManager,
         override var router: ScpRouter,
         override var appDatabase: AppDatabase,
-        public override var apiClient: ApiClient
-) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase, apiClient), AuthPresenter<IntroDialogFragment> {
+        public override var apiClient: ApiClient,
+        override var transactionInteractor: TransactionInteractor
+) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase, apiClient,transactionInteractor), AuthPresenter<IntroDialogFragment> {
 
     override fun onAuthSuccess() {
         preferences.setIntroDialogShown(true)
