@@ -19,6 +19,7 @@ import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.api.NwQuiz
@@ -44,8 +45,9 @@ class EnterPresenter @Inject constructor(
         override var appDatabase: AppDatabase,
         private val moshi: Moshi,
         private var quizConverter: QuizConverter,
-        public override var apiClient: ApiClient
-) : BasePresenter<EnterView>(appContext, preferences, router, appDatabase, apiClient) {
+        public override var apiClient: ApiClient,
+        override var transactionInteractor: TransactionInteractor
+) : BasePresenter<EnterView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor) {
 
     private var dbFilled: Boolean = false
 
@@ -175,13 +177,14 @@ class EnterPresenter @Inject constructor(
         Single.fromCallable {
             if (appDatabase.transactionDao().getTransactionsCount() == 0) {
                 syncScoreWithServer()
+                syncFinishedLevels()
             }
         }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe()
 
-        syncFinishedLevels()
+
     }
 
     private fun syncScoreWithServer() {

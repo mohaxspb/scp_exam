@@ -5,6 +5,7 @@ import com.arellomobile.mvp.InjectViewState
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -17,8 +18,9 @@ class MainPresenter @Inject constructor(
         override var preferences: MyPreferenceManager,
         override var router: ScpRouter,
         override var appDatabase: AppDatabase,
-        public override var apiClient: ApiClient
-) : BasePresenter<MainView>(appContext, preferences, router, appDatabase, apiClient) {
+        public override var apiClient: ApiClient,
+        override var transactionInteractor: TransactionInteractor
+) : BasePresenter<MainView>(appContext, preferences, router, appDatabase, apiClient,transactionInteractor) {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
