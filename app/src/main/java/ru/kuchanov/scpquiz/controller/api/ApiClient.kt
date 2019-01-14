@@ -86,8 +86,5 @@ class ApiClient @Inject constructor(
                     System.currentTimeMillis().toString()
             )
 
-    fun addAllTransactions(transactions: List<QuizTransaction>): Single<List<NwQuizTransaction>> =
-            transactionApi.addAllTransactions(
-                    transactions
-            )
+    fun deleteAllNwTransactions():Single<Boolean> = transactionApi.deleteAllNwTransactions()
 }

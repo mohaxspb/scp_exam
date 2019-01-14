@@ -25,9 +25,6 @@ interface TransactionApi {
             @Field("createdOnClient") createdOnClient: String
     ): Single<NwQuizTransaction>
 
-    @FormUrlEncoded
-    @POST("transactions/addAll")
-    fun addAllTransactions(
-            @Field("transactions") transactions: List<QuizTransaction>
-    ): Single<List<NwQuizTransaction>>
+    @DELETE("transactions/deleteAll")
+    fun deleteAllNwTransactions(): Single<Boolean>
 }

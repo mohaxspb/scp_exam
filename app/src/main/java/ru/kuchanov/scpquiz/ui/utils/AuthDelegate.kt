@@ -39,6 +39,7 @@ import timber.log.Timber
 import toothpick.Toothpick
 import javax.inject.Inject
 
+@SuppressWarnings("Injectable")
 class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView>>>(
         private val fragment: T,
         private val authPresenter: AuthPresenter<*>,
@@ -48,6 +49,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
     init {
         Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
     }
+
     @Inject
     lateinit var transactionInteractor: TransactionInteractor
     private val compositeDisposable = CompositeDisposable()

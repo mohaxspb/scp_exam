@@ -11,6 +11,12 @@ interface TransactionDao {
     @Query("SELECT * FROM QuizTransaction")
     fun getAll(): Flowable<List<QuizTransaction>>
 
+    @Query("SELECT * FROM QuizTransaction")
+    fun getAllSingle(): Single<List<QuizTransaction>>
+
+    @Query("SELECT * FROM QuizTransaction")
+    fun getAllList(): List<QuizTransaction>
+
     @Query("SELECT * FROM QuizTransaction WHERE id IN (:ids)")
     fun getAllByIds(ids: List<Long>): Single<List<QuizTransaction>>
 
@@ -28,6 +34,9 @@ interface TransactionDao {
 
     @Delete
     fun delete(quizTransaction: QuizTransaction): Int
+
+    @Query("DELETE FROM QuizTransaction")
+    fun deleteAll(): Int
 
     @Query("UPDATE QuizTransaction SET externalId = :quizTransactionExternalId WHERE id = :quizTransactionId")
     fun updateQuizTransactionExternalId(quizTransactionId: Long, quizTransactionExternalId: Long)

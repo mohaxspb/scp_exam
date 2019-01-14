@@ -74,61 +74,74 @@ class ScpSettingsPresenter @Inject constructor(
         preferences.setRefreshToken(null)
         preferences.setUserPassword(null)
         preferences.setNeverShowAuth(false)
-        compositeDisposable.add(appDatabase.userDao().getOneByRole(UserRole.PLAYER)
-                .map { user ->
-                    user.score = 0
-                    appDatabase.userDao().update(user)
-                    Timber.d("USER : %s", user)
-                }
-                .flatMap { appDatabase.finishedLevelsDao().getAllByAsc() }
-                .map { finishedLevels ->
-                    appDatabase.finishedLevelsDao().update(finishedLevels.mapIndexed { index, it ->
-                        it.apply {
-                            scpNameFilled = false
-                            scpNumberFilled = false
-                            nameRedundantCharsRemoved = false
-                            numberRedundantCharsRemoved = false
-                            isLevelAvailable = index < 5
-                            Timber.d("FINISHED LEVEL : %s", it)
+        compositeDisposable.add(
+                appDatabase.userDao().getOneByRole(UserRole.PLAYER)
+                        .map { user ->
+                            user.score = 0
+                            appDatabase.userDao().update(user)
+                            Timber.d("USER : %s", user)
                         }
-                    })
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { router.newRootScreen(Constants.Screens.ENTER) },
-                        onError = {
-                            Timber.e(it)
-                            viewState.showMessage(it.message.toString())
+                        .map { Timber.d("BEFORE DELETE ALL : %s", appDatabase.transactionDao().getAllList()) }
+                        .map { appDatabase.transactionDao().deleteAll() }
+                        .map { Timber.d("AFTER DELETE ALL : %s", appDatabase.transactionDao().getAllList()) }
+                        .flatMap { appDatabase.finishedLevelsDao().getAllByAsc() }
+                        .map { finishedLevels ->
+                            appDatabase.finishedLevelsDao().update(finishedLevels.mapIndexed { index, it ->
+                                it.apply {
+                                    scpNameFilled = false
+                                    scpNumberFilled = false
+                                    nameRedundantCharsRemoved = false
+                                    numberRedundantCharsRemoved = false
+                                    isLevelAvailable = index < 5
+                                    Timber.d("FINISHED LEVEL : %s", it)
+                                }
+                            })
                         }
-                ))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeBy(
+                                onSuccess = { router.newRootScreen(Constants.Screens.ENTER) },
+                                onError = {
+                                    Timber.e(it)
+                                    viewState.showMessage(it.message.toString())
+                                }
+                        )
+        )
     }
 
     fun onResetProgressClicked() {
-        compositeDisposable.add(appDatabase.finishedLevelsDao().getAllByAsc()
-                .map { finishedLevels ->
-                    appDatabase.finishedLevelsDao().update(finishedLevels.mapIndexed { index, it ->
-                        it.apply {
-                            scpNameFilled = false
-                            scpNumberFilled = false
-                            nameRedundantCharsRemoved = false
-                            numberRedundantCharsRemoved = false
-                            isLevelAvailable = index < 5
-                            Timber.d("FINISHED LEVEL : %s", it)
+        compositeDisposable.add(
+                apiClient.deleteAllNwTransactions()
+                        .doOnSuccess {
+                            appDatabase.finishedLevelsDao().getAllByAsc()
+                                    .map { finishedLevels ->
+                                        appDatabase.finishedLevelsDao().update(finishedLevels.mapIndexed { index, it ->
+                                            it.apply {
+                                                scpNameFilled = false
+                                                scpNumberFilled = false
+                                                nameRedundantCharsRemoved = false
+                                                numberRedundantCharsRemoved = false
+                                                isLevelAvailable = index < 5
+                                                Timber.d("FINISHED LEVEL : %s", it)
+                                            }
+                                        })
+                                    }
+                            Timber.d("BEFORE DELETE ALL : %s", appDatabase.transactionDao().getAllList())
+                            appDatabase.transactionDao().deleteAll()
+                            Timber.d("AFTER DELETE ALL : %s", appDatabase.transactionDao().getAllList())
                         }
-                    })
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { viewState.showProgress(true) }
-                .doOnEvent { _, _ -> viewState.showProgress(false) }
-                .subscribeBy(
-                        onSuccess = { viewState.showMessage(R.string.reset_progress_user_message) },
-                        onError = {
-                            Timber.e(it)
-                            viewState.showMessage(it.message.toString())
-                        }
-                ))
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe { viewState.showProgress(true) }
+                        .doOnEvent { _, _ -> viewState.showProgress(false) }
+                        .subscribeBy(
+                                onSuccess = { viewState.showMessage(R.string.reset_progress_user_message) },
+                                onError = {
+                                    Timber.e(it)
+                                    viewState.showMessage(it.message.toString())
+                                }
+                        )
+        )
     }
 
     fun onPrivacyPolicyClicked() = IntentUtils.openUrl(appContext, Constants.PRIVACY_POLICY_URL)
