@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function3
 import io.reactivex.rxkotlin.subscribeBy
@@ -155,7 +154,7 @@ class LevelsPresenter @Inject constructor(
 
     fun onLevelUnlockClicked(levelViewModel: LevelViewModel) {
         if (player.score >= Constants.COINS_FOR_LEVEL_UNLOCK) {
-            appDatabase.finishedLevelsDao()
+            compositeDisposable.add(appDatabase.finishedLevelsDao()
                     .getByIdOrErrorOnce(levelViewModel.quiz.id)
                     .map {
                         it.isLevelAvailable = true
@@ -175,7 +174,7 @@ class LevelsPresenter @Inject constructor(
                                 viewState.showMessage(it.message ?: "Unexpected error")
                             },
                             onComplete = { Timber.d("Success transaction from Level Presenter") }
-                    )
+                    ))
         } else {
             viewState.showMessage(R.string.message_not_enough_coins_level_unlock)
         }

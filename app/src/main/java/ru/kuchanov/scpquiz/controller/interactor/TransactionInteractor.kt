@@ -1,6 +1,5 @@
 package ru.kuchanov.scpquiz.controller.interactor
 
-import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Single
