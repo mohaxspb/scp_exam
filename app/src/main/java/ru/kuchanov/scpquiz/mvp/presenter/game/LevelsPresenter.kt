@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function3
 import io.reactivex.rxkotlin.subscribeBy
@@ -15,9 +16,9 @@ import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
-import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
 import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -32,8 +33,9 @@ class LevelsPresenter @Inject constructor(
         override var preferences: MyPreferenceManager,
         override var router: ScpRouter,
         override var appDatabase: AppDatabase,
-        public override var apiClient: ApiClient
-) : BasePresenter<LevelsView>(appContext, preferences, router, appDatabase, apiClient) {
+        public override var apiClient: ApiClient,
+        override var transactionInteractor: TransactionInteractor
+) : BasePresenter<LevelsView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor) {
 
     lateinit var player: User
 
@@ -148,10 +150,6 @@ class LevelsPresenter @Inject constructor(
                     }
                     .subscribeOn(Schedulers.io())
                     .subscribe()
-            appDatabase.finishedLevelsDao()
-                    .getAll()
-                    .subscribeOn(Schedulers.io())
-                    .subscribe { finishedLevels -> Timber.d("FinishedLevels: ${finishedLevels.map { it.isLevelAvailable }}") }
         }
     }
 
@@ -167,28 +165,8 @@ class LevelsPresenter @Inject constructor(
                     .map {
                         it.score -= Constants.COINS_FOR_LEVEL_UNLOCK
                         appDatabase.userDao().update(it)
-                        val quizTransaction = QuizTransaction(
-                                quizId = levelViewModel.quiz.id,
-                                transactionType = TransactionType.LEVEL_ENABLE_FOR_COINS,
-                                coinsAmount = -Constants.COINS_FOR_LEVEL_UNLOCK
-                        )
-                        return@map appDatabase.transactionDao().insert(quizTransaction)
                     }
-                    .flatMapCompletable { quizTransactionId ->
-                        apiClient.addTransaction(
-                                levelViewModel.quiz.id,
-                                TransactionType.LEVEL_ENABLE_FOR_COINS,
-                                -Constants.COINS_FOR_LEVEL_UNLOCK
-                        )
-                                .doOnSuccess { nwQuizTransaction ->
-                                    appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                            quizTransactionId = quizTransactionId,
-                                            quizTransactionExternalId = nwQuizTransaction.id)
-                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
-                                }
-                                .ignoreElement()
-                                .onErrorComplete()
-                    }
+                    .flatMapCompletable { transactionInteractor.makeTransaction(levelViewModel.quiz.id, TransactionType.LEVEL_ENABLE_FOR_COINS, -Constants.COINS_FOR_LEVEL_UNLOCK) }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
@@ -203,3 +181,4 @@ class LevelsPresenter @Inject constructor(
         }
     }
 }
+

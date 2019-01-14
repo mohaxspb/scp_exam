@@ -135,4 +135,17 @@ object Migrations {
             }
         }
     }
+    val MIGRATION_4_5 = object : Migration(4, 5) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            Timber.d("executeMigration 4_5")
+            //add column createdOnClient into QuizTransaction
+            try {
+                database.execSQL("""
+                        ALTER TABLE QuizTransaction ADD COLUMN createdOnClient INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP
+                                """)
+            } catch (e: Throwable) {
+                Timber.e(e)
+            }
+        }
+    }
 }

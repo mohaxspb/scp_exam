@@ -22,17 +22,22 @@ import com.vk.sdk.api.model.VKApiUserFull
 import com.vk.sdk.api.model.VKList
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.api.ApiClient
+import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
+import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.model.CommonUserData
 import ru.kuchanov.scpquiz.mvp.AuthPresenter
 import ru.kuchanov.scpquiz.mvp.AuthView
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import timber.log.Timber
+import toothpick.Toothpick
+import javax.inject.Inject
 
 class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView>>>(
         private val fragment: T,
@@ -40,7 +45,11 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
         private var apiClient: ApiClient,
         internal var preferences: MyPreferenceManager
 ) {
-
+    init {
+        Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
+    }
+    @Inject
+    lateinit var transactionInteractor: TransactionInteractor
     private val compositeDisposable = CompositeDisposable()
     private val callbackManager = CallbackManager.Factory.create()
     private var googleApiClient: GoogleApiClient? = null
@@ -139,13 +148,17 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                     preferences.setAccessToken(accessToken)
                     preferences.setRefreshToken(refreshToken)
                 }
+                .flatMapCompletable { transactionInteractor.syncAllProgress() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ authPresenter.onAuthSuccess() },
-                        { error ->
-                            Timber.e(error)
-                            fragment.showMessage(error.toString())
-                        }))
+                .subscribeBy(
+                        onComplete = { authPresenter.onAuthSuccess() },
+                        onError = {
+                            Timber.e(it)
+                            fragment.showMessage(it.toString())
+                        }
+                )
+        )
     }
 
     fun onPause() {

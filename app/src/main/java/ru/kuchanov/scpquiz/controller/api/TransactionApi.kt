@@ -21,7 +21,8 @@ interface TransactionApi {
     fun addTransaction(
             @Field("quizId") quizId: Long?,
             @Field("typeTransaction") typeTransaction: TransactionType,
-            @Field("coinsAmount") coinsAmount: Int?
+            @Field("coinsAmount") coinsAmount: Int?,
+            @Field("createdOnClient") createdOnClient: String
     ): Single<NwQuizTransaction>
 
     @FormUrlEncoded

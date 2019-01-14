@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.mvp.presenter.intro
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
 import android.graphics.Bitmap
@@ -18,13 +19,12 @@ import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.QuizConverter
-import ru.kuchanov.scpquiz.model.db.FinishedLevel
-import ru.kuchanov.scpquiz.model.db.User
-import ru.kuchanov.scpquiz.model.db.UserRole
+import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.ProgressPhrase
 import ru.kuchanov.scpquiz.model.ui.ProgressPhrasesJson
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -45,8 +45,9 @@ class EnterPresenter @Inject constructor(
         override var appDatabase: AppDatabase,
         private val moshi: Moshi,
         private var quizConverter: QuizConverter,
-        public override var apiClient: ApiClient
-) : BasePresenter<EnterView>(appContext, preferences, router, appDatabase, apiClient) {
+        public override var apiClient: ApiClient,
+        override var transactionInteractor: TransactionInteractor
+) : BasePresenter<EnterView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor) {
 
     private var dbFilled: Boolean = false
 
@@ -54,6 +55,7 @@ class EnterPresenter @Inject constructor(
 
     private lateinit var progressPhrases: List<ProgressPhrase>
 
+    @SuppressLint("CheckResult")
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
@@ -108,7 +110,6 @@ class EnterPresenter @Inject constructor(
                                 isLevelAvailable = index < 5
                         )
                     })
-
                     val langs = appDatabase.quizTranslationsDao().getAllLangs().toSet()
                     preferences.setLangs(langs)
 
