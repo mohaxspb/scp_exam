@@ -23,5 +23,7 @@ interface QuizApi {
     @GET("quiz/all")
     fun getNwQuizList(@Header("Authorization") authorization: String): Single<List<NwQuiz>>
 
+    @GET("user/score")
+    fun getServerUserScore(): Single<Long>
 }
 

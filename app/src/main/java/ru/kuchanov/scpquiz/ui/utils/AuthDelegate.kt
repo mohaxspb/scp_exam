@@ -27,10 +27,12 @@ import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.api.ApiClient
+import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.model.CommonUserData
+import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.AuthPresenter
 import ru.kuchanov.scpquiz.mvp.AuthView
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -44,7 +46,8 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
         private val fragment: T,
         private val authPresenter: AuthPresenter<*>,
         private var apiClient: ApiClient,
-        internal var preferences: MyPreferenceManager
+        internal var preferences: MyPreferenceManager,
+        private var appDatabase: AppDatabase
 ) {
     init {
         Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
@@ -149,6 +152,16 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                 .doOnSuccess { (accessToken, refreshToken) ->
                     preferences.setAccessToken(accessToken)
                     preferences.setRefreshToken(refreshToken)
+                }
+                .flatMap {
+                    apiClient.getServerUserScore()
+                            .doOnSuccess { score ->
+                                appDatabase.userDao().getOneByRole(UserRole.PLAYER)
+                                        .map {
+                                            it.score = score.toInt()
+                                            appDatabase.userDao().update(it)
+                                        }
+                            }
                 }
                 .flatMapCompletable { transactionInteractor.syncAllProgress() }
                 .subscribeOn(Schedulers.io())

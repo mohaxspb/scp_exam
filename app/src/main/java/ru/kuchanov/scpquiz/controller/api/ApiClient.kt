@@ -86,5 +86,7 @@ class ApiClient @Inject constructor(
                     System.currentTimeMillis().toString()
             )
 
-    fun deleteAllNwTransactions():Single<Boolean> = transactionApi.deleteAllNwTransactions()
+    fun deleteAllNwTransactions(): Single<Boolean> = transactionApi.deleteAllNwTransactions()
+
+    fun getServerUserScore(): Single<Long> = quizApi.getServerUserScore()
 }
