@@ -3,7 +3,7 @@
     <string name="market_url" translatable="false">market://details?id=%s</string>
     <string name="feedback_email" translatable="false">neva.spb.rx@gmail.com</string>
     <string name="error_unexpected" translatable="false">Unexpected error</string>
-
+    <string name="server_client_id" translatable="false">353406952353-4dfmj81efc44qkqu1renvpb7pnuu7ict.apps.googleusercontent.com</string>
     <!--social login-->
     <!--facebook-->
     <string name="facebook_app_id" translatable="false">2167234416849408</string>
@@ -15,6 +15,7 @@
     <string name="chat_action_auth_facebook" translatable="false">Facebook</string>
     <string name="chat_action_auth_google" translatable="false">Google</string>
     <string name="chat_action_auth_vk" translatable="false">VK</string>
+
     <!--social login END-->
 
     <string name="app_name">Scp Exam</string>

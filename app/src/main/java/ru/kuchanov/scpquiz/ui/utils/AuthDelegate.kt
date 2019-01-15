@@ -62,7 +62,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
 
     fun onViewCreated(fragmentActivity: FragmentActivity) {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(fragmentActivity.getString(R.string.default_web_client_id))
+                .requestIdToken(fragmentActivity.getString(R.string.server_client_id))
                 .requestEmail()
                 .build()
         googleApiClient = GoogleApiClient.Builder(fragmentActivity)
