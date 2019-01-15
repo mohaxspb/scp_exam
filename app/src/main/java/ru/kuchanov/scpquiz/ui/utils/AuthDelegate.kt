@@ -24,8 +24,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
-import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
@@ -46,8 +46,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
         private val fragment: T,
         private val authPresenter: AuthPresenter<*>,
         private var apiClient: ApiClient,
-        internal var preferences: MyPreferenceManager,
-        private var appDatabase: AppDatabase
+        internal var preferences: MyPreferenceManager
 ) {
     init {
         Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
@@ -55,6 +54,8 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
 
     @Inject
     lateinit var transactionInteractor: TransactionInteractor
+    @Inject
+    lateinit var appDatabase: AppDatabase
     private val compositeDisposable = CompositeDisposable()
     private val callbackManager = CallbackManager.Factory.create()
     private var googleApiClient: GoogleApiClient? = null
@@ -65,7 +66,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
 
     fun onViewCreated(fragmentActivity: FragmentActivity) {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(fragmentActivity.getString(R.string.server_client_id))
+                .requestIdToken(BuildConfig.SERVER_GOOGLE_CLIENT_ID)
                 .requestEmail()
                 .build()
         googleApiClient = GoogleApiClient.Builder(fragmentActivity)
