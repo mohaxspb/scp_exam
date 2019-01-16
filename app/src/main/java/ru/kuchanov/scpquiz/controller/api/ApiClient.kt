@@ -91,5 +91,5 @@ class ApiClient @Inject constructor(
 
     fun getServerUserScore(): Single<Long> = quizApi.getServerUserScore()
 
-    fun getNwUser() : Single<NwUser> = quizApi.getNwUser()
+    fun getNwUser(): Single<NwUser> = quizApi.getNwUser()
 }

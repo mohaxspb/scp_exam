@@ -6,13 +6,13 @@ import android.arch.persistence.room.PrimaryKey
 @Entity
 data class User(
     //db
-    @PrimaryKey
+        @PrimaryKey
     val id: Long? = null,
     //content
-    val name: String,
-    val avatarUrl: String? = null,
-    var score: Int = 0,
-    val role: UserRole
+        var name: String,
+        var avatarUrl: String? = null,
+        var score: Int = 0,
+        val role: UserRole
 )
 
 enum class UserRole {

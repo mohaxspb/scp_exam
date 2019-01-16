@@ -81,9 +81,7 @@ class ScpSettingsPresenter @Inject constructor(
                             appDatabase.userDao().update(user)
                             Timber.d("USER : %s", user)
                         }
-                        .map { Timber.d("BEFORE DELETE ALL : %s", appDatabase.transactionDao().getAllList()) }
                         .map { appDatabase.transactionDao().deleteAll() }
-                        .map { Timber.d("AFTER DELETE ALL : %s", appDatabase.transactionDao().getAllList()) }
                         .flatMap { appDatabase.finishedLevelsDao().getAllByAsc() }
                         .map { finishedLevels ->
                             appDatabase.finishedLevelsDao().update(finishedLevels.mapIndexed { index, it ->

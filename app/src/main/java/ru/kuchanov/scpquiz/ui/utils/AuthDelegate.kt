@@ -32,6 +32,7 @@ import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.model.CommonUserData
+import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.AuthPresenter
 import ru.kuchanov.scpquiz.mvp.AuthView
@@ -56,6 +57,8 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
     lateinit var transactionInteractor: TransactionInteractor
     @Inject
     lateinit var appDatabase: AppDatabase
+    @Inject
+    lateinit var quizConverter: QuizConverter
     private val compositeDisposable = CompositeDisposable()
     private val callbackManager = CallbackManager.Factory.create()
     private var googleApiClient: GoogleApiClient? = null
@@ -154,14 +157,27 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                     preferences.setAccessToken(accessToken)
                     preferences.setRefreshToken(refreshToken)
                 }
-                .flatMap {
-                    apiClient.getServerUserScore()
-                            .doOnSuccess { score ->
+                .flatMap { it ->
+                    apiClient.getNwUser()
+                            .doOnSuccess { nwUser ->
                                 appDatabase.userDao().getOneByRole(UserRole.PLAYER)
-                                        .map {
-                                            it.score = score.toInt()
+                                        .map { it ->
+                                            it.name = nwUser.fullName!!
+                                            it.avatarUrl = nwUser.avatar
+                                            it.score = nwUser.score
                                             appDatabase.userDao().update(it)
                                         }
+                            }
+                }
+                .flatMap {
+                    apiClient.getNwQuizTransactionList()
+                            .doOnSuccess { nwTransactionList ->
+                                nwTransactionList.forEach { nwQuizTransaction ->
+                                    appDatabase.transactionDao().insert(
+                                            quizConverter.convert(nwQuizTransaction
+                                            )
+                                    )
+                                }
                             }
                 }
                 .flatMapCompletable { transactionInteractor.syncAllProgress() }

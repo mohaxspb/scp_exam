@@ -16,7 +16,7 @@ data class QuizTransaction(
         val transactionType: TransactionType,
         val coinsAmount: Int? = null,
         //dates
-        val createdOnClient: Date = Date()
+        val createdOnClient: Long = System.currentTimeMillis()
 )
 
 enum class TransactionType {
