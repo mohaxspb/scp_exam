@@ -124,9 +124,12 @@ class ScpSettingsPresenter @Inject constructor(
                                             }
                                         })
                                     }
-                            Timber.d("BEFORE DELETE ALL : %s", appDatabase.transactionDao().getAllList())
                             appDatabase.transactionDao().deleteAll()
-                            Timber.d("AFTER DELETE ALL : %s", appDatabase.transactionDao().getAllList())
+                            appDatabase.userDao().getOneByRole(UserRole.PLAYER)
+                                    .map { user ->
+                                        user.score = 0
+                                        appDatabase.userDao().update(user)
+                                    }
                         }
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())

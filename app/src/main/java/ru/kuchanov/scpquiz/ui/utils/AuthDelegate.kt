@@ -174,8 +174,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                             .doOnSuccess { nwTransactionList ->
                                 nwTransactionList.forEach { nwQuizTransaction ->
                                     appDatabase.transactionDao().insert(
-                                            quizConverter.convert(nwQuizTransaction
-                                            )
+                                            quizConverter.convert(nwQuizTransaction)
                                     )
                                 }
                             }
