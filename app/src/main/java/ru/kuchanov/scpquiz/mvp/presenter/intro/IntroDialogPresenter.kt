@@ -38,7 +38,7 @@ class IntroDialogPresenter @Inject constructor(
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor
-) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase, apiClient,transactionInteractor), AuthPresenter<IntroDialogFragment> {
+) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor), AuthPresenter<IntroDialogFragment> {
 
     override fun onAuthSuccess() {
         preferences.setIntroDialogShown(true)
@@ -98,6 +98,9 @@ class IntroDialogPresenter @Inject constructor(
                             viewState.showChatActions(generateStartGameActions(), ChatActionsGroupType.START_GAME)
                         }
                 )
+        if (preferences.isIntroDialogShown()) {
+            navigateToFirstLevel()
+        }
     }
 
     private fun generateStartGameActions(): List<ChatAction> {
