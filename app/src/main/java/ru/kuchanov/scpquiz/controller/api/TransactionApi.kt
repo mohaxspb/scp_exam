@@ -26,4 +26,7 @@ interface TransactionApi {
 
     @DELETE("transactions/deleteAll")
     fun deleteAllNwTransactions(): Single<Boolean>
+
+    @GET("transactions/resetProgress")
+    fun resetProgress(): Single<Int>
 }

@@ -109,7 +109,7 @@ class ScpSettingsPresenter @Inject constructor(
 
     fun onResetProgressClicked() {
         compositeDisposable.add(
-                apiClient.deleteAllNwTransactions()
+                apiClient.resetProgress()
                         .doOnSuccess {
                             appDatabase.finishedLevelsDao().getAllByAsc()
                                     .map { finishedLevels ->
@@ -124,10 +124,10 @@ class ScpSettingsPresenter @Inject constructor(
                                             }
                                         })
                                     }
-                            appDatabase.transactionDao().deleteAll()
+                            appDatabase.transactionDao().resetProgress()
                             appDatabase.userDao().getOneByRole(UserRole.PLAYER)
                                     .map { user ->
-                                        user.score = 0
+                                        user.score = it
                                         appDatabase.userDao().update(user)
                                     }
                         }
@@ -139,7 +139,7 @@ class ScpSettingsPresenter @Inject constructor(
                                 onSuccess = { viewState.showMessage(R.string.reset_progress_user_message) },
                                 onError = {
                                     Timber.e(it)
-                                    viewState.showMessage(it.message.toString())
+                                    viewState.showMessage(it.toString())
                                 }
                         )
         )

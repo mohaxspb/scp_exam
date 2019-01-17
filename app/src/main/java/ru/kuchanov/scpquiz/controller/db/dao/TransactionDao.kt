@@ -4,6 +4,7 @@ import android.arch.persistence.room.*
 import io.reactivex.Flowable
 import io.reactivex.Single
 import ru.kuchanov.scpquiz.model.db.QuizTransaction
+import ru.kuchanov.scpquiz.model.db.TransactionType
 
 @Dao
 interface TransactionDao {
@@ -23,6 +24,9 @@ interface TransactionDao {
     @Query("SELECT * FROM QuizTransaction WHERE id = :id")
     fun getOneById(id: Long): QuizTransaction
 
+    @Query("SELECT * FROM QuizTransaction WHERE transactionType = :transactionType")
+    fun getOneByType(transactionType: TransactionType): Single<QuizTransaction>
+
     @Insert
     fun insert(quizTransaction: QuizTransaction): Long
 
@@ -38,8 +42,10 @@ interface TransactionDao {
     @Query("DELETE FROM QuizTransaction")
     fun deleteAll(): Int
 
-    @Query("DELETE FROM QuizTransaction WHERE transactionType = 0 OR transactionType = 1 OR transactionType = 2 OR transactionType = 3 OR transactionType = 4 OR transactionType = 5 OR transactionType = 6 ")
-    fun deleteAllTransactionsWithQuiz(): Int
+    @Query("DELETE FROM QuizTransaction WHERE transactionType = 'NAME_WITH_PRICE' OR transactionType = 'NAME_NO_PRICE' OR transactionType = 'NAME_CHARS_REMOVED'" +
+            " OR transactionType = 'NUMBER_WITH_PRICE' OR transactionType = 'NUMBER_NO_PRICE' OR transactionType = 'NUMBER_CHARS_REMOVED' OR transactionType = 'LEVEL_ENABLE_FOR_COINS' " +
+            " OR transactionType = 'NAME_ENTERED_MIGRATION' OR transactionType = 'NUMBER_ENTERED_MIGRATION' OR transactionType = 'NAME_CHARS_REMOVED_MIGRATION' OR transactionType = 'NUMBER_CHARS_REMOVED_MIGRATION' OR transactionType = 'LEVEL_AVAILABLE_MIGRATION'")
+    fun resetProgress(): Int
 
     @Query("UPDATE QuizTransaction SET coinsAmount = :coinsAmount WHERE transactionType = 'UPDATE_SYNC'")
     fun updateCoinsInSyncScoreTransaction(coinsAmount: Int?)

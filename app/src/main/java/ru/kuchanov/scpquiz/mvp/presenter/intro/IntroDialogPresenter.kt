@@ -98,9 +98,6 @@ class IntroDialogPresenter @Inject constructor(
                             viewState.showChatActions(generateStartGameActions(), ChatActionsGroupType.START_GAME)
                         }
                 )
-        if (preferences.isIntroDialogShown()) {
-            navigateToFirstLevel()
-        }
     }
 
     private fun generateStartGameActions(): List<ChatAction> {

@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.controller.interactor
 
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -8,7 +9,6 @@ import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.TransactionType
-import ru.kuchanov.scpquiz.model.db.UserRole
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -45,30 +45,25 @@ class TransactionInteractor @Inject constructor(
     fun syncAllProgress() =
             syncScoreWithServer().andThen(syncFinishedLevels().onErrorComplete())
 
-    fun syncScoreWithServer() =
-            Single.fromCallable {
-                val quizTransaction = QuizTransaction(
-                        quizId = null,
-                        transactionType = TransactionType.UPDATE_SYNC,
-                        coinsAmount = appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet().score
-                )
-                appDatabase.transactionDao().insert(quizTransaction)
+    private fun syncScoreWithServer() =
+            Completable.fromAction {
+                appDatabase.transactionDao().getOneByType(TransactionType.UPDATE_SYNC)
+                        .flatMapCompletable { quizTransaction ->
+                            apiClient.addTransaction(
+                                    quizTransaction.quizId,
+                                    quizTransaction.transactionType,
+                                    quizTransaction.coinsAmount
+                            )
+                                    .doOnSuccess { nwQuizTransaction ->
+                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                quizTransactionId = quizTransaction.id!!,
+                                                quizTransactionExternalId = nwQuizTransaction.id)
+                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransaction.id))
+                                    }
+                                    .ignoreElement()
+                                    .onErrorComplete()
+                        }
             }
-                    .flatMapCompletable { quizTransactionId ->
-                        apiClient.addTransaction(
-                                null,
-                                TransactionType.UPDATE_SYNC,
-                                appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet().score
-                        )
-                                .doOnSuccess { nwQuizTransaction ->
-                                    appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                            quizTransactionId = quizTransactionId,
-                                            quizTransactionExternalId = nwQuizTransaction.id)
-                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
-                                }
-                                .ignoreElement()
-                                .onErrorComplete()
-                    }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
 
@@ -81,7 +76,7 @@ class TransactionInteractor @Inject constructor(
      * отправляем на сервер, flatmap()
      * обновляем externalId doOnSuccess()
      */
-    fun syncFinishedLevels() =
+    private fun syncFinishedLevels() =
             appDatabase.finishedLevelsDao().getAll()
                     .map { finishedLevels -> finishedLevels.filter { it.isLevelAvailable } }
                     .map { levelsAvailableTrue ->
