@@ -6,12 +6,22 @@ import com.facebook.appevents.AppEventsLogger
 import com.vk.sdk.VKSdk
 import com.yandex.metrica.YandexMetrica
 import com.yandex.metrica.YandexMetricaConfig
+import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.AppModule
+import ru.kuchanov.scpquiz.model.db.QuizTransaction
+import ru.kuchanov.scpquiz.model.db.TransactionType
+import ru.kuchanov.scpquiz.model.db.UserRole
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
 import toothpick.smoothie.module.SmoothieApplicationModule
+import javax.inject.Inject
 
 
 @SuppressWarnings("unused")
@@ -21,6 +31,12 @@ class App : MultiDexApplication() {
         lateinit var INSTANCE: App
     }
 
+    @Inject
+    lateinit var transactionInteractor: TransactionInteractor
+
+    @Inject
+    lateinit var appDatabase: AppDatabase
+
     override fun onCreate() {
         super.onCreate()
 
@@ -29,9 +45,11 @@ class App : MultiDexApplication() {
         initTimber()
         initDi()
         initYandexMetrica()
+        Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
         VKSdk.initialize(this)
         FacebookSdk.sdkInitialize(applicationContext)
         AppEventsLogger.activateApp(this)
+        initScore()
 
         //use it for printing keys hash for facebook
 //        Timber.d("App#onCreate")
@@ -57,5 +75,28 @@ class App : MultiDexApplication() {
         if (BuildConfig.DEBUG) {
             Toothpick.setConfiguration(Configuration.forDevelopment())
         }
+    }
+
+    private fun initScore() {
+        Completable.fromAction {
+            if (appDatabase.transactionDao().getTransactionsCount() == 0) {
+                val quizTransaction = QuizTransaction(
+                        quizId = null,
+                        transactionType = TransactionType.UPDATE_SYNC,
+                        coinsAmount = appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet().score
+                )
+                appDatabase.transactionDao().insert(quizTransaction)
+            }
+        }
+                .andThen { Timber.d("DEFAULT transaction after entering APP:%s", appDatabase.transactionDao().getAllList()) }
+                .onErrorComplete()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onComplete = { Timber.d("Success sync score") },
+                        onError = {
+                            Timber.e(it)
+                        }
+                )
     }
 }

@@ -1,13 +1,11 @@
 package ru.kuchanov.scpquiz.controller.interactor
 
 import io.reactivex.Flowable
-import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
-import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.TransactionType
 import ru.kuchanov.scpquiz.model.db.UserRole
@@ -16,8 +14,7 @@ import javax.inject.Inject
 
 class TransactionInteractor @Inject constructor(
         private val appDatabase: AppDatabase,
-        private val apiClient: ApiClient,
-        private val preferences: MyPreferenceManager
+        private val apiClient: ApiClient
 ) {
     fun makeTransaction(quizId: Long?, transactionType: TransactionType, coinsAmount: Int) =
             Single
@@ -46,18 +43,9 @@ class TransactionInteractor @Inject constructor(
                     }
 
     fun syncAllProgress() =
-            Maybe.fromCallable {
-                if (appDatabase.transactionDao().getTransactionsCount() == 0 && preferences.getAccessToken() != null) {
-                    true
-                } else {
-                    null
-                }
-            }
-                    .flatMapCompletable { syncScoreWithServer().andThen(syncFinishedLevels().onErrorComplete()) }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+            syncScoreWithServer().andThen(syncFinishedLevels().onErrorComplete())
 
-    private fun syncScoreWithServer() =
+    fun syncScoreWithServer() =
             Single.fromCallable {
                 val quizTransaction = QuizTransaction(
                         quizId = null,
@@ -65,7 +53,6 @@ class TransactionInteractor @Inject constructor(
                         coinsAmount = appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet().score
                 )
                 appDatabase.transactionDao().insert(quizTransaction)
-
             }
                     .flatMapCompletable { quizTransactionId ->
                         apiClient.addTransaction(
@@ -94,7 +81,7 @@ class TransactionInteractor @Inject constructor(
      * отправляем на сервер, flatmap()
      * обновляем externalId doOnSuccess()
      */
-    private fun syncFinishedLevels() =
+    fun syncFinishedLevels() =
             appDatabase.finishedLevelsDao().getAll()
                     .map { finishedLevels -> finishedLevels.filter { it.isLevelAvailable } }
                     .map { levelsAvailableTrue ->
@@ -122,7 +109,6 @@ class TransactionInteractor @Inject constructor(
                     .map { quizTransactionList ->
                         Timber.d("quizTransactionList :%s", quizTransactionList)
                         appDatabase.transactionDao().insertQuizTransactionList(quizTransactionList)
-
                     }
                     .flatMapSingle { localIds ->
                         Flowable
@@ -156,5 +142,4 @@ class TransactionInteractor @Inject constructor(
                     quizId = quizId,
                     transactionType = transactionType
             )
-
 }

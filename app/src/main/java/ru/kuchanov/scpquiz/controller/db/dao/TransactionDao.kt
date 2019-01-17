@@ -41,6 +41,9 @@ interface TransactionDao {
     @Query("DELETE FROM QuizTransaction WHERE transactionType = 0 OR transactionType = 1 OR transactionType = 2 OR transactionType = 3 OR transactionType = 4 OR transactionType = 5 OR transactionType = 6 ")
     fun deleteAllTransactionsWithQuiz(): Int
 
+    @Query("UPDATE QuizTransaction SET coinsAmount = :coinsAmount WHERE transactionType = 'UPDATE_SYNC'")
+    fun updateCoinsInSyncScoreTransaction(coinsAmount: Int?)
+
     @Query("UPDATE QuizTransaction SET externalId = :quizTransactionExternalId WHERE id = :quizTransactionId")
     fun updateQuizTransactionExternalId(quizTransactionId: Long, quizTransactionExternalId: Long)
 
