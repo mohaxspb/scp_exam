@@ -1,6 +1,5 @@
 package ru.kuchanov.scpquiz.controller.interactor
 
-import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -46,24 +45,22 @@ class TransactionInteractor @Inject constructor(
             syncScoreWithServer().andThen(syncFinishedLevels().onErrorComplete())
 
     private fun syncScoreWithServer() =
-            Completable.fromAction {
-                appDatabase.transactionDao().getOneByType(TransactionType.UPDATE_SYNC)
-                        .flatMapCompletable { quizTransaction ->
-                            apiClient.addTransaction(
-                                    quizTransaction.quizId,
-                                    quizTransaction.transactionType,
-                                    quizTransaction.coinsAmount
-                            )
-                                    .doOnSuccess { nwQuizTransaction ->
-                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                                quizTransactionId = quizTransaction.id!!,
-                                                quizTransactionExternalId = nwQuizTransaction.id)
-                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransaction.id))
-                                    }
-                                    .ignoreElement()
-                                    .onErrorComplete()
-                        }
-            }
+            appDatabase.transactionDao().getOneByType(TransactionType.UPDATE_SYNC)
+                    .flatMapCompletable { quizTransaction ->
+                        apiClient.addTransaction(
+                                quizTransaction.quizId,
+                                quizTransaction.transactionType,
+                                quizTransaction.coinsAmount
+                        )
+                                .doOnSuccess { nwQuizTransaction ->
+                                    appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                            quizTransactionId = quizTransaction.id!!,
+                                            quizTransactionExternalId = nwQuizTransaction.id)
+                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransaction.id))
+                                }
+                                .ignoreElement()
+                                .onErrorComplete()
+                    }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
 

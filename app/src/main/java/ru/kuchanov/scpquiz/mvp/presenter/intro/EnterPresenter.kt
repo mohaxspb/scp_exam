@@ -198,6 +198,8 @@ class EnterPresenter @Inject constructor(
                         onComplete = {
                             if (!preferences.isIntroDialogShown()) {
                                 router.newRootScreen(Constants.Screens.INTRO_DIALOG)
+                            } else {
+                                router.newRootScreen(Constants.Screens.QUIZ_LIST)
                             }
                         }
                 )
