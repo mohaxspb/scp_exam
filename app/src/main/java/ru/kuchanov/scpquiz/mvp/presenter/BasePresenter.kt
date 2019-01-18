@@ -47,7 +47,7 @@ abstract class BasePresenter<V : BaseView>(
 
     fun onRewardedVideoFinished() {
         Timber.d("onRewardedVideoFinished")
-        Completable.fromAction {
+        compositeDisposable.add(Completable.fromAction {
             with(appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet()) {
                 score += Constants.REWARD_VIDEO_ADS
                 appDatabase.userDao().update(this).toLong()
@@ -66,6 +66,6 @@ abstract class BasePresenter<V : BaseView>(
                             viewState.showMessage(appContext.getString(R.string.coins_received, Constants.REWARD_VIDEO_ADS))
                             Timber.d("Success transaction from REWARDED VIDEO")
                         }
-                )
+                ))
     }
 }

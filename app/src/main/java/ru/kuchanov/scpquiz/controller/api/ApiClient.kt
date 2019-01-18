@@ -9,7 +9,7 @@ import ru.kuchanov.scpquiz.controller.api.response.TokenResponse
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
-import ru.kuchanov.scpquiz.model.db.QuizTransaction
+import ru.kuchanov.scpquiz.model.api.NwUser
 import ru.kuchanov.scpquiz.model.db.TransactionType
 import java.net.HttpURLConnection
 import javax.inject.Inject
@@ -86,8 +86,11 @@ class ApiClient @Inject constructor(
                     System.currentTimeMillis().toString()
             )
 
-    fun addAllTransactions(transactions: List<QuizTransaction>): Single<List<NwQuizTransaction>> =
-            transactionApi.addAllTransactions(
-                    transactions
-            )
+    fun deleteAllNwTransactions(): Single<Boolean> = transactionApi.deleteAllNwTransactions()
+
+    fun resetProgress(): Single<Int> = transactionApi.resetProgress()
+
+    fun getServerUserScore(): Single<Long> = quizApi.getServerUserScore()
+
+    fun getNwUser(): Single<NwUser> = quizApi.getNwUser()
 }

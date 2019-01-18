@@ -10,6 +10,7 @@ data class NwQuizTransaction(
         var userId: Long? = null,
         var quizId: Long? = null,
         val quizTransactionType: TransactionType,
-        val coinsAmount: Int? = null
+        val coinsAmount: Int? = null,
+        val createdOnClient: Long
 )
 

@@ -1,24 +1,19 @@
 package ru.kuchanov.scpquiz.controller.interactor
 
-import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Maybe
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
-import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.TransactionType
-import ru.kuchanov.scpquiz.model.db.UserRole
 import timber.log.Timber
 import javax.inject.Inject
 
 class TransactionInteractor @Inject constructor(
         private val appDatabase: AppDatabase,
-        private val apiClient: ApiClient,
-        private val preferences: MyPreferenceManager
+        private val apiClient: ApiClient
 ) {
     fun makeTransaction(quizId: Long?, transactionType: TransactionType, coinsAmount: Int) =
             Single
@@ -47,38 +42,21 @@ class TransactionInteractor @Inject constructor(
                     }
 
     fun syncAllProgress() =
-            Maybe.fromCallable {
-                if (appDatabase.transactionDao().getTransactionsCount() == 0 && preferences.getAccessToken() != null) {
-                    true
-                } else {
-                    null
-                }
-            }
-                    .flatMapCompletable { syncScoreWithServer().andThen(syncFinishedLevels().onErrorComplete()) }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
+            syncScoreWithServer().andThen(syncFinishedLevels().onErrorComplete())
 
     private fun syncScoreWithServer() =
-            Single.fromCallable {
-                val quizTransaction = QuizTransaction(
-                        quizId = null,
-                        transactionType = TransactionType.UPDATE_SYNC,
-                        coinsAmount = appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet().score
-                )
-                appDatabase.transactionDao().insert(quizTransaction)
-
-            }
-                    .flatMapCompletable { quizTransactionId ->
+            appDatabase.transactionDao().getOneByType(TransactionType.UPDATE_SYNC)
+                    .flatMapCompletable { quizTransaction ->
                         apiClient.addTransaction(
-                                null,
-                                TransactionType.UPDATE_SYNC,
-                                appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet().score
+                                quizTransaction.quizId,
+                                quizTransaction.transactionType,
+                                quizTransaction.coinsAmount
                         )
                                 .doOnSuccess { nwQuizTransaction ->
                                     appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                            quizTransactionId = quizTransactionId,
+                                            quizTransactionId = quizTransaction.id!!,
                                             quizTransactionExternalId = nwQuizTransaction.id)
-                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransaction.id))
                                 }
                                 .ignoreElement()
                                 .onErrorComplete()
@@ -123,7 +101,6 @@ class TransactionInteractor @Inject constructor(
                     .map { quizTransactionList ->
                         Timber.d("quizTransactionList :%s", quizTransactionList)
                         appDatabase.transactionDao().insertQuizTransactionList(quizTransactionList)
-
                     }
                     .flatMapSingle { localIds ->
                         Flowable
@@ -157,5 +134,4 @@ class TransactionInteractor @Inject constructor(
                     quizId = quizId,
                     transactionType = transactionType
             )
-
 }

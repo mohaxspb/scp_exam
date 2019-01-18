@@ -48,7 +48,7 @@ class GamePresenter @Inject constructor(
         override var transactionInteractor: TransactionInteractor,
         public override var apiClient: ApiClient
 
-) : BasePresenter<GameView>(appContext, preferences, router, appDatabase, apiClient,transactionInteractor), AuthPresenter<GameFragment> {
+) : BasePresenter<GameView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor), AuthPresenter<GameFragment> {
 
     override fun getAuthView(): GameView = viewState
 
@@ -268,7 +268,7 @@ class GamePresenter @Inject constructor(
                                 chars = quizLevelInfo.quiz.scpNumber.toList()
                             }
                             chars.let { viewState.setKeyboardChars(it) }
-                            gameInteractor.updateFinishedLevel(
+                            compositeDisposable.add(gameInteractor.updateFinishedLevel(
                                     quizLevelInfo.quiz.id,
                                     nameRedundantCharsRemoved = nameRedundantCharsRemoved,
                                     numberRedundantCharsRemoved = numberRedundantCharsRemoved
@@ -285,7 +285,7 @@ class GamePresenter @Inject constructor(
                                                         ?: "Unexpected error")
                                             },
                                             onComplete = { Timber.d("Success transaction from Game Presenter") }
-                                    )
+                                    ))
                         }
                     },
                     R.drawable.selector_chat_action_green,
@@ -722,7 +722,7 @@ class GamePresenter @Inject constructor(
                         if (checkCoins.invoke(Constants.COINS_FOR_LEVEL_UNLOCK, index)) {
                             viewState.removeChatAction(index)
                             viewState.showChatMessage(nextLevelMessageText, quizLevelInfo.player)
-                            gameInteractor
+                            compositeDisposable.add(gameInteractor
                                     .increaseScore(-Constants.COINS_FOR_LEVEL_UNLOCK)
                                     .andThen(transactionInteractor.makeTransaction(quizLevelInfo.quiz.id, TransactionType.LEVEL_ENABLE_FOR_COINS, -Constants.COINS_FOR_LEVEL_UNLOCK))
                                     .subscribeOn(Schedulers.io())
@@ -740,7 +740,7 @@ class GamePresenter @Inject constructor(
                                                 )
                                                 Timber.d("Success transaction from Game Presenter")
                                             }
-                                    )
+                                    ))
                         }
                     }
                 },
@@ -884,7 +884,7 @@ class GamePresenter @Inject constructor(
                         appContext.getString(R.string.message_after_suggestion_of_name),
                         quizLevelInfo.player
                 )
-                gameInteractor
+                compositeDisposable.add(gameInteractor
                         .increaseScore(-Constants.SUGGESTION_PRICE_NAME)
                         .andThen(transactionInteractor.makeTransaction(quizLevelInfo.quiz.id, TransactionType.NAME_NO_PRICE, -Constants.SUGGESTION_PRICE_NAME))
                         .subscribeOn(Schedulers.io())
@@ -898,7 +898,7 @@ class GamePresenter @Inject constructor(
                                 onComplete = {
                                     Timber.d("Success transaction from Game Presenter")
                                 }
-                        )
+                        ))
             } else {
                 showChatMessage(
                         quizTranslation.translation,
@@ -908,7 +908,7 @@ class GamePresenter @Inject constructor(
                         appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NAME),
                         quizLevelInfo.doctor
                 )
-                gameInteractor
+                compositeDisposable.add(gameInteractor
                         .increaseScore(Constants.COINS_FOR_NAME)
                         .andThen(transactionInteractor.makeTransaction(quizLevelInfo.quiz.id, TransactionType.NAME_WITH_PRICE, Constants.COINS_FOR_NAME))
                         .subscribeOn(Schedulers.io())
@@ -922,7 +922,7 @@ class GamePresenter @Inject constructor(
                                 onComplete = {
                                     Timber.d("Success transaction from Game Presenter")
                                 }
-                        )
+                        ))
             }
             showName(quizLevelInfo.quiz.quizTranslations!!.first().translation.toList())
             showBackspaceButton(false)
@@ -959,7 +959,7 @@ class GamePresenter @Inject constructor(
                         quizLevelInfo.player
                 )
 
-                gameInteractor
+                compositeDisposable.add(gameInteractor
                         .increaseScore(-Constants.SUGGESTION_PRICE_NUMBER)
                         .andThen(transactionInteractor.makeTransaction(quizLevelInfo.quiz.id, TransactionType.NUMBER_NO_PRICE, -Constants.SUGGESTION_PRICE_NUMBER))
                         .subscribeOn(Schedulers.io())
@@ -973,7 +973,7 @@ class GamePresenter @Inject constructor(
                                 onComplete = {
                                     Timber.d("Success transaction from Game Presenter")
                                 }
-                        )
+                        ))
             } else {
                 showChatMessage(
                         appContext.getString(R.string.message_correct_give_coins, Constants.COINS_FOR_NUMBER),
@@ -983,7 +983,7 @@ class GamePresenter @Inject constructor(
                         appContext.getString(R.string.message_level_comleted, quizLevelInfo.player.name),
                         quizLevelInfo.doctor
                 )
-                gameInteractor
+                compositeDisposable.add(gameInteractor
                         .increaseScore(Constants.COINS_FOR_NUMBER)
                         .andThen(transactionInteractor.makeTransaction(quizLevelInfo.quiz.id, TransactionType.NUMBER_WITH_PRICE, Constants.COINS_FOR_NUMBER))
                         .subscribeOn(Schedulers.io())
@@ -997,7 +997,7 @@ class GamePresenter @Inject constructor(
                                 onComplete = {
                                     Timber.d("Success transaction from Game Presenter")
                                 }
-                        )
+                        ))
             }
 
             showNumber(quizLevelInfo.quiz.scpNumber.toList())

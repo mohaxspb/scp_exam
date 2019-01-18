@@ -141,7 +141,7 @@ object Migrations {
             //add column createdOnClient into QuizTransaction
             try {
                 database.execSQL("""
-                        ALTER TABLE QuizTransaction ADD COLUMN createdOnClient INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP
+                        ALTER TABLE QuizTransaction ADD COLUMN createdOnClient INTEGER NOT NULL
                                 """)
             } catch (e: Throwable) {
                 Timber.e(e)

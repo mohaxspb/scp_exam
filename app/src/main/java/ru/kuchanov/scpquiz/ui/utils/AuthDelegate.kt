@@ -24,13 +24,16 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
-import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.api.ApiClient
+import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.model.CommonUserData
+import ru.kuchanov.scpquiz.model.api.QuizConverter
+import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.AuthPresenter
 import ru.kuchanov.scpquiz.mvp.AuthView
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -39,6 +42,7 @@ import timber.log.Timber
 import toothpick.Toothpick
 import javax.inject.Inject
 
+@SuppressWarnings("Injectable")
 class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView>>>(
         private val fragment: T,
         private val authPresenter: AuthPresenter<*>,
@@ -48,8 +52,13 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
     init {
         Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
     }
+
     @Inject
     lateinit var transactionInteractor: TransactionInteractor
+    @Inject
+    lateinit var appDatabase: AppDatabase
+    @Inject
+    lateinit var quizConverter: QuizConverter
     private val compositeDisposable = CompositeDisposable()
     private val callbackManager = CallbackManager.Factory.create()
     private var googleApiClient: GoogleApiClient? = null
@@ -60,7 +69,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
 
     fun onViewCreated(fragmentActivity: FragmentActivity) {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(fragmentActivity.getString(R.string.default_web_client_id))
+                .requestIdToken(BuildConfig.SERVER_GOOGLE_CLIENT_ID)
                 .requestEmail()
                 .build()
         googleApiClient = GoogleApiClient.Builder(fragmentActivity)
@@ -147,6 +156,30 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                 .doOnSuccess { (accessToken, refreshToken) ->
                     preferences.setAccessToken(accessToken)
                     preferences.setRefreshToken(refreshToken)
+                }
+                .flatMap { it ->
+                    apiClient.getNwUser()
+                            .flatMap { nwUser ->
+                                appDatabase.userDao().getOneByRole(UserRole.PLAYER)
+                                        .map { it ->
+                                            it.name = nwUser.fullName!!
+                                            it.avatarUrl = nwUser.avatar
+                                            it.score = nwUser.score
+                                            appDatabase.userDao().update(it)
+                                            Timber.d("USER AFTER SOCIAL LOGIN UPDATE:%s", it)
+                                        }
+                            }
+                }
+                .flatMap {
+                    apiClient.getNwQuizTransactionList()
+                            .map { nwTransactionList ->
+                                nwTransactionList.forEach { nwQuizTransaction ->
+                                    appDatabase.transactionDao().insert(
+                                            quizConverter.convert(nwQuizTransaction)
+                                    )
+                                    Timber.d("TRANSACTIONS AFTER SOCIAL LOGIN UPDATE :%s", appDatabase.transactionDao().getAllList())
+                                }
+                            }
                 }
                 .flatMapCompletable { transactionInteractor.syncAllProgress() }
                 .subscribeOn(Schedulers.io())

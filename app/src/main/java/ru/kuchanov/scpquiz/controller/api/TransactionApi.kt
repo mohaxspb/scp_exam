@@ -3,7 +3,6 @@ package ru.kuchanov.scpquiz.controller.api
 import io.reactivex.Single
 import retrofit2.http.*
 import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
-import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.TransactionType
 
 interface TransactionApi {
@@ -25,9 +24,9 @@ interface TransactionApi {
             @Field("createdOnClient") createdOnClient: String
     ): Single<NwQuizTransaction>
 
-    @FormUrlEncoded
-    @POST("transactions/addAll")
-    fun addAllTransactions(
-            @Field("transactions") transactions: List<QuizTransaction>
-    ): Single<List<NwQuizTransaction>>
+    @DELETE("transactions/deleteAll")
+    fun deleteAllNwTransactions(): Single<Boolean>
+
+    @GET("transactions/resetProgress")
+    fun resetProgress(): Single<Int>
 }
