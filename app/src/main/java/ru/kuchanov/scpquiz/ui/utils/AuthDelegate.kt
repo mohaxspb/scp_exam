@@ -159,23 +159,25 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                 }
                 .flatMap { it ->
                     apiClient.getNwUser()
-                            .doOnSuccess { nwUser ->
+                            .flatMap { nwUser ->
                                 appDatabase.userDao().getOneByRole(UserRole.PLAYER)
                                         .map { it ->
                                             it.name = nwUser.fullName!!
                                             it.avatarUrl = nwUser.avatar
                                             it.score = nwUser.score
                                             appDatabase.userDao().update(it)
+                                            Timber.d("USER AFTER SOCIAL LOGIN UPDATE:%s", it)
                                         }
                             }
                 }
                 .flatMap {
                     apiClient.getNwQuizTransactionList()
-                            .doOnSuccess { nwTransactionList ->
+                            .map { nwTransactionList ->
                                 nwTransactionList.forEach { nwQuizTransaction ->
                                     appDatabase.transactionDao().insert(
                                             quizConverter.convert(nwQuizTransaction)
                                     )
+                                    Timber.d("TRANSACTIONS AFTER SOCIAL LOGIN UPDATE :%s", appDatabase.transactionDao().getAllList())
                                 }
                             }
                 }

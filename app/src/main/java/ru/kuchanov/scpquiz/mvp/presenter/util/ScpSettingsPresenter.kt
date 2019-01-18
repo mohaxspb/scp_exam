@@ -110,7 +110,15 @@ class ScpSettingsPresenter @Inject constructor(
     fun onResetProgressClicked() {
         compositeDisposable.add(
                 apiClient.resetProgress()
-                        .doOnSuccess {
+                        .flatMap { it ->
+                            appDatabase.userDao().getOneByRole(UserRole.PLAYER)
+                                    .map { user ->
+                                        user.score = it
+                                        appDatabase.userDao().update(user)
+                                        Timber.d("USER : %s", user)
+                                    }
+                        }
+                        .flatMap {
                             appDatabase.finishedLevelsDao().getAllByAsc()
                                     .map { finishedLevels ->
                                         appDatabase.finishedLevelsDao().update(finishedLevels.mapIndexed { index, it ->
@@ -124,11 +132,10 @@ class ScpSettingsPresenter @Inject constructor(
                                             }
                                         })
                                     }
-                            appDatabase.transactionDao().resetProgress()
-                            appDatabase.userDao().getOneByRole(UserRole.PLAYER)
-                                    .map { user ->
-                                        user.score = it
-                                        appDatabase.userDao().update(user)
+                                    .doOnSuccess {
+                                        Timber.d("BEFORE RESET :%s", appDatabase.transactionDao().getAllList())
+                                        appDatabase.transactionDao().resetProgress()
+                                        Timber.d("AFTER RESET :%s", appDatabase.transactionDao().getAllList())
                                     }
                         }
                         .subscribeOn(Schedulers.io())
@@ -136,7 +143,9 @@ class ScpSettingsPresenter @Inject constructor(
                         .doOnSubscribe { viewState.showProgress(true) }
                         .doOnEvent { _, _ -> viewState.showProgress(false) }
                         .subscribeBy(
-                                onSuccess = { viewState.showMessage(R.string.reset_progress_user_message) },
+                                onSuccess = {
+                                    viewState.showMessage(R.string.reset_progress_user_message)
+                                },
                                 onError = {
                                     Timber.e(it)
                                     viewState.showMessage(it.toString())
