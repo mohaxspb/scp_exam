@@ -78,7 +78,7 @@ class App : MultiDexApplication() {
     }
 
     private fun initScore() {
-        Completable.fromAction {
+        Completable.fromCallable {
             if (appDatabase.transactionDao().getTransactionsCount() == 0) {
                 val quizTransaction = QuizTransaction(
                         quizId = null,
@@ -88,7 +88,7 @@ class App : MultiDexApplication() {
                 appDatabase.transactionDao().insert(quizTransaction)
             }
         }
-                .andThen { Timber.d("DEFAULT transaction after entering APP:%s", appDatabase.transactionDao().getAllList()) }
+                .doOnComplete { Timber.d("DEFAULT transaction after entering APP:%s", appDatabase.transactionDao().getAllList()) }
                 .onErrorComplete()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

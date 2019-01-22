@@ -1,11 +1,11 @@
 package ru.kuchanov.scpquiz.controller.interactor
 
-import io.reactivex.Flowable
-import io.reactivex.Single
+import io.reactivex.*
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.TransactionType
 import timber.log.Timber
@@ -13,9 +13,11 @@ import javax.inject.Inject
 
 class TransactionInteractor @Inject constructor(
         private val appDatabase: AppDatabase,
-        private val apiClient: ApiClient
+        private val apiClient: ApiClient,
+        private val preferences: MyPreferenceManager
 ) {
-    fun makeTransaction(quizId: Long?, transactionType: TransactionType, coinsAmount: Int) =
+
+    fun makeTransaction(quizId: Long?, transactionType: TransactionType, coinsAmount: Int?) =
             Single
                     .fromCallable {
                         val quizTransaction = QuizTransaction(
@@ -23,29 +25,66 @@ class TransactionInteractor @Inject constructor(
                                 transactionType = transactionType,
                                 coinsAmount = coinsAmount
                         )
-                        appDatabase.transactionDao().insert(quizTransaction)
+                        appDatabase.transactionDao().insert(quizTransaction).also { Timber.d("LOCAL DB TRANSACTION :%s", appDatabase.transactionDao().getOneById(it)) }
                     }
                     .flatMapCompletable { quizTransactionId ->
-                        apiClient.addTransaction(
-                                quizId,
-                                transactionType,
-                                coinsAmount
-                        )
-                                .doOnSuccess { nwQuizTransaction ->
-                                    appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                            quizTransactionId = quizTransactionId,
-                                            quizTransactionExternalId = nwQuizTransaction.id)
-                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
-                                }
-                                .ignoreElement()
-                                .onErrorComplete()
+                        if (preferences.getAccessToken() == null) {
+                            Completable.complete()
+                        } else {
+                            apiClient.addTransaction(
+                                    quizId,
+                                    transactionType,
+                                    coinsAmount
+                            )
+                                    .doOnSuccess { nwQuizTransaction ->
+                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                quizTransactionId = quizTransactionId,
+                                                quizTransactionExternalId = nwQuizTransaction.id)
+                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                    }
+                                    .ignoreElement()
+                                    .onErrorComplete()
+                        }
                     }
 
-    fun syncAllProgress() =
-            syncScoreWithServer().andThen(syncFinishedLevels().onErrorComplete())
+    fun syncAllProgress() = Maybe.fromCallable {
+        if (preferences.getAccessToken() != null) {
+            true
+        } else {
+            null
+        }
+    }
+            .flatMapCompletable { syncScoreWithServer() }
+            .andThen(syncFinishedLevels())
+
+
+    fun syncTransactions() =
+            appDatabase.transactionDao().getAllWithoutExternalId()
+                    .doOnSuccess { Timber.d("doOnSuccess :%s", it) }
+                    .flatMap { listWithoutExtId ->
+                        Timber.d("LIST WITHOUT ExtID:%s", listWithoutExtId)
+                        Observable.fromIterable(listWithoutExtId)
+                                .flatMapSingle { transaction ->
+                                    Timber.d("Transaction:%s", transaction)
+                                    makeTransaction(transaction.quizId, transaction.transactionType, transaction.coinsAmount).toSingleDefault(transaction)
+                                }
+                                .doOnNext { Timber.d("Transaction BEFORE TO LIST():%s", it) }
+                                .toList()
+                                .doOnSuccess { Timber.d("Transaction AFTER TO LIST:%s", it) }
+                    }
+                    .ignoreElement()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
 
     private fun syncScoreWithServer() =
-            appDatabase.transactionDao().getOneByType(TransactionType.UPDATE_SYNC)
+            Maybe.fromCallable {
+                val updateSyncTransaction = appDatabase.transactionDao().getOneByTypeNoReactive(TransactionType.UPDATE_SYNC)
+                return@fromCallable if (updateSyncTransaction.externalId == null) {
+                    updateSyncTransaction
+                } else {
+                    null
+                }
+            }
                     .flatMapCompletable { quizTransaction ->
                         apiClient.addTransaction(
                                 quizTransaction.quizId,
@@ -74,24 +113,36 @@ class TransactionInteractor @Inject constructor(
      * обновляем externalId doOnSuccess()
      */
     private fun syncFinishedLevels() =
-            appDatabase.finishedLevelsDao().getAll()
+            appDatabase.finishedLevelsDao().getAllSingle()
                     .map { finishedLevels -> finishedLevels.filter { it.isLevelAvailable } }
                     .map { levelsAvailableTrue ->
                         val finishedLevelsToTransactions = arrayListOf<QuizTransaction>()
-                        levelsAvailableTrue.forEach { levelAvailable ->
-                            val quizId = levelAvailable.quizId
-                            if (levelAvailable.nameRedundantCharsRemoved) {
+                        levelsAvailableTrue.forEach { levelAvailableFinishedLevel ->
+                            val quizId = levelAvailableFinishedLevel.quizId
+                            if (levelAvailableFinishedLevel.nameRedundantCharsRemoved
+                                    && appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizId, TransactionType.NAME_CHARS_REMOVED) == null
+                                    && appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizId, TransactionType.NAME_CHARS_REMOVED_MIGRATION) == null) {
                                 finishedLevelsToTransactions.add(quizTransactionForMigration(quizId, TransactionType.NAME_CHARS_REMOVED_MIGRATION))
                             }
-                            if (levelAvailable.numberRedundantCharsRemoved) {
+                            if (levelAvailableFinishedLevel.numberRedundantCharsRemoved
+                                    && appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizId, TransactionType.NUMBER_CHARS_REMOVED) == null
+                                    && appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizId, TransactionType.NUMBER_CHARS_REMOVED_MIGRATION) == null) {
                                 finishedLevelsToTransactions.add(quizTransactionForMigration(quizId, TransactionType.NUMBER_CHARS_REMOVED_MIGRATION))
                             }
-                            if (levelAvailable.scpNameFilled) {
+                            if (levelAvailableFinishedLevel.scpNameFilled
+                                    && appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizId, TransactionType.NAME_WITH_PRICE) == null
+                                    && appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizId, TransactionType.NAME_NO_PRICE) == null
+                                    && appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizId, TransactionType.NAME_ENTERED_MIGRATION) == null) {
                                 finishedLevelsToTransactions.add(quizTransactionForMigration(quizId, TransactionType.NAME_ENTERED_MIGRATION))
                             }
-                            if (levelAvailable.scpNumberFilled) {
+                            if (levelAvailableFinishedLevel.scpNumberFilled
+                                    && appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizId, TransactionType.NUMBER_WITH_PRICE) == null
+                                    && appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizId, TransactionType.NUMBER_NO_PRICE) == null
+                                    && appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizId, TransactionType.NUMBER_ENTERED_MIGRATION) == null) {
                                 finishedLevelsToTransactions.add(quizTransactionForMigration(quizId, TransactionType.NUMBER_ENTERED_MIGRATION))
-                            } else {
+                            }
+                            if (appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizId, TransactionType.LEVEL_ENABLE_FOR_COINS) == null
+                                    && appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizId, TransactionType.LEVEL_AVAILABLE_MIGRATION) == null) {
                                 finishedLevelsToTransactions.add(quizTransactionForMigration(quizId, TransactionType.LEVEL_AVAILABLE_MIGRATION))
                             }
                         }
@@ -102,10 +153,12 @@ class TransactionInteractor @Inject constructor(
                         Timber.d("quizTransactionList :%s", quizTransactionList)
                         appDatabase.transactionDao().insertQuizTransactionList(quizTransactionList)
                     }
-                    .flatMapSingle { localIds ->
+                    .flatMap { localIds ->
                         Flowable
                                 .fromIterable(localIds)
-                                .flatMap {
+                                .doOnNext { Timber.d("DO ON NEXT syncFinishedLevels") }
+                                .doOnComplete { Timber.d("DO ON COMPLETE syncFinishedLevels") }
+                                .flatMapSingle {
                                     apiClient
                                             .addTransaction(
                                                     quizId = appDatabase.transactionDao().getOneById(it).quizId,
@@ -119,12 +172,11 @@ class TransactionInteractor @Inject constructor(
                                                         quizTransactionExternalId = nwQuizTransaction.id)
                                                 Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(it))
                                             }
-                                            .toFlowable()
                                 }
                                 .toList()
                     }
-                    .firstOrError()
                     .ignoreElement()
+                    .onErrorComplete()
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
 
