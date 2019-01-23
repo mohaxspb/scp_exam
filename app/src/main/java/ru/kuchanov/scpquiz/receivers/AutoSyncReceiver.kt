@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.services.PeriodicallySyncService
 
 
@@ -21,7 +22,7 @@ class AutoSyncReceiver : BroadcastReceiver() {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val syncIntent = Intent(context, AutoSyncReceiver::class.java)
             val pendingSyncIntent = PendingIntent.getBroadcast(context, 0, syncIntent, 0)
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), (1000 * 60 * 1).toLong(), pendingSyncIntent) // Millisec * Second * Minute
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), Constants.SYNC_PERIOD, pendingSyncIntent) // Millisec * Second * Minute
         }
 
         private fun cancelAlarm(context: Context) {
