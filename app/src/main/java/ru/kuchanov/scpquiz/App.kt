@@ -79,7 +79,7 @@ class App : MultiDexApplication() {
 
     private fun initScore() {
         Completable.fromCallable {
-            if (appDatabase.transactionDao().getTransactionsCount() == 0) {
+            if (appDatabase.transactionDao().getOneByTypeNoReactive(TransactionType.UPDATE_SYNC) == null) {
                 val quizTransaction = QuizTransaction(
                         quizId = null,
                         transactionType = TransactionType.UPDATE_SYNC,

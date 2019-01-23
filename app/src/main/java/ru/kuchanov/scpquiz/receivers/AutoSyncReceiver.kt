@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import ru.kuchanov.scpquiz.services.PeriodicallySyncService
 
+
 class AutoSyncReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -23,7 +24,7 @@ class AutoSyncReceiver : BroadcastReceiver() {
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), (1000 * 60 * 1).toLong(), pendingSyncIntent) // Millisec * Second * Minute
         }
 
-        fun cancelAlarm(context: Context) {
+        private fun cancelAlarm(context: Context) {
             val intent = Intent(context, AutoSyncReceiver::class.java)
             val sender = PendingIntent.getBroadcast(context, 0, intent, 0)
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -31,4 +32,5 @@ class AutoSyncReceiver : BroadcastReceiver() {
         }
     }
 }
+
 

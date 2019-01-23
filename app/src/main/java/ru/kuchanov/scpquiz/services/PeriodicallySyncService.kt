@@ -48,7 +48,6 @@ class PeriodicallySyncService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         transactionInteractor.syncAllProgress()
-                .doOnComplete { Timber.d("doOnComplete before AND THEN") }
                 .andThen(transactionInteractor.syncTransactions())
                 .subscribeBy(
                         onComplete = {

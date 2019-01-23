@@ -34,7 +34,7 @@ interface TransactionDao {
     fun getOneByType(transactionType: TransactionType): Single<QuizTransaction>
 
     @Query("SELECT * FROM QuizTransaction WHERE transactionType = :transactionType")
-    fun getOneByTypeNoReactive(transactionType: TransactionType): QuizTransaction
+    fun getOneByTypeNoReactive(transactionType: TransactionType): QuizTransaction?
 
     @Insert
     fun insert(quizTransaction: QuizTransaction): Long

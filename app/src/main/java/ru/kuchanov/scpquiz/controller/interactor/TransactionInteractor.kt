@@ -60,13 +60,23 @@ class TransactionInteractor @Inject constructor(
 
     fun syncTransactions() =
             appDatabase.transactionDao().getAllWithoutExternalId()
-                    .doOnSuccess { Timber.d("doOnSuccess :%s", it) }
                     .flatMap { listWithoutExtId ->
                         Timber.d("LIST WITHOUT ExtID:%s", listWithoutExtId)
                         Observable.fromIterable(listWithoutExtId)
                                 .flatMapSingle { transaction ->
                                     Timber.d("Transaction:%s", transaction)
-                                    makeTransaction(transaction.quizId, transaction.transactionType, transaction.coinsAmount).toSingleDefault(transaction)
+//                                    makeTransaction(transaction.quizId, transaction.transactionType, transaction.coinsAmount).toSingleDefault(transaction)
+                                    apiClient.addTransaction(
+                                            transaction.quizId,
+                                            transaction.transactionType,
+                                            transaction.coinsAmount
+                                    )
+                                            .doOnSuccess { nwTransaction ->
+                                                appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                        transaction.id!!,
+                                                        nwTransaction.id
+                                                )
+                                            }
                                 }
                                 .doOnNext { Timber.d("Transaction BEFORE TO LIST():%s", it) }
                                 .toList()
@@ -79,7 +89,7 @@ class TransactionInteractor @Inject constructor(
     private fun syncScoreWithServer() =
             Maybe.fromCallable {
                 val updateSyncTransaction = appDatabase.transactionDao().getOneByTypeNoReactive(TransactionType.UPDATE_SYNC)
-                return@fromCallable if (updateSyncTransaction.externalId == null) {
+                return@fromCallable if (updateSyncTransaction?.externalId == null) {
                     updateSyncTransaction
                 } else {
                     null
