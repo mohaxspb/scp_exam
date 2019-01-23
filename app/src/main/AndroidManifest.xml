@@ -50,6 +50,30 @@
             android:name=".services.UploadService"
             android:enabled="true" />
 
+        <service
+            android:name=".services.PeriodicallySyncService"
+            android:enabled="true" />
+
+        <receiver
+            android:name=".receivers.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <!--For HTC devices-->
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receivers.AutoSyncReceiver">
+            <intent-filter>
+                <action android:name="ru.kuchanov.scpquiz.SYNC_INTENT" />
+            </intent-filter>
+        </receiver>
+
         <!-- AdMob crash fix -->
         <!-- see https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml -->
         <meta-data

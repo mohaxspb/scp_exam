@@ -12,6 +12,9 @@ interface TransactionDao {
     @Query("SELECT * FROM QuizTransaction")
     fun getAll(): Flowable<List<QuizTransaction>>
 
+    @Query("SELECT * FROM QuizTransaction WHERE externalId IS NULL")
+    fun getAllWithoutExternalId(): Single<List<QuizTransaction>>
+
     @Query("SELECT * FROM QuizTransaction")
     fun getAllSingle(): Single<List<QuizTransaction>>
 
@@ -24,8 +27,14 @@ interface TransactionDao {
     @Query("SELECT * FROM QuizTransaction WHERE id = :id")
     fun getOneById(id: Long): QuizTransaction
 
+    @Query("SELECT * FROM QuizTransaction WHERE quizId = :quizId AND transactionType = :transactionType")
+    fun getOneByQuizIdAndTransactionType(quizId: Long, transactionType: TransactionType): QuizTransaction?
+
     @Query("SELECT * FROM QuizTransaction WHERE transactionType = :transactionType")
     fun getOneByType(transactionType: TransactionType): Single<QuizTransaction>
+
+    @Query("SELECT * FROM QuizTransaction WHERE transactionType = :transactionType")
+    fun getOneByTypeNoReactive(transactionType: TransactionType): QuizTransaction?
 
     @Insert
     fun insert(quizTransaction: QuizTransaction): Long
