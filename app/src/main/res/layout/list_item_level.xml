@@ -5,10 +5,11 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:clipToPadding="false"
-    android:paddingBottom="@dimen/defaultMargin"
     android:paddingTop="@dimen/defaultMarginSmall"
+    android:paddingBottom="@dimen/defaultMargin"
     tools:layout_gravity="center"
     tools:targetApi="lollipop">
+
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -69,9 +70,9 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginEnd="@dimen/defaultMarginSmall"
                     android:layout_marginStart="@dimen/defaultMarginSmall"
                     android:layout_marginTop="6dp"
+                    android:layout_marginEnd="@dimen/defaultMarginSmall"
                     android:background="@color/stokeColor" />
             </LinearLayout>
 
@@ -83,8 +84,8 @@
                 android:ellipsize="end"
                 android:gravity="center"
                 android:maxLines="1"
-                android:paddingEnd="@dimen/defaultMarginTiny"
                 android:paddingStart="@dimen/defaultMarginTiny"
+                android:paddingEnd="@dimen/defaultMarginTiny"
                 android:textColor="@color/stokeColor"
                 android:textSize="12sp"
                 android:visibility="gone"
@@ -95,5 +96,20 @@
         </FrameLayout>
 
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/quizProgressView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@color/colorRed"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            />
+    </FrameLayout>
 
 </FrameLayout>

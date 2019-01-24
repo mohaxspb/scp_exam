@@ -11,6 +11,8 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import kotlinx.android.synthetic.main.fragment_levels.*
+import kotlinx.android.synthetic.main.list_item_level.*
+import kotlinx.android.synthetic.main.list_item_level.view.*
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.LevelDelegate
@@ -29,6 +31,7 @@ import javax.inject.Inject
 
 
 class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
+
 
     companion object {
         fun newInstance() = LevelsFragment()
@@ -79,8 +82,8 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
         recyclerView.layoutManager = GridLayoutManager(activity, 3)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
         delegateManager.addDelegate(LevelDelegate(
-            { presenter.onLevelClick(it) },
-            { presenter.onLevelUnlockClicked(it) }
+                { presenter.onLevelClick(it) },
+                { presenter.onLevelUnlockClicked(it) }
         ))
         adapter = ListDelegationAdapter(delegateManager)
         recyclerView.adapter = adapter
@@ -88,6 +91,10 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
 
     override fun showProgress(show: Boolean) {
         progressView.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    override fun showProgressOnQuizLevel(show: Boolean) {
+        quizProgressView.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     override fun showLevels(quizes: List<LevelViewModel>) {

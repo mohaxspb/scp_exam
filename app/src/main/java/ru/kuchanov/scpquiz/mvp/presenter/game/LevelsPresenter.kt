@@ -24,7 +24,9 @@ import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+
 
 @InjectViewState
 class LevelsPresenter @Inject constructor(
@@ -153,6 +155,7 @@ class LevelsPresenter @Inject constructor(
     }
 
     fun onLevelUnlockClicked(levelViewModel: LevelViewModel) {
+        viewState.showProgressOnQuizLevel(true)
         if (player.score >= Constants.COINS_FOR_LEVEL_UNLOCK) {
             compositeDisposable.add(appDatabase.finishedLevelsDao()
                     .getByIdOrErrorOnce(levelViewModel.quiz.id)
@@ -165,19 +168,24 @@ class LevelsPresenter @Inject constructor(
                         it.score -= Constants.COINS_FOR_LEVEL_UNLOCK
                         appDatabase.userDao().update(it)
                     }
+                    .delay(5000, TimeUnit.MILLISECONDS)
                     .flatMapCompletable { transactionInteractor.makeTransaction(levelViewModel.quiz.id, TransactionType.LEVEL_ENABLE_FOR_COINS, -Constants.COINS_FOR_LEVEL_UNLOCK) }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onError = {
+                                viewState.showProgressOnQuizLevel(false)
                                 Timber.e(it)
                                 viewState.showMessage(it.message ?: "Unexpected error")
                             },
-                            onComplete = { Timber.d("Success transaction from Level Presenter") }
+                            onComplete = {
+                                viewState.showProgressOnQuizLevel(false)
+                                Timber.d("Success transaction from Level Presenter")
+                            }
                     ))
         } else {
+            viewState.showProgressOnQuizLevel(false)
             viewState.showMessage(R.string.message_not_enough_coins_level_unlock)
         }
     }
 }
-
