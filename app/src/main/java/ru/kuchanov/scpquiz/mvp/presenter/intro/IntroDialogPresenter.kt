@@ -41,8 +41,6 @@ class IntroDialogPresenter @Inject constructor(
 ) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor), AuthPresenter<IntroDialogFragment> {
 
     override fun onAuthSuccess() {
-        preferences.setIntroDialogShown(true)
-
         navigateToFirstLevel()
     }
 
@@ -106,13 +104,19 @@ class IntroDialogPresenter @Inject constructor(
         val messageOk = appContext.getString(R.string.chat_action_sure)
         chatActions += ChatAction(
                 messageOk,
-                onActionClicked(messageOk) { showAuthChatActions() },
+                onActionClicked(messageOk) {
+                    preferences.setIntroDialogShown(true)
+                    showAuthChatActions()
+                },
                 R.drawable.selector_chat_action_accent
         )
         val messageSure = appContext.getString(R.string.chat_action_yes)
         chatActions += ChatAction(
                 messageSure,
-                onActionClicked(messageSure) { showAuthChatActions() },
+                onActionClicked(messageSure) {
+                    preferences.setIntroDialogShown(true)
+                    showAuthChatActions()
+                },
                 R.drawable.selector_chat_action_green
         )
 
