@@ -23,6 +23,7 @@ import ru.kuchanov.scpquiz.mvp.view.activity.MainView
 import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.utils.BitmapUtils
+import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
 import javax.inject.Inject
@@ -92,6 +93,7 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
     }
 
     override fun showProgressOnQuizLevel(itemPosition: Int) {
+        Timber.d("Item Position:%s", itemPosition)
         recyclerView.adapter?.notifyItemChanged(itemPosition)
     }
 

@@ -14,6 +14,7 @@ import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.ui.utils.getImageUrl
 import ru.kuchanov.scpquiz.utils.DimensionUtils
 import ru.kuchanov.scpquiz.utils.StorageUtils
+import timber.log.Timber
 
 
 class LevelDelegate(
@@ -33,6 +34,7 @@ class LevelDelegate(
         with(viewHolder.itemView) {
             @Suppress("SimplifyBooleanWithConstants")
             quizProgressView.visibility = if (item.showProgress == true) View.VISIBLE else View.GONE
+            Timber.d("ITEM onBindViewHolder:%s", item)
             if (item.scpNameFilled || item.scpNumberFilled) {
                 imageView.setPadding(0, 0, 0, 0)
                 with(GlideApp.with(imageView.context)) {
@@ -67,7 +69,7 @@ class LevelDelegate(
                     imageView.setPadding(padding, padding, padding, padding)
                     imageView.setImageResource(R.drawable.ic_coins5)
                     imageView.setBackgroundResource(R.color.backgroundColorLevelLocked)
-                    setOnClickListener { unlockLevelListener(item,viewHolder.adapterPosition) }
+                    setOnClickListener { unlockLevelListener(item, viewHolder.adapterPosition) }
                 }
                 strokeView.visibility = View.VISIBLE
                 scpNumberTextView.visibility = View.GONE

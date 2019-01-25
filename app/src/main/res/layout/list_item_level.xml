@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
@@ -10,106 +10,113 @@
     tools:layout_gravity="center"
     tools:targetApi="lollipop">
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="130dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_level_card"
+        android:elevation="@dimen/defaultMarginSmall"
+        android:foreground="?selectableItemBackground"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="@dimen/levelItemPadding"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UselessParent">
 
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="@dimen/levelImageSize"
+            android:layout_height="@dimen/levelImageSize"
+            android:background="@android:color/black"
+            android:src="@drawable/ic_level_unknown"
+            tools:ignore="ContentDescription" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="130dp"
-            android:layout_gravity="center"
-            android:background="@drawable/bg_level_card"
-            android:elevation="@dimen/defaultMarginSmall"
-            android:foreground="?selectableItemBackground"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:padding="@dimen/levelItemPadding"
-            tools:ignore="UselessParent">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="@dimen/levelImageSize"
-                android:layout_height="@dimen/levelImageSize"
-                android:background="@android:color/black"
-                android:src="@drawable/ic_level_unknown"
-                tools:ignore="ContentDescription" />
-
-            <FrameLayout
+            <LinearLayout
+                android:id="@+id/strokeView"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/strokeView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:orientation="vertical">
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <Space
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
-
-                        <Space
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1" />
-
-                        <View
-                            android:layout_width="0dp"
-                            android:layout_height="1dp"
-                            android:layout_weight="2"
-                            android:background="@color/stokeColor" />
-
-                        <Space
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1" />
-
-                    </LinearLayout>
+                        android:layout_weight="1" />
 
                     <View
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="1dp"
-                        android:layout_marginStart="@dimen/defaultMarginSmall"
-                        android:layout_marginTop="6dp"
-                        android:layout_marginEnd="@dimen/defaultMarginSmall"
+                        android:layout_weight="2"
                         android:background="@color/stokeColor" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
                 </LinearLayout>
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/scpNumberTextView"
+                <View
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/defaultMarginSmall"
-                    android:ellipsize="end"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:paddingStart="@dimen/defaultMarginTiny"
-                    android:paddingEnd="@dimen/defaultMarginTiny"
-                    android:textColor="@color/stokeColor"
-                    android:textSize="12sp"
-                    android:visibility="gone"
-                    app:fontFamily="@font/trixie_cyr_plain"
-                    tools:text="SCP-1001-RU"
-                    tools:visibility="visible" />
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/defaultMarginSmall"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginEnd="@dimen/defaultMarginSmall"
+                    android:background="@color/stokeColor" />
+            </LinearLayout>
 
-            </FrameLayout>
+            <android.support.v7.widget.AppCompatTextView
+                android:id="@+id/scpNumberTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/defaultMarginSmall"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:paddingStart="@dimen/defaultMarginTiny"
+                android:paddingEnd="@dimen/defaultMarginTiny"
+                android:textColor="@color/stokeColor"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:fontFamily="@font/trixie_cyr_plain"
+                tools:text="SCP-1001-RU"
+                tools:visibility="visible" />
 
-        </LinearLayout>
+        </FrameLayout>
+
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/quizProgressView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorRed"
-        android:visibility="visible"
+        android:layout_width="0dp"
+        android:elevation="9dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible">
 
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:indeterminate="true" />
     </FrameLayout>
 
-</FrameLayout>
+</android.support.constraint.ConstraintLayout>
