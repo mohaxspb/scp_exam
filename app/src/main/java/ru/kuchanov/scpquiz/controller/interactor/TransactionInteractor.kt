@@ -61,11 +61,8 @@ class TransactionInteractor @Inject constructor(
     fun syncTransactions() =
             appDatabase.transactionDao().getAllWithoutExternalId()
                     .flatMap { listWithoutExtId ->
-                        Timber.d("LIST WITHOUT ExtID:%s", listWithoutExtId)
                         Observable.fromIterable(listWithoutExtId)
                                 .flatMapSingle { transaction ->
-                                    Timber.d("Transaction:%s", transaction)
-//                                    makeTransaction(transaction.quizId, transaction.transactionType, transaction.coinsAmount).toSingleDefault(transaction)
                                     apiClient.addTransaction(
                                             transaction.quizId,
                                             transaction.transactionType,
@@ -78,9 +75,7 @@ class TransactionInteractor @Inject constructor(
                                                 )
                                             }
                                 }
-                                .doOnNext { Timber.d("Transaction BEFORE TO LIST():%s", it) }
                                 .toList()
-                                .doOnSuccess { Timber.d("Transaction AFTER TO LIST:%s", it) }
                     }
                     .ignoreElement()
                     .subscribeOn(Schedulers.io())
@@ -166,8 +161,6 @@ class TransactionInteractor @Inject constructor(
                     .flatMap { localIds ->
                         Flowable
                                 .fromIterable(localIds)
-                                .doOnNext { Timber.d("DO ON NEXT syncFinishedLevels") }
-                                .doOnComplete { Timber.d("DO ON COMPLETE syncFinishedLevels") }
                                 .flatMapSingle {
                                     apiClient
                                             .addTransaction(

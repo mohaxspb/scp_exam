@@ -14,7 +14,6 @@ import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.ui.utils.getImageUrl
 import ru.kuchanov.scpquiz.utils.DimensionUtils
 import ru.kuchanov.scpquiz.utils.StorageUtils
-import timber.log.Timber
 
 
 class LevelDelegate(
@@ -32,9 +31,7 @@ class LevelDelegate(
 
     override fun onBindViewHolder(item: LevelViewModel, viewHolder: LevelViewHolder, payloads: MutableList<Any>) {
         with(viewHolder.itemView) {
-            @Suppress("SimplifyBooleanWithConstants")
-            quizProgressView.visibility = if (item.showProgress == true) View.VISIBLE else View.GONE
-            Timber.d("ITEM onBindViewHolder:%s", item)
+            quizProgressView.visibility = if (item.showProgress) View.VISIBLE else View.GONE
             if (item.scpNameFilled || item.scpNumberFilled) {
                 imageView.setPadding(0, 0, 0, 0)
                 with(GlideApp.with(imageView.context)) {
