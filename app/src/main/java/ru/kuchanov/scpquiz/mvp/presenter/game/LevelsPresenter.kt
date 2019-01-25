@@ -24,7 +24,10 @@ import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
+import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+
 
 @InjectViewState
 class LevelsPresenter @Inject constructor(
@@ -38,6 +41,8 @@ class LevelsPresenter @Inject constructor(
 
     lateinit var player: User
 
+    private val quizProgressStates = TreeMap<Long, LevelViewModel>()
+
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
@@ -45,7 +50,6 @@ class LevelsPresenter @Inject constructor(
     }
 
     fun onLevelClick(levelViewModel: LevelViewModel) {
-        Timber.d("onLevelClick: %s", levelViewModel.quiz.id)
         val showAds = !preferences.isAdsDisabled()
                 && preferences.isNeedToShowInterstitial()
                 && (!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled)
@@ -112,18 +116,26 @@ class LevelsPresenter @Inject constructor(
                 }
                 .observeOn(Schedulers.io())
                 .map { triple ->
-                    val levels = triple.first.map { quiz ->
+                    triple.first.forEach { quiz ->
                         val finishedLevel = triple.second.find { it.quizId == quiz.id }
                                 ?: throw IllegalStateException("level not found for quizId: ${quiz.id}")
-                        LevelViewModel(
-                                quiz = quiz,
-                                scpNameFilled = finishedLevel.scpNameFilled,
-                                scpNumberFilled = finishedLevel.scpNumberFilled,
-                                isLevelAvailable = finishedLevel.isLevelAvailable
-                        )
+                        quizProgressStates.getOrPut(quiz.id) {
+                            LevelViewModel(
+                                    quiz = quiz,
+                                    scpNameFilled = finishedLevel.scpNameFilled,
+                                    scpNumberFilled = finishedLevel.scpNumberFilled,
+                                    isLevelAvailable = finishedLevel.isLevelAvailable,
+                                    showProgress = false
+                            )
+                        }
+                                .apply {
+                                    this.quiz = quiz
+                                    scpNameFilled = finishedLevel.scpNameFilled
+                                    scpNumberFilled = finishedLevel.scpNumberFilled
+                                    isLevelAvailable = finishedLevel.isLevelAvailable
+                                }
                     }
-
-                    return@map Pair(levels, triple.third)
+                    return@map Pair(quizProgressStates.values.toList(), triple.third)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
@@ -152,7 +164,7 @@ class LevelsPresenter @Inject constructor(
         }
     }
 
-    fun onLevelUnlockClicked(levelViewModel: LevelViewModel) {
+    fun onLevelUnlockClicked(levelViewModel: LevelViewModel, itemPosition: Int) {
         if (player.score >= Constants.COINS_FOR_LEVEL_UNLOCK) {
             compositeDisposable.add(appDatabase.finishedLevelsDao()
                     .getByIdOrErrorOnce(levelViewModel.quiz.id)
@@ -165,19 +177,26 @@ class LevelsPresenter @Inject constructor(
                         it.score -= Constants.COINS_FOR_LEVEL_UNLOCK
                         appDatabase.userDao().update(it)
                     }
+
                     .flatMapCompletable { transactionInteractor.makeTransaction(levelViewModel.quiz.id, TransactionType.LEVEL_ENABLE_FOR_COINS, -Constants.COINS_FOR_LEVEL_UNLOCK) }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe {
+                        levelViewModel.showProgress = true
+                        viewState.showProgressOnQuizLevel(itemPosition)
+                    }
+                    .doOnEvent {
+                        levelViewModel.showProgress = false
+                        viewState.showProgressOnQuizLevel(itemPosition)
+                    }
                     .subscribeBy(
                             onError = {
                                 Timber.e(it)
                                 viewState.showMessage(it.message ?: "Unexpected error")
-                            },
-                            onComplete = { Timber.d("Success transaction from Level Presenter") }
+                            }
                     ))
         } else {
             viewState.showMessage(R.string.message_not_enough_coins_level_unlock)
         }
     }
 }
-

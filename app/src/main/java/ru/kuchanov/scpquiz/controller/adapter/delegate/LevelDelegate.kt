@@ -17,8 +17,8 @@ import ru.kuchanov.scpquiz.utils.StorageUtils
 
 
 class LevelDelegate(
-    private val clickListener: (LevelViewModel) -> Unit,
-    private val unlockLevelListener: (LevelViewModel) -> Unit
+        private val clickListener: (LevelViewModel) -> Unit,
+        private val unlockLevelListener: (LevelViewModel, Int) -> Unit
 ) : AbsListItemAdapterDelegate<LevelViewModel, MyListItem, LevelDelegate.LevelViewHolder>() {
 
     override fun isForViewType(item: MyListItem, items: MutableList<MyListItem>, position: Int) = item is LevelViewModel
@@ -31,6 +31,7 @@ class LevelDelegate(
 
     override fun onBindViewHolder(item: LevelViewModel, viewHolder: LevelViewHolder, payloads: MutableList<Any>) {
         with(viewHolder.itemView) {
+            quizProgressView.visibility = if (item.showProgress) View.VISIBLE else View.GONE
             if (item.scpNameFilled || item.scpNumberFilled) {
                 imageView.setPadding(0, 0, 0, 0)
                 with(GlideApp.with(imageView.context)) {
@@ -65,7 +66,7 @@ class LevelDelegate(
                     imageView.setPadding(padding, padding, padding, padding)
                     imageView.setImageResource(R.drawable.ic_coins5)
                     imageView.setBackgroundResource(R.color.backgroundColorLevelLocked)
-                    setOnClickListener { unlockLevelListener(item) }
+                    setOnClickListener { unlockLevelListener(item, viewHolder.adapterPosition) }
                 }
                 strokeView.visibility = View.VISIBLE
                 scpNumberTextView.visibility = View.GONE

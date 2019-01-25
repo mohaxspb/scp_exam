@@ -196,10 +196,10 @@ class EnterPresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onComplete = {
-                            if (!preferences.isIntroDialogShown()) {
-                                router.newRootScreen(Constants.Screens.INTRO_DIALOG)
-                            } else {
+                            if (preferences.isIntroDialogShown()) {
                                 router.newRootScreen(Constants.Screens.QUIZ_LIST)
+                            } else {
+                                router.newRootScreen(Constants.Screens.INTRO_DIALOG)
                             }
                         }
                 )
