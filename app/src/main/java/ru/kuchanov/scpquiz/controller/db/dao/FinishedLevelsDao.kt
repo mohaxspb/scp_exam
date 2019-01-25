@@ -12,6 +12,9 @@ interface FinishedLevelsDao {
     @Query("SELECT * FROM FinishedLevel")
     fun getAll(): Flowable<List<FinishedLevel>>
 
+    @Query("SELECT * FROM FinishedLevel")
+    fun getAllSingle(): Single<List<FinishedLevel>>
+
     @Query("SELECT * FROM FinishedLevel ORDER BY quizId ASC")
     fun getAllByAsc(): Single<List<FinishedLevel>>
 

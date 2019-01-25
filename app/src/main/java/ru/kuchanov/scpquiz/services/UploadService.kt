@@ -64,8 +64,8 @@ class UploadService : Service() {
 
         val notification = NotificationCompat.Builder(this, getChanelId())
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Scp quiz")
-                .setContentText("Downloading data")
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(getString(R.string.download_notification))
                 .setContentIntent(pendingIntent)
                 .build()
 
