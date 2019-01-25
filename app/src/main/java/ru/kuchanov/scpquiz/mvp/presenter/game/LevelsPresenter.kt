@@ -154,8 +154,9 @@ class LevelsPresenter @Inject constructor(
         }
     }
 
-    fun onLevelUnlockClicked(levelViewModel: LevelViewModel) {
-        viewState.showProgressOnQuizLevel(true)
+    fun onLevelUnlockClicked(levelViewModel: LevelViewModel, itemPosition: Int) {
+        levelViewModel.showProgress = true
+        viewState.showProgressOnQuizLevel(itemPosition)
         if (player.score >= Constants.COINS_FOR_LEVEL_UNLOCK) {
             compositeDisposable.add(appDatabase.finishedLevelsDao()
                     .getByIdOrErrorOnce(levelViewModel.quiz.id)
@@ -174,17 +175,20 @@ class LevelsPresenter @Inject constructor(
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onError = {
-                                viewState.showProgressOnQuizLevel(false)
+                                levelViewModel.showProgress = false
+                                viewState.showProgressOnQuizLevel(itemPosition)
                                 Timber.e(it)
                                 viewState.showMessage(it.message ?: "Unexpected error")
                             },
                             onComplete = {
-                                viewState.showProgressOnQuizLevel(false)
+                                levelViewModel.showProgress = false
+                                viewState.showProgressOnQuizLevel(itemPosition)
                                 Timber.d("Success transaction from Level Presenter")
                             }
                     ))
         } else {
-            viewState.showProgressOnQuizLevel(false)
+            levelViewModel.showProgress = false
+            viewState.showProgressOnQuizLevel(itemPosition)
             viewState.showMessage(R.string.message_not_enough_coins_level_unlock)
         }
     }

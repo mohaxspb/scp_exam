@@ -10,5 +10,5 @@ interface LevelsView : BaseView {
     fun onNeedToOpenCoins()
     fun onNeedToOpenSettings()
     fun showCoins(coins: Int)
-    fun showProgressOnQuizLevel(show: Boolean)
+    fun showProgressOnQuizLevel(itemPosition: Int)
 }
