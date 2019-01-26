@@ -61,12 +61,14 @@ class TransactionInteractor @Inject constructor(
             .andThen(syncFinishedLevels())
             .andThen(getProgressFromServer())
 
-    fun getProgressFromServer() =
+    private fun getProgressFromServer() =
             apiClient.getNwQuizTransactionList()
                     .map { nwTransactionList ->
                         nwTransactionList.forEach { nwQuizTransaction ->
+                            Timber.d("ALL LOCAL TRANSACTIONS :%s", appDatabase.transactionDao().getAllList())
+                            Timber.d("ALL LOCAL FINISHED LEVELS :%s", appDatabase.finishedLevelsDao().getAllList())
                             val quizTransaction = converter.convert(nwQuizTransaction)
-                            val finishedLevel = appDatabase.finishedLevelsDao().getById(nwQuizTransaction.quizId!!)
+                            val finishedLevel = appDatabase.finishedLevelsDao().getByQuizId(nwQuizTransaction.quizId!!)
                             val quizTransactionFromBd = appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizTransaction.quizId!!, quizTransaction.transactionType)
                             if (quizTransactionFromBd == null) {
                                 appDatabase.transactionDao().insert(quizTransaction)
