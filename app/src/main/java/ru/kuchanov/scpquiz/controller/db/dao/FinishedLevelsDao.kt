@@ -30,6 +30,9 @@ interface FinishedLevelsDao {
     @Query("SELECT * FROM FinishedLevel WHERE quizId = :quizId")
     fun getByIdOrErrorOnce(quizId: Long): Single<FinishedLevel>
 
+    @Query("SELECT * FROM FinishedLevel WHERE quizId = :quizId")
+    fun getById(quizId: Long): FinishedLevel?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(finishedLevels: List<FinishedLevel>): List<Long>
 

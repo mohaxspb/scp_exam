@@ -6,6 +6,8 @@ import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
+import ru.kuchanov.scpquiz.model.api.QuizConverter
+import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.TransactionType
 import timber.log.Timber
@@ -14,7 +16,8 @@ import javax.inject.Inject
 class TransactionInteractor @Inject constructor(
         private val appDatabase: AppDatabase,
         private val apiClient: ApiClient,
-        private val preferences: MyPreferenceManager
+        private val preferences: MyPreferenceManager,
+        private val converter: QuizConverter
 ) {
 
     fun makeTransaction(quizId: Long?, transactionType: TransactionType, coinsAmount: Int?) =
@@ -56,6 +59,102 @@ class TransactionInteractor @Inject constructor(
     }
             .flatMapCompletable { syncScoreWithServer() }
             .andThen(syncFinishedLevels())
+            .andThen(getProgressFromServer())
+
+    fun getProgressFromServer() =
+            apiClient.getNwQuizTransactionList()
+                    .map { nwTransactionList ->
+                        nwTransactionList.forEach { nwQuizTransaction ->
+                            val quizTransaction = converter.convert(nwQuizTransaction)
+                            val finishedLevel = appDatabase.finishedLevelsDao().getById(nwQuizTransaction.quizId!!)
+                            val quizTransactionFromBd = appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizTransaction.quizId!!, quizTransaction.transactionType)
+                            if (quizTransactionFromBd == null) {
+                                appDatabase.transactionDao().insert(quizTransaction)
+                            }
+                            if (quizTransactionFromBd != null && quizTransactionFromBd.externalId == null) {
+                                appDatabase.transactionDao().updateQuizTransactionExternalId(quizTransactionFromBd.id!!, nwQuizTransaction.id)
+                            }
+                            if (quizTransaction.transactionType == TransactionType.NAME_WITH_PRICE || quizTransaction.transactionType == TransactionType.NAME_NO_PRICE) {
+                                if (finishedLevel != null) {
+                                    appDatabase.finishedLevelsDao().update(
+                                            finishedLevel.apply {
+                                                isLevelAvailable = true
+                                                scpNameFilled = true
+                                            })
+                                } else {
+                                    appDatabase.finishedLevelsDao().insert(FinishedLevel(
+                                            quizId = nwQuizTransaction.quizId!!,
+                                            scpNameFilled = true,
+                                            scpNumberFilled = false,
+                                            nameRedundantCharsRemoved = false,
+                                            numberRedundantCharsRemoved = false,
+                                            isLevelAvailable = true
+                                    ))
+                                }
+                            }
+
+                            if (quizTransaction.transactionType == TransactionType.NUMBER_WITH_PRICE || quizTransaction.transactionType == TransactionType.NUMBER_NO_PRICE) {
+                                if (finishedLevel != null) {
+                                    appDatabase.finishedLevelsDao().update(
+                                            finishedLevel.apply {
+                                                isLevelAvailable = true
+                                                scpNumberFilled = true
+                                            })
+                                } else {
+                                    appDatabase.finishedLevelsDao().insert(FinishedLevel(
+                                            quizId = nwQuizTransaction.quizId!!,
+                                            scpNameFilled = false,
+                                            scpNumberFilled = true,
+                                            nameRedundantCharsRemoved = false,
+                                            numberRedundantCharsRemoved = false,
+                                            isLevelAvailable = true
+                                    ))
+                                }
+                            }
+
+                            if (quizTransaction.transactionType == TransactionType.NAME_CHARS_REMOVED) {
+                                if (finishedLevel != null) {
+                                    appDatabase.finishedLevelsDao().update(
+                                            finishedLevel.apply {
+                                                isLevelAvailable = true
+                                                nameRedundantCharsRemoved = true
+                                            })
+                                } else {
+                                    appDatabase.finishedLevelsDao().insert(FinishedLevel(
+                                            quizId = nwQuizTransaction.quizId!!,
+                                            scpNameFilled = false,
+                                            scpNumberFilled = false,
+                                            nameRedundantCharsRemoved = true,
+                                            numberRedundantCharsRemoved = false,
+                                            isLevelAvailable = true
+                                    ))
+                                }
+
+                                if (quizTransaction.transactionType == TransactionType.NUMBER_CHARS_REMOVED) {
+                                    if (finishedLevel != null) {
+                                        appDatabase.finishedLevelsDao().update(
+                                                finishedLevel.apply {
+                                                    isLevelAvailable = true
+                                                    numberRedundantCharsRemoved = true
+                                                })
+                                    } else {
+                                        appDatabase.finishedLevelsDao().insert(FinishedLevel(
+                                                quizId = nwQuizTransaction.quizId!!,
+                                                scpNameFilled = false,
+                                                scpNumberFilled = false,
+                                                nameRedundantCharsRemoved = false,
+                                                numberRedundantCharsRemoved = true,
+                                                isLevelAvailable = true
+                                        ))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .ignoreElement()
+                    .onErrorComplete()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
 
 
     fun syncTransactions() =
