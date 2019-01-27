@@ -53,14 +53,13 @@ class QuizConverter @Inject constructor() {
     )
 
     fun convert(source: NwQuizTransaction): QuizTransaction {
-        val result = QuizTransaction(
+        return QuizTransaction(
                 quizId = source.quizId,
                 externalId = source.id,
                 transactionType = source.quizTransactionType,
                 coinsAmount = source.coinsAmount,
                 createdOnClient = source.createdOnClient
         )
-        return result
     }
 
 //    fun <T, W> convertCollection(collection: Iterable<T>, convertFunction: Function1<T, W>): List<W> {

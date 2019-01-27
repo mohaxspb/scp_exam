@@ -67,90 +67,60 @@ class TransactionInteractor @Inject constructor(
                         nwTransactionList.forEach { nwQuizTransaction ->
                             Timber.d("ALL LOCAL TRANSACTIONS :%s", appDatabase.transactionDao().getAllList())
                             Timber.d("ALL LOCAL FINISHED LEVELS :%s", appDatabase.finishedLevelsDao().getAllList())
-                            val quizTransaction = converter.convert(nwQuizTransaction)
                             val finishedLevel = appDatabase.finishedLevelsDao().getByQuizId(nwQuizTransaction.quizId!!)
-                            val quizTransactionFromBd = appDatabase.transactionDao().getOneByQuizIdAndTransactionType(quizTransaction.quizId!!, quizTransaction.transactionType)
+                            val quizTransactionFromBd = appDatabase.transactionDao().getOneByQuizIdAndTransactionType(nwQuizTransaction.quizId!!, nwQuizTransaction.quizTransactionType)
+
+                            if (nwQuizTransaction.quizTransactionType == TransactionType.NAME_WITH_PRICE || nwQuizTransaction.quizTransactionType == TransactionType.NAME_NO_PRICE) {
+                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                    scpNameFilled = true
+                                    isLevelAvailable = true
+                                })
+                                Timber.d("Finished level :%s", finishedLevel)
+                            }
+
+                            if (nwQuizTransaction.quizTransactionType == TransactionType.NUMBER_WITH_PRICE || nwQuizTransaction.quizTransactionType == TransactionType.NUMBER_NO_PRICE) {
+                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                    scpNumberFilled = true
+                                    isLevelAvailable = true
+                                })
+                                Timber.d("Finished level :%s", finishedLevel)
+                            }
+
+                            if (nwQuizTransaction.quizTransactionType == TransactionType.NAME_CHARS_REMOVED) {
+                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                    nameRedundantCharsRemoved = true
+                                    isLevelAvailable = true
+                                })
+                                Timber.d("Finished level :%s", finishedLevel)
+                            }
+
+                            if (nwQuizTransaction.quizTransactionType == TransactionType.NUMBER_CHARS_REMOVED) {
+                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                    numberRedundantCharsRemoved = true
+                                    isLevelAvailable = true
+                                })
+                                Timber.d("Finished level :%s", finishedLevel)
+                            }
+
+                            if (nwQuizTransaction.quizTransactionType == TransactionType.LEVEL_ENABLE_FOR_COINS) {
+                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                    isLevelAvailable = true
+                                })
+                                Timber.d("Finished level :%s", finishedLevel)
+                            }
+
                             if (quizTransactionFromBd == null) {
-                                appDatabase.transactionDao().insert(quizTransaction)
-                            }
-                            if (quizTransactionFromBd != null && quizTransactionFromBd.externalId == null) {
-                                appDatabase.transactionDao().updateQuizTransactionExternalId(quizTransactionFromBd.id!!, nwQuizTransaction.id)
-                            }
-                            if (quizTransaction.transactionType == TransactionType.NAME_WITH_PRICE || quizTransaction.transactionType == TransactionType.NAME_NO_PRICE) {
-                                if (finishedLevel != null) {
-                                    appDatabase.finishedLevelsDao().update(
-                                            finishedLevel.apply {
-                                                isLevelAvailable = true
-                                                scpNameFilled = true
-                                            })
-                                } else {
-                                    appDatabase.finishedLevelsDao().insert(FinishedLevel(
-                                            quizId = nwQuizTransaction.quizId!!,
-                                            scpNameFilled = true,
-                                            scpNumberFilled = false,
-                                            nameRedundantCharsRemoved = false,
-                                            numberRedundantCharsRemoved = false,
-                                            isLevelAvailable = true
-                                    ))
+                                appDatabase.transactionDao().insert(QuizTransaction(
+                                        quizId = nwQuizTransaction.quizId,
+                                        externalId = nwQuizTransaction.id,
+                                        coinsAmount = nwQuizTransaction.coinsAmount,
+                                        createdOnClient = nwQuizTransaction.createdOnClient,
+                                        transactionType = nwQuizTransaction.quizTransactionType
+                                ))
+                            } else
+                                if (quizTransactionFromBd.externalId == null) {
+                                    appDatabase.transactionDao().updateQuizTransactionExternalId(quizTransactionFromBd.id!!, nwQuizTransaction.id)
                                 }
-                            }
-
-                            if (quizTransaction.transactionType == TransactionType.NUMBER_WITH_PRICE || quizTransaction.transactionType == TransactionType.NUMBER_NO_PRICE) {
-                                if (finishedLevel != null) {
-                                    appDatabase.finishedLevelsDao().update(
-                                            finishedLevel.apply {
-                                                isLevelAvailable = true
-                                                scpNumberFilled = true
-                                            })
-                                } else {
-                                    appDatabase.finishedLevelsDao().insert(FinishedLevel(
-                                            quizId = nwQuizTransaction.quizId!!,
-                                            scpNameFilled = false,
-                                            scpNumberFilled = true,
-                                            nameRedundantCharsRemoved = false,
-                                            numberRedundantCharsRemoved = false,
-                                            isLevelAvailable = true
-                                    ))
-                                }
-                            }
-
-                            if (quizTransaction.transactionType == TransactionType.NAME_CHARS_REMOVED) {
-                                if (finishedLevel != null) {
-                                    appDatabase.finishedLevelsDao().update(
-                                            finishedLevel.apply {
-                                                isLevelAvailable = true
-                                                nameRedundantCharsRemoved = true
-                                            })
-                                } else {
-                                    appDatabase.finishedLevelsDao().insert(FinishedLevel(
-                                            quizId = nwQuizTransaction.quizId!!,
-                                            scpNameFilled = false,
-                                            scpNumberFilled = false,
-                                            nameRedundantCharsRemoved = true,
-                                            numberRedundantCharsRemoved = false,
-                                            isLevelAvailable = true
-                                    ))
-                                }
-
-                                if (quizTransaction.transactionType == TransactionType.NUMBER_CHARS_REMOVED) {
-                                    if (finishedLevel != null) {
-                                        appDatabase.finishedLevelsDao().update(
-                                                finishedLevel.apply {
-                                                    isLevelAvailable = true
-                                                    numberRedundantCharsRemoved = true
-                                                })
-                                    } else {
-                                        appDatabase.finishedLevelsDao().insert(FinishedLevel(
-                                                quizId = nwQuizTransaction.quizId!!,
-                                                scpNameFilled = false,
-                                                scpNumberFilled = false,
-                                                nameRedundantCharsRemoved = false,
-                                                numberRedundantCharsRemoved = true,
-                                                isLevelAvailable = true
-                                        ))
-                                    }
-                                }
-                            }
                         }
                     }
                     .ignoreElement()
