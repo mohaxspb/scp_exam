@@ -135,11 +135,12 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                 Timber.d("Error: $error")
             }
         }
-
+        Timber.d("onActivityResult: $resultCode")
         if (!VKSdk.onActivityResult(requestCode, resultCode, data, vkCallback)) {
             when (requestCode) {
                 REQUEST_CODE_GOOGLE -> {
                     val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+                    Timber.d("result: ${result.isSuccess}/${result.signInAccount}")
                     if (result.isSuccess) {
                         socialLogin(Constants.Social.GOOGLE, result.signInAccount!!.idToken)
                     } else {
@@ -158,11 +159,11 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                             preferences.setTrueAccessToken(accessToken)
                             preferences.setRefreshToken(refreshToken)
                         }
-                        .flatMap { it ->
+                        .flatMap {
                             apiClient.getNwUser()
                                     .flatMap { nwUser ->
                                         appDatabase.userDao().getOneByRole(UserRole.PLAYER)
-                                                .map { it ->
+                                                .map {
                                                     it.name = nwUser.fullName!!
                                                     it.avatarUrl = nwUser.avatar
                                                     it.score = nwUser.score

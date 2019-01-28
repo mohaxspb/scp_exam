@@ -37,6 +37,7 @@ class ScpSettingsPresenter @Inject constructor(
     override fun onAuthSuccess() {
         preferences.setIntroDialogShown(true)
         viewState.showMessage(R.string.settings_success_auth)
+        router.exit()
     }
 
     override lateinit var authDelegate: AuthDelegate<ScpSettingsFragment>
