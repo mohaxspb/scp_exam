@@ -67,48 +67,98 @@ class TransactionInteractor @Inject constructor(
                         nwTransactionList.forEach { nwQuizTransaction ->
                             Timber.d("ALL LOCAL TRANSACTIONS :%s", appDatabase.transactionDao().getAllList())
                             Timber.d("ALL LOCAL FINISHED LEVELS :%s", appDatabase.finishedLevelsDao().getAllList())
+                            Timber.d("nwQuizTransaction.quizTransactionType :%s", nwQuizTransaction.quizTransactionType)
+                            Timber.d("TransactionType.NAME_WITH_PRICE :%s", TransactionType.NAME_WITH_PRICE)
                             val finishedLevel = appDatabase.finishedLevelsDao().getByQuizId(nwQuizTransaction.quizId!!)
                             val quizTransactionFromBd = appDatabase.transactionDao().getOneByQuizIdAndTransactionType(nwQuizTransaction.quizId!!, nwQuizTransaction.quizTransactionType)
 
-                            if (nwQuizTransaction.quizTransactionType == TransactionType.NAME_WITH_PRICE || nwQuizTransaction.quizTransactionType == TransactionType.NAME_NO_PRICE) {
-                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
-                                    scpNameFilled = true
-                                    isLevelAvailable = true
-                                })
-                                Timber.d("Finished level :%s", finishedLevel)
+                            /**
+                            Этот блок не исполняется
+                             */
+                            when (nwQuizTransaction.quizTransactionType) {
+                                TransactionType.NAME_WITH_PRICE, TransactionType.NAME_NO_PRICE -> {
+                                    Timber.d(" LevelFinished:%s", finishedLevel)
+                                    appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                        scpNameFilled = true
+                                        isLevelAvailable = true
+                                    })
+                                }
+                                TransactionType.NUMBER_WITH_PRICE, TransactionType.NUMBER_NO_PRICE -> {
+                                    Timber.d(" LevelFinished:%s", finishedLevel)
+                                    appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                        scpNumberFilled = true
+                                        isLevelAvailable = true
+                                    })
+                                }
+                                TransactionType.NAME_CHARS_REMOVED -> {
+                                    Timber.d(" LevelFinished:%s", finishedLevel)
+                                    appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                        nameRedundantCharsRemoved = true
+                                        isLevelAvailable = true
+                                    })
+                                }
+                                TransactionType.NUMBER_CHARS_REMOVED -> {
+                                    Timber.d(" LevelFinished:%s", finishedLevel)
+                                    appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                        numberRedundantCharsRemoved = true
+                                        isLevelAvailable = true
+                                    })
+                                }
+                                TransactionType.LEVEL_ENABLE_FOR_COINS -> {
+                                    Timber.d(" LevelFinished:%s", finishedLevel)
+                                    appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                        isLevelAvailable = true
+                                    })
+                                }
+
+                                else -> Timber.d("Type is not LevelFinished:%s", finishedLevel)
                             }
 
-                            if (nwQuizTransaction.quizTransactionType == TransactionType.NUMBER_WITH_PRICE || nwQuizTransaction.quizTransactionType == TransactionType.NUMBER_NO_PRICE) {
-                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
-                                    scpNumberFilled = true
-                                    isLevelAvailable = true
-                                })
-                                Timber.d("Finished level :%s", finishedLevel)
-                            }
+//                            if (nwQuizTransaction.quizTransactionType.toString() == TransactionType.NAME_WITH_PRICE.toString() || nwQuizTransaction.quizTransactionType.toString() == TransactionType.NAME_NO_PRICE.toString()) {
+//                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+//                                    scpNameFilled = true
+//                                    isLevelAvailable = true
+//                                })
+//                                Timber.d("Finished level :%s", finishedLevel)
+//                            }
+//
+//                            if (nwQuizTransaction.quizTransactionType.toString() == TransactionType.UPDATE_SYNC.toString()) {
+//                                Timber.d("Finished level :%s", finishedLevel)
+//                            }
+//
+//                            if (nwQuizTransaction.quizTransactionType.toString() == TransactionType.NUMBER_WITH_PRICE.toString() || nwQuizTransaction.quizTransactionType.toString() == TransactionType.NUMBER_NO_PRICE.toString()) {
+//                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+//                                    scpNumberFilled = true
+//                                    isLevelAvailable = true
+//                                })
+//                                Timber.d("Finished level :%s", finishedLevel)
+//                            }
 
-                            if (nwQuizTransaction.quizTransactionType == TransactionType.NAME_CHARS_REMOVED) {
-                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
-                                    nameRedundantCharsRemoved = true
-                                    isLevelAvailable = true
-                                })
-                                Timber.d("Finished level :%s", finishedLevel)
-                            }
+//                            if (nwQuizTransaction.quizTransactionType.toString() == TransactionType.NAME_CHARS_REMOVED.toString()) {
+//                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+//                                    nameRedundantCharsRemoved = true
+//                                    isLevelAvailable = true
+//                                })
+//                                Timber.d("Finished level :%s", finishedLevel)
+//                            }
 
-                            if (nwQuizTransaction.quizTransactionType == TransactionType.NUMBER_CHARS_REMOVED) {
-                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
-                                    numberRedundantCharsRemoved = true
-                                    isLevelAvailable = true
-                                })
-                                Timber.d("Finished level :%s", finishedLevel)
-                            }
+//                            if (nwQuizTransaction.quizTransactionType.toString() == TransactionType.NUMBER_CHARS_REMOVED.toString()) {
+//                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+//                                    numberRedundantCharsRemoved = true
+//                                    isLevelAvailable = true
+//                                })
+//                                Timber.d("Finished level :%s", finishedLevel)
+//                            }
 
-                            if (nwQuizTransaction.quizTransactionType == TransactionType.LEVEL_ENABLE_FOR_COINS) {
-                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
-                                    isLevelAvailable = true
-                                })
-                                Timber.d("Finished level :%s", finishedLevel)
-                            }
-
+//                            if (nwQuizTransaction.quizTransactionType.toString() == TransactionType.LEVEL_ENABLE_FOR_COINS.toString()) {
+//                                appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+//                                    isLevelAvailable = true
+//                                })
+//                                Timber.d("Finished level :%s", finishedLevel)
+//                            }
+                            /**
+                             Этот блок исполняется
+                             */
                             if (quizTransactionFromBd == null) {
                                 appDatabase.transactionDao().insert(QuizTransaction(
                                         quizId = nwQuizTransaction.quizId,
