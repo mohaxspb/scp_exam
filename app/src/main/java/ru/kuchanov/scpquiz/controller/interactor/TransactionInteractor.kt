@@ -30,7 +30,7 @@ class TransactionInteractor @Inject constructor(
 //                                .also { Timber.d("LOCAL DB TRANSACTION :%s", appDatabase.transactionDao().getOneById(it)) }
                     }
                     .flatMapCompletable { quizTransactionId ->
-                        if (preferences.getAccessToken() == null) {
+                        if (preferences.getTrueAccessToken() == null) {
                             Completable.complete()
                         } else {
                             apiClient.addTransaction(
@@ -50,7 +50,7 @@ class TransactionInteractor @Inject constructor(
                     }
 
     fun syncAllProgress() = Maybe.fromCallable {
-        if (preferences.getAccessToken() != null) {
+        if (preferences.getTrueAccessToken() != null) {
             true
         } else {
             null
@@ -65,10 +65,6 @@ class TransactionInteractor @Inject constructor(
                     .map { it -> it.filter { nwQuizTransaction -> nwQuizTransaction.quizId != null } }
                     .doOnSuccess { nwTransactionList ->
                         nwTransactionList.forEach { nwQuizTransaction ->
-                            //                            Timber.d("ALL LOCAL TRANSACTIONS :%s", appDatabase.transactionDao().getAllList())
-//                            Timber.d("ALL LOCAL FINISHED LEVELS :%s", appDatabase.finishedLevelsDao().getAllList())
-//                            Timber.d("nwQuizTransaction.quizTransactionType :%s", nwQuizTransaction.quizTransactionType)
-//                            Timber.d("TransactionType.NAME_WITH_PRICE :%s", TransactionType.UPDATE_SYNC)
                             val finishedLevel = appDatabase.finishedLevelsDao().getByQuizId(nwQuizTransaction.quizId!!)
                             val quizTransactionFromBd = appDatabase.transactionDao().getOneByQuizIdAndTransactionType(nwQuizTransaction.quizId!!, nwQuizTransaction.quizTransactionType)
 

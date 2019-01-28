@@ -70,7 +70,7 @@ class ScpSettingsPresenter @Inject constructor(
 
     fun onLogoutClicked() {
         preferences.setIntroDialogShown(false)
-        preferences.setAccessToken(null)
+        preferences.setTrueAccessToken(null)
         preferences.setRefreshToken(null)
         preferences.setUserPassword(null)
         preferences.setNeverShowAuth(false)

@@ -111,7 +111,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         shareImageView.setOnClickListener(onShareClickListener)
         shareLabelTextView.setOnClickListener(onShareClickListener)
 
-        if (myPreferenceManager.getAccessToken() == null) {
+        if (myPreferenceManager.getTrueAccessToken() == null) {
             logoutLabelTextView.visibility = GONE
             logoutImageView.visibility = GONE
             vkImage.visibility = VISIBLE

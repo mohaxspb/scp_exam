@@ -73,7 +73,6 @@ class AppModule(context: Context) : Module() {
                         "sha256/${BuildConfig.SSL_PINNING_VALUE}")
                 .build()
 
-
         val okHttpClientCommon = OkHttpClient.Builder()
                 .addInterceptor(
                         HttpLoggingInterceptor { log -> Timber.d(log) }
@@ -88,6 +87,52 @@ class AppModule(context: Context) : Module() {
                 .build()
         val authApi = authRetrofit.create(AuthApi::class.java)
         bind(AuthApi::class.java).toInstance(authApi)
+
+        val authorizedOkHttpClient = OkHttpClient.Builder()
+                .addInterceptor(
+                        HttpLoggingInterceptor { log -> Timber.tag("OkHttp").d(log) }
+                                .setLevel(HttpLoggingInterceptor.Level.BODY)
+                )
+                .addInterceptor { chain ->
+                    var request = chain.request()
+                    if (preferenceManager.getTrueAccessToken()?.isNotEmpty() == true) {
+                        request = request
+                                .newBuilder()
+                                .header(
+                                        Constants.Api.HEADER_AUTHORIZATION,
+                                        Constants.Api.HEADER_PART_BEARER + preferenceManager.getTrueAccessToken()
+                                )
+                                .build()
+                    }
+                    chain.proceed(request)
+                }
+                .addInterceptor { chain ->
+                    var request = chain.request()
+                    var response = chain.proceed(request)
+                    if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                        val tokenResponse: TokenResponse
+                        tokenResponse = authApi
+                                .getAccessTokenByRefreshToken(
+                                        Credentials.basic(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_SECRET),
+                                        Constants.Api.GRANT_TYPE_REFRESH_TOKEN,
+                                        preferenceManager.getRefreshToken()!!
+                                )
+                                .blockingGet()
+                        preferenceManager.setTrueAccessToken(tokenResponse.accessToken)
+                        preferenceManager.setRefreshToken(tokenResponse.refreshToken)
+
+                        request = request
+                                .newBuilder()
+                                .header(
+                                        Constants.Api.HEADER_AUTHORIZATION,
+                                        Constants.Api.HEADER_PART_BEARER + tokenResponse.accessToken
+                                )
+                                .build()
+                        response = chain.proceed(request)
+                    }
+                    response
+                }
+                .build()
 
         val quizOkHttpClient = OkHttpClient.Builder()
                 .certificatePinner(certPinner)
@@ -113,26 +158,16 @@ class AppModule(context: Context) : Module() {
                     var response = chain.proceed(request)
                     if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
                         val tokenResponse: TokenResponse
+
                         //use implicit grant flow if there is no refresh token
-                        if (preferenceManager.getRefreshToken().isNullOrEmpty()) {
-                            tokenResponse = authApi
-                                    .getAccessToken(
-                                            Credentials.basic(BuildConfig.USER, BuildConfig.PASSWORD),
-                                            Constants.Api.GRANT_TYPE_CLIENT_CREDENTIALS
-                                    )
-                                    .blockingGet()
-                            preferenceManager.setAccessToken(tokenResponse.accessToken)
-                        } else {
-                            tokenResponse = authApi
-                                    .getAccessTokenByRefreshToken(
-                                            Credentials.basic(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_SECRET),
-                                            Constants.Api.GRANT_TYPE_REFRESH_TOKEN,
-                                            preferenceManager.getRefreshToken()!!
-                                    )
-                                    .blockingGet()
-                            preferenceManager.setAccessToken(tokenResponse.accessToken)
-                            preferenceManager.setRefreshToken(tokenResponse.refreshToken)
-                        }
+
+                        tokenResponse = authApi
+                                .getAccessToken(
+                                        Credentials.basic(BuildConfig.USER, BuildConfig.PASSWORD),
+                                        Constants.Api.GRANT_TYPE_CLIENT_CREDENTIALS
+                                )
+                                .blockingGet()
+                        preferenceManager.setAccessToken(tokenResponse.accessToken)
 
                         request = request
                                 .newBuilder()
@@ -166,7 +201,7 @@ class AppModule(context: Context) : Module() {
         val transactionRetrofit = Retrofit.Builder()
                 .baseUrl(BuildConfig.QUIZ_API_URL)
                 .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .client(quizOkHttpClient)
+                .client(authorizedOkHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
         bind(TransactionApi::class.java).toInstance(transactionRetrofit.create(TransactionApi::class.java))

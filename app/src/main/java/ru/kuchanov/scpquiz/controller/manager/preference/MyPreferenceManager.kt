@@ -50,6 +50,13 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun setAccessToken(accessToken: String?) = preferences.edit().putString(Key.ACCESS_TOKEN, accessToken).apply()
 
+    // Access token только для получения списка квизов если Юзер не зарегистрирован
+    // TrueAccessToken это реальный токен юзера
+
+    fun getTrueAccessToken(): String? = preferences.getString(Key.TRUE_ACCESS_TOKEN, null)
+
+    fun setTrueAccessToken(trueAccessToken: String?) = preferences.edit().putString(Key.TRUE_ACCESS_TOKEN, trueAccessToken).apply()
+
     fun setRefreshToken(testRefreshToken: String?) = preferences.edit().putString(Key.REFRESH_TOKEN, testRefreshToken).apply()
 
     fun getRefreshToken(): String? = preferences.getString(Key.REFRESH_TOKEN, null)
