@@ -47,7 +47,7 @@
         </activity>
 
         <service
-            android:name=".services.UploadService"
+            android:name=".services.DownloadService"
             android:enabled="true" />
 
         <service

@@ -8,11 +8,6 @@ import ru.kuchanov.scpquiz.model.db.TransactionType
 
 interface TransactionApi {
 
-    @GET("transactions/{id}")
-    fun getNwQuizTransactionById(
-            @Path("id") transactionId: Long
-    ): Single<NwQuizTransaction>
-
     @GET("transactions/allByUserId")
     fun getNwQuizTransactionList(): Single<List<NwQuizTransaction>>
 
@@ -24,9 +19,6 @@ interface TransactionApi {
             @Field("coinsAmount") coinsAmount: Int?,
             @Field("createdOnClient") createdOnClient: String
     ): Single<NwQuizTransaction>
-
-    @DELETE("transactions/deleteAll")
-    fun deleteAllNwTransactions(): Single<Boolean>
 
     @GET("transactions/resetProgress")
     fun resetProgress(): Single<Int>

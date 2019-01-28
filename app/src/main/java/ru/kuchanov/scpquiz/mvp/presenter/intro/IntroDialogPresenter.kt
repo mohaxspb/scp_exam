@@ -27,6 +27,7 @@ import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.IntroDialogView
 import ru.kuchanov.scpquiz.ui.fragment.intro.IntroDialogFragment
 import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -41,8 +42,20 @@ class IntroDialogPresenter @Inject constructor(
 ) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor), AuthPresenter<IntroDialogFragment> {
 
     override fun onAuthSuccess() {
-        navigateToFirstLevel()
+        Single.fromCallable { appDatabase.finishedLevelsDao().getCountWhereLevelAvailableTrueFinishedLevels() > 5 || appDatabase.finishedLevelsDao().getCountWhereSomethingExceptLevelAvailableTrueFinishedLevels() > 0 }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onSuccess = { hasAnyGameAction ->
+                            if (hasAnyGameAction) {
+                                navigateToAllQuizscreen()
+                            } else {
+                                navigateToFirstLevel()
+                            }
+                        }, onError = { Timber.e(it) }
+                )
     }
+
 
     override lateinit var authDelegate: AuthDelegate<IntroDialogFragment>
 
@@ -176,6 +189,19 @@ class IntroDialogPresenter @Inject constructor(
                             router.newRootScreen(
                                     Constants.Screens.QUIZ,
                                     QuizScreenLaunchData(quiz.id, true)
+                            )
+                        }
+                )
+    }
+
+    private fun navigateToAllQuizscreen() {
+        Single.timer(1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onSuccess = {
+                            router.newRootScreen(
+                                    Constants.Screens.QUIZ_LIST
                             )
                         }
                 )

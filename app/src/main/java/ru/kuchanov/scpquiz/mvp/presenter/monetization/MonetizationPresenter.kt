@@ -47,12 +47,12 @@ class MonetizationPresenter @Inject constructor(
     }
 
     private fun buyNoAdsInApp() {
-        Timber.d("buyNoAdsInApp")
+//        Timber.d("buyNoAdsInApp")
         billingDelegate?.startPurchaseFlow(Constants.SKU_INAPP_DISABLE_ADS)
     }
 
     private fun showAppodealAds() {
-        Timber.d("showAppodealAds")
+//        Timber.d("showAppodealAds")
         viewState.onNeedToShowRewardedVideo()
     }
 
@@ -68,7 +68,7 @@ class MonetizationPresenter @Inject constructor(
                         .doOnEvent { _, _ -> view?.showProgress(false) }
                         .subscribeBy(
                                 onSuccess = {
-                                    Timber.d("loadInAppsToBuy force: $it")
+//                                    Timber.d("loadInAppsToBuy force: $it")
                                     onBillingClientReady()
                                 },
                                 onError = {
@@ -152,12 +152,12 @@ class MonetizationPresenter @Inject constructor(
                     .doOnEvent { view?.showProgress(false) }
                     .subscribeBy(
                             onComplete = {
-                                Timber.d("Successfully consume in app")
+//                                Timber.d("Successfully consume in app")
                                 view?.showMessage("Successfully consume inApp!")
                                 loadInAppsToBuy(true)
                             },
                             onError = {
-                                Timber.e(it, "Error while consume inApp")
+//                                Timber.e(it, "Error while consume inApp")
                                 view?.showMessage("Error while consume inApp: ${it.message}")
                             }
                     )

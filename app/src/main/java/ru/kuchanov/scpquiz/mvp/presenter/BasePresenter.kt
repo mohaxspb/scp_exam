@@ -64,7 +64,7 @@ abstract class BasePresenter<V : BaseView>(
                         },
                         onComplete = {
                             viewState.showMessage(appContext.getString(R.string.coins_received, Constants.REWARD_VIDEO_ADS))
-                            Timber.d("Success transaction from REWARDED VIDEO")
+//                            Timber.d("Success transaction from REWARDED VIDEO")
                         }
                 ))
     }

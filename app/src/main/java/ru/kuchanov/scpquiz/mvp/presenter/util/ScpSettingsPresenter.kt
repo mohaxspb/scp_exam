@@ -79,7 +79,7 @@ class ScpSettingsPresenter @Inject constructor(
                         .map { user ->
                             user.score = 0
                             appDatabase.userDao().update(user)
-                            Timber.d("USER : %s", user)
+//                            Timber.d("USER : %s", user)
                         }
                         .map { appDatabase.transactionDao().deleteAll() }
                         .flatMap { appDatabase.finishedLevelsDao().getAllByAsc() }
@@ -91,7 +91,7 @@ class ScpSettingsPresenter @Inject constructor(
                                     nameRedundantCharsRemoved = false
                                     numberRedundantCharsRemoved = false
                                     isLevelAvailable = index < 5
-                                    Timber.d("FINISHED LEVEL : %s", it)
+//                                    Timber.d("FINISHED LEVEL : %s", it)
                                 }
                             })
                         }
@@ -115,7 +115,7 @@ class ScpSettingsPresenter @Inject constructor(
                                     .map { user ->
                                         user.score = it
                                         appDatabase.userDao().update(user)
-                                        Timber.d("USER : %s", user)
+//                                        Timber.d("USER : %s", user)
                                     }
                         }
                         .flatMap {
@@ -128,14 +128,14 @@ class ScpSettingsPresenter @Inject constructor(
                                                 nameRedundantCharsRemoved = false
                                                 numberRedundantCharsRemoved = false
                                                 isLevelAvailable = index < 5
-                                                Timber.d("FINISHED LEVEL : %s", it)
+//                                                Timber.d("FINISHED LEVEL : %s", it)
                                             }
                                         })
                                     }
                                     .doOnSuccess {
-                                        Timber.d("BEFORE RESET :%s", appDatabase.transactionDao().getAllList())
+//                                        Timber.d("BEFORE RESET :%s", appDatabase.transactionDao().getAllList())
                                         appDatabase.transactionDao().resetProgress()
-                                        Timber.d("AFTER RESET :%s", appDatabase.transactionDao().getAllList())
+//                                        Timber.d("AFTER RESET :%s", appDatabase.transactionDao().getAllList())
                                     }
                         }
                         .subscribeOn(Schedulers.io())

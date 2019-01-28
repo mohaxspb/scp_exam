@@ -94,7 +94,7 @@ class GamePresenter @Inject constructor(
     var currentEnterType = EnterType.NOT_CHOOSED
 
     override fun onFirstViewAttach() {
-        Timber.d("onFirstViewAttach")
+//        Timber.d("onFirstViewAttach")
         super.onFirstViewAttach()
 
         loadLevel()
@@ -284,7 +284,7 @@ class GamePresenter @Inject constructor(
                                                 viewState.showMessage(it.message
                                                         ?: "Unexpected error")
                                             },
-                                            onComplete = { Timber.d("Success transaction from Game Presenter") }
+                                            onComplete = {}
                                     ))
                         }
                     },
@@ -382,20 +382,16 @@ class GamePresenter @Inject constructor(
     }
 
     private fun onNeedToShowVideoAds() {
-        Timber.d("onNeedToShowVideoAds")
         viewState.onNeedToShowRewardedVideo()
     }
 
     private fun loadLevel() {
-        Timber.d("loadLevelInfo")
-
         viewState.showProgress(true)
-
         levelDataDisposable = gameInteractor
                 .getLevelInfo(quizId)
                 .subscribeBy(
                         onNext = { levelInfo ->
-                            Timber.d("quiz:${levelInfo.quiz.scpNumber}\ntranslationTexts:${levelInfo.randomTranslations.map { it.translation }}")
+                            //                            Timber.d("quiz:${levelInfo.quiz.scpNumber}\ntranslationTexts:${levelInfo.randomTranslations.map { it.translation }}")
 
                             quizLevelInfo = levelInfo
 
@@ -417,7 +413,7 @@ class GamePresenter @Inject constructor(
                                             onLevelCompletelyFinished()
                                         }
                                         !scpNumberFilled && scpNameFilled -> {
-                                            Timber.d("!scpNumberFilled && scpNameFilled")
+//                                            Timber.d("!scpNumberFilled && scpNameFilled")
                                             currentEnterType = EnterType.NUMBER
 
                                             with(viewState) {
@@ -498,7 +494,6 @@ class GamePresenter @Inject constructor(
                                                     showKeyboard(false)
                                                 }
                                             }
-
                                             sendPeriodicMessages()
                                         }
                                     }
@@ -550,10 +545,10 @@ class GamePresenter @Inject constructor(
     }
 
     fun onCharClicked(char: Char, charId: Int) {
-        Timber.d("char pressed: $char")
+//        Timber.d("char pressed: $char")
 
         val charEnteredForName = {
-            Timber.d("charEnteredForName invoked")
+            //            Timber.d("charEnteredForName invoked")
             enteredName += char.toLowerCase()
 
             viewState.addCharToNameInput(char, charId)
@@ -563,7 +558,7 @@ class GamePresenter @Inject constructor(
         }
 
         val charEnteredForNumber = {
-            Timber.d("charEnteredForNumber invoked")
+            //            Timber.d("charEnteredForNumber invoked")
             enteredNumber += char.toLowerCase()
 
             viewState.addCharToNumberInput(char, charId)
@@ -580,8 +575,8 @@ class GamePresenter @Inject constructor(
     }
 
     fun onCharRemovedFromName(charId: Int, indexOfChild: Int) {
-        Timber.d("onCharRemoved: $charId, $indexOfChild")
-        Timber.d("enteredName: $enteredName, enteredNumber: $enteredNumber")
+//        Timber.d("onCharRemoved: $charId, $indexOfChild")
+//        Timber.d("enteredName: $enteredName, enteredNumber: $enteredNumber")
         if (!quizLevelInfo.finishedLevel.scpNameFilled) {
             enteredName.removeAt(indexOfChild)
             if (enteredName.isEmpty()) {
@@ -597,8 +592,8 @@ class GamePresenter @Inject constructor(
     }
 
     fun onCharRemovedFromNumber(charId: Int, indexOfChild: Int) {
-        Timber.d("onCharRemoved: $charId, $indexOfChild")
-        Timber.d("enteredName: $enteredName, enteredNumber: $enteredNumber")
+//        Timber.d("onCharRemoved: $charId, $indexOfChild")
+//        Timber.d("enteredName: $enteredName, enteredNumber: $enteredNumber")
         if (!quizLevelInfo.finishedLevel.scpNameFilled && currentEnterType == EnterType.NAME) {
             enteredName.removeAt(indexOfChild)
             if (enteredName.isEmpty()) {
@@ -615,22 +610,22 @@ class GamePresenter @Inject constructor(
 
     private fun checkEnteredScpNumber() {
         if (quizLevelInfo.quiz.scpNumber.toLowerCase() == enteredNumber.joinToString("").toLowerCase()) {
-            Timber.d("number is correct!")
+//            Timber.d("number is correct!")
             currentEnterType = EnterType.NAME
             onNumberEntered(true)
         } else {
-            Timber.d("number is not correct")
+//            Timber.d("number is not correct")
         }
     }
 
     private fun checkEnteredScpName() {
         quizLevelInfo.quiz.quizTranslations?.first()?.let { quizTranslation ->
             if (enteredName.joinToString("").toLowerCase() == quizTranslation.translation.toLowerCase()) {
-                Timber.d("name is correct!")
+//                Timber.d("name is correct!")
                 currentEnterType = EnterType.NUMBER
                 onNameEntered(true)
             } else {
-                Timber.d("name is not correct")
+//                Timber.d("name is not correct")
             }
         }
     }
@@ -690,14 +685,14 @@ class GamePresenter @Inject constructor(
                             && preferences.isNeedToShowInterstitial()
                             && (!quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNameFilled
                             || !quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNumberFilled)
-                    Timber.d(
-                            "!preferences.isAdsDisabled()\npreferences.isNeedToShowInterstitial()\n(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
-                            !preferences.isAdsDisabled(),
-                            preferences.isNeedToShowInterstitial(),
-                            !quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNameFilled
-                                    || !quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNumberFilled
-                    )
-                    Timber.d("showAds: $showAds")
+//                    Timber.d(
+//                            "!preferences.isAdsDisabled()\npreferences.isNeedToShowInterstitial()\n(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
+//                            !preferences.isAdsDisabled(),
+//                            preferences.isNeedToShowInterstitial(),
+//                            !quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNameFilled
+//                                    || !quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.scpNumberFilled
+//                    )
+//                    Timber.d("showAds: $showAds")
                     if (quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.isLevelAvailable) {
                         router.replaceScreen(
                                 Constants.Screens.QUIZ,
@@ -707,7 +702,7 @@ class GamePresenter @Inject constructor(
                         //todo move to function
                         val checkCoins: (Int, Int) -> Boolean = { price, _ ->
                             val hasEnoughCoins = quizLevelInfo.player.score >= price
-                            Timber.d("hasEnoughCoins: $hasEnoughCoins (coins: ${quizLevelInfo.player.score})")
+//                            Timber.d("hasEnoughCoins: $hasEnoughCoins (coins: ${quizLevelInfo.player.score})")
                             if (!hasEnoughCoins) {
                                 viewState.showChatMessage(nextLevelMessageText, quizLevelInfo.player)
                                 viewState.showChatMessage(
@@ -738,7 +733,6 @@ class GamePresenter @Inject constructor(
                                                         Constants.Screens.QUIZ,
                                                         QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
                                                 )
-                                                Timber.d("Success transaction from Game Presenter")
                                             }
                                     ))
                         }
@@ -829,7 +823,7 @@ class GamePresenter @Inject constructor(
                 .flatMap { gameInteractor.getNumberOfPartiallyAndFullyFinishedLevels() }
                 .subscribeBy(
                         onSuccess = {
-                            Timber.d("finished levels updated!")
+                            //                            Timber.d("finished levels updated!")
                             if (it.first == Constants.FINISHED_LEVEL_BEFORE_ASK_RATE_APP && preferences.isAlreadySuggestRateUs()) {
                                 preferences.setAlreadySuggestRateUs(true)
                                 viewState.askForRateApp()
@@ -865,7 +859,7 @@ class GamePresenter @Inject constructor(
     }
 
     private fun onNameEntered(receiveReward: Boolean) {
-        Timber.d("onNameEntered")
+//        Timber.d("onNameEntered")
         val quizTranslation = quizLevelInfo.quiz.quizTranslations?.first()
                 ?: throw IllegalStateException("quizTranslation is NULL!")
 
@@ -896,7 +890,6 @@ class GamePresenter @Inject constructor(
                                             ?: "Unexpected error")
                                 },
                                 onComplete = {
-                                    Timber.d("Success transaction from Game Presenter")
                                 }
                         ))
             } else {
@@ -920,7 +913,6 @@ class GamePresenter @Inject constructor(
                                             ?: "Unexpected error")
                                 },
                                 onComplete = {
-                                    Timber.d("Success transaction from Game Presenter")
                                 }
                         ))
             }
@@ -942,7 +934,7 @@ class GamePresenter @Inject constructor(
     }
 
     private fun onNumberEntered(receiveReward: Boolean) {
-        Timber.d("onNumberEntered")
+//        Timber.d("onNumberEntered")
         quizLevelInfo.finishedLevel.scpNumberFilled = true
         onLevelCompleted()
 
@@ -971,7 +963,6 @@ class GamePresenter @Inject constructor(
                                             ?: "Unexpected error")
                                 },
                                 onComplete = {
-                                    Timber.d("Success transaction from Game Presenter")
                                 }
                         ))
             } else {
@@ -995,7 +986,6 @@ class GamePresenter @Inject constructor(
                                             ?: "Unexpected error")
                                 },
                                 onComplete = {
-                                    Timber.d("Success transaction from Game Presenter")
                                 }
                         ))
             }

@@ -53,13 +53,13 @@ class LevelsPresenter @Inject constructor(
         val showAds = !preferences.isAdsDisabled()
                 && preferences.isNeedToShowInterstitial()
                 && (!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled)
-        Timber.d(
-                "!preferences.isAdsDisabled()\npreferences.isNeedToShowInterstitial()\n(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
-                !preferences.isAdsDisabled(),
-                preferences.isNeedToShowInterstitial(),
-                !levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled
-        )
-        Timber.d("showAds: $showAds")
+//        Timber.d(
+//                "!preferences.isAdsDisabled()\npreferences.isNeedToShowInterstitial()\n(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
+//                !preferences.isAdsDisabled(),
+//                preferences.isNeedToShowInterstitial(),
+//                !levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled
+//        )
+//        Timber.d("showAds: $showAds")
         router.navigateTo(Constants.Screens.QUIZ, QuizScreenLaunchData(levelViewModel.quiz.id, !showAds))
     }
 
@@ -140,7 +140,7 @@ class LevelsPresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onNext = {
-                            Timber.d("loadLevels onNext")
+//                            Timber.d("loadLevels onNext")
                             viewState.showLevels(it.first)
                             player = it.second
                             viewState.showCoins(it.second.score)
