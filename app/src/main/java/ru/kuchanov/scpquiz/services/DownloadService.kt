@@ -20,6 +20,7 @@ import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.model.api.QuizConverter
+import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.util.QuizFilter
 import ru.kuchanov.scpquiz.ui.activity.MainActivity
 import ru.kuchanov.scpquiz.utils.createNotificationChannel
@@ -28,7 +29,7 @@ import toothpick.Toothpick
 import javax.inject.Inject
 
 
-class UploadService : Service() {
+class DownloadService : Service() {
 
     @Inject
     lateinit var appContext: Application
@@ -73,7 +74,7 @@ class UploadService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Timber.d("Service started")
+//        Timber.d("Service started")
         Maybe
                 .fromCallable {
                     if (appDatabase.quizDao().getCount() == 0L) {
@@ -99,6 +100,12 @@ class UploadService : Service() {
                                             quizConverter::convert
                                     )
                             )
+                    quizes.forEach { quiz ->
+                        if (appDatabase.finishedLevelsDao().getByQuizId(quiz.id) == null) {
+                            appDatabase.finishedLevelsDao().insert(FinishedLevel(quizId = quiz.id))
+//                            Timber.d("FINISHED LEVEL:%s", appDatabase.finishedLevelsDao().getByQuizId(quiz.id))
+                        }
+                    }
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(mainThread())
@@ -112,7 +119,7 @@ class UploadService : Service() {
     }
 
     private fun stopServiceAndRemoveNotification() {
-        Timber.d("stopServiceAndRemoveNotification")
+//        Timber.d("stopServiceAndRemoveNotification")
         notificationManager.cancel(NOTIFICATION_ID)
         stopForeground(true)
         stopSelf()

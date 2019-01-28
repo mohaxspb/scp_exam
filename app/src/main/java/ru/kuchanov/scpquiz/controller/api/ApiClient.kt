@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.controller.api
 
+import io.reactivex.Flowable
 import io.reactivex.Single
 import retrofit2.HttpException
 import ru.kuchanov.scpquiz.App
@@ -70,11 +71,6 @@ class ApiClient @Inject constructor(
                             Constants.GAME
                     )
 
-    fun getNwQuizTransactionById(transactionId: Long): Single<NwQuizTransaction> =
-            transactionApi.getNwQuizTransactionById(
-                    transactionId
-            )
-
     fun getNwQuizTransactionList(): Single<List<NwQuizTransaction>> =
             transactionApi.getNwQuizTransactionList()
 
@@ -86,11 +82,7 @@ class ApiClient @Inject constructor(
                     System.currentTimeMillis().toString()
             )
 
-    fun deleteAllNwTransactions(): Single<Boolean> = transactionApi.deleteAllNwTransactions()
-
     fun resetProgress(): Single<Int> = transactionApi.resetProgress()
-
-    fun getServerUserScore(): Single<Long> = quizApi.getServerUserScore()
 
     fun getNwUser(): Single<NwUser> = quizApi.getNwUser()
 }

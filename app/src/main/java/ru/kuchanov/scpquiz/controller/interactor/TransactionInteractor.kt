@@ -6,6 +6,7 @@ import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
+import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.TransactionType
 import timber.log.Timber
@@ -25,7 +26,8 @@ class TransactionInteractor @Inject constructor(
                                 transactionType = transactionType,
                                 coinsAmount = coinsAmount
                         )
-                        appDatabase.transactionDao().insert(quizTransaction).also { Timber.d("LOCAL DB TRANSACTION :%s", appDatabase.transactionDao().getOneById(it)) }
+                        appDatabase.transactionDao().insert(quizTransaction)
+//                                .also { Timber.d("LOCAL DB TRANSACTION :%s", appDatabase.transactionDao().getOneById(it)) }
                     }
                     .flatMapCompletable { quizTransactionId ->
                         if (preferences.getAccessToken() == null) {
@@ -40,7 +42,7 @@ class TransactionInteractor @Inject constructor(
                                         appDatabase.transactionDao().updateQuizTransactionExternalId(
                                                 quizTransactionId = quizTransactionId,
                                                 quizTransactionExternalId = nwQuizTransaction.id)
-                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+//                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
                                     }
                                     .ignoreElement()
                                     .onErrorComplete()
@@ -56,6 +58,144 @@ class TransactionInteractor @Inject constructor(
     }
             .flatMapCompletable { syncScoreWithServer() }
             .andThen(syncFinishedLevels())
+            .andThen(getProgressFromServer())
+
+    private fun getProgressFromServer() =
+            apiClient.getNwQuizTransactionList()
+                    .map { it -> it.filter { nwQuizTransaction -> nwQuizTransaction.quizId != null } }
+                    .doOnSuccess { nwTransactionList ->
+                        nwTransactionList.forEach { nwQuizTransaction ->
+                            //                            Timber.d("ALL LOCAL TRANSACTIONS :%s", appDatabase.transactionDao().getAllList())
+//                            Timber.d("ALL LOCAL FINISHED LEVELS :%s", appDatabase.finishedLevelsDao().getAllList())
+//                            Timber.d("nwQuizTransaction.quizTransactionType :%s", nwQuizTransaction.quizTransactionType)
+//                            Timber.d("TransactionType.NAME_WITH_PRICE :%s", TransactionType.UPDATE_SYNC)
+                            val finishedLevel = appDatabase.finishedLevelsDao().getByQuizId(nwQuizTransaction.quizId!!)
+                            val quizTransactionFromBd = appDatabase.transactionDao().getOneByQuizIdAndTransactionType(nwQuizTransaction.quizId!!, nwQuizTransaction.quizTransactionType)
+
+                            when (nwQuizTransaction.quizTransactionType) {
+
+                                TransactionType.NAME_WITH_PRICE, TransactionType.NAME_NO_PRICE -> {
+                                    if (finishedLevel != null) {
+//                                        Timber.d(" LevelFinished:%s", finishedLevel)
+                                        appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                            scpNameFilled = true
+                                            isLevelAvailable = true
+                                        })
+                                    } else {
+//                                        Timber.d(" LevelFinished NULL:%s", finishedLevel)
+                                        appDatabase.finishedLevelsDao().insert(FinishedLevel(
+                                                quizId = nwQuizTransaction.quizId!!,
+                                                scpNameFilled = true,
+                                                scpNumberFilled = false,
+                                                nameRedundantCharsRemoved = false,
+                                                numberRedundantCharsRemoved = false,
+                                                isLevelAvailable = true
+                                        ))
+                                    }
+                                }
+
+                                TransactionType.NUMBER_WITH_PRICE, TransactionType.NUMBER_NO_PRICE -> {
+                                    if (finishedLevel != null) {
+//                                        Timber.d(" LevelFinished:%s", finishedLevel)
+                                        appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                            scpNumberFilled = true
+                                            isLevelAvailable = true
+                                        })
+                                    } else {
+//                                        Timber.d(" LevelFinished NULL:%s", finishedLevel)
+                                        appDatabase.finishedLevelsDao().insert(FinishedLevel(
+                                                quizId = nwQuizTransaction.quizId!!,
+                                                scpNameFilled = false,
+                                                scpNumberFilled = true,
+                                                nameRedundantCharsRemoved = false,
+                                                numberRedundantCharsRemoved = false,
+                                                isLevelAvailable = true
+                                        ))
+                                    }
+                                }
+
+                                TransactionType.NAME_CHARS_REMOVED -> {
+                                    if (finishedLevel != null) {
+//                                        Timber.d(" LevelFinished:%s", finishedLevel)
+                                        appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                            nameRedundantCharsRemoved = true
+                                            isLevelAvailable = true
+                                        })
+                                    } else {
+//                                        Timber.d(" LevelFinished NULL:%s", finishedLevel)
+                                        appDatabase.finishedLevelsDao().insert(FinishedLevel(
+                                                quizId = nwQuizTransaction.quizId!!,
+                                                scpNameFilled = false,
+                                                scpNumberFilled = false,
+                                                nameRedundantCharsRemoved = true,
+                                                numberRedundantCharsRemoved = false,
+                                                isLevelAvailable = true
+                                        ))
+                                    }
+                                }
+
+                                TransactionType.NUMBER_CHARS_REMOVED -> {
+                                    if (finishedLevel != null) {
+//                                        Timber.d(" LevelFinished:%s", finishedLevel)
+                                        appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                            numberRedundantCharsRemoved = true
+                                            isLevelAvailable = true
+                                        })
+                                    } else {
+//                                        Timber.d(" LevelFinished NULL:%s", finishedLevel)
+                                        appDatabase.finishedLevelsDao().insert(FinishedLevel(
+                                                quizId = nwQuizTransaction.quizId!!,
+                                                scpNameFilled = false,
+                                                scpNumberFilled = false,
+                                                nameRedundantCharsRemoved = false,
+                                                numberRedundantCharsRemoved = true,
+                                                isLevelAvailable = true
+                                        ))
+                                    }
+                                }
+
+                                TransactionType.LEVEL_ENABLE_FOR_COINS -> {
+                                    if (finishedLevel != null) {
+//                                        Timber.d(" LevelFinished:%s", finishedLevel)
+                                        appDatabase.finishedLevelsDao().update(finishedLevel.apply {
+                                            isLevelAvailable = true
+                                        })
+                                    } else {
+//                                        Timber.d(" LevelFinished NULL:%s", finishedLevel)
+                                        appDatabase.finishedLevelsDao().insert(FinishedLevel(
+                                                quizId = nwQuizTransaction.quizId!!,
+                                                scpNameFilled = false,
+                                                scpNumberFilled = false,
+                                                nameRedundantCharsRemoved = false,
+                                                numberRedundantCharsRemoved = false,
+                                                isLevelAvailable = true
+                                        ))
+                                    }
+                                }
+
+                                else -> Timber.d("Type is not LevelFinished:%s", finishedLevel)
+                            }
+
+                            if (quizTransactionFromBd == null) {
+                                appDatabase.transactionDao().insert(QuizTransaction(
+                                        quizId = nwQuizTransaction.quizId,
+                                        externalId = nwQuizTransaction.id,
+                                        coinsAmount = nwQuizTransaction.coinsAmount,
+                                        createdOnClient = nwQuizTransaction.createdOnClient,
+                                        transactionType = nwQuizTransaction.quizTransactionType
+                                ))
+//                                Timber.d("Inserted transaction :%s", quizTransactionFromBd)
+                            } else
+                                if (quizTransactionFromBd.externalId == null) {
+                                    appDatabase.transactionDao().updateQuizTransactionExternalId(quizTransactionFromBd.id!!, nwQuizTransaction.id)
+//                                    Timber.d("Inserted transaction when ExtId == null :%s", quizTransactionFromBd)
+                                }
+                        }
+                    }
+                    .ignoreElement()
+                    .onErrorComplete()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
 
 
     fun syncTransactions() =
@@ -100,7 +240,7 @@ class TransactionInteractor @Inject constructor(
                                     appDatabase.transactionDao().updateQuizTransactionExternalId(
                                             quizTransactionId = quizTransaction.id!!,
                                             quizTransactionExternalId = nwQuizTransaction.id)
-                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransaction.id))
+//                                    Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransaction.id))
                                 }
                                 .ignoreElement()
                                 .onErrorComplete()
@@ -151,11 +291,11 @@ class TransactionInteractor @Inject constructor(
                                 finishedLevelsToTransactions.add(quizTransactionForMigration(quizId, TransactionType.LEVEL_AVAILABLE_MIGRATION))
                             }
                         }
-                        Timber.d("finishedLevelsToTransactions.toList() : %s", finishedLevelsToTransactions.toList())
+//                        Timber.d("finishedLevelsToTransactions.toList() : %s", finishedLevelsToTransactions.toList())
                         return@map finishedLevelsToTransactions.toList()
                     }
                     .map { quizTransactionList ->
-                        Timber.d("quizTransactionList :%s", quizTransactionList)
+                        //                        Timber.d("quizTransactionList :%s", quizTransactionList)
                         appDatabase.transactionDao().insertQuizTransactionList(quizTransactionList)
                     }
                     .flatMap { localIds ->
@@ -169,11 +309,11 @@ class TransactionInteractor @Inject constructor(
                                                     coinsAmount = appDatabase.transactionDao().getOneById(it).coinsAmount
                                             )
                                             .doOnSuccess { nwQuizTransaction ->
-                                                Timber.d("OnSuccess :%s", nwQuizTransaction)
+                                                //                                                Timber.d("OnSuccess :%s", nwQuizTransaction)
                                                 appDatabase.transactionDao().updateQuizTransactionExternalId(
                                                         quizTransactionId = it,
                                                         quizTransactionExternalId = nwQuizTransaction.id)
-                                                Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(it))
+//                                                Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(it))
                                             }
                                 }
                                 .toList()

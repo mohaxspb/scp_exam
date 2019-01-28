@@ -57,7 +57,7 @@ class BillingDelegate(
         view?.showRefreshFab(false)
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(@BillingClient.BillingResponse billingResponseCode: Int) {
-                Timber.d("billingClient onBillingSetupFinished: $billingResponseCode")
+//                Timber.d("billingClient onBillingSetupFinished: $billingResponseCode")
                 if (billingResponseCode == BillingClient.BillingResponse.OK) {
                     clientReady = true
                     // The billing client is ready. You can query purchases here.
@@ -77,7 +77,7 @@ class BillingDelegate(
             }
 
             override fun onBillingServiceDisconnected() {
-                Timber.d("billingClient onBillingServiceDisconnected")
+//                Timber.d("billingClient onBillingServiceDisconnected")
                 // Try to restart the connection on the next request to
                 // Google Play by calling the startConnection() method.
                 clientReady = false
@@ -87,7 +87,7 @@ class BillingDelegate(
     }
 
     override fun onPurchasesUpdated(responseCode: Int, purchases: MutableList<Purchase>?) {
-        Timber.d("onPurchasesUpdated: $responseCode, $purchases")
+//        Timber.d("onPurchasesUpdated: $responseCode, $purchases")
 
         if (responseCode == BillingClient.BillingResponse.OK && purchases != null) {
             for (purchase in purchases) {
@@ -118,7 +118,7 @@ class BillingDelegate(
                                         appDatabase.transactionDao().updateQuizTransactionExternalId(
                                                 quizTransactionId = quizTransactionId,
                                                 quizTransactionExternalId = nwQuizTransaction.id)
-                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+//                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
                                     }
                                     .ignoreElement()
                                     .onErrorComplete()
@@ -127,7 +127,7 @@ class BillingDelegate(
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeBy(
                                 onComplete = {
-                                    Timber.d("on Complete purchase")
+//                                    Timber.d("on Complete purchase")
                                     preferencesManager.disableAds(true)
                                     view?.showMessage(R.string.ads_disabled)
                                     presenter?.loadInAppsToBuy(true)
@@ -143,7 +143,7 @@ class BillingDelegate(
             //nothing to do
         } else {
             // Handle any other error codes.
-            Timber.e("Error while onPurchasesUpdated: $responseCode")
+//            Timber.e("Error while onPurchasesUpdated: $responseCode")
             view?.showMessage(context.getString(R.string.error_purchase, responseCode.toString())
                     ?: "Unexpected error")
         }
@@ -159,7 +159,7 @@ class BillingDelegate(
                                 .build()
                         if (clientReady) {
                             billingClient.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
-                                Timber.d("inapps: $responseCode, $skuDetailsList")
+//                                Timber.d("inapps: $responseCode, $skuDetailsList")
                                 if (responseCode == BillingClient.BillingResponse.OK && skuDetailsList != null) {
                                     val disableAdsInapp = skuDetailsList.firstOrNull {
                                         it.sku == Constants.SKU_INAPP_DISABLE_ADS
@@ -183,7 +183,7 @@ class BillingDelegate(
                         .setType(BillingClient.SkuType.INAPP)
                         .build()
                 val responseCode = billingClient.launchBillingFlow(activity, flowParams)
-                Timber.d("startPurchaseFlow responseCode $responseCode")
+//                Timber.d("startPurchaseFlow responseCode $responseCode")
 
                 responseCode == BillingClient.BillingResponse.OK
             } else {
