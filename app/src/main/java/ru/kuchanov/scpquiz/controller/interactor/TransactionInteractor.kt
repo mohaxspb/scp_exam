@@ -62,14 +62,13 @@ class TransactionInteractor @Inject constructor(
 
     private fun getProgressFromServer() =
             apiClient.getNwQuizTransactionList()
-                    .map { it -> it.filter { nwQuizTransaction -> nwQuizTransaction.quizId != null } }
+                    .map { it.filter { nwQuizTransaction -> nwQuizTransaction.quizId != null } }
                     .doOnSuccess { nwTransactionList ->
                         nwTransactionList.forEach { nwQuizTransaction ->
                             val finishedLevel = appDatabase.finishedLevelsDao().getByQuizId(nwQuizTransaction.quizId!!)
                             val quizTransactionFromBd = appDatabase.transactionDao().getOneByQuizIdAndTransactionType(nwQuizTransaction.quizId!!, nwQuizTransaction.quizTransactionType)
 
                             when (nwQuizTransaction.quizTransactionType) {
-
                                 TransactionType.NAME_WITH_PRICE, TransactionType.NAME_NO_PRICE -> {
                                     if (finishedLevel != null) {
 //                                        Timber.d(" LevelFinished:%s", finishedLevel)

@@ -45,6 +45,7 @@ interface FinishedLevelsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(finishedLevels: List<FinishedLevel>): List<Long>
 
+    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(finishedLevel: FinishedLevel): Long
 

@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Intent
 import com.arellomobile.mvp.InjectViewState
 import com.google.android.gms.ads.MobileAds
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -15,6 +16,7 @@ import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.db.UserRole
+import ru.kuchanov.scpquiz.model.db.generateRandomName
 import ru.kuchanov.scpquiz.mvp.AuthPresenter
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
@@ -79,6 +81,8 @@ class ScpSettingsPresenter @Inject constructor(
                 appDatabase.userDao().getOneByRole(UserRole.PLAYER)
                         .map { user ->
                             user.score = 0
+                            user.avatarUrl = null
+                            user.name = generateRandomName(appContext)
                             appDatabase.userDao().update(user)
 //                            Timber.d("USER : %s", user)
                         }
@@ -109,36 +113,42 @@ class ScpSettingsPresenter @Inject constructor(
     }
 
     fun onResetProgressClicked() {
+        val resetProgressSingle = if (preferences.getTrueAccessToken() == null) {
+            Single.just(0)
+        } else {
+            apiClient.resetProgress()
+        }
         compositeDisposable.add(
-                apiClient.resetProgress()
-                        .flatMap { it ->
-                            appDatabase.userDao().getOneByRole(UserRole.PLAYER)
-                                    .map { user ->
-                                        user.score = it
+                resetProgressSingle
+                        .flatMapCompletable { score ->
+                            appDatabase
+                                    .userDao()
+                                    .getOneByRole(UserRole.PLAYER)
+                                    .doOnSuccess { user ->
+                                        user.score = score
                                         appDatabase.userDao().update(user)
-//                                        Timber.d("USER : %s", user)
                                     }
+                                    .ignoreElement()
                         }
-                        .flatMap {
-                            appDatabase.finishedLevelsDao().getAllByAsc()
-                                    .map { finishedLevels ->
-                                        appDatabase.finishedLevelsDao().update(finishedLevels.mapIndexed { index, it ->
-                                            it.apply {
-                                                scpNameFilled = false
-                                                scpNumberFilled = false
-                                                nameRedundantCharsRemoved = false
-                                                numberRedundantCharsRemoved = false
-                                                isLevelAvailable = index < 5
-//                                                Timber.d("FINISHED LEVEL : %s", it)
-                                            }
-                                        })
-                                    }
-                                    .doOnSuccess {
-//                                        Timber.d("BEFORE RESET :%s", appDatabase.transactionDao().getAllList())
-                                        appDatabase.transactionDao().resetProgress()
-//                                        Timber.d("AFTER RESET :%s", appDatabase.transactionDao().getAllList())
-                                    }
-                        }
+                        .andThen(
+                                appDatabase
+                                        .finishedLevelsDao()
+                                        .getAllByAsc()
+                                        .map { finishedLevels ->
+                                            appDatabase
+                                                    .finishedLevelsDao()
+                                                    .update(finishedLevels.mapIndexed { index, finishedLevel ->
+                                                        finishedLevel.apply {
+                                                            scpNameFilled = false
+                                                            scpNumberFilled = false
+                                                            nameRedundantCharsRemoved = false
+                                                            numberRedundantCharsRemoved = false
+                                                            isLevelAvailable = index < 5
+                                                        }
+                                                    })
+                                        }
+                                        .doOnSuccess { appDatabase.transactionDao().resetProgress() }
+                        )
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnSubscribe { viewState.showProgress(true) }

@@ -2,13 +2,16 @@ package ru.kuchanov.scpquiz.model.db
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import android.content.Context
+import ru.kuchanov.scpquiz.R
+import java.util.*
 
 @Entity
 data class User(
-    //db
+        //db
         @PrimaryKey
-    val id: Long? = null,
-    //content
+        val id: Long? = null,
+        //content
         var name: String,
         var avatarUrl: String? = null,
         var score: Int = 0,
@@ -18,3 +21,5 @@ data class User(
 enum class UserRole {
     PLAYER, DOCTOR, OTHER_USER
 }
+
+fun generateRandomName(context: Context) = context.getString(R.string.player_name, Random().nextInt(10000))

@@ -69,6 +69,15 @@ interface QuizDao {
     @Delete
     fun delete(quiz: Quiz): Int
 
+    //finished levels
+
+    @Transaction
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(finishedLevel: FinishedLevel): Long
+
+    @Query("SELECT * FROM FinishedLevel WHERE quizId = :quizId")
+    fun getByQuizId(quizId: Long): FinishedLevel?
+
     @Transaction
     fun insertQuizWithQuizTranslations(quiz: Quiz): Long {
         quiz.quizTranslations?.let { quizTranslations ->
@@ -87,6 +96,25 @@ interface QuizDao {
             insertFinishedLevel(FinishedLevel(quiz.id))
         }
         return insert(quiz)
+    }
+
+    @Transaction
+    fun insertQuizesWithQuizTranslationsWithFinishedLevels(quizes: List<Quiz>) {
+        insertQuizesWithQuizTranslations(quizes)
+        quizes.forEach { quiz ->
+            if (getByQuizId(quiz.id) == null) {
+                insert(
+                        FinishedLevel(
+                                quizId = quiz.id,
+                                scpNameFilled = false,
+                                scpNumberFilled = false,
+                                nameRedundantCharsRemoved = false,
+                                numberRedundantCharsRemoved = false,
+                                isLevelAvailable = false
+                        )
+                )
+            }
+        }
     }
 
     @Transaction
