@@ -60,5 +60,5 @@ object Constants {
     }
 
     const val GAME = "GAME"
-    const val SYNC_PERIOD = (1000 * 60 * 120).toLong()
+    const val SYNC_PERIOD = (1000 * 60 * 60 * 2).toLong()
 }

@@ -25,7 +25,6 @@ import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -96,18 +95,19 @@ class LevelsPresenter @Inject constructor(
     }
 
     private fun loadLevels() {
-        Flowable.combineLatest(
-                appDatabase.quizDao().getAll(),
-                appDatabase.finishedLevelsDao().getAll(),
-                appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
-                Function3 { quizes: List<Quiz>, finishedLevels: List<FinishedLevel>, player: User ->
-                    Triple(
-                            quizes,
-                            finishedLevels,
-                            player
-                    )
-                }
-        )
+        Flowable
+                .combineLatest(
+                        appDatabase.quizDao().getAll(),
+                        appDatabase.finishedLevelsDao().getAll(),
+                        appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
+                        Function3 { quizes: List<Quiz>, finishedLevels: List<FinishedLevel>, player: User ->
+                            Triple(
+                                    quizes,
+                                    finishedLevels,
+                                    player
+                            )
+                        }
+                )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { pair ->
@@ -118,7 +118,7 @@ class LevelsPresenter @Inject constructor(
                 .map { triple ->
                     triple.first.forEach { quiz ->
                         val finishedLevel = triple.second.find { it.quizId == quiz.id }
-                                ?: throw IllegalStateException("level not found for quizId: ${quiz.id}")
+                                ?: return@forEach
                         quizProgressStates.getOrPut(quiz.id) {
                             LevelViewModel(
                                     quiz = quiz,
@@ -140,7 +140,7 @@ class LevelsPresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onNext = {
-//                            Timber.d("loadLevels onNext")
+                            //                            Timber.d("loadLevels onNext")
                             viewState.showLevels(it.first)
                             player = it.second
                             viewState.showCoins(it.second.score)

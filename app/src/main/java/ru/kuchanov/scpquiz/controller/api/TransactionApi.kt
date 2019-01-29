@@ -1,9 +1,12 @@
 package ru.kuchanov.scpquiz.controller.api
 
-import io.reactivex.Flowable
 import io.reactivex.Single
-import retrofit2.http.*
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.POST
 import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
+import ru.kuchanov.scpquiz.model.api.NwUser
 import ru.kuchanov.scpquiz.model.db.TransactionType
 
 interface TransactionApi {
@@ -22,4 +25,7 @@ interface TransactionApi {
 
     @GET("transactions/resetProgress")
     fun resetProgress(): Single<Int>
+
+    @GET("user/meClient")
+    fun getNwUser(): Single<NwUser>
 }

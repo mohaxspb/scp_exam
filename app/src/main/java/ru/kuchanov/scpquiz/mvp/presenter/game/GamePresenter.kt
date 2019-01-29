@@ -198,7 +198,7 @@ class GamePresenter @Inject constructor(
                     viewState.showChatActions(generateSuggestions(), ChatActionsGroupType.SUGGESTIONS)
                 }
         )
-        if (!preferences.getNeverShowAuth() && preferences.getAccessToken() == null) {
+        if (!preferences.getNeverShowAuth() && preferences.getTrueAccessToken() == null) {
             periodicMessagesCompositeDisposable.add(Flowable.interval(
                     PERIODIC_GAME_AUTH_INITIAL_DELAY,
                     PERIODIC_GAME_AUTH_PERIOD,
@@ -207,7 +207,7 @@ class GamePresenter @Inject constructor(
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy {
-                        if (!preferences.getNeverShowAuth() && preferences.getAccessToken() == null) {
+                        if (!preferences.getNeverShowAuth() && preferences.getTrueAccessToken() == null) {
                             showAuthChatActions()
                         }
                     }

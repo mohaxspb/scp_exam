@@ -91,7 +91,7 @@ class EnterPresenter @Inject constructor(
                     appDatabase.userDao().insert(doctorUser)
 
                     val playerUser = User(
-                            name = appContext.getString(R.string.player_name, Random().nextInt(10000)),
+                            name = generateRandomName(appContext),
                             role = UserRole.PLAYER
                     )
                     appDatabase.userDao().insert(playerUser)

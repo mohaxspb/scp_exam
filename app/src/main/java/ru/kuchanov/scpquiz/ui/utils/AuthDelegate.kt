@@ -135,11 +135,12 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                 Timber.d("Error: $error")
             }
         }
-
+        Timber.d("onActivityResult: $resultCode")
         if (!VKSdk.onActivityResult(requestCode, resultCode, data, vkCallback)) {
             when (requestCode) {
                 REQUEST_CODE_GOOGLE -> {
                     val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+                    Timber.d("result: ${result.isSuccess}/${result.signInAccount}")
                     if (result.isSuccess) {
                         socialLogin(Constants.Social.GOOGLE, result.signInAccount!!.idToken)
                     } else {
@@ -152,45 +153,44 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
     }
 
     private fun socialLogin(socialName: Constants.Social, data: String?) {
-        compositeDisposable.add(apiClient.socialLogin(socialName, data!!)
-                .doOnSuccess { (accessToken, refreshToken) ->
-                    preferences.setAccessToken(accessToken)
-                    preferences.setRefreshToken(refreshToken)
-                }
-                .flatMap { it ->
-                    apiClient.getNwUser()
-                            .flatMap { nwUser ->
-                                appDatabase.userDao().getOneByRole(UserRole.PLAYER)
-                                        .map { it ->
-                                            it.name = nwUser.fullName!!
-                                            it.avatarUrl = nwUser.avatar
-                                            it.score = nwUser.score
-                                            appDatabase.userDao().update(it)
-                                            Timber.d("USER AFTER SOCIAL LOGIN UPDATE:%s", it)
-                                        }
-                            }
-                }
-                .flatMap {
-                    apiClient.getNwQuizTransactionList()
-                            .map { nwTransactionList ->
-                                nwTransactionList.forEach { nwQuizTransaction ->
-                                    appDatabase.transactionDao().insert(
-                                            quizConverter.convert(nwQuizTransaction)
-                                    )
-                                    Timber.d("TRANSACTIONS AFTER SOCIAL LOGIN UPDATE :%s", appDatabase.transactionDao().getAllList())
-                                }
-                            }
-                }
-                .flatMapCompletable { transactionInteractor.syncAllProgress() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onComplete = { authPresenter.onAuthSuccess() },
-                        onError = {
-                            Timber.e(it)
-                            fragment.showMessage(it.toString())
+        compositeDisposable.add(
+                apiClient.socialLogin(socialName, data!!)
+                        .doOnSuccess { (accessToken, refreshToken) ->
+                            preferences.setTrueAccessToken(accessToken)
+                            preferences.setRefreshToken(refreshToken)
                         }
-                )
+                        .flatMap {
+                            apiClient.getNwUser()
+                                    .flatMap { nwUser ->
+                                        appDatabase.userDao().getOneByRole(UserRole.PLAYER)
+                                                .map {
+                                                    it.name = nwUser.fullName!!
+                                                    it.avatarUrl = nwUser.avatar
+                                                    it.score = nwUser.score
+                                                    appDatabase.userDao().update(it)
+                                                }
+                                    }
+                        }
+                        .flatMap {
+                            apiClient.getNwQuizTransactionList()
+                                    .map { nwTransactionList ->
+                                        nwTransactionList.forEach { nwQuizTransaction ->
+                                            appDatabase.transactionDao().insert(
+                                                    quizConverter.convert(nwQuizTransaction)
+                                            )
+                                        }
+                                    }
+                        }
+                        .flatMapCompletable { transactionInteractor.syncAllProgress() }
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeBy(
+                                onComplete = { authPresenter.onAuthSuccess() },
+                                onError = {
+                                    Timber.e(it)
+                                    fragment.showMessage(it.toString())
+                                }
+                        )
         )
     }
 
