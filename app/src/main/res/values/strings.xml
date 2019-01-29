@@ -3,6 +3,19 @@
     <string name="market_url" translatable="false">market://details?id=%s</string>
     <string name="feedback_email" translatable="false">neva.spb.rx@gmail.com</string>
     <string name="error_unexpected" translatable="false">Unexpected error</string>
+    <!--social login-->
+    <!--facebook-->
+    <string name="facebook_app_id" translatable="false">2167234416849408</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb2167234416849408</string>
+    <integer name="com_vk_sdk_AppId">6753863</integer>
+    <!-- TODO check for needenest-->
+    <string name="vk_key" translatable="false">3dtOUgvfD1xMueVAGQK7</string>
+    <string name="service_vk_access_key" translatable="false">a30fa717a30fa717a30fa717bda368a950aa30fa30fa717f8e147a8e59a068245b6b626></string>
+    <string name="chat_action_auth_facebook" translatable="false">Facebook</string>
+    <string name="chat_action_auth_google" translatable="false">Google</string>
+    <string name="chat_action_auth_vk" translatable="false">VK</string>
+
+    <!--social login END-->
 
     <string name="app_name">Scp Exam</string>
     <string name="menu">Menu</string>
@@ -72,6 +85,36 @@
     <string name="chat_action_want_to_enter_name">I want to tell name first</string>
     <string name="plus_5" translatable="false">+5</string>
     <string name="message_not_enough_coins_level_unlock">You don\'t have enough coins.</string>
+    <string name="settings_fingerprint">Вход по отпечатку пальца</string>
+    <string name="error_no_fingerprints"><![CDATA[Отпечатки пальца не найдены. Добавьте их в \"Настройки\" -> \"Безопасность\" -> \"Отпечатки пальца\"]]></string>
+    <string name="dialog_fingerprints_title">Войдите в приложение используя отпечаток пальца</string>
+    <string name="touch_sensor">Прикоснитесь к сенсору</string>
+    <string name="error_fingerprint_auth_failed">Не удалось аутентифицироваться по отпечатку.</string>
+    <string name="try_again">Попробуйте ещё раз</string>
+    <string name="error_fingerprint_auth_failed_try_again">Не удалось аутентифицироваться по отпечатку. Попробуйте ещё раз.</string>
+    <string name="error_create_password">Не удалось создать пароль.</string>
+    <string name="fingerprint_access_enabled">Вход по отпечатку пальца активирован</string>
+    <string name="error_decode_password">Не удалось расшифровать пароль. Попробуйте ещё раз.</string>
+    <string name="error_get_chipher">Не удалось получить Cipher для декодирования.</string>
+    <string name="error_compare_password">Пароли не совпадают. Операция отменена</string>
+    <string name="fingerprint_access_disabled">Вход по отпечатку пальца отключён</string>
+    <string name="dialog_fingerprint_enable_title">Подтвердите включение входа по отпечатку</string>
+    <string name="dialog_fingerprint_disable_title">Подтвердите отключение входа по отпечатку</string>
+    <string name="settings_logout">Logout</string>
+    <string name="chat_action_skip_auth">Skip auth</string>
+    <string name="logout">Confirm logout</string>
+    <string name="OK">OK</string>
+    <string name="cancel">Cancel</string>
+    <!--todo translate-->
+    <string name="message_auth_suggestion">Before you start we sugest you to login. So your progress will be saved on our cloud and you\'ll be able to compare your progress with other players. Ofcourse, you can do it later from game settings. Please, choose:</string>
+    <string name="resetProgress">Reset your game progress?</string>
+    <string name="settings_reset_progress">Reset progress</string>
+    <string name="reset_progress_user_message">Successfully reset</string>
+    <string name="settings_success_auth">You are successfully logged in</string>
+    <string name="chat_action_skip_auth_and_dont_show">Skip auth and never show</string>
+    <string name="message_auth_suggestion_game">You can login.So your progress will be saved on our cloud and you\'ll be able to compare your progress with other players. Ofcourse, you can do it later from game settings. Please, choose:</string>
+    <string name="download_notification">Downloading data</string>
+    <string name="sync_notification">Syncronize progress</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>

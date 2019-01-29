@@ -30,6 +30,7 @@ import javax.inject.Inject
 
 class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
 
+
     companion object {
         fun newInstance() = LevelsFragment()
     }
@@ -79,8 +80,8 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
         recyclerView.layoutManager = GridLayoutManager(activity, 3)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
         delegateManager.addDelegate(LevelDelegate(
-            { presenter.onLevelClick(it) },
-            { presenter.onLevelUnlockClicked(it) }
+                { levelViewModel -> presenter.onLevelClick(levelViewModel) },
+                { levelViewModel, itemPosition -> presenter.onLevelUnlockClicked(levelViewModel, itemPosition) }
         ))
         adapter = ListDelegationAdapter(delegateManager)
         recyclerView.adapter = adapter
@@ -88,6 +89,10 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
 
     override fun showProgress(show: Boolean) {
         progressView.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    override fun showProgressOnQuizLevel(itemPosition: Int) {
+        recyclerView.adapter?.notifyItemChanged(itemPosition)
     }
 
     override fun showLevels(quizes: List<LevelViewModel>) {

@@ -45,10 +45,10 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
 
     override fun showProgressAnimation() {
         val progressAnimator = ObjectAnimator.ofInt(
-            progressBar,
-            "progress",
-            0,
-            1000
+                progressBar,
+                "progress",
+                0,
+                1000
         )
         progressAnimator.duration = 1000
         progressAnimator.interpolator = AccelerateDecelerateInterpolator()
@@ -65,10 +65,10 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
         }
 
         val progressAnimator = ObjectAnimator.ofFloat(
-            imageView,
-            "alpha",
-            0f,
-            1f
+                imageView,
+                "alpha",
+                0f,
+                1f
         )
         progressAnimator.duration = 800
         progressAnimator.interpolator = AccelerateDecelerateInterpolator()

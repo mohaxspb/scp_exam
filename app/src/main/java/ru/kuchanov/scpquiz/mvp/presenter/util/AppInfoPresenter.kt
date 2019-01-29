@@ -2,7 +2,9 @@ package ru.kuchanov.scpquiz.mvp.presenter.util
 
 import android.app.Application
 import com.arellomobile.mvp.InjectViewState
+import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -14,8 +16,10 @@ class AppInfoPresenter @Inject constructor(
     override var appContext: Application,
     override var preferences: MyPreferenceManager,
     override var router: ScpRouter,
-    override var appDatabase: AppDatabase
-) : BasePresenter<AppInfoView>(appContext, preferences, router, appDatabase) {
+    override var appDatabase: AppDatabase,
+    public override var apiClient: ApiClient,
+    override var transactionInteractor: TransactionInteractor
+) : BasePresenter<AppInfoView>(appContext, preferences, router, appDatabase,apiClient,transactionInteractor) {
 
     fun onSomethingClick() = viewState.showMessage("onSomethingClick from Fragment")
 }

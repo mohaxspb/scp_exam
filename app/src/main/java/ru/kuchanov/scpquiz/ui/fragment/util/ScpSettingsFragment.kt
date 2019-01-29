@@ -1,36 +1,47 @@
 package ru.kuchanov.scpquiz.ui.fragment.util
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.PopupWindow
+import com.afollestad.materialdialogs.MaterialDialog
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
+import com.bumptech.glide.request.RequestOptions
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import jp.wasabeef.blurry.Blurry
+import kotlinx.android.synthetic.main.dialog_logout.view.*
 import kotlinx.android.synthetic.main.fragment_settings.*
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.DelegateLang
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LangViewModel
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.di.module.SettingsModule
-import ru.kuchanov.scpquiz.mvp.presenter.util.SettingsPresenter
+import ru.kuchanov.scpquiz.mvp.presenter.util.ScpSettingsPresenter
 import ru.kuchanov.scpquiz.mvp.view.util.SettingsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
+import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
+import javax.inject.Inject
 
 
-class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), SettingsView {
+class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), SettingsView {
 
     companion object {
 
@@ -42,17 +53,22 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
         }
     }
 
+    @Inject
+    lateinit var myPreferenceManager: MyPreferenceManager
+
     override val translucent = true
 
     override val scopes: Array<String> = arrayOf(Di.Scope.SETTINGS_FRAGMENT)
 
     override val modules: Array<Module> = arrayOf(SettingsModule())
 
+    private lateinit var authDelegate: AuthDelegate<ScpSettingsFragment>
+
     @InjectPresenter
-    override lateinit var presenter: SettingsPresenter
+    override lateinit var presenter: ScpSettingsPresenter
 
     @ProvidePresenter
-    override fun providePresenter(): SettingsPresenter = scope.getInstance(SettingsPresenter::class.java)
+    override fun providePresenter(): ScpSettingsPresenter = scope.getInstance(ScpSettingsPresenter::class.java)
 
     override fun inject() = Toothpick.inject(this, scope)
 
@@ -60,6 +76,15 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        authDelegate = AuthDelegate(
+                this,
+                presenter,
+                presenter.apiClient,
+                presenter.preferences
+        )
+        presenter.authDelegate = authDelegate
+        activity?.let { authDelegate.onViewCreated(it) }
 
         //todo move to delegate
         val bitmap = BitmapUtils.fileToBitmap("${activity?.cacheDir}/${Constants.SETTINGS_BACKGROUND_FILE_NAME}.png")
@@ -86,9 +111,104 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
         shareImageView.setOnClickListener(onShareClickListener)
         shareLabelTextView.setOnClickListener(onShareClickListener)
 
+        if (myPreferenceManager.getTrueAccessToken() == null) {
+            logoutLabelTextView.visibility = GONE
+            logoutImageView.visibility = GONE
+            vkImage.visibility = VISIBLE
+            faceBookImage.visibility = VISIBLE
+            googleImage.visibility = VISIBLE
+        } else {
+            logoutLabelTextView.visibility = VISIBLE
+            logoutImageView.visibility = VISIBLE
+            vkImage.visibility = GONE
+            faceBookImage.visibility = GONE
+            googleImage.visibility = GONE
+        }
+
+        val onLogoutClickListener: (View) -> Unit = { showLogoutDialog() }
+        logoutLabelTextView.setOnClickListener(onLogoutClickListener)
+        logoutImageView.setOnClickListener(onLogoutClickListener)
+
+        val onResetProgressClickListener: (View) -> Unit = { showResetProgressDialog() }
+        resetProgressLabelTextView.setOnClickListener(onResetProgressClickListener)
+        resetProgressImageView.setOnClickListener(onLogoutClickListener)
+
+        val onVkLoginClickListener: (View) -> Unit = { presenter.onVkLoginClicked() }
+        vkImage.setOnClickListener(onVkLoginClickListener)
+
+        val onFacebookLoginClickListener: (View) -> Unit = { presenter.onFacebookLoginClicked() }
+        faceBookImage.setOnClickListener(onFacebookLoginClickListener)
+
+        val onGoogleLoginClickListener: (View) -> Unit = { presenter.onGoogleLoginClicked() }
+        googleImage.setOnClickListener(onGoogleLoginClickListener)
+
         privacyPolicyLabelTextView.setOnClickListener { presenter.onPrivacyPolicyClicked() }
 
         toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        presenter.onActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        authDelegate.onPause()
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showLogoutDialog() {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_logout, null, false)
+        GlideApp
+                .with(activity!!)
+                .load(R.drawable.ic_doctor)
+                .apply(RequestOptions.circleCropTransform())
+                .into(dialogView.doctorImageView)
+        activity?.let {
+            MaterialDialog.Builder(it)
+                    .customView(dialogView, true)
+                    .positiveText(R.string.OK)
+                    .onPositive { dialog, _ ->
+                        presenter.onLogoutClicked()
+                        dialog.cancel()
+                    }
+                    .negativeText(R.string.cancel)
+                    .onNegative { dialog, _ -> dialog.cancel() }
+                    .canceledOnTouchOutside(true)
+                    .cancelable(true)
+                    .build()
+                    .show()
+        }
+    }
+
+    @SuppressLint("InflateParams")
+    private fun showResetProgressDialog() {
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_reset_progress, null, false)
+        GlideApp
+                .with(activity!!)
+                .load(R.drawable.ic_doctor)
+                .apply(RequestOptions.circleCropTransform())
+                .into(dialogView.doctorImageView)
+        activity?.let {
+            MaterialDialog.Builder(it)
+                    .customView(dialogView, true)
+                    .positiveText(R.string.OK)
+                    .onPositive { dialog, _ ->
+                        presenter.onResetProgressClicked()
+                        dialog.cancel()
+                    }
+                    .negativeText(R.string.cancel)
+                    .onNegative { dialog, _ -> dialog.cancel() }
+                    .canceledOnTouchOutside(true)
+                    .cancelable(true)
+                    .build()
+                    .show()
+        }
+    }
+
+    override fun showProgress(show: Boolean) {
+        progressView.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     override fun showLang(langString: String) {
@@ -105,10 +225,10 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
         val focusable = true
         val wrapContent = ViewGroup.LayoutParams.WRAP_CONTENT
         val popupWindow = PopupWindow(
-            popupView,
-            wrapContent,
-            wrapContent,
-            focusable
+                popupView,
+                wrapContent,
+                wrapContent,
+                focusable
         )
 
         val recyclerView = popupView.findViewById(R.id.recyclerView) as RecyclerView
@@ -145,3 +265,4 @@ class ScpSettingsFragment : BaseFragment<SettingsView, SettingsPresenter>(), Set
         }
     }
 }
+

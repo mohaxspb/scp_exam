@@ -43,13 +43,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
 
     override var navigator: Navigator = object : SupportAppNavigator(this, containerId) {
 
-        override fun createActivityIntent(context: Context, screenKey: String?, data: Any?): Intent? {
-            Timber.d("createActivityIntent key: $screenKey, data: $data")
-            return when (screenKey) {
-//                Constants.Screens.AUTH -> AuthActivity.newIntent(this@MainActivity)
-                else -> null
-            }
-        }
+        override fun createActivityIntent(context: Context, screenKey: String?, data: Any?): Intent? = null
 
         override fun createFragment(screenKey: String?, data: Any?): Fragment? {
             Timber.d("createFragment key: $screenKey, data: $data")
@@ -69,7 +63,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
             Timber.d("applyCommand: ${command?.javaClass?.simpleName ?: command}")
             if (command is ShowCommand) {
                 supportFragmentManager.beginTransaction()
-                        .add(containerId, createFragment(command.screenKey, command.transitionData))
+                        .add(containerId, createFragment(command.screenKey, command.transitionData)!!)
                         .addToBackStack(null)
                         .commit()
             } else {
@@ -109,6 +103,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
 
     override fun showFirstTimeAppodealAdsDialog() {
         Timber.d("showFirstTimeAppodealAdsDialog")
+        //todo move to DialogUtils
         MaterialDialog.Builder(this)
                 .title(R.string.will_show_ads_title)
                 .content(R.string.want_watch_ads_content)
@@ -118,12 +113,12 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                     showRewardedVideo()
                 }
                 .negativeText(android.R.string.cancel)
-                .build()
                 .show()
     }
 
     override fun showAdsDialog(quizId: Long) {
         Timber.d("showAdsDialog")
+        //todo move to DialogUtils
         MaterialDialog.Builder(this)
                 .title(R.string.will_show_ads_title)
                 .content(R.string.will_show_ads_content)
@@ -133,12 +128,12 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                 .onNegative { _, _ -> startPurchase() }
                 .neutralText(R.string.why_ads)
                 .onNeutral { _, _ -> showWhyAdsDialog(quizId) }
-                .build()
                 .show()
     }
 
     override fun showWhyAdsDialog(quizId: Long) {
         Timber.d("showWhyAdsDialog")
+        //todo move to DialogUtils
         MaterialDialog.Builder(this)
                 .title(R.string.why_ads_title)
                 .content(R.string.why_ads_content)
@@ -146,7 +141,6 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                 .onPositive { _, _ -> showInterstitial(quizId) }
                 .negativeText(R.string.remove_ads)
                 .onNegative { _, _ -> startPurchase() }
-                .build()
                 .show()
     }
 

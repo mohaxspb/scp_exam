@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
@@ -9,6 +10,10 @@ import com.arellomobile.mvp.MvpAppCompatActivity
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
+import com.vk.sdk.VKAccessToken
+import com.vk.sdk.VKCallback
+import com.vk.sdk.VKSdk
+import com.vk.sdk.api.VKError
 import ru.kuchanov.rate.PreRate
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
@@ -67,6 +72,19 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         navigationHolder.removeNavigator()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        VKSdk.onActivityResult(requestCode, resultCode, data, object : VKCallback<VKAccessToken> {
+            override fun onResult(res: VKAccessToken) {
+                for (fragment in supportFragmentManager.fragments) {
+                    fragment.onActivityResult(requestCode, resultCode, data)
+                }
+            }
+
+            override fun onError(error: VKError) {}
+        })
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
 
     override fun onResume() {
         super.onResume()
@@ -80,6 +98,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
      * and contains installed [modules]
      */
     val scope: Scope by lazy {
+        @Suppress("LocalVariableName")
         val _scope = Toothpick.openScopes(Di.Scope.APP, *scopes)
         _scope.installModules(SmoothieSupportActivityModule(this), *modules)
         _scope
@@ -143,19 +162,14 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 //        Appodeal.disableNetwork(this, "vungle")
 //        Appodeal.disableNetwork(this, "facebook");
         Appodeal.initialize(
-            this,
-            getString(R.string.appodeal_app_key),
-            Appodeal.REWARDED_VIDEO,
-            true
+                this,
+                getString(R.string.appodeal_app_key),
+                Appodeal.REWARDED_VIDEO,
+                true
         )
 
         Appodeal.muteVideosIfCallsMuted(true)
         Appodeal.setRewardedVideoCallbacks(object : MyRewardedVideoCallbacks() {
-//            override fun onRewardedVideoFinished(p0: Double, p1: String?) {
-//                super.onRewardedVideoFinished(p0, p1)
-//                Timber.d("onRewardedVideoFinished: $p0, $p1")
-//                presenter.onRewardedVideoFinished()
-//            }
 
             override fun onRewardedVideoClosed(p0: Boolean) {
                 super.onRewardedVideoClosed(p0)
@@ -179,10 +193,10 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 
     protected fun requestNewInterstitial() {
         Timber.d(
-            "requestNewInterstitial loading/loaded/disabled: %s/%s/%s",
-            interstitialAd.isLoading,
-            interstitialAd.isLoaded,
-            preferenceManager.isAdsDisabled()
+                "requestNewInterstitial loading/loaded/disabled: %s/%s/%s",
+                interstitialAd.isLoading,
+                interstitialAd.isLoaded,
+                preferenceManager.isAdsDisabled()
         )
         if (interstitialAd.isLoading || interstitialAd.isLoaded || preferenceManager.isAdsDisabled()) {
             Timber.d("loading already in progress or already done or disabled")

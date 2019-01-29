@@ -1,7 +1,10 @@
 package ru.kuchanov.scpquiz.mvp.presenter.intro
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Intent
 import android.graphics.Bitmap
+import android.support.v4.content.ContextCompat
 import com.arellomobile.mvp.InjectViewState
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
@@ -14,18 +17,19 @@ import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
+import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.QuizConverter
-import ru.kuchanov.scpquiz.model.db.FinishedLevel
-import ru.kuchanov.scpquiz.model.db.User
-import ru.kuchanov.scpquiz.model.db.UserRole
+import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.ProgressPhrase
 import ru.kuchanov.scpquiz.model.ui.ProgressPhrasesJson
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.EnterView
+import ru.kuchanov.scpquiz.services.DownloadService
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import ru.kuchanov.scpquiz.utils.StorageUtils
 import timber.log.Timber
@@ -35,13 +39,15 @@ import javax.inject.Inject
 
 @InjectViewState
 class EnterPresenter @Inject constructor(
-    override var appContext: Application,
-    override var preferences: MyPreferenceManager,
-    override var router: ScpRouter,
-    override var appDatabase: AppDatabase,
-    private val moshi: Moshi,
-    private var quizConverter: QuizConverter
-) : BasePresenter<EnterView>(appContext, preferences, router, appDatabase) {
+        override var appContext: Application,
+        override var preferences: MyPreferenceManager,
+        override var router: ScpRouter,
+        override var appDatabase: AppDatabase,
+        private val moshi: Moshi,
+        private var quizConverter: QuizConverter,
+        public override var apiClient: ApiClient,
+        override var transactionInteractor: TransactionInteractor
+) : BasePresenter<EnterView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor) {
 
     private var dbFilled: Boolean = false
 
@@ -49,60 +55,61 @@ class EnterPresenter @Inject constructor(
 
     private lateinit var progressPhrases: List<ProgressPhrase>
 
+    @SuppressLint("CheckResult")
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
 
         readProgressPhrases()
 
         val timerObservable = Flowable.intervalRange(
-            0,
-            10,
-            0,
-            1050,
-            TimeUnit.MILLISECONDS
+                0,
+                10,
+                0,
+                1050,
+                TimeUnit.MILLISECONDS
         )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
 
-        val dbFillObservable = Single.fromCallable {
-            Timber.d("read initial data from json")
-            val json = StorageUtils.readFromAssets(appContext, "baseData.json")
-            val type = Types.newParameterizedType(List::class.java, NwQuiz::class.java)
-            val adapter = moshi.adapter<List<NwQuiz>>(type)
-            adapter.fromJson(json)
-        }
+        val dbFillObservable = Single
+                .fromCallable {
+//                    Timber.d("read initial data from json")
+                    val json = StorageUtils.readFromAssets(appContext, "baseData.json")
+                    val type = Types.newParameterizedType(List::class.java, NwQuiz::class.java)
+                    val adapter = moshi.adapter<List<NwQuiz>>(type)
+                    adapter.fromJson(json)
+                }
                 .map { initialQuizes -> initialQuizes.sortedBy { it.id } }
                 .map { initialQuizes ->
-                    Timber.d("write initial data to DB")
+//                    Timber.d("write initial data to DB")
 
-                    Timber.d("write users:")
+//                    Timber.d("write users:")
                     val doctorUser = User(
-                        name = appContext.getString(R.string.doctor_name),
-                        role = UserRole.DOCTOR
+                            name = appContext.getString(R.string.doctor_name),
+                            role = UserRole.DOCTOR
                     )
                     appDatabase.userDao().insert(doctorUser)
 
                     val playerUser = User(
-                        name = appContext.getString(R.string.player_name, Random().nextInt(10000)),
-                        role = UserRole.PLAYER
+                            name = generateRandomName(appContext),
+                            role = UserRole.PLAYER
                     )
                     appDatabase.userDao().insert(playerUser)
 
-                    Timber.d("write quizes")
+//                    Timber.d("write quizes")
                     appDatabase.quizDao().insertQuizesWithQuizTranslations(
-                        quizConverter.convertCollection(
-                            initialQuizes,
-                            quizConverter::convert
-                        ))
+                            quizConverter.convertCollection(
+                                    initialQuizes,
+                                    quizConverter::convert
+                            ))
                     appDatabase.finishedLevelsDao().insert(initialQuizes.mapIndexed { index, nwQuiz ->
-                        Timber.d("initialQuizes: $index, ${nwQuiz.id}")
+//                        Timber.d("initialQuizes: $index, ${nwQuiz.id}")
                         FinishedLevel(
-                            nwQuiz.id,
-                            //first 5 levels must be available always
-                            isLevelAvailable = index < 5
+                                nwQuiz.id,
+                                //first 5 levels must be available always
+                                isLevelAvailable = index < 5
                         )
                     })
-
                     val langs = appDatabase.quizTranslationsDao().getAllLangs().toSet()
                     preferences.setLangs(langs)
 
@@ -111,13 +118,14 @@ class EnterPresenter @Inject constructor(
                     -1L
                 }
 
-        val dbFillIfEmptyObservable = Single.fromCallable { appDatabase.quizDao().getCount() }
+        val dbFillIfEmptyObservable = Single
+                .fromCallable { appDatabase.quizDao().getCount() }
                 .flatMap {
                     if (it != 0L) {
-                        Timber.d("data in DB already exists")
+//                        Timber.d("data in DB already exists")
                         Single.just(-1L)
                     } else {
-                        Timber.d("fill DB with initial data")
+//                        Timber.d("fill DB with initial data")
                         dbFillObservable
                     }
                 }
@@ -129,31 +137,41 @@ class EnterPresenter @Inject constructor(
                     }
                 }
                 .flatMap {
-                    if (dbFilled && secondsPast > 2) Flowable.error(IllegalStateException()) else Flowable.just(it)
+                    if (dbFilled && secondsPast > 2) {
+                        Flowable.error(IllegalStateException("Stop condition is true"))
+                    } else {
+                        Flowable.just(it)
+                    }
                 }
-                .onErrorResumeNext { _: Throwable -> Flowable.empty() }
+                .onErrorResumeNext { error: Throwable ->
+//                    Timber.d("onErrorResumeNext: $error")
+                    Flowable.empty()
+                }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onNext = {
-                        Timber.d("onNext: $it")
-                        if (it == -1L) {
-                            dbFilled = true
-                        } else {
-                            viewState.showProgressText(progressPhrases[Random().nextInt(progressPhrases.size)].translation)
-                            viewState.showProgressAnimation()
-                            viewState.showImage(it.toInt())
-                        }
-                    },
-                    onComplete = {
-                        Timber.d("onComplete")
-                        if (preferences.isIntroDialogShown()) {
-                            router.newRootScreen(Constants.Screens.QUIZ_LIST)
-                        } else {
-                            viewState.onNeedToOpenIntroDialogFragment()
-                        }
-                    },
-                    onError = Timber::e
+                        onNext = {
+//                            Timber.d("onNext: $it")
+                            if (it == -1L) {
+                                dbFilled = true
+                            } else {
+                                viewState.showProgressText(progressPhrases[Random().nextInt(progressPhrases.size)].translation)
+                                viewState.showProgressAnimation()
+                                viewState.showImage(it.toInt())
+                            }
+                        },
+                        onComplete = {
+//                            Timber.d("onComplete")
+                            val serviceIntent = Intent(appContext, DownloadService::class.java)
+                            ContextCompat.startForegroundService(appContext, serviceIntent)
+
+                            if (preferences.isIntroDialogShown()) {
+                                router.newRootScreen(Constants.Screens.QUIZ_LIST)
+                            } else {
+                                viewState.onNeedToOpenIntroDialogFragment()
+                            }
+                        },
+                        onError = Timber::e
                 )
     }
 
@@ -170,14 +188,20 @@ class EnterPresenter @Inject constructor(
     fun openIntroDialogScreen(bitmap: Bitmap) {
         Completable.fromAction {
             BitmapUtils.persistImage(
-                appContext,
-                bitmap,
-                Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME)
+                    appContext,
+                    bitmap,
+                    Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME)
         }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onComplete = { router.newRootScreen(Constants.Screens.INTRO_DIALOG) }
+                        onComplete = {
+                            if (preferences.isIntroDialogShown()) {
+                                router.newRootScreen(Constants.Screens.QUIZ_LIST)
+                            } else {
+                                router.newRootScreen(Constants.Screens.INTRO_DIALOG)
+                            }
+                        }
                 )
     }
 
@@ -196,7 +220,6 @@ class EnterPresenter @Inject constructor(
 
     fun onProgressTextClicked() {
         //later there will be an easter egg
-
         if (BuildConfig.DEBUG) {
             val scoreToDecrease = 1000
             Completable.fromAction {

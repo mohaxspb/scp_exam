@@ -1,50 +1,59 @@
 package ru.kuchanov.scpquiz.controller.api
 
 import io.reactivex.Single
-import retrofit2.HttpException
-import retrofit2.Retrofit
 import ru.kuchanov.scpquiz.App
 import ru.kuchanov.scpquiz.BuildConfig
-import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
-import ru.kuchanov.scpquiz.di.qualifier.VpsQuizApi
-import ru.kuchanov.scpquiz.di.qualifier.VpsToolsApi
+import ru.kuchanov.scpquiz.Constants
+import ru.kuchanov.scpquiz.controller.api.response.TokenResponse
 import ru.kuchanov.scpquiz.model.api.NwQuiz
-import java.net.HttpURLConnection
+import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
+import ru.kuchanov.scpquiz.model.api.NwUser
+import ru.kuchanov.scpquiz.model.db.TransactionType
 import javax.inject.Inject
 
 
 class ApiClient @Inject constructor(
-    @VpsToolsApi toolsRetrofit: Retrofit,
-    @VpsQuizApi quizRetrofit: Retrofit,
-    val preferences: MyPreferenceManager
+        private val toolsApi: ToolsApi,
+        private val quizApi: QuizApi,
+        private val authApi: AuthApi,
+        private val transactionApi: TransactionApi
 ) {
 
-    private val toolsApi = toolsRetrofit.create(ToolsApi::class.java)
+    //todo create method on quiz api (I mean server)
+    fun validateInApp(sku: String, purchaseToken: String): Single<Int> =
+            toolsApi
+                    .validatePurchase(
+                            false,
+                            App.INSTANCE.packageName,
+                            sku,
+                            purchaseToken
+                    )
+                    .map { it.status }
 
-    private val quizApi = quizRetrofit.create(QuizApi::class.java)
+    fun getNwQuizList(): Single<List<NwQuiz>> = quizApi.getNwQuizList(Constants.Api.HEADER_PART_BEARER)
 
-    fun validateInApp(sku: String, purchaseToken: String): Single<Int> = toolsApi.validatePurchase(
-        false,
-        App.INSTANCE.packageName,
-        sku,
-        purchaseToken
-    ).map { it.status }
+    fun socialLogin(provider: Constants.Social, tokenValue: String): Single<TokenResponse> =
+            authApi
+                    .socialLogin(
+                            provider,
+                            tokenValue,
+                            BuildConfig.CLIENT_ID,
+                            BuildConfig.CLIENT_SECRET,
+                            Constants.GAME
+                    )
 
-    private fun getAccessToken() = quizApi.getAccessToken(
-        okhttp3.Credentials.basic(
-            BuildConfig.USER,
-            BuildConfig.PASSWORD
-        ),
-        BuildConfig.GRANT_TYPE
-    ).doOnSuccess { (accessToken) -> preferences.setAccessToken(accessToken) }
+    fun getNwQuizTransactionList(): Single<List<NwQuizTransaction>> =
+            transactionApi.getNwQuizTransactionList()
 
-    fun getNwQuizList(): Single<List<NwQuiz>> = quizApi.getNwQuizList("Bearer " + preferences.getAccessToken())
-            .onErrorResumeNext { error: Throwable ->
-                if (error is HttpException) {
-                    if (error.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                        return@onErrorResumeNext getAccessToken().flatMap<List<NwQuiz>> { getNwQuizList() }
-                    }
-                }
-                Single.error<List<NwQuiz>>(error)
-            }
+    fun addTransaction(quizId: Long?, typeTransaction: TransactionType, coinsAmount: Int?): Single<NwQuizTransaction> =
+            transactionApi.addTransaction(
+                    quizId,
+                    typeTransaction,
+                    coinsAmount,
+                    System.currentTimeMillis().toString()
+            )
+
+    fun resetProgress(): Single<Int> = transactionApi.resetProgress()
+
+    fun getNwUser(): Single<NwUser> = transactionApi.getNwUser()
 }

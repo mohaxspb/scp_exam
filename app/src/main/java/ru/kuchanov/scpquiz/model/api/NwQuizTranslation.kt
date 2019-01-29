@@ -13,10 +13,10 @@ data class NwQuizTranslation(
     val langCode: String,
     val translation: String,
     val description: String,
-    val quizTranslationPhrases: MutableList<NwQuizTranslationPhrase>,
+    var quizTranslationPhrases: MutableList<NwQuizTranslationPhrase>,
     //status
     val approved: Boolean,
-    val authorId: Long,
+    val authorId: Long?,
     val approverId: Long?,
     //dates
     val created: Date,

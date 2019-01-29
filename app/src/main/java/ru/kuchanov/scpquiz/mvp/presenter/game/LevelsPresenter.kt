@@ -13,29 +13,34 @@ import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
+import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
+import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
-import ru.kuchanov.scpquiz.model.db.FinishedLevel
-import ru.kuchanov.scpquiz.model.db.Quiz
-import ru.kuchanov.scpquiz.model.db.User
-import ru.kuchanov.scpquiz.model.db.UserRole
+import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
+
 
 @InjectViewState
 class LevelsPresenter @Inject constructor(
-    override var appContext: Application,
-    override var preferences: MyPreferenceManager,
-    override var router: ScpRouter,
-    override var appDatabase: AppDatabase
-) : BasePresenter<LevelsView>(appContext, preferences, router, appDatabase) {
+        override var appContext: Application,
+        override var preferences: MyPreferenceManager,
+        override var router: ScpRouter,
+        override var appDatabase: AppDatabase,
+        public override var apiClient: ApiClient,
+        override var transactionInteractor: TransactionInteractor
+) : BasePresenter<LevelsView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor) {
 
     lateinit var player: User
+
+    private val quizProgressStates = TreeMap<Long, LevelViewModel>()
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -44,17 +49,16 @@ class LevelsPresenter @Inject constructor(
     }
 
     fun onLevelClick(levelViewModel: LevelViewModel) {
-        Timber.d("onLevelClick: %s", levelViewModel.quiz.id)
         val showAds = !preferences.isAdsDisabled()
                 && preferences.isNeedToShowInterstitial()
                 && (!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled)
-        Timber.d(
-            "!preferences.isAdsDisabled()\npreferences.isNeedToShowInterstitial()\n(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
-            !preferences.isAdsDisabled(),
-            preferences.isNeedToShowInterstitial(),
-            !levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled
-        )
-        Timber.d("showAds: $showAds")
+//        Timber.d(
+//                "!preferences.isAdsDisabled()\npreferences.isNeedToShowInterstitial()\n(!levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled): %s/%s/%s",
+//                !preferences.isAdsDisabled(),
+//                preferences.isNeedToShowInterstitial(),
+//                !levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled
+//        )
+//        Timber.d("showAds: $showAds")
         router.navigateTo(Constants.Screens.QUIZ, QuizScreenLaunchData(levelViewModel.quiz.id, !showAds))
     }
 
@@ -63,14 +67,14 @@ class LevelsPresenter @Inject constructor(
     fun openCoins(bitmap: Bitmap) {
         Completable.fromAction {
             BitmapUtils.persistImage(
-                appContext,
-                bitmap,
-                Constants.SETTINGS_BACKGROUND_FILE_NAME)
+                    appContext,
+                    bitmap,
+                    Constants.SETTINGS_BACKGROUND_FILE_NAME)
         }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onComplete = { router.navigateTo(Constants.Screens.MONETIZATION) }
+                        onComplete = { router.navigateTo(Constants.Screens.MONETIZATION) }
                 )
     }
 
@@ -79,30 +83,31 @@ class LevelsPresenter @Inject constructor(
     fun openSettings(bitmap: Bitmap) {
         Completable.fromAction {
             BitmapUtils.persistImage(
-                appContext,
-                bitmap,
-                Constants.SETTINGS_BACKGROUND_FILE_NAME)
+                    appContext,
+                    bitmap,
+                    Constants.SETTINGS_BACKGROUND_FILE_NAME)
         }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onComplete = { router.navigateTo(Constants.Screens.SETTINGS) }
+                        onComplete = { router.navigateTo(Constants.Screens.SETTINGS) }
                 )
     }
 
     private fun loadLevels() {
-        Flowable.combineLatest(
-            appDatabase.quizDao().getAll(),
-            appDatabase.finishedLevelsDao().getAll(),
-            appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
-            Function3 { quizes: List<Quiz>, finishedLevels: List<FinishedLevel>, player: User ->
-                Triple(
-                    quizes,
-                    finishedLevels,
-                    player
+        Flowable
+                .combineLatest(
+                        appDatabase.quizDao().getAll(),
+                        appDatabase.finishedLevelsDao().getAll(),
+                        appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
+                        Function3 { quizes: List<Quiz>, finishedLevels: List<FinishedLevel>, player: User ->
+                            Triple(
+                                    quizes,
+                                    finishedLevels,
+                                    player
+                            )
+                        }
                 )
-            }
-        )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { pair ->
@@ -111,27 +116,38 @@ class LevelsPresenter @Inject constructor(
                 }
                 .observeOn(Schedulers.io())
                 .map { triple ->
-                    val levels = triple.first.map { quiz ->
+                    triple.first.forEach { quiz ->
                         val finishedLevel = triple.second.find { it.quizId == quiz.id }
-                                ?: throw IllegalStateException("level not found for quizId: ${quiz.id}")
-                        LevelViewModel(
-                            quiz = quiz,
-                            scpNameFilled = finishedLevel.scpNameFilled,
-                            scpNumberFilled = finishedLevel.scpNumberFilled,
-                            isLevelAvailable = finishedLevel.isLevelAvailable
-                        )
+                                ?: return@forEach
+                        quizProgressStates.getOrPut(quiz.id) {
+                            LevelViewModel(
+                                    quiz = quiz,
+                                    scpNameFilled = finishedLevel.scpNameFilled,
+                                    scpNumberFilled = finishedLevel.scpNumberFilled,
+                                    isLevelAvailable = finishedLevel.isLevelAvailable,
+                                    showProgress = false
+                            )
+                        }
+                                .apply {
+                                    this.quiz = quiz
+                                    scpNameFilled = finishedLevel.scpNameFilled
+                                    scpNumberFilled = finishedLevel.scpNumberFilled
+                                    isLevelAvailable = finishedLevel.isLevelAvailable
+                                }
                     }
-
-                    return@map Pair(levels, triple.third)
+                    return@map Pair(quizProgressStates.values.toList(), triple.third)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                    onNext = {
-                        Timber.d("loadLevels onNext")
-                        viewState.showLevels(it.first)
-                        player = it.second
-                        viewState.showCoins(it.second.score)
-                    }
+                        onNext = {
+                            //                            Timber.d("loadLevels onNext")
+                            viewState.showLevels(it.first)
+                            player = it.second
+                            viewState.showCoins(it.second.score)
+                        },
+                        onError = {
+                            Timber.e(it, "error while load levels")
+                        }
                 )
     }
 
@@ -145,16 +161,12 @@ class LevelsPresenter @Inject constructor(
                     }
                     .subscribeOn(Schedulers.io())
                     .subscribe()
-            appDatabase.finishedLevelsDao()
-                    .getAll()
-                    .subscribeOn(Schedulers.io())
-                    .subscribe { finishedLevels -> Timber.d("FinishedLevels: ${finishedLevels.map { it.isLevelAvailable }}") }
         }
     }
 
-    fun onLevelUnlockClicked(levelViewModel: LevelViewModel) {
+    fun onLevelUnlockClicked(levelViewModel: LevelViewModel, itemPosition: Int) {
         if (player.score >= Constants.COINS_FOR_LEVEL_UNLOCK) {
-            appDatabase.finishedLevelsDao()
+            compositeDisposable.add(appDatabase.finishedLevelsDao()
                     .getByIdOrErrorOnce(levelViewModel.quiz.id)
                     .map {
                         it.isLevelAvailable = true
@@ -165,9 +177,24 @@ class LevelsPresenter @Inject constructor(
                         it.score -= Constants.COINS_FOR_LEVEL_UNLOCK
                         appDatabase.userDao().update(it)
                     }
+
+                    .flatMapCompletable { transactionInteractor.makeTransaction(levelViewModel.quiz.id, TransactionType.LEVEL_ENABLE_FOR_COINS, -Constants.COINS_FOR_LEVEL_UNLOCK) }
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe()
+                    .doOnSubscribe {
+                        levelViewModel.showProgress = true
+                        viewState.showProgressOnQuizLevel(itemPosition)
+                    }
+                    .doOnEvent {
+                        levelViewModel.showProgress = false
+                        viewState.showProgressOnQuizLevel(itemPosition)
+                    }
+                    .subscribeBy(
+                            onError = {
+                                Timber.e(it)
+                                viewState.showMessage(it.message ?: "Unexpected error")
+                            }
+                    ))
         } else {
             viewState.showMessage(R.string.message_not_enough_coins_level_unlock)
         }

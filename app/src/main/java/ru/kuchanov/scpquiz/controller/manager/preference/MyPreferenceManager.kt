@@ -11,11 +11,11 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun setLangs(langs: Set<String>) = preferences.edit().putStringSet(Key.LANGS, langs).apply()
 
-    fun getLangs() = preferences.getStringSet(Key.LANGS, setOf())
+    fun getLangs(): MutableSet<String>? = preferences.getStringSet(Key.LANGS, setOf())
 
     fun setLang(lang: String) = preferences.edit().putString(Key.LANG, lang).apply()
 
-    fun getLang() = preferences.getString(Key.LANG, Constants.DEFAULT_LANG)
+    fun getLang(): String = preferences.getString(Key.LANG, Constants.DEFAULT_LANG)!!
 
     fun setPushToken(pushToken: String) = preferences.edit().putString(Key.PUSH_TOKEN, pushToken).apply()
 
@@ -42,27 +42,46 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun isAdsDisabled() = preferences.getBoolean(Key.ADS_DISABLED, false)
 
-    fun getAccessToken() = preferences.getString(Key.ACCESS_TOKEN, null)
+    fun setNeverShowAuth(neverShowAuth: Boolean) = preferences.edit().putBoolean(Key.NEVER_SHOW_AUTH, neverShowAuth).apply()
 
-    fun setAccessToken(accessToken: String) = preferences.edit().putString(Key.ACCESS_TOKEN, accessToken).apply()
+    fun getNeverShowAuth() = preferences.getBoolean(Key.NEVER_SHOW_AUTH, false)
+
+    fun getAccessToken(): String? = preferences.getString(Key.ACCESS_TOKEN, null)
+
+    fun setAccessToken(accessToken: String?) = preferences.edit().putString(Key.ACCESS_TOKEN, accessToken).apply()
+
+    // Access token только для получения списка квизов если Юзер не зарегистрирован
+    // TrueAccessToken это реальный токен юзера
+
+    fun getTrueAccessToken(): String? = preferences.getString(Key.TRUE_ACCESS_TOKEN, null)
+
+    fun setTrueAccessToken(trueAccessToken: String?) = preferences.edit().putString(Key.TRUE_ACCESS_TOKEN, trueAccessToken).apply()
+
+    fun setRefreshToken(testRefreshToken: String?) = preferences.edit().putString(Key.REFRESH_TOKEN, testRefreshToken).apply()
+
+    fun getRefreshToken(): String? = preferences.getString(Key.REFRESH_TOKEN, null)
 
     fun isAlreadySuggestRateUs() = preferences.getBoolean(Key.SUGGEST_RATE_US, false)
 
     fun setAlreadySuggestRateUs(alreadySuggestRateUs: Boolean) = preferences.edit().putBoolean(
-        Key.SUGGEST_RATE_US,
-        alreadySuggestRateUs
+            Key.SUGGEST_RATE_US,
+            alreadySuggestRateUs
     ).apply()
 
     fun getLastFinishedLevelsNum() = preferences.getLong(Key.LAST_FINISHED_LEVELS_NUM, 0)
 
     fun setLastFinishedLevelsNum(lastFinishedLevelsNum: Long) = preferences.edit().putLong(
-        Key.LAST_FINISHED_LEVELS_NUM,
-        lastFinishedLevelsNum
+            Key.LAST_FINISHED_LEVELS_NUM,
+            lastFinishedLevelsNum
     ).apply()
 
+    fun getUserPassword(): String? = preferences.getString(Key.USER_PASSWORD, null)
+
+    fun setUserPassword(password: String?) = preferences.edit().putString(Key.USER_PASSWORD, password).apply()
+
     fun setAppodealDescriptionShown(shown: Boolean) = preferences.edit().putBoolean(
-        Key.APPODEAL_DESCRIPTION_SHOWN,
-        shown
+            Key.APPODEAL_DESCRIPTION_SHOWN,
+            shown
     ).apply()
 
     fun isAppodealDescriptionShown() = preferences.getBoolean(Key.APPODEAL_DESCRIPTION_SHOWN, false)
