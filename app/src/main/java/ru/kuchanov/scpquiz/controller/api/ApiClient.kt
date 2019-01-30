@@ -55,5 +55,7 @@ class ApiClient @Inject constructor(
 
     fun resetProgress(): Single<Int> = transactionApi.resetProgress()
 
+    fun deleteOneQuizProgress(quizId: Long) = transactionApi.deleteOneQuizProgress(quizId)
+
     fun getNwUser(): Single<NwUser> = transactionApi.getNwUser()
 }
