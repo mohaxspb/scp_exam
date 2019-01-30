@@ -90,6 +90,14 @@ class DownloadService : Service() {
                 .flatMap { apiClient.getNwQuizList().toMaybe() }
                 .map { quizFilter.filterQuizes(it) }
                 .map { quizes -> quizes.sortedBy { it.id } }
+                .map { sortedQuizList ->
+                    if (sortedQuizList.size < appDatabase.quizDao().getCount()) {
+                        appDatabase.quizDao().deleteAll()
+                        return@map sortedQuizList
+                    } else {
+                        return@map sortedQuizList
+                    }
+                }
                 .doOnSuccess { quizes ->
                     appDatabase
                             .quizDao()
