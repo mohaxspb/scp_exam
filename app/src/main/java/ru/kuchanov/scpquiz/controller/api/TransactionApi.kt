@@ -26,8 +26,4 @@ interface TransactionApi {
     @GET("user/meClient")
     fun getNwUser(): Single<NwUser>
 
-    @DELETE("transactions/deleteOneQuizProgress")
-    fun deleteOneQuizProgress(
-            @Field("quizId") quizId: Long
-    ): Boolean
 }
