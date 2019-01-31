@@ -51,11 +51,11 @@ class PeriodicallySyncService : Service() {
                 .andThen(transactionInteractor.syncTransactions())
                 .subscribeBy(
                         onComplete = {
-//                            Timber.d("SYnc from service complete")
+                            Timber.d("SYnc from service complete")
                             stopServiceAndRemoveNotification()
                         },
                         onError = {
-//                            Timber.e(it, "SYnc from service error")
+                            Timber.e(it, "SYnc from service error")
                             stopServiceAndRemoveNotification()
                         }
                 )
@@ -67,7 +67,7 @@ class PeriodicallySyncService : Service() {
     }
 
     private fun stopServiceAndRemoveNotification() {
-//        Timber.d("stopSyncServiceAndRemoveNotification")
+        Timber.d("stopSyncServiceAndRemoveNotification")
         notificationManager.cancel(NOTIFICATION_ID)
         stopForeground(true)
         stopSelf()

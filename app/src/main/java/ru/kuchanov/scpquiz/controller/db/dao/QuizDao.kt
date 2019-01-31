@@ -69,6 +69,9 @@ interface QuizDao {
     @Delete
     fun delete(quiz: Quiz): Int
 
+    @Query("DELETE FROM Quiz")
+    fun deleteAll()
+
     //finished levels
 
     @Transaction
