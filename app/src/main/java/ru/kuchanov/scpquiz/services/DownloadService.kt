@@ -19,6 +19,7 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.di.Di
+import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.kuchanov.scpquiz.model.util.QuizFilter
 import ru.kuchanov.scpquiz.ui.activity.MainActivity
@@ -90,6 +91,22 @@ class DownloadService : Service() {
                 .flatMap { apiClient.getNwQuizList().toMaybe() }
                 .map { quizFilter.filterQuizes(it) }
                 .map { quizes -> quizes.sortedBy { it.id } }
+                .map { sortedQuizList ->
+                    val nwQuizzesToInsert = mutableListOf<NwQuiz>()
+                    val quizzesFromBd = appDatabase.quizDao().getAllList()
+                    quizzesFromBd.forEach { quizFromDb ->
+                        sortedQuizList.forEach { nwQuiz ->
+                            if (nwQuiz.id == quizFromDb.id) {
+                                nwQuizzesToInsert.add(nwQuiz)
+                            } else {
+                                appDatabase.transactionDao().deleteAllTransactionsByQuizId(quizFromDb.id)
+                                appDatabase.finishedLevelsDao().deleteAllFinishedLevelsByQuizId(quizFromDb.id)
+                                appDatabase.quizDao().delete(quizFromDb)
+                            }
+                        }
+                    }
+                    return@map nwQuizzesToInsert
+                }
                 .doOnSuccess { quizes ->
                     appDatabase
                             .quizDao()
