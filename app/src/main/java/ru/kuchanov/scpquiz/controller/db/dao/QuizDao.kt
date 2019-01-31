@@ -24,6 +24,9 @@ interface QuizDao {
     @Query("SELECT * FROM Quiz ORDER BY id ASC")
     fun getAll(): Flowable<List<Quiz>>
 
+    @Query("SELECT * FROM Quiz ORDER BY id ASC")
+    fun getAllList(): List<Quiz>
+
     @Query("SELECT * FROM Quiz ORDER BY RANDOM() LIMIT :count")
     fun getRandomQuizes(count: Int = 1): Flowable<List<Quiz>>
 
@@ -68,6 +71,9 @@ interface QuizDao {
 
     @Delete
     fun delete(quiz: Quiz): Int
+
+    @Query("DELETE FROM Quiz")
+    fun deleteAll()
 
     //finished levels
 

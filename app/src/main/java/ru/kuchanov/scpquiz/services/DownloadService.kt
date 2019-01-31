@@ -89,7 +89,19 @@ class DownloadService : Service() {
                 }
                 .flatMap { apiClient.getNwQuizList().toMaybe() }
                 .map { quizFilter.filterQuizes(it) }
-                .map { quizes -> quizes.sortedBy { it.id } }
+                .map { quizzes -> quizzes.sortedBy { it.id } }
+//                .map { sortedQuizList ->
+//                    val quizzesFromBd = appDatabase.quizDao().getAllList()
+//                    quizzesFromBd.forEach { quizFromDb ->
+//                        val quizFromDbInListFromServer = sortedQuizList.find { it.id == quizFromDb.id }
+//                        if (quizFromDbInListFromServer == null) {
+//                            appDatabase.transactionDao().deleteAllTransactionsByQuizId(quizFromDb.id)
+//                            appDatabase.finishedLevelsDao().deleteAllFinishedLevelsByQuizId(quizFromDb.id)
+//                            appDatabase.quizDao().delete(quizFromDb)
+//                        }
+//                    }
+//                    return@map sortedQuizList
+//                }
                 .doOnSuccess { quizes ->
                     appDatabase
                             .quizDao()

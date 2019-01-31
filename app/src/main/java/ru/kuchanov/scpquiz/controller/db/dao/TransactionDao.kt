@@ -51,6 +51,9 @@ interface TransactionDao {
     @Query("DELETE FROM QuizTransaction")
     fun deleteAll(): Int
 
+    @Query("DELETE FROM QuizTransaction WHERE quizId = :quizId")
+    fun deleteAllTransactionsByQuizId(quizId: Long)
+
     @Query("DELETE FROM QuizTransaction WHERE transactionType = 'NAME_WITH_PRICE' OR transactionType = 'NAME_NO_PRICE' OR transactionType = 'NAME_CHARS_REMOVED'" +
             " OR transactionType = 'NUMBER_WITH_PRICE' OR transactionType = 'NUMBER_NO_PRICE' OR transactionType = 'NUMBER_CHARS_REMOVED' OR transactionType = 'LEVEL_ENABLE_FOR_COINS' " +
             " OR transactionType = 'NAME_ENTERED_MIGRATION' OR transactionType = 'NUMBER_ENTERED_MIGRATION' OR transactionType = 'NAME_CHARS_REMOVED_MIGRATION' OR transactionType = 'NUMBER_CHARS_REMOVED_MIGRATION' OR transactionType = 'LEVEL_AVAILABLE_MIGRATION'")

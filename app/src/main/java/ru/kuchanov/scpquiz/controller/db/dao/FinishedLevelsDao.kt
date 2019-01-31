@@ -42,6 +42,9 @@ interface FinishedLevelsDao {
     @Query("SELECT * FROM FinishedLevel WHERE quizId = :quizId")
     fun getByQuizId(quizId: Long): FinishedLevel?
 
+    @Query("DELETE FROM FinishedLevel WHERE quizId = :quizId")
+    fun deleteAllFinishedLevelsByQuizId(quizId: Long)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(finishedLevels: List<FinishedLevel>): List<Long>
 

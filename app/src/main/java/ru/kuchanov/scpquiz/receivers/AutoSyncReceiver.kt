@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.support.v4.content.ContextCompat
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.services.PeriodicallySyncService
 
@@ -13,7 +14,7 @@ class AutoSyncReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val serviceIntent = Intent(context, PeriodicallySyncService::class.java)
-        context.startService(serviceIntent)
+        ContextCompat.startForegroundService(context, serviceIntent)
     }
 
     companion object {
