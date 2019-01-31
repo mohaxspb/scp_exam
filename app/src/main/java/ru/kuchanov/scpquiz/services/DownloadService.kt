@@ -89,7 +89,6 @@ class DownloadService : Service() {
                 }
                 .flatMap { apiClient.getNwQuizList().toMaybe() }
                 .map { quizFilter.filterQuizes(it) }
-                
                 .map { quizes -> quizes.sortedBy { it.id } }
                 .doOnSuccess { quizes ->
                     appDatabase
