@@ -106,7 +106,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
         //todo move to DialogUtils
         MaterialDialog.Builder(this)
                 .title(R.string.will_show_ads_title)
-                .content(R.string.want_watch_ads_content)
+                .content(getString(R.string.want_watch_ads_content, Constants.REWARD_VIDEO_ADS))
                 .positiveText(android.R.string.ok)
                 .onPositive { _, _ ->
                     preferenceManager.setAppodealDescriptionShown(true)
