@@ -60,7 +60,7 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
         hamburgerButton.setOnClickListener { presenter.onHamburgerMenuClicked() }
 
         getCoinsButton.setOnClickListener {
-            if (preferenceManager.isAppodealDescriptionShown()) {
+            if (preferenceManager.isRewardedVideoDescriptionShown()) {
                 getBaseActivity().showRewardedVideo()
             } else {
                 (getBaseActivity() as MainView).showFirstTimeAppodealAdsDialog()

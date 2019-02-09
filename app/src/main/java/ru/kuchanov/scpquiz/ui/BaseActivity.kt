@@ -9,6 +9,8 @@ import com.arellomobile.mvp.MvpAppCompatActivity
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.reward.RewardItem
+import com.google.android.gms.ads.reward.RewardedVideoAd
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKCallback
 import com.vk.sdk.VKSdk
@@ -23,6 +25,7 @@ import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.BaseView
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
+import ru.kuchanov.scpquiz.ui.utils.MyRewardedVideoCallbacks
 import ru.kuchanov.scpquiz.utils.AdsUtils
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.NavigatorHolder
@@ -60,6 +63,8 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 
     private lateinit var interstitialAd: InterstitialAd
 
+    private lateinit var mRewardedVideoAd: RewardedVideoAd
+
     override fun onResumeFragments() {
         super.onResumeFragments()
         navigationHolder.setNavigator(navigator)
@@ -68,6 +73,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     override fun onPause() {
         super.onPause()
         navigationHolder.removeNavigator()
+        mRewardedVideoAd.pause(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -88,6 +94,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         super.onResume()
         PreRate.init(this, getString(R.string.feedback_email), getString(R.string.feedback_title)).showIfNeed()
         requestNewInterstitial()
+        mRewardedVideoAd.resume(this)
     }
 
     /**
@@ -152,7 +159,20 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
             requestNewInterstitial()
         }
 
-        //todo admob rewarded video
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this)
+        mRewardedVideoAd.rewardedVideoAdListener = object : MyRewardedVideoCallbacks() {
+            override fun onRewardedVideoAdClosed() {
+                super.onRewardedVideoAdClosed()
+                loadRewardedVideoAd()
+            }
+
+            override fun onRewarded(rewardItem: RewardItem?) {
+                super.onRewarded(rewardItem)
+                presenter.onRewardedVideoFinished()
+            }
+        }
+
+        loadRewardedVideoAd()
     }
 
     fun showInterstitial(quizId: Long) {
@@ -181,6 +201,14 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         }
     }
 
+    private fun loadRewardedVideoAd() {
+        @Suppress("ConstantConditionIf")
+        mRewardedVideoAd.loadAd(
+                getString(R.string.ad_unit_id_rewarded_video),
+                AdsUtils.buildAdRequest()
+        )
+    }
+
     protected fun isInterstitialLoaded() = interstitialAd.isLoaded
 
     override fun showMessage(message: String) = Toast.makeText(this, message, Toast.LENGTH_LONG).show()
@@ -195,14 +223,16 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         }
 
         PreRate.clearDialogIfOpen()
+
+        mRewardedVideoAd.destroy(this)
     }
 
     fun showRewardedVideo() {
-        //todo admob rewarded video
-//        if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
-//            Appodeal.show(this, Appodeal.REWARDED_VIDEO)
-//        } else {
-//            showMessage(R.string.reward_not_loaded_yet)
-//        }
+        if (mRewardedVideoAd.isLoaded) {
+            mRewardedVideoAd.show()
+        } else {
+            showMessage(R.string.reward_not_loaded_yet)
+            loadRewardedVideoAd()
+        }
     }
 }

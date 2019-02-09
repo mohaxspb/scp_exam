@@ -8,7 +8,6 @@ open class MyRewardedVideoCallbacks : RewardedVideoAdListener {
 
     override fun onRewardedVideoAdClosed() {
         Timber.d("onRewardedVideoAdClosed")
-
     }
 
     override fun onRewardedVideoAdLeftApplication() {
@@ -21,12 +20,10 @@ open class MyRewardedVideoCallbacks : RewardedVideoAdListener {
 
     override fun onRewardedVideoAdOpened() {
         Timber.d("onRewardedVideoAdOpened")
-
     }
 
     override fun onRewardedVideoCompleted() {
         Timber.d("onRewardedVideoCompleted")
-
     }
 
     override fun onRewarded(rewardItem: RewardItem?) {
@@ -35,11 +32,9 @@ open class MyRewardedVideoCallbacks : RewardedVideoAdListener {
 
     override fun onRewardedVideoStarted() {
         Timber.d("onRewardedVideoStarted")
-
     }
 
     override fun onRewardedVideoAdFailedToLoad(errorCode: Int) {
         Timber.d("onRewardedVideoAdFailedToLoad: $errorCode")
-
     }
 }

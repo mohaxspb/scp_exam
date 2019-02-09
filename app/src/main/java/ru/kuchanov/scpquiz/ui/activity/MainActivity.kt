@@ -106,7 +106,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                 .content(getString(R.string.want_watch_ads_content, Constants.REWARD_VIDEO_ADS))
                 .positiveText(android.R.string.ok)
                 .onPositive { _, _ ->
-                    preferenceManager.setAppodealDescriptionShown(true)
+                    preferenceManager.setRewardedDescriptionShown(true)
                     showRewardedVideo()
                 }
                 .negativeText(android.R.string.cancel)

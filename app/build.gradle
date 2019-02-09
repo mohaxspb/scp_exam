@@ -65,6 +65,7 @@ android {
             //test adUnit IDs from https://developers.google.com/admob/android/test-ads#enable_test_devices
             resValue('string', 'ad_unit_id_interstitial', 'ca-app-pub-3940256099942544/1033173712')
             resValue('string', 'ad_unit_id_game_screen_banner', 'ca-app-pub-3940256099942544/6300978111')
+            resValue('string', 'ad_unit_id_rewarded_video', 'ca-app-pub-3940256099942544/5224354917')
         }
     }
 
@@ -101,9 +102,8 @@ android {
                 resValue('string', 'ads_app_id', properties.get("adMobAppId"))
                 resValue('string', 'ad_unit_id_interstitial', properties.get("adsBannerIdInterstitial"))
                 resValue('string', 'ad_unit_id_game_screen_banner', properties.get("adsBannerIdGameScreen"))
+                resValue('string', 'ad_unit_id_rewarded_video', properties.get("adsBannerIdRewardedVideo"))
 
-                //appodeal
-                resValue('string', 'appodeal_app_key', properties.get("appodealAppKey"))
                 //ads END
                 //vps api
                 buildConfigField('String', 'VPS_API_URL', '"' + properties.get("vpsApiUrl") + '"')
@@ -124,13 +124,12 @@ android {
             } else {
                 throw new GradleException(
                         "You need to have projectRoot/config/config.properties file with "
-                                + "yandexMetricaApiKey,"
-                                + "adMobAppId,"
-                                + "adsBannerIdInterstitial,"
-                                + "adsBannerIdGameScreen,"
-                                + "appodealAppKey,"
-                                + "vpsApiUrl,"
-                                + " to build project"
+                                + "yandexMetricaApiKey, "
+                                + "adMobAppId, "
+                                + "adsBannerIdInterstitial, "
+                                + "adsBannerIdGameScreen, "
+                                + "vpsApiUrl etc "
+                                + "to build project"
                 )
             }
         }
