@@ -5,9 +5,10 @@ import ru.kuchanov.scpquiz.mvp.presenter.game.GamePresenter
 import toothpick.config.Module
 
 class GameModule : Module() {
+
     init {
         bind(GameInteractor::class.java).singletonInScope()
-//        bind(GamePresenter::class.java).singletonInScope()
+        //todo check if we need it
         bind(GamePresenter::class.java)
     }
 }
