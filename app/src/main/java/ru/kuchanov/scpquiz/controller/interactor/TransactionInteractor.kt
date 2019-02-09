@@ -304,11 +304,11 @@ class TransactionInteractor @Inject constructor(
                                                     coinsAmount = appDatabase.transactionDao().getOneById(it).coinsAmount
                                             )
                                             .doOnSuccess { nwQuizTransaction ->
-                                                //                                                Timber.d("OnSuccess :%s", nwQuizTransaction)
+                                                //Timber.d("OnSuccess :%s", nwQuizTransaction)
                                                 appDatabase.transactionDao().updateQuizTransactionExternalId(
                                                         quizTransactionId = it,
                                                         quizTransactionExternalId = nwQuizTransaction.id)
-//                                                Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(it))
+                                                //Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(it))
                                             }
                                 }
                                 .toList()
