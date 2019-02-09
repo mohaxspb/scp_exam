@@ -6,8 +6,6 @@ import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
 import kotlinx.android.synthetic.main.fragment_enter.*
 import ru.kuchanov.scpquiz.R
-import ru.kuchanov.scpquiz.di.Di
-import ru.kuchanov.scpquiz.di.module.EnterModule
 import ru.kuchanov.scpquiz.mvp.presenter.intro.EnterPresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.EnterView
 import ru.kuchanov.scpquiz.ui.BaseFragment
@@ -18,15 +16,11 @@ import toothpick.config.Module
 
 class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
 
-    companion object {
-        fun newInstance() = EnterFragment()
-    }
-
     override val translucent = true
 
-    override val scopes: Array<String> = arrayOf(Di.Scope.ENTER_FRAGMENT)
+    override val scopes: Array<String> = arrayOf()
 
-    override val modules: Array<Module> = arrayOf(EnterModule())
+    override val modules: Array<Module> = arrayOf()
 
     @InjectPresenter
     override lateinit var presenter: EnterPresenter
@@ -77,5 +71,9 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
 
     override fun onNeedToOpenIntroDialogFragment() {
         BitmapUtils.loadBitmapFromView(root)?.let { presenter.openIntroDialogScreen(it) }
+    }
+
+    companion object {
+        fun newInstance() = EnterFragment()
     }
 }

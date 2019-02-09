@@ -10,8 +10,6 @@ import com.arellomobile.mvp.presenter.ProvidePresenter
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.navigation.ShowCommand
-import ru.kuchanov.scpquiz.di.Di
-import ru.kuchanov.scpquiz.di.module.MainActivityModule
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.presenter.activity.MainPresenter
 import ru.kuchanov.scpquiz.mvp.view.activity.MainView
@@ -21,7 +19,6 @@ import ru.kuchanov.scpquiz.ui.fragment.game.LevelsFragment
 import ru.kuchanov.scpquiz.ui.fragment.intro.EnterFragment
 import ru.kuchanov.scpquiz.ui.fragment.intro.IntroDialogFragment
 import ru.kuchanov.scpquiz.ui.fragment.monetization.MonetizationFragment
-import ru.kuchanov.scpquiz.ui.fragment.util.AppInfoFragment
 import ru.kuchanov.scpquiz.ui.fragment.util.ScpSettingsFragment
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.android.SupportAppNavigator
@@ -30,6 +27,7 @@ import ru.terrakok.cicerone.commands.Forward
 import ru.terrakok.cicerone.commands.Replace
 import timber.log.Timber
 import toothpick.Toothpick
+import toothpick.config.Module
 
 
 class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
@@ -37,9 +35,9 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
     @IdRes
     override val containerId = R.id.container
 
-    override val scopes = arrayOf(Di.Scope.MAIN_ACTIVITY)
+    override val scopes: Array<String> = arrayOf()
 
-    override val modules = arrayOf(MainActivityModule())
+    override val modules: Array<Module> = arrayOf()
 
     override var navigator: Navigator = object : SupportAppNavigator(this, containerId) {
 
@@ -49,7 +47,6 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
             Timber.d("createFragment key: $screenKey, data: $data")
             return when (screenKey) {
                 Constants.Screens.ENTER -> EnterFragment.newInstance()
-                Constants.Screens.APP_INFO -> AppInfoFragment.newInstance()
                 Constants.Screens.QUIZ_LIST -> LevelsFragment.newInstance()
                 Constants.Screens.QUIZ -> GameFragment.newInstance((data as QuizScreenLaunchData).quizId)
                 Constants.Screens.SETTINGS -> ScpSettingsFragment.newInstance()
@@ -109,7 +106,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                 .content(getString(R.string.want_watch_ads_content, Constants.REWARD_VIDEO_ADS))
                 .positiveText(android.R.string.ok)
                 .onPositive { _, _ ->
-                    preferenceManager.setAppodealDescriptionShown(true)
+                    preferenceManager.setRewardedDescriptionShown(true)
                     showRewardedVideo()
                 }
                 .negativeText(android.R.string.cancel)

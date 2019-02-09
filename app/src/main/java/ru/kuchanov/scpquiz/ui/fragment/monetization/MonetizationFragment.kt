@@ -18,8 +18,6 @@ import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.MonetizationDelegate
 import ru.kuchanov.scpquiz.controller.adapter.delegate.MonetizationHeaderDelegate
 import ru.kuchanov.scpquiz.controller.manager.monetization.BillingDelegate
-import ru.kuchanov.scpquiz.di.Di
-import ru.kuchanov.scpquiz.di.module.MonetizationModule
 import ru.kuchanov.scpquiz.mvp.presenter.monetization.MonetizationPresenter
 import ru.kuchanov.scpquiz.mvp.view.monetization.MonetizationView
 import ru.kuchanov.scpquiz.ui.BaseActivity
@@ -38,9 +36,9 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
 
     override val translucent = true
 
-    override val scopes: Array<String> = arrayOf(Di.Scope.MONETIZATION_FRAGMENT)
+    override val scopes: Array<String> = arrayOf()
 
-    override val modules: Array<Module> = arrayOf(MonetizationModule())
+    override val modules: Array<Module> = arrayOf()
 
     @InjectPresenter
     override lateinit var presenter: MonetizationPresenter
@@ -58,7 +56,9 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         super.onViewCreated(view, savedInstanceState)
 
         //todo move to delegate
-        val bitmap = BitmapUtils.fileToBitmap("${activity?.cacheDir}/${Constants.SETTINGS_BACKGROUND_FILE_NAME}.png")
+        val bitmap = BitmapUtils.fileToBitmap(
+                "${activity?.cacheDir}/${Constants.SETTINGS_BACKGROUND_FILE_NAME}.png"
+        )
 
         backgroundImageView.post {
             Blurry.with(context)
@@ -91,7 +91,7 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         recyclerView.layoutManager = LinearLayoutManager(activity)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
         delegateManager.addDelegate(MonetizationHeaderDelegate())
-        delegateManager.addDelegate(MonetizationDelegate {presenter.onOwnedItemClicked(it)})
+        delegateManager.addDelegate(MonetizationDelegate { presenter.onOwnedItemClicked(it) })
         adapter = ListDelegationAdapter(delegateManager)
         recyclerView.adapter = adapter
     }

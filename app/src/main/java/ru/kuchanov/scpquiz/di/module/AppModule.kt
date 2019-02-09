@@ -15,7 +15,6 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.api.*
-import ru.kuchanov.scpquiz.controller.api.response.TokenResponse
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.db.migrations.Migrations
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
@@ -75,7 +74,7 @@ class AppModule(context: Context) : Module() {
 
         val okHttpClientCommon = OkHttpClient.Builder()
                 .addInterceptor(
-                        HttpLoggingInterceptor { log -> Timber.d(log) }
+                        HttpLoggingInterceptor { log -> Timber.tag("OkHttp").d(log) }
                                 .setLevel(HttpLoggingInterceptor.Level.BODY)
                 )
                 .build()
@@ -110,8 +109,7 @@ class AppModule(context: Context) : Module() {
                     var request = chain.request()
                     var response = chain.proceed(request)
                     if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                        val tokenResponse: TokenResponse
-                        tokenResponse = authApi
+                        val tokenResponse = authApi
                                 .getAccessTokenByRefreshToken(
                                         Credentials.basic(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_SECRET),
                                         Constants.Api.GRANT_TYPE_REFRESH_TOKEN,
@@ -157,16 +155,14 @@ class AppModule(context: Context) : Module() {
                     var request = chain.request()
                     var response = chain.proceed(request)
                     if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                        val tokenResponse: TokenResponse
-
                         //use implicit grant flow if there is no refresh token
-
-                        tokenResponse = authApi
+                        val tokenResponse = authApi
                                 .getAccessToken(
                                         Credentials.basic(BuildConfig.USER, BuildConfig.PASSWORD),
                                         Constants.Api.GRANT_TYPE_CLIENT_CREDENTIALS
                                 )
                                 .blockingGet()
+
                         preferenceManager.setAccessToken(tokenResponse.accessToken)
 
                         request = request

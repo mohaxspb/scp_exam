@@ -1,34 +1,40 @@
 package ru.kuchanov.scpquiz.ui.utils
 
-import com.appodeal.ads.RewardedVideoCallbacks
+import com.google.android.gms.ads.reward.RewardItem
+import com.google.android.gms.ads.reward.RewardedVideoAdListener
 import timber.log.Timber
 
-open class MyRewardedVideoCallbacks : RewardedVideoCallbacks {
+open class MyRewardedVideoCallbacks : RewardedVideoAdListener {
 
-    override fun onRewardedVideoFinished(p0: Double, p1: String?) {
-        Timber.d("onRewardedVideoFinished: $p0, $p1")
-        //nothing to do
+    override fun onRewardedVideoAdClosed() {
+        Timber.d("onRewardedVideoAdClosed")
     }
 
-    override fun onRewardedVideoClosed(p0: Boolean) {
-        Timber.d("onRewardedVideoClosed: $p0")
-        //nothing to do
+    override fun onRewardedVideoAdLeftApplication() {
+        Timber.d("onRewardedVideoAdLeftApplication")
     }
 
-    override fun onRewardedVideoLoaded(p0: Boolean) {
-        //nothing to do
+    override fun onRewardedVideoAdLoaded() {
+        Timber.d("onRewardedVideoAdLoaded")
     }
 
-    override fun onRewardedVideoFailedToLoad() {
-        //nothing to do
+    override fun onRewardedVideoAdOpened() {
+        Timber.d("onRewardedVideoAdOpened")
     }
 
-    override fun onRewardedVideoShown() {
-        Timber.d("onRewardedVideoShown")
-        //nothing to do
+    override fun onRewardedVideoCompleted() {
+        Timber.d("onRewardedVideoCompleted")
     }
 
-    override fun onRewardedVideoExpired() {
-        Timber.d("onRewardedVideoExpired")
+    override fun onRewarded(rewardItem: RewardItem?) {
+        Timber.d("onRewardedVideoAdFailedToLoad: $rewardItem")
+    }
+
+    override fun onRewardedVideoStarted() {
+        Timber.d("onRewardedVideoStarted")
+    }
+
+    override fun onRewardedVideoAdFailedToLoad(errorCode: Int) {
+        Timber.d("onRewardedVideoAdFailedToLoad: $errorCode")
     }
 }

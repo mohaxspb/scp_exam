@@ -118,7 +118,7 @@ class BillingDelegate(
                                         appDatabase.transactionDao().updateQuizTransactionExternalId(
                                                 quizTransactionId = quizTransactionId,
                                                 quizTransactionExternalId = nwQuizTransaction.id)
-//                                        Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                        //Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
                                     }
                                     .ignoreElement()
                                     .onErrorComplete()
@@ -127,7 +127,7 @@ class BillingDelegate(
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeBy(
                                 onComplete = {
-//                                    Timber.d("on Complete purchase")
+                                    //Timber.d("on Complete purchase")
                                     preferencesManager.disableAds(true)
                                     view?.showMessage(R.string.ads_disabled)
                                     presenter?.loadInAppsToBuy(true)
@@ -159,7 +159,7 @@ class BillingDelegate(
                                 .build()
                         if (clientReady) {
                             billingClient.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
-//                                Timber.d("inapps: $responseCode, $skuDetailsList")
+                                //Timber.d("inapps: $responseCode, $skuDetailsList")
                                 if (responseCode == BillingClient.BillingResponse.OK && skuDetailsList != null) {
                                     val disableAdsInapp = skuDetailsList.firstOrNull {
                                         it.sku == Constants.SKU_INAPP_DISABLE_ADS
@@ -183,7 +183,7 @@ class BillingDelegate(
                         .setType(BillingClient.SkuType.INAPP)
                         .build()
                 val responseCode = billingClient.launchBillingFlow(activity, flowParams)
-//                Timber.d("startPurchaseFlow responseCode $responseCode")
+                //Timber.d("startPurchaseFlow responseCode $responseCode")
 
                 responseCode == BillingClient.BillingResponse.OK
             } else {
@@ -201,6 +201,7 @@ class BillingDelegate(
                         }
                     }
                     .flatMap { purchasesResult ->
+                        Timber.d("purchasesResult: ${purchasesResult.purchasesList}")
                         val disableAdsInApp = purchasesResult
                                 .purchasesList
                                 ?.firstOrNull { it.sku == Constants.SKU_INAPP_DISABLE_ADS }
@@ -209,6 +210,7 @@ class BillingDelegate(
                         } else {
                             apiClient
                                     .validateInApp(disableAdsInApp.sku, disableAdsInApp.purchaseToken)
+                                    .doOnSuccess { Timber.d("isHasDisableAdsInApp validateInApp doOnSuccess: $it") }
                                     .map { it == VALID }
                         }
                     }
@@ -218,6 +220,7 @@ class BillingDelegate(
                     .map { inApps -> inApps.first { it.sku == sku }.purchaseToken }
                     .flatMapCompletable { consumeInApp(it) }
 
+    @Suppress("UNUSED_ANONYMOUS_PARAMETER")
     private fun consumeInApp(purchaseTokenToConsume: String): Completable =
             Completable.create {
                 if (clientReady) {
