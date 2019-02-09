@@ -22,6 +22,7 @@ import ru.kuchanov.scpquiz.mvp.presenter.game.LevelsPresenter
 import ru.kuchanov.scpquiz.mvp.view.activity.MainView
 import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.ui.dialog.CC3LicenseDialogFragment
 import ru.kuchanov.scpquiz.utils.BitmapUtils
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -29,11 +30,6 @@ import javax.inject.Inject
 
 
 class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
-
-
-    companion object {
-        fun newInstance() = LevelsFragment()
-    }
 
     override val translucent = false
 
@@ -74,6 +70,11 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
         }
 
         levelsTextView.setOnClickListener { presenter.onLevelsClick() }
+
+        if (!preferenceManager.isPersonalDataAccepted()) {
+            val dialogFragment = CC3LicenseDialogFragment.newInstance()
+            dialogFragment.show(fragmentManager, CC3LicenseDialogFragment.TAG)
+        }
     }
 
     private fun initRecyclerView() {
@@ -117,5 +118,9 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
         animator.duration = 1000
         animator.addUpdateListener { animation -> coinsValueTextView?.text = animation.animatedValue.toString() }
         animator.start()
+    }
+
+    companion object {
+        fun newInstance() = LevelsFragment()
     }
 }

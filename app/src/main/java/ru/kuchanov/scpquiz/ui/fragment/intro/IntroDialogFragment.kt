@@ -19,6 +19,7 @@ import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
 import ru.kuchanov.scpquiz.mvp.presenter.intro.IntroDialogPresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.IntroDialogView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.ui.dialog.CC3LicenseDialogFragment
 import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
 import ru.kuchanov.scpquiz.ui.utils.ChatDelegate
 import ru.kuchanov.scpquiz.utils.BitmapUtils
@@ -74,8 +75,6 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
                 myPreferenceManager
         )
 
-
-
         //todo move to delegate
         val bitmap = BitmapUtils.fileToBitmap("${activity?.cacheDir}/${Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME}.png")
 
@@ -92,6 +91,11 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
         }
 
         chatView.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
+
+        if (!myPreferenceManager.isPersonalDataAccepted()) {
+            val dialogFragment = CC3LicenseDialogFragment.newInstance()
+            dialogFragment.show(fragmentManager, CC3LicenseDialogFragment.TAG)
+        }
     }
 
     override fun showChatMessage(message: String, user: User) =

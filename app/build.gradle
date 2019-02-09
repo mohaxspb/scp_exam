@@ -170,8 +170,6 @@ dependencies {
     api 'com.android.support:multidex:1.0.3'
 
     //google libs
-    //WARNING!!!!!!!!111
-    //do not update to 16.0.5!!!
     implementation 'com.google.firebase:firebase-core:16.0.6'
     implementation 'com.google.firebase:firebase-analytics:16.0.6'
     implementation 'com.google.firebase:firebase-invites:16.0.6'

@@ -100,6 +100,10 @@
     <string name="message_auth_suggestion_game">Вы можете залогиниться. Таким образом, ваш прогресс будет сохранен на нашем сервере, и вы сможете сравнить свой прогресс с другими игроками. Конечно, вы можете сделать это позже из настроек игры. Пожалуйста, выберите:</string>
     <string name="download_notification">Downloading data</string>
     <string name="sync_notification">Syncronize progress</string>
+
+    <string name="attention">Внимание!</string>
+    <string name="i_accept">Я согласен</string>
+
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>
         <item>Мы получили ваш запрос на повышение квалификации.</item>

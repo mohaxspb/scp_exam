@@ -39,10 +39,25 @@ class IntroDialogPresenter @Inject constructor(
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor
-) : BasePresenter<IntroDialogView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor), AuthPresenter<IntroDialogFragment> {
+) : BasePresenter<IntroDialogView>(
+        appContext,
+        preferences,
+        router,
+        appDatabase,
+        apiClient,
+        transactionInteractor
+), AuthPresenter<IntroDialogFragment> {
 
     override fun onAuthSuccess() {
-        Single.fromCallable { appDatabase.finishedLevelsDao().getCountWhereLevelAvailableTrueFinishedLevels() > 5 || appDatabase.finishedLevelsDao().getCountWhereSomethingExceptLevelAvailableTrueFinishedLevels() > 0 }
+        Single
+                .fromCallable {
+                    appDatabase
+                            .finishedLevelsDao()
+                            .getCountWhereLevelAvailableTrueFinishedLevels() > 5
+                            || appDatabase
+                            .finishedLevelsDao()
+                            .getCountWhereSomethingExceptLevelAvailableTrueFinishedLevels() > 0
+                }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(

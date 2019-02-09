@@ -116,6 +116,9 @@
     <string name="download_notification">Downloading data</string>
     <string name="sync_notification">Syncronize progress</string>
 
+    <string name="attention">Attention!</string>
+    <string name="i_accept">I accept</string>
+
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>
         <item>We received your request for further training.</item>
