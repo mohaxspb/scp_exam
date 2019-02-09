@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.widget.Toast
-import com.appodeal.ads.Appodeal
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.InterstitialAd
@@ -24,7 +23,6 @@ import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.BaseView
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
-import ru.kuchanov.scpquiz.ui.utils.MyRewardedVideoCallbacks
 import ru.kuchanov.scpquiz.utils.AdsUtils
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.NavigatorHolder
@@ -154,29 +152,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
             requestNewInterstitial()
         }
 
-        //appodeal
-        Appodeal.disableLocationPermissionCheck()
-        Appodeal.disableWriteExternalStoragePermissionCheck()
-//        Appodeal.setTesting(BuildConfig.DEBUG)
-//        Appodeal.setLogLevel(if (BuildConfig.DEBUG) Log.LogLevel.debug else Log.LogLevel.none);
-//        Appodeal.disableNetwork(this, "vungle")
-//        Appodeal.disableNetwork(this, "facebook");
-        Appodeal.initialize(
-                this,
-                getString(R.string.appodeal_app_key),
-                Appodeal.REWARDED_VIDEO,
-                true
-        )
-
-        Appodeal.muteVideosIfCallsMuted(true)
-        Appodeal.setRewardedVideoCallbacks(object : MyRewardedVideoCallbacks() {
-
-            override fun onRewardedVideoClosed(p0: Boolean) {
-                super.onRewardedVideoClosed(p0)
-                Timber.d("onRewardedVideoClosed: $p0")
-                presenter.onRewardedVideoFinished()
-            }
-        })
+        //todo admob rewarded video
     }
 
     fun showInterstitial(quizId: Long) {
@@ -222,10 +198,11 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     }
 
     fun showRewardedVideo() {
-        if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
-            Appodeal.show(this, Appodeal.REWARDED_VIDEO)
-        } else {
-            showMessage(R.string.reward_not_loaded_yet)
-        }
+        //todo admob rewarded video
+//        if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
+//            Appodeal.show(this, Appodeal.REWARDED_VIDEO)
+//        } else {
+//            showMessage(R.string.reward_not_loaded_yet)
+//        }
     }
 }

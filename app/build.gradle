@@ -172,27 +172,8 @@ dependencies {
     //google libs
     implementation 'com.google.firebase:firebase-core:16.0.6'
     implementation 'com.google.firebase:firebase-analytics:16.0.6'
-    implementation 'com.google.firebase:firebase-invites:16.0.6'
     implementation 'com.google.firebase:firebase-ads:17.1.2'
     implementation 'com.google.firebase:firebase-messaging:17.3.4'
-
-    //appodeal
-    implementation 'com.squareup.picasso:picasso:2.5.2'
-    //for Inmobi
-    implementation name: 'adcolony-3.3.5', ext: 'aar'
-    implementation name: 'mobvista-9.0.0-alphab', ext: 'aar'
-    implementation name: 'mobvista-9.0.0-common', ext: 'aar'
-    implementation name: 'mobvista-9.0.0-interstitial', ext: 'aar'
-    implementation name: 'mobvista-9.0.0-interstitialvideo', ext: 'aar'
-    implementation name: 'mobvista-9.0.0-mtgdownloads', ext: 'aar'
-    implementation name: 'mobvista-9.0.0-mtgjscommon', ext: 'aar'
-    implementation name: 'mobvista-9.0.0-mtgnative', ext: 'aar'
-    implementation name: 'mobvista-9.0.0-nativeex', ext: 'aar'
-    implementation name: 'mobvista-9.0.0-playercommon', ext: 'aar'
-    implementation name: 'mobvista-9.0.0-reward', ext: 'aar'
-    implementation name: 'mobvista-9.0.0-videocommon', ext: 'aar'
-    implementation name: 'mobvista-9.0.0-videojs', ext: 'aar'
-    implementation name: 'ogury-3.0.22', ext: 'aar'
 
     // AppMetrica
     //we add it here and delete jar from appodeal
@@ -228,15 +209,13 @@ dependencies {
 
     //rx
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.4'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.5'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
 
     //db
     def roomVersion = "1.1.1"
     implementation "android.arch.persistence.room:runtime:$roomVersion"
     kapt "android.arch.persistence.room:compiler:$roomVersion"
-
-    //optional - RxJava support for Room
     implementation "android.arch.persistence.room:rxjava2:$roomVersion"
 
     // Retrofit

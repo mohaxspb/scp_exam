@@ -24,7 +24,10 @@ import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
 import ru.kuchanov.scpquiz.model.api.NwQuiz
 import ru.kuchanov.scpquiz.model.api.QuizConverter
-import ru.kuchanov.scpquiz.model.db.*
+import ru.kuchanov.scpquiz.model.db.FinishedLevel
+import ru.kuchanov.scpquiz.model.db.User
+import ru.kuchanov.scpquiz.model.db.UserRole
+import ru.kuchanov.scpquiz.model.db.generateRandomName
 import ru.kuchanov.scpquiz.model.ui.ProgressPhrase
 import ru.kuchanov.scpquiz.model.ui.ProgressPhrasesJson
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -73,7 +76,7 @@ class EnterPresenter @Inject constructor(
 
         val dbFillObservable = Single
                 .fromCallable {
-//                    Timber.d("read initial data from json")
+                    //                    Timber.d("read initial data from json")
                     val json = StorageUtils.readFromAssets(appContext, "baseData.json")
                     val type = Types.newParameterizedType(List::class.java, NwQuiz::class.java)
                     val adapter = moshi.adapter<List<NwQuiz>>(type)
@@ -81,7 +84,7 @@ class EnterPresenter @Inject constructor(
                 }
                 .map { initialQuizes -> initialQuizes.sortedBy { it.id } }
                 .map { initialQuizes ->
-//                    Timber.d("write initial data to DB")
+                    //                    Timber.d("write initial data to DB")
 
 //                    Timber.d("write users:")
                     val doctorUser = User(
@@ -103,7 +106,7 @@ class EnterPresenter @Inject constructor(
                                     quizConverter::convert
                             ))
                     appDatabase.finishedLevelsDao().insert(initialQuizes.mapIndexed { index, nwQuiz ->
-//                        Timber.d("initialQuizes: $index, ${nwQuiz.id}")
+                        //                        Timber.d("initialQuizes: $index, ${nwQuiz.id}")
                         FinishedLevel(
                                 nwQuiz.id,
                                 //first 5 levels must be available always
@@ -143,15 +146,15 @@ class EnterPresenter @Inject constructor(
                         Flowable.just(it)
                     }
                 }
-                .onErrorResumeNext { error: Throwable ->
-//                    Timber.d("onErrorResumeNext: $error")
+                .onErrorResumeNext { _: Throwable ->
+                    //                    Timber.d("onErrorResumeNext: $error")
                     Flowable.empty()
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onNext = {
-//                            Timber.d("onNext: $it")
+                            //                            Timber.d("onNext: $it")
                             if (it == -1L) {
                                 dbFilled = true
                             } else {
@@ -161,7 +164,7 @@ class EnterPresenter @Inject constructor(
                             }
                         },
                         onComplete = {
-//                            Timber.d("onComplete")
+                            //                            Timber.d("onComplete")
                             val serviceIntent = Intent(appContext, DownloadService::class.java)
                             ContextCompat.startForegroundService(appContext, serviceIntent)
 
@@ -220,6 +223,7 @@ class EnterPresenter @Inject constructor(
 
     fun onProgressTextClicked() {
         //later there will be an easter egg
+        @Suppress("ConstantConditionIf")
         if (BuildConfig.DEBUG) {
             val scoreToDecrease = 1000
             Completable.fromAction {
