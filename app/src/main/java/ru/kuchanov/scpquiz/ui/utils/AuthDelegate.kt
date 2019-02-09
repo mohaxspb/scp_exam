@@ -10,7 +10,7 @@ import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.gson.GsonBuilder
+import com.squareup.moshi.Moshi
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKCallback
 import com.vk.sdk.VKSdk
@@ -49,18 +49,27 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
         private var apiClient: ApiClient,
         internal var preferences: MyPreferenceManager
 ) {
+
     init {
         Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
     }
 
     @Inject
     lateinit var transactionInteractor: TransactionInteractor
+
     @Inject
     lateinit var appDatabase: AppDatabase
+
     @Inject
     lateinit var quizConverter: QuizConverter
+
+    @Inject
+    lateinit var moshi: Moshi
+
     private val compositeDisposable = CompositeDisposable()
+
     private val callbackManager = CallbackManager.Factory.create()
+
     private var googleApiClient: GoogleApiClient? = null
 
     fun getFragment(): BaseFragment<out AuthView, out BasePresenter<out AuthView>> {
@@ -116,9 +125,8 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                         commonUserData.lastName = user.last_name
                         commonUserData.avatarUrl = user.photo_200
                         commonUserData.fullName = user.first_name + "" + user.last_name
-                        val builder = GsonBuilder()
-                        val gson = builder.create()
-                        socialLogin(Constants.Social.VK, gson.toJson(commonUserData))
+                        val jsonAdapter = moshi.adapter(CommonUserData::class.java)
+                        socialLogin(Constants.Social.VK, jsonAdapter.toJson(commonUserData))
                     }
 
                     override fun onError(error: VKError?) {

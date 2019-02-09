@@ -5,11 +5,12 @@ import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.widget.Toast
-import com.appodeal.ads.Appodeal
 import com.arellomobile.mvp.MvpAppCompatActivity
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.reward.RewardItem
+import com.google.android.gms.ads.reward.RewardedVideoAd
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKCallback
 import com.vk.sdk.VKSdk
@@ -62,6 +63,8 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 
     private lateinit var interstitialAd: InterstitialAd
 
+    private lateinit var mRewardedVideoAd: RewardedVideoAd
+
     override fun onResumeFragments() {
         super.onResumeFragments()
         navigationHolder.setNavigator(navigator)
@@ -70,6 +73,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     override fun onPause() {
         super.onPause()
         navigationHolder.removeNavigator()
+        mRewardedVideoAd.pause(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -90,6 +94,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         super.onResume()
         PreRate.init(this, getString(R.string.feedback_email), getString(R.string.feedback_title)).showIfNeed()
         requestNewInterstitial()
+        mRewardedVideoAd.resume(this)
     }
 
     /**
@@ -154,29 +159,20 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
             requestNewInterstitial()
         }
 
-        //appodeal
-        Appodeal.disableLocationPermissionCheck()
-        Appodeal.disableWriteExternalStoragePermissionCheck()
-//        Appodeal.setTesting(BuildConfig.DEBUG)
-//        Appodeal.setLogLevel(if (BuildConfig.DEBUG) Log.LogLevel.debug else Log.LogLevel.none);
-//        Appodeal.disableNetwork(this, "vungle")
-//        Appodeal.disableNetwork(this, "facebook");
-        Appodeal.initialize(
-                this,
-                getString(R.string.appodeal_app_key),
-                Appodeal.REWARDED_VIDEO,
-                true
-        )
+        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this)
+        mRewardedVideoAd.rewardedVideoAdListener = object : MyRewardedVideoCallbacks() {
+            override fun onRewardedVideoAdClosed() {
+                super.onRewardedVideoAdClosed()
+                loadRewardedVideoAd()
+            }
 
-        Appodeal.muteVideosIfCallsMuted(true)
-        Appodeal.setRewardedVideoCallbacks(object : MyRewardedVideoCallbacks() {
-
-            override fun onRewardedVideoClosed(p0: Boolean) {
-                super.onRewardedVideoClosed(p0)
-                Timber.d("onRewardedVideoClosed: $p0")
+            override fun onRewarded(rewardItem: RewardItem?) {
+                super.onRewarded(rewardItem)
                 presenter.onRewardedVideoFinished()
             }
-        })
+        }
+
+        loadRewardedVideoAd()
     }
 
     fun showInterstitial(quizId: Long) {
@@ -205,6 +201,14 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         }
     }
 
+    private fun loadRewardedVideoAd() {
+        @Suppress("ConstantConditionIf")
+        mRewardedVideoAd.loadAd(
+                getString(R.string.ad_unit_id_rewarded_video),
+                AdsUtils.buildAdRequest()
+        )
+    }
+
     protected fun isInterstitialLoaded() = interstitialAd.isLoaded
 
     override fun showMessage(message: String) = Toast.makeText(this, message, Toast.LENGTH_LONG).show()
@@ -219,13 +223,16 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         }
 
         PreRate.clearDialogIfOpen()
+
+        mRewardedVideoAd.destroy(this)
     }
 
     fun showRewardedVideo() {
-        if (Appodeal.isLoaded(Appodeal.REWARDED_VIDEO)) {
-            Appodeal.show(this, Appodeal.REWARDED_VIDEO)
+        if (mRewardedVideoAd.isLoaded) {
+            mRewardedVideoAd.show()
         } else {
             showMessage(R.string.reward_not_loaded_yet)
+            loadRewardedVideoAd()
         }
     }
 }

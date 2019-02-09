@@ -11,8 +11,6 @@ import kotlinx.android.synthetic.main.fragment_intro_dialog.*
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
-import ru.kuchanov.scpquiz.di.Di
-import ru.kuchanov.scpquiz.di.module.IntroDialogModule
 import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
@@ -30,10 +28,6 @@ import javax.inject.Inject
 
 class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(), IntroDialogView {
 
-    companion object {
-        fun newInstance() = IntroDialogFragment()
-    }
-
     @Inject
     lateinit var myPreferenceManager: MyPreferenceManager
 
@@ -43,9 +37,9 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
 
     override val translucent = true
 
-    override val scopes: Array<String> = arrayOf(Di.Scope.INTRO_DIALOG_FRAGMENT)
+    override val scopes: Array<String> = arrayOf()
 
-    override val modules: Array<Module> = arrayOf(IntroDialogModule())
+    override val modules: Array<Module> = arrayOf()
 
     @InjectPresenter
     override lateinit var presenter: IntroDialogPresenter
@@ -76,7 +70,9 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
         )
 
         //todo move to delegate
-        val bitmap = BitmapUtils.fileToBitmap("${activity?.cacheDir}/${Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME}.png")
+        val bitmap = BitmapUtils.fileToBitmap(
+                "${activity?.cacheDir}/${Constants.INTRO_DIALOG_BACKGROUND_FILE_NAME}.png"
+        )
 
         context?.let {
             backgroundImageView.post {
@@ -119,5 +115,9 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
     override fun onPause() {
         super.onPause()
         authDelegate.onPause()
+    }
+
+    companion object {
+        fun newInstance() = IntroDialogFragment()
     }
 }

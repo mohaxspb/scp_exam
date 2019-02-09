@@ -79,12 +79,12 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun setUserPassword(password: String?) = preferences.edit().putString(Key.USER_PASSWORD, password).apply()
 
-    fun setAppodealDescriptionShown(shown: Boolean) = preferences.edit().putBoolean(
+    fun setRewardedDescriptionShown(shown: Boolean) = preferences.edit().putBoolean(
             Key.APPODEAL_DESCRIPTION_SHOWN,
             shown
     ).apply()
 
-    fun isAppodealDescriptionShown() = preferences.getBoolean(Key.APPODEAL_DESCRIPTION_SHOWN, false)
+    fun isRewardedVideoDescriptionShown() = preferences.getBoolean(Key.APPODEAL_DESCRIPTION_SHOWN, false)
 
     fun isPersonalDataAccepted() = preferences.getBoolean(Key.PERSONAL_DATA_ACCEPTED, false)
 

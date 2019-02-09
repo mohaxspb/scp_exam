@@ -16,8 +16,6 @@ import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.LevelDelegate
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
-import ru.kuchanov.scpquiz.di.Di
-import ru.kuchanov.scpquiz.di.module.LevelsModule
 import ru.kuchanov.scpquiz.mvp.presenter.game.LevelsPresenter
 import ru.kuchanov.scpquiz.mvp.view.activity.MainView
 import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
@@ -33,9 +31,9 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
 
     override val translucent = false
 
-    override val scopes: Array<String> = arrayOf(Di.Scope.LEVELS_FRAGMENT)
+    override val scopes: Array<String> = arrayOf()
 
-    override val modules: Array<Module> = arrayOf(LevelsModule())
+    override val modules: Array<Module> = arrayOf()
 
     @InjectPresenter
     override lateinit var presenter: LevelsPresenter
@@ -62,7 +60,7 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
         hamburgerButton.setOnClickListener { presenter.onHamburgerMenuClicked() }
 
         getCoinsButton.setOnClickListener {
-            if (preferenceManager.isAppodealDescriptionShown()) {
+            if (preferenceManager.isRewardedVideoDescriptionShown()) {
                 getBaseActivity().showRewardedVideo()
             } else {
                 (getBaseActivity() as MainView).showFirstTimeAppodealAdsDialog()
