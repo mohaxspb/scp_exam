@@ -37,6 +37,7 @@ class MonetizationDelegate(
 
             if (item.isAlreadyOwned) {
                 alreadyOwnedTextView.visibility = VISIBLE
+                @Suppress("ConstantConditionIf")
                 if (BuildConfig.DEBUG) {
                     alreadyOwnedTextView.setOnClickListener { clickListener.invoke(item.sku!!) }
                 }
