@@ -85,4 +85,10 @@ class MyPreferenceManager @Inject constructor(context: Context) {
     ).apply()
 
     fun isAppodealDescriptionShown() = preferences.getBoolean(Key.APPODEAL_DESCRIPTION_SHOWN, false)
+
+    fun isPersonalDataAccepted() = preferences.getBoolean(Key.PERSONAL_DATA_ACCEPTED, false)
+
+    fun setPersonalDataAccepted(accepted: Boolean) {
+        preferences.edit().putBoolean(Key.PERSONAL_DATA_ACCEPTED, accepted).apply()
+    }
 }

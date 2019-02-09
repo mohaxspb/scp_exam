@@ -43,16 +43,6 @@ import javax.inject.Inject
 
 class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), SettingsView {
 
-    companion object {
-
-        fun newInstance() = ScpSettingsFragment()
-
-        fun getIconForLang(langString: String) = when (langString) {
-            "ru" -> R.drawable.ic_ru
-            else -> R.drawable.ic_en
-        }
-    }
-
     @Inject
     lateinit var myPreferenceManager: MyPreferenceManager
 
@@ -262,6 +252,16 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
                 }
                 presenter.onVibrationEnabled(isChecked)
             }
+        }
+    }
+
+    companion object {
+
+        fun newInstance() = ScpSettingsFragment()
+
+        fun getIconForLang(langString: String) = when (langString) {
+            "ru" -> R.drawable.ic_ru
+            else -> R.drawable.ic_en
         }
     }
 }
