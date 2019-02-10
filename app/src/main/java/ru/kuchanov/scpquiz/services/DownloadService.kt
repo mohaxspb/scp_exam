@@ -88,7 +88,7 @@ class DownloadService : Service() {
                     }
                 }
                 .flatMap { apiClient.getNwQuizList().toMaybe() }
-                .map { quizFilter.filterQuizes(it) }
+                .map { quizFilter.filterQuizzes(it) }
                 .map { quizzes -> quizzes.sortedBy { it.id } }
 //                .map { sortedQuizList ->
 //                    val quizzesFromBd = appDatabase.quizDao().getAllList()
@@ -102,12 +102,12 @@ class DownloadService : Service() {
 //                    }
 //                    return@map sortedQuizList
 //                }
-                .doOnSuccess { quizes ->
+                .doOnSuccess { quizzes ->
                     appDatabase
                             .quizDao()
                             .insertQuizesWithQuizTranslationsWithFinishedLevels(
                                     quizConverter.convertCollection(
-                                            quizes,
+                                            quizzes,
                                             quizConverter::convert
                                     )
                             )
@@ -124,7 +124,7 @@ class DownloadService : Service() {
     }
 
     private fun stopServiceAndRemoveNotification() {
-//        Timber.d("stopServiceAndRemoveNotification")
+        Timber.d("stopServiceAndRemoveNotification")
         notificationManager.cancel(NOTIFICATION_ID)
         stopForeground(true)
         stopSelf()

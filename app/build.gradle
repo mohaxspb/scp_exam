@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 //kotlin
-apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 //new crash reporting
 apply plugin: 'io.fabric'
@@ -113,7 +113,7 @@ android {
                 buildConfigField('String', 'USER', '"' + properties.get("user") + '"')
                 buildConfigField('String', 'PASSWORD', '"' + properties.get("password") + '"')
                 //google server_client_id
-                buildConfigField('String', 'SERVER_GOOGLE_CLIENT_ID','"' + properties.get("serverGoogleClientId") + '"')
+                buildConfigField('String', 'SERVER_GOOGLE_CLIENT_ID', '"' + properties.get("serverGoogleClientId") + '"')
 
                 buildConfigField('String', 'CLIENT_ID', '"' + properties.get("clientId") + '"')
                 buildConfigField('String', 'CLIENT_SECRET', '"' + properties.get("clientSecret") + '"')

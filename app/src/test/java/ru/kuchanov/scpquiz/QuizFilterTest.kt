@@ -24,7 +24,7 @@ class QuizFilterTest {
     fun quizFilter_emptyList() {
         val quizesToTest = mutableListOf<NwQuiz>()
 
-        val filteredQuizes = quizFilter.filterQuizes(quizesToTest)
+        val filteredQuizes = quizFilter.filterQuizzes(quizesToTest)
 
         assertTrue(filteredQuizes.isEmpty())
     }
@@ -43,7 +43,7 @@ class QuizFilterTest {
         val quiz1 = createQuiz(true, listOf(translation1))
         quizesToTest += quiz1
 
-        val filteredQuizes = quizFilter.filterQuizes(quizesToTest)
+        val filteredQuizes = quizFilter.filterQuizzes(quizesToTest)
 
         assertTrue(filteredQuizes.size == 2)
         filteredQuizes.forEach { quiz ->
@@ -64,7 +64,7 @@ class QuizFilterTest {
         val quiz1 = createQuiz(true, listOf())
         quizesToTest.add(quiz1)
 
-        val filteredQuizes = quizFilter.filterQuizes(quizesToTest)
+        val filteredQuizes = quizFilter.filterQuizzes(quizesToTest)
 
         assertTrue(filteredQuizes.isEmpty())
     }
@@ -81,7 +81,7 @@ class QuizFilterTest {
         val quiz1 = createQuiz(true, listOf(translation1))
         quizesToTest.add(quiz1)
 
-        val filteredQuizes = quizFilter.filterQuizes(quizesToTest)
+        val filteredQuizes = quizFilter.filterQuizzes(quizesToTest)
 
         assertTrue(filteredQuizes.isEmpty())
     }
@@ -95,7 +95,7 @@ class QuizFilterTest {
         val quiz0 = createQuiz(true, listOf(translation0))
         quizesToTest.add(quiz0)
 
-        val filteredQuizes = quizFilter.filterQuizes(quizesToTest)
+        val filteredQuizes = quizFilter.filterQuizzes(quizesToTest)
 
         assertTrue(filteredQuizes.isEmpty())
     }
@@ -113,7 +113,7 @@ class QuizFilterTest {
         val quiz0 = createQuiz(true, listOf(translation0, translation1))
         quizesToTest.add(quiz0)
 
-        val filteredQuizes = quizFilter.filterQuizes(quizesToTest)
+        val filteredQuizes = quizFilter.filterQuizzes(quizesToTest)
 
         assertTrue(filteredQuizes.size == 1)
     }
@@ -127,7 +127,7 @@ class QuizFilterTest {
         val quiz0 = createQuiz(true, listOf(translation0))
         quizesToTest.add(quiz0)
 
-        val filteredQuizes = quizFilter.filterQuizes(quizesToTest)
+        val filteredQuizes = quizFilter.filterQuizzes(quizesToTest)
 
         assertTrue(filteredQuizes.isEmpty())
     }
@@ -142,7 +142,7 @@ class QuizFilterTest {
         val quiz0 = createQuiz(true, listOf(translation0))
         quizesToTest.add(quiz0)
 
-        val filteredQuizes = quizFilter.filterQuizes(quizesToTest)
+        val filteredQuizes = quizFilter.filterQuizzes(quizesToTest)
 
         assertTrue(filteredQuizes.size == 1)
     }
