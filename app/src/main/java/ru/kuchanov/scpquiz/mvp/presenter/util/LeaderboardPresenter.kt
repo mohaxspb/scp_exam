@@ -88,4 +88,8 @@ class LeaderboardPresenter @Inject constructor(
         getLeaderboard()
         getCurrentPositionInLeaderboard()
     }
+
+    fun onBackClicked() {
+        router.exit()
+    }
 }

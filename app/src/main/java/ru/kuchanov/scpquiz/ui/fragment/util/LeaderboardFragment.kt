@@ -1,6 +1,7 @@
 package ru.kuchanov.scpquiz.ui.fragment.util
 
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
@@ -49,6 +50,14 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        with(activity as AppCompatActivity) {
+            setSupportActionBar(toolbar)
+            supportActionBar?.let {
+                it.setDisplayHomeAsUpEnabled(true)
+                it.setHomeButtonEnabled(true)
+            }
+        }
+        toolbar.setNavigationOnClickListener { presenter.onBackClicked() }
 
         if (preferenceManager.getTrueAccessToken() == null) {
             itemUserInLeaderboardView.visibility = View.GONE
