@@ -25,7 +25,6 @@ import javax.inject.Inject
 
 
 class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(), LeaderboardView {
-
     override val translucent = false
 
     override val scopes: Array<String> = arrayOf()
@@ -50,6 +49,7 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         if (preferenceManager.getTrueAccessToken() == null) {
             itemUserInLeaderboardView.visibility = View.GONE
         } else {
@@ -58,10 +58,15 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
             faceBookImage.visibility = View.GONE
         }
         initRecyclerView()
+        swipeRefresher.setOnRefreshListener { presenter.showLeaderboard() }
     }
 
     override fun showProgress(show: Boolean) {
         progressView.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    override fun showSwipeProgressBar(showSwipeProgressBar: Boolean) {
+        swipeRefresher.isRefreshing = showSwipeProgressBar
     }
 
     override fun showLeaderboard(users: List<UserLeaderboardViewModel>) {

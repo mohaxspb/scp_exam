@@ -32,8 +32,7 @@ class LeaderboardPresenter @Inject constructor(
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        getLeaderboard()
-        getCurrentPositionInLeaderboard()
+        showLeaderboard()
     }
 
     private fun getLeaderboard() {
@@ -49,6 +48,8 @@ class LeaderboardPresenter @Inject constructor(
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { viewState.showSwipeProgressBar(true) }
+                .doOnEvent { _, _ -> viewState.showSwipeProgressBar(false) }
                 .subscribeBy(
                         onSuccess = { viewState.showLeaderboard(it) },
                         onError = {
@@ -70,6 +71,8 @@ class LeaderboardPresenter @Inject constructor(
             )
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe { viewState.showSwipeProgressBar(true) }
+                    .doOnEvent { _, _ -> viewState.showSwipeProgressBar(false) }
                     .subscribeBy(
                             onSuccess = { viewState.showUserPosition(it.first, it.second) },
                             onError = {
@@ -79,5 +82,10 @@ class LeaderboardPresenter @Inject constructor(
                     )
                     .addTo(compositeDisposable)
         }
+    }
+
+    fun showLeaderboard() {
+        getLeaderboard()
+        getCurrentPositionInLeaderboard()
     }
 }

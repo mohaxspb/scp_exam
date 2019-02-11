@@ -6,27 +6,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerViewLeaderboard"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresher"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintVertical_weight="1"
-        app:layout_constraintBottom_toTopOf="@+id/barrier"
+        app:layout_constraintBottom_toTopOf="@+id/itemUserInLeaderboardView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:itemCount="15"
-        tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_leaderboard" />
+        app:layout_constraintVertical_weight="1">
 
-    <android.support.constraint.Barrier
-        android:id="@+id/barrier"
-        android:layout_width="0dp"
-        app:barrierDirection="top"
-        android:layout_height="0dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:constraint_referenced_ids="recyclerViewLeaderboard"/>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewLeaderboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:itemCount="15"
+            tools:layoutManager="android.support.v7.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_leaderboard" />
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
     <ImageView
         android:id="@+id/vkImage"
@@ -47,11 +45,11 @@
         android:layout_marginBottom="@dimen/defaultMargin"
         android:gravity="center"
         android:padding="@dimen/defaultMarginSmall"
+
         android:src="@drawable/ic_google"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/barrier"
         tools:ignore="ContentDescription" />
 
     <ImageView
@@ -70,17 +68,18 @@
         layout="@layout/item_leaderboard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/defaultMargin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/barrier" />
+        app:layout_constraintTop_toBottomOf="@+id/swipeRefresher" />
 
     <FrameLayout
         android:id="@+id/progressView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
         <ProgressBar
             android:layout_width="wrap_content"
