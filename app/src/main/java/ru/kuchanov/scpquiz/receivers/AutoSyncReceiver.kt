@@ -7,14 +7,22 @@ import android.content.Context
 import android.content.Intent
 import android.support.v4.content.ContextCompat
 import ru.kuchanov.scpquiz.Constants
+import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.services.PeriodicallySyncService
+import javax.inject.Inject
 
 
 class AutoSyncReceiver : BroadcastReceiver() {
 
+    @Inject
+    lateinit var preferences: MyPreferenceManager
+
     override fun onReceive(context: Context, intent: Intent) {
-        val serviceIntent = Intent(context, PeriodicallySyncService::class.java)
-        ContextCompat.startForegroundService(context, serviceIntent)
+
+        if (preferences.getTrueAccessToken() != null) {
+            val serviceIntent = Intent(context, PeriodicallySyncService::class.java)
+            ContextCompat.startForegroundService(context, serviceIntent)
+        }
     }
 
     companion object {
