@@ -7,14 +7,18 @@ import android.content.Context
 import android.content.Intent
 import android.support.v4.content.ContextCompat
 import ru.kuchanov.scpquiz.Constants
+import ru.kuchanov.scpquiz.services.DownloadService
 import ru.kuchanov.scpquiz.services.PeriodicallySyncService
 
 
 class AutoSyncReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
-        val serviceIntent = Intent(context, PeriodicallySyncService::class.java)
-        ContextCompat.startForegroundService(context, serviceIntent)
+        val periodicallyServiceIntent = Intent(context, PeriodicallySyncService::class.java)
+        ContextCompat.startForegroundService(context, periodicallyServiceIntent)
+
+        val downloadServiceIntent = Intent(context, DownloadService::class.java)
+        ContextCompat.startForegroundService(context, downloadServiceIntent)
     }
 
     companion object {
