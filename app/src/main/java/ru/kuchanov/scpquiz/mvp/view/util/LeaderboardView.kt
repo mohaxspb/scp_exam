@@ -9,4 +9,6 @@ interface LeaderboardView : BaseView {
     fun showLeaderboard(users: List<UserLeaderboardViewModel>)
     fun showUserPosition(user: NwUser, position: Int)
     fun showSwipeProgressBar(showSwipeProgressBar: Boolean)
+    fun showBottomProgress(showBottomProgress: Boolean)
+    fun enableScrollListener(enableScrollListener: Boolean)
 }

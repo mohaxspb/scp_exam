@@ -8,6 +8,7 @@ import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.UserLeaderboardViewModel
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
@@ -18,6 +19,7 @@ import ru.kuchanov.scpquiz.model.api.NwUser
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.util.LeaderboardView
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @InjectViewState
@@ -30,13 +32,15 @@ class LeaderboardPresenter @Inject constructor(
         override var transactionInteractor: TransactionInteractor
 ) : BasePresenter<LeaderboardView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor) {
 
+    val userList = mutableListOf<UserLeaderboardViewModel>()
+
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        showLeaderboard()
+        showLeaderboard(Constants.OFFSET_ZERO)
     }
 
-    private fun getLeaderboard() {
-        apiClient.getLeaderboard(0, 50)
+    fun getLeaderboard(offset: Int) {
+        apiClient.getLeaderboard(offset, Constants.LIMIT_PAGE)
                 .map {
                     it.map { nwUser ->
                         UserLeaderboardViewModel(
@@ -46,12 +50,30 @@ class LeaderboardPresenter @Inject constructor(
                         )
                     }
                 }
+                .delay(650, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { viewState.showSwipeProgressBar(true) }
-                .doOnEvent { _, _ -> viewState.showSwipeProgressBar(false) }
+                .doOnSubscribe {
+                    viewState.enableScrollListener(false)
+                    if (offset > 0) {
+                        viewState.showBottomProgress(true)
+                    } else {
+                        viewState.showSwipeProgressBar(true)
+                    }
+                }
+                .doOnEvent { _, _ ->
+                    viewState.enableScrollListener(true)
+                    viewState.showBottomProgress(false)
+                    viewState.showSwipeProgressBar(false)
+                }
                 .subscribeBy(
-                        onSuccess = { viewState.showLeaderboard(it) },
+                        onSuccess = {
+                            if (offset == 0) {
+                                userList.clear()
+                            }
+                            userList.addAll(it)
+                            viewState.showLeaderboard(userList)
+                        },
                         onError = {
                             Timber.e(it)
                             viewState.showMessage(it.toString())
@@ -60,7 +82,7 @@ class LeaderboardPresenter @Inject constructor(
                 .addTo(compositeDisposable)
     }
 
-    private fun getCurrentPositionInLeaderboard() {
+    fun getCurrentPositionInLeaderboard() {
         if (preferences.getTrueAccessToken() != null) {
             Single.zip(
                     apiClient.getNwUser(),
@@ -84,8 +106,8 @@ class LeaderboardPresenter @Inject constructor(
         }
     }
 
-    fun showLeaderboard() {
-        getLeaderboard()
+    fun showLeaderboard(offset: Int) {
+        getLeaderboard(offset)
         getCurrentPositionInLeaderboard()
     }
 

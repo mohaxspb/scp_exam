@@ -10,6 +10,8 @@ import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import kotlinx.android.synthetic.main.fragment_leaderboard.*
 import kotlinx.android.synthetic.main.item_leaderboard.view.*
+import ru.kuchanov.scpquiz.Constants
+import ru.kuchanov.scpquiz.EndlessRecyclerViewScrollListener
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.LeaderboardDelegate
@@ -20,12 +22,14 @@ import ru.kuchanov.scpquiz.mvp.presenter.util.LeaderboardPresenter
 import ru.kuchanov.scpquiz.mvp.view.util.LeaderboardView
 import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
+import ru.kuchanov.scpquiz.utils.DimensionUtils
 import toothpick.Toothpick
 import toothpick.config.Module
 import javax.inject.Inject
 
 
 class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(), LeaderboardView {
+
     override val translucent = false
 
     override val scopes: Array<String> = arrayOf()
@@ -67,7 +71,7 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
             faceBookImage.visibility = View.GONE
         }
         initRecyclerView()
-        swipeRefresher.setOnRefreshListener { presenter.showLeaderboard() }
+        swipeRefresher.setOnRefreshListener { presenter.showLeaderboard(Constants.OFFSET_ZERO) }
     }
 
     override fun showProgress(show: Boolean) {
@@ -75,12 +79,29 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
     }
 
     override fun showSwipeProgressBar(showSwipeProgressBar: Boolean) {
+        swipeRefresher.setProgressViewEndTarget(false, DimensionUtils.getActionBarHeight(activity!!))
         swipeRefresher.isRefreshing = showSwipeProgressBar
     }
 
     override fun showLeaderboard(users: List<UserLeaderboardViewModel>) {
         adapter.items = users
         adapter.notifyDataSetChanged()
+    }
+
+    override fun showBottomProgress(showBottomProgress: Boolean) {
+        swipeRefresher.setProgressViewEndTarget(false, DimensionUtils.getScreenHeight() - DimensionUtils.getActionBarHeight(activity!!) * 3)
+        swipeRefresher.isRefreshing = showBottomProgress
+    }
+
+    override fun enableScrollListener(enableScrollListener: Boolean) {
+        recyclerViewLeaderboard.clearOnScrollListeners()
+        if (enableScrollListener) {
+            recyclerViewLeaderboard.addOnScrollListener(object : EndlessRecyclerViewScrollListener() {
+                override fun onLoadMore(page: Int, totalItemsCount: Int) {
+                    presenter.getLeaderboard(adapter.itemCount)
+                }
+            })
+        }
     }
 
     override fun showUserPosition(user: NwUser, position: Int) {
