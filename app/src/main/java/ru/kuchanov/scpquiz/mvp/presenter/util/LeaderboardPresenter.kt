@@ -32,7 +32,7 @@ class LeaderboardPresenter @Inject constructor(
         override var transactionInteractor: TransactionInteractor
 ) : BasePresenter<LeaderboardView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor) {
 
-    val userList = mutableListOf<UserLeaderboardViewModel>()
+    private val userList = mutableListOf<UserLeaderboardViewModel>()
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -82,7 +82,7 @@ class LeaderboardPresenter @Inject constructor(
                 .addTo(compositeDisposable)
     }
 
-    fun getCurrentPositionInLeaderboard() {
+    private fun getCurrentPositionInLeaderboard() {
         if (preferences.getTrueAccessToken() != null) {
             Single.zip(
                     apiClient.getNwUser(),
