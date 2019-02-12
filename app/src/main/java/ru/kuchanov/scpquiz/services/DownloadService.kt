@@ -73,7 +73,7 @@ class DownloadService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-//        Timber.d("Service started")
+        Timber.d("Service started")
         Maybe
                 .fromCallable {
                     if (appDatabase.quizDao().getCount() == 0L) {
