@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.ui.fragment.util
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -21,6 +22,7 @@ import ru.kuchanov.scpquiz.model.api.NwUser
 import ru.kuchanov.scpquiz.mvp.presenter.util.LeaderboardPresenter
 import ru.kuchanov.scpquiz.mvp.view.util.LeaderboardView
 import ru.kuchanov.scpquiz.ui.BaseFragment
+import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.utils.DimensionUtils
 import toothpick.Toothpick
@@ -35,6 +37,8 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
     override val scopes: Array<String> = arrayOf()
 
     override val modules: Array<Module> = arrayOf()
+
+    private lateinit var authDelegate: AuthDelegate<LeaderboardFragment>
 
     @Inject
     lateinit var preferenceManager: MyPreferenceManager
@@ -72,6 +76,36 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
         }
         initRecyclerView()
         swipeRefresher.setOnRefreshListener { presenter.showLeaderboard(Constants.OFFSET_ZERO) }
+
+        authDelegate = AuthDelegate(
+                this,
+                presenter,
+                presenter.apiClient,
+                presenter.preferences
+        )
+
+        val onVkLoginClickListener: (View) -> Unit = { presenter.onVkLoginClicked() }
+        vkImage.setOnClickListener(onVkLoginClickListener)
+
+        val onFacebookLoginClickListener: (View) -> Unit = { presenter.onFacebookLoginClicked() }
+        faceBookImage.setOnClickListener(onFacebookLoginClickListener)
+
+        val onGoogleLoginClickListener: (View) -> Unit = { presenter.onGoogleLoginClicked() }
+        googleImage.setOnClickListener(onGoogleLoginClickListener)
+
+        presenter.authDelegate = authDelegate
+        activity?.let { authDelegate.onViewCreated(it) }
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        presenter.onActivityResult(requestCode, resultCode, data)
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        authDelegate.onPause()
     }
 
     override fun showProgress(show: Boolean) {
@@ -98,7 +132,11 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
         if (enableScrollListener) {
             recyclerViewLeaderboard.addOnScrollListener(object : EndlessRecyclerViewScrollListener() {
                 override fun onLoadMore(page: Int, totalItemsCount: Int) {
-                    presenter.getLeaderboard(adapter.itemCount)
+                    if (adapter.itemCount % Constants.LIMIT_PAGE != 0) {
+                        enableScrollListener(false)
+                    } else {
+                        presenter.getLeaderboard(adapter.itemCount)
+                    }
                 }
             })
         }
