@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.services.PeriodicallySyncService
+import toothpick.Toothpick
 import javax.inject.Inject
 
 
@@ -18,6 +19,7 @@ class AutoSyncReceiver : BroadcastReceiver() {
     lateinit var preferences: MyPreferenceManager
 
     override fun onReceive(context: Context, intent: Intent) {
+        Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
 
         if (preferences.getTrueAccessToken() != null) {
             val serviceIntent = Intent(context, PeriodicallySyncService::class.java)
@@ -42,5 +44,3 @@ class AutoSyncReceiver : BroadcastReceiver() {
         }
     }
 }
-
-
