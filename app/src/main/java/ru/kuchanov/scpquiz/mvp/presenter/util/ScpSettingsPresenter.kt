@@ -6,6 +6,7 @@ import com.arellomobile.mvp.InjectViewState
 import com.google.android.gms.ads.MobileAds
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
@@ -77,39 +78,37 @@ class ScpSettingsPresenter @Inject constructor(
         preferences.setRefreshToken(null)
         preferences.setUserPassword(null)
         preferences.setNeverShowAuth(false)
-        compositeDisposable.add(
-                appDatabase.userDao().getOneByRole(UserRole.PLAYER)
-                        .map { user ->
-                            user.score = 0
-                            user.avatarUrl = null
-                            user.name = generateRandomName(appContext)
-                            appDatabase.userDao().update(user)
+        appDatabase.userDao().getOneByRole(UserRole.PLAYER)
+                .map { user ->
+                    user.score = 0
+                    user.avatarUrl = null
+                    user.name = generateRandomName(appContext)
+                    appDatabase.userDao().update(user)
 //                            Timber.d("USER : %s", user)
-                        }
-                        .map { appDatabase.transactionDao().deleteAll() }
-                        .flatMap { appDatabase.finishedLevelsDao().getAllByAsc() }
-                        .map { finishedLevels ->
-                            appDatabase.finishedLevelsDao().update(finishedLevels.mapIndexed { index, it ->
-                                it.apply {
-                                    scpNameFilled = false
-                                    scpNumberFilled = false
-                                    nameRedundantCharsRemoved = false
-                                    numberRedundantCharsRemoved = false
-                                    isLevelAvailable = index < 5
+                }
+                .map { appDatabase.transactionDao().deleteAll() }
+                .flatMap { appDatabase.finishedLevelsDao().getAllByAsc() }
+                .map { finishedLevels ->
+                    appDatabase.finishedLevelsDao().update(finishedLevels.mapIndexed { index, it ->
+                        it.apply {
+                            scpNameFilled = false
+                            scpNumberFilled = false
+                            nameRedundantCharsRemoved = false
+                            numberRedundantCharsRemoved = false
+                            isLevelAvailable = index < 5
 //                                    Timber.d("FINISHED LEVEL : %s", it)
-                                }
-                            })
                         }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeBy(
-                                onSuccess = { router.newRootScreen(Constants.Screens.ENTER) },
-                                onError = {
-                                    Timber.e(it)
-                                    viewState.showMessage(it.message.toString())
-                                }
-                        )
-        )
+                    })
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onSuccess = { router.newRootScreen(Constants.Screens.ENTER) },
+                        onError = {
+                            Timber.e(it)
+                            viewState.showMessage(it.message.toString())
+                        }
+                ).addTo(compositeDisposable)
     }
 
     fun onResetProgressClicked() {
@@ -118,51 +117,49 @@ class ScpSettingsPresenter @Inject constructor(
         } else {
             apiClient.resetProgress()
         }
-        compositeDisposable.add(
-                resetProgressSingle
-                        .flatMapCompletable { score ->
-                            appDatabase
-                                    .userDao()
-                                    .getOneByRole(UserRole.PLAYER)
-                                    .doOnSuccess { user ->
-                                        user.score = score
-                                        appDatabase.userDao().update(user)
-                                    }
-                                    .ignoreElement()
-                        }
-                        .andThen(
-                                appDatabase
-                                        .finishedLevelsDao()
-                                        .getAllByAsc()
-                                        .map { finishedLevels ->
-                                            appDatabase
-                                                    .finishedLevelsDao()
-                                                    .update(finishedLevels.mapIndexed { index, finishedLevel ->
-                                                        finishedLevel.apply {
-                                                            scpNameFilled = false
-                                                            scpNumberFilled = false
-                                                            nameRedundantCharsRemoved = false
-                                                            numberRedundantCharsRemoved = false
-                                                            isLevelAvailable = index < 5
-                                                        }
-                                                    })
-                                        }
-                                        .doOnSuccess { appDatabase.transactionDao().resetProgress() }
-                        )
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnSubscribe { viewState.showProgress(true) }
-                        .doOnEvent { _, _ -> viewState.showProgress(false) }
-                        .subscribeBy(
-                                onSuccess = {
-                                    viewState.showMessage(R.string.reset_progress_user_message)
-                                },
-                                onError = {
-                                    Timber.e(it)
-                                    viewState.showMessage(it.toString())
+        resetProgressSingle
+                .flatMapCompletable { score ->
+                    appDatabase
+                            .userDao()
+                            .getOneByRole(UserRole.PLAYER)
+                            .doOnSuccess { user ->
+                                user.score = score
+                                appDatabase.userDao().update(user)
+                            }
+                            .ignoreElement()
+                }
+                .andThen(
+                        appDatabase
+                                .finishedLevelsDao()
+                                .getAllByAsc()
+                                .map { finishedLevels ->
+                                    appDatabase
+                                            .finishedLevelsDao()
+                                            .update(finishedLevels.mapIndexed { index, finishedLevel ->
+                                                finishedLevel.apply {
+                                                    scpNameFilled = false
+                                                    scpNumberFilled = false
+                                                    nameRedundantCharsRemoved = false
+                                                    numberRedundantCharsRemoved = false
+                                                    isLevelAvailable = index < 5
+                                                }
+                                            })
                                 }
-                        )
-        )
+                                .doOnSuccess { appDatabase.transactionDao().resetProgress() }
+                )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { viewState.showProgress(true) }
+                .doOnEvent { _, _ -> viewState.showProgress(false) }
+                .subscribeBy(
+                        onSuccess = {
+                            viewState.showMessage(R.string.reset_progress_user_message)
+                        },
+                        onError = {
+                            Timber.e(it)
+                            viewState.showMessage(it.toString())
+                        }
+                ).addTo(compositeDisposable)
     }
 
     fun onPrivacyPolicyClicked() = IntentUtils.openUrl(appContext, Constants.PRIVACY_POLICY_URL)

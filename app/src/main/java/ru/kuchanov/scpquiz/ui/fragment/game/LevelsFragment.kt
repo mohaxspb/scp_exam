@@ -55,6 +55,8 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
 
         initRecyclerView()
 
+        leaderboardButton.setOnClickListener { presenter.onLeaderboardButtonClicked() }
+
         coinsButton.setOnClickListener { presenter.onCoinsClicked() }
 
         hamburgerButton.setOnClickListener { presenter.onHamburgerMenuClicked() }

@@ -19,6 +19,7 @@ import ru.kuchanov.scpquiz.ui.fragment.game.LevelsFragment
 import ru.kuchanov.scpquiz.ui.fragment.intro.EnterFragment
 import ru.kuchanov.scpquiz.ui.fragment.intro.IntroDialogFragment
 import ru.kuchanov.scpquiz.ui.fragment.monetization.MonetizationFragment
+import ru.kuchanov.scpquiz.ui.fragment.util.LeaderboardFragment
 import ru.kuchanov.scpquiz.ui.fragment.util.ScpSettingsFragment
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.android.SupportAppNavigator
@@ -52,6 +53,7 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
                 Constants.Screens.SETTINGS -> ScpSettingsFragment.newInstance()
                 Constants.Screens.INTRO_DIALOG -> IntroDialogFragment.newInstance()
                 Constants.Screens.MONETIZATION -> MonetizationFragment.newInstance()
+                Constants.Screens.LEADERBOARD -> LeaderboardFragment.newInstance()
                 else -> null
             }
         }

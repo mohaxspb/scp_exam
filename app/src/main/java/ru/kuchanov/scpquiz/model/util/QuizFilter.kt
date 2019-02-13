@@ -6,17 +6,17 @@ import javax.inject.Inject
 class QuizFilter @Inject constructor() {
 
     /**
-     * remove all quizes which not approved
-     * remove all quizes with no approved translations
+     * remove all quizzes which not approved
+     * remove all quizzes with no approved translations
      * remove all translation which not approved
      * remove all translations with no approved phrases
      * remove all phrases which not approved
      */
-    fun filterQuizes(quizes: List<NwQuiz>): List<NwQuiz> {
-        var filteredQuizes = quizes.toMutableList()
+    fun filterQuizzes(quizzes: List<NwQuiz>): List<NwQuiz> {
+        var filteredQuizzes = quizzes.toMutableList()
 
         //remove all phrases which not approved
-        filteredQuizes.forEach { quiz ->
+        filteredQuizzes.forEach { quiz ->
             quiz.quizTranslations.map { translation ->
                 translation.apply {
                     quizTranslationPhrases = quizTranslationPhrases
@@ -26,27 +26,27 @@ class QuizFilter @Inject constructor() {
             }
         }
         //remove all translations with no approved phrases
-        filteredQuizes.forEach { quiz ->
+        filteredQuizzes.forEach { quiz ->
             quiz.quizTranslations = quiz.quizTranslations
                     .filter { it.quizTranslationPhrases.isNotEmpty() }
                     .toMutableList()
         }
         //remove all translation which not approved
-        filteredQuizes.forEach { quiz ->
+        filteredQuizzes.forEach { quiz ->
             quiz.quizTranslations = quiz.quizTranslations
                     .filter { it.approved }
                     .toMutableList()
         }
         //remove all quizes with no approved translations
-        filteredQuizes = filteredQuizes
+        filteredQuizzes = filteredQuizzes
                 .filter { it.quizTranslations.isNotEmpty() }
                 .toMutableList()
 
         //remove all quizes which not approved
-        filteredQuizes = filteredQuizes
+        filteredQuizzes = filteredQuizzes
                 .filter { it.approved }
                 .toMutableList()
 
-        return filteredQuizes
+        return filteredQuizzes
     }
 }

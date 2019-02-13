@@ -38,6 +38,7 @@ object Constants {
         const val QUIZ = "QUIZ"
         const val INTRO_DIALOG = "INTRO_DIALOG"
         const val MONETIZATION = "MONETIZATION"
+        const val LEADERBOARD = "LEADERBOARD"
     }
 
     object Api {
@@ -59,5 +60,7 @@ object Constants {
     }
 
     const val GAME = "GAME"
+    const val LIMIT_PAGE = 50
     const val SYNC_PERIOD = (1000 * 60 * 120).toLong()
+    const val OFFSET_ZERO = 0
 }
