@@ -88,20 +88,33 @@ class DownloadService : Service() {
                     }
                 }
                 .flatMap { apiClient.getNwQuizList().toMaybe() }
-                .map { quizFilter.filterQuizzes(it) }
-                .map { quizzes -> quizzes.sortedBy { it.id } }
-//                .map { sortedQuizList ->
-//                    val quizzesFromBd = appDatabase.quizDao().getAllList()
-//                    quizzesFromBd.forEach { quizFromDb ->
-//                        val quizFromDbInListFromServer = sortedQuizList.find { it.id == quizFromDb.id }
-//                        if (quizFromDbInListFromServer == null) {
-//                            appDatabase.transactionDao().deleteAllTransactionsByQuizId(quizFromDb.id)
-//                            appDatabase.finishedLevelsDao().deleteAllFinishedLevelsByQuizId(quizFromDb.id)
-//                            appDatabase.quizDao().delete(quizFromDb)
-//                        }
-//                    }
-//                    return@map sortedQuizList
-//                }
+                .map {
+                    Timber.d("apiClient.getNwQuizList().toMaybe() :%s", it)
+                    quizFilter.filterQuizzes(it)
+                }
+                .map { quizzes ->
+                    Timber.d("quizFilter.filterQuizzes(it) :%s", quizzes)
+                    quizzes.sortedBy { it.id }
+                }
+                .map { sortedQuizList ->
+                    Timber.d("sortedQuizList :%s", sortedQuizList)
+                    val quizzesFromBd = appDatabase.quizDao().getAllList()
+                    Timber.d("quizzesFromDb :%s", quizzesFromBd)
+                    quizzesFromBd.forEach { quizFromDb ->
+                        Timber.d("quizFromDb :%s", quizFromDb)
+                        val quizFromDbInListFromServer = sortedQuizList.find {
+                            Timber.d("NwQuizInFind :%s", it)
+                            Timber.d("quizFromDbInFind :%s", quizFromDb)
+                            it.id == quizFromDb.id }
+                        Timber.d("quizFromDbInListFromServer :%s", quizFromDbInListFromServer)
+                        if (quizFromDbInListFromServer == null) {
+                            appDatabase.transactionDao().deleteAllTransactionsByQuizId(quizFromDb.id)
+                            appDatabase.finishedLevelsDao().deleteAllFinishedLevelsByQuizId(quizFromDb.id)
+                            appDatabase.quizDao().delete(quizFromDb)
+                        }
+                    }
+                    return@map sortedQuizList
+                }
                 .doOnSuccess { quizzes ->
                     appDatabase
                             .quizDao()
