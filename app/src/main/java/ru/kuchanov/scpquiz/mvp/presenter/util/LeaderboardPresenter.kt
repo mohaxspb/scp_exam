@@ -101,7 +101,7 @@ class LeaderboardPresenter @Inject constructor(
                 .addTo(compositeDisposable)
     }
 
-    private fun getCurrentPositionInLeaderboard() {
+    fun getCurrentPositionInLeaderboard() {
         if (preferences.getTrueAccessToken() != null) {
             Single.zip(
                     apiClient.getNwUser(),
@@ -113,12 +113,19 @@ class LeaderboardPresenter @Inject constructor(
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe {
-                        //TODO show progressBar - hide UI etc..
-                        viewState.showSwipeProgressBar(true) }
-                    .doOnEvent { _, _ -> viewState.showSwipeProgressBar(false) }
+                        viewState.showCurrentUserUI(false)
+                        viewState.showSwipeProgressBar(true)
+                    }
+                    .doOnEvent { _, _ ->
+                        viewState.showSwipeProgressBar(false)
+                    }
                     .subscribeBy(
-                            onSuccess = { viewState.showUserPosition(it.first, it.second) },
+                            onSuccess = {
+                                viewState.showCurrentUserUI(true)
+                                viewState.showUserPosition(it.first, it.second)
+                            },
                             onError = {
+                                viewState.showCurrentUserUI(false)
                                 Timber.e(it)
                                 viewState.showMessage(it.toString())
                             }

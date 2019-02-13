@@ -74,6 +74,8 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
             vkImage.visibility = View.GONE
             faceBookImage.visibility = View.GONE
         }
+
+        retryGetCurrentUserImage.setOnClickListener { presenter.getCurrentPositionInLeaderboard() }
         initRecyclerView()
         swipeRefresher.setOnRefreshListener { presenter.showLeaderboard(Constants.OFFSET_ZERO) }
 
@@ -110,6 +112,16 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
 
     override fun showProgress(show: Boolean) {
         progressView.visibility = if (show) View.VISIBLE else View.GONE
+    }
+
+    override fun showCurrentUserUI(showCurrentUserUI: Boolean) {
+        if (showCurrentUserUI) {
+            itemUserInLeaderboardView.visibility = View.VISIBLE
+            retryGetCurrentUserImage.visibility = View.GONE
+        } else {
+            itemUserInLeaderboardView.visibility = View.GONE
+            retryGetCurrentUserImage.visibility = View.VISIBLE
+        }
     }
 
     override fun showSwipeProgressBar(showSwipeProgressBar: Boolean) {

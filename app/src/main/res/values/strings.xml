@@ -119,6 +119,7 @@
     <string name="attention">Attention!</string>
     <string name="i_accept">I accept</string>
     <string name="leaderboard">Leaderboard</string>
+    <string name="retryGetYourPosition">Retry get your position</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>
