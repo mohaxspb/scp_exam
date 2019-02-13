@@ -13,4 +13,5 @@ interface LeaderboardView : BaseView, AuthView {
     fun showBottomProgress(showBottomProgress: Boolean)
     fun enableScrollListener(enableScrollListener: Boolean)
     fun showCurrentUserUI(showCurrentUserUI: Boolean)
+    fun showCurrentUserProgressBar(showCurrentUserProgressBar: Boolean)
 }

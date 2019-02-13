@@ -114,10 +114,10 @@ class LeaderboardPresenter @Inject constructor(
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe {
                         viewState.showCurrentUserUI(false)
-                        viewState.showSwipeProgressBar(true)
+                        viewState.showCurrentUserProgressBar(true)
                     }
                     .doOnEvent { _, _ ->
-                        viewState.showSwipeProgressBar(false)
+                        viewState.showCurrentUserProgressBar(false)
                     }
                     .subscribeBy(
                             onSuccess = {
