@@ -8,5 +8,7 @@ data class NwUser(
         //content
         val fullName: String? = null,
         val avatar: String? = null,
-        val score: Int = 0
+        val score: Int = 0,
+        val fullCompleteLevels: Int = 0,
+        val partCompleteLevels: Int = 0
 )

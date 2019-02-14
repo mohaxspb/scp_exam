@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import com.arellomobile.mvp.presenter.InjectPresenter
 import com.arellomobile.mvp.presenter.ProvidePresenter
+import com.bumptech.glide.request.RequestOptions
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import kotlinx.android.synthetic.main.fragment_leaderboard.*
@@ -16,7 +17,7 @@ import ru.kuchanov.scpquiz.EndlessRecyclerViewScrollListener
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.LeaderboardDelegate
-import ru.kuchanov.scpquiz.controller.adapter.viewmodel.UserLeaderboardViewModel
+import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LeaderboardViewModel
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.api.NwUser
 import ru.kuchanov.scpquiz.mvp.presenter.util.LeaderboardPresenter
@@ -118,13 +119,11 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
     }
 
     override fun showCurrentUserUI(showCurrentUserUI: Boolean) {
-        if (showCurrentUserUI) {
-            itemUserInLeaderboardView.visibility = View.VISIBLE
-            retryGetCurrentUserImage.visibility = View.GONE
-        } else {
-            itemUserInLeaderboardView.visibility = View.GONE
-            retryGetCurrentUserImage.visibility = View.VISIBLE
-        }
+        itemUserInLeaderboardView.visibility = if (showCurrentUserUI) View.VISIBLE else View.GONE
+    }
+
+    override fun showRetryButton(showRetryButton: Boolean) {
+        retryGetCurrentUserImage.visibility = if (showRetryButton) View.VISIBLE else View.GONE
     }
 
     override fun showSwipeProgressBar(showSwipeProgressBar: Boolean) {
@@ -132,7 +131,7 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
         swipeRefresher.isRefreshing = showSwipeProgressBar
     }
 
-    override fun showLeaderboard(users: List<UserLeaderboardViewModel>) {
+    override fun showLeaderboard(users: List<LeaderboardViewModel>) {
         adapter.items = users
         adapter.notifyDataSetChanged()
     }
@@ -161,11 +160,13 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
         itemUserInLeaderboardView.userPositionTextView.text = position.toString()
         itemUserInLeaderboardView.userFullNameTextView.text = user.fullName
         itemUserInLeaderboardView.userScoreTextView.text = user.score.toString()
-        GlideApp
-                .with(itemUserInLeaderboardView.userAvatarImageView.context)
-                .load(user.avatar)
-                .placeholder(R.drawable.ic_player)
-                .centerInside()
+
+        val glideRequest = GlideApp.with(itemUserInLeaderboardView.userAvatarImageView.context)
+        when (user.avatar) {
+            null -> glideRequest.load(R.drawable.ic_player)
+            else -> glideRequest.load(user.avatar)
+        }
+                .apply(RequestOptions.circleCropTransform())
                 .into(itemUserInLeaderboardView.userAvatarImageView)
     }
 

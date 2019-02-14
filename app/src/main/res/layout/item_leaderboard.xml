@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,9 +11,12 @@
         android:id="@+id/userPositionTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
         android:padding="@dimen/defaultMargin"
-        android:textColor="@color/colorAccent"
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/userAvatarImageView"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="4" />
 
     <ImageView
@@ -20,6 +24,10 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/userPositionTextView"
+        app:layout_constraintRight_toRightOf="@+id/userFullNameTextView"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription"
         tools:src="@drawable/ic_doctor" />
 
@@ -27,11 +35,40 @@
         android:id="@+id/userFullNameTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="1"
-        android:padding="@dimen/defaultMargin"
+        android:paddingStart="@dimen/defaultMarginSmall"
+        android:paddingEnd="@dimen/defaultMarginSmall"
         android:textColor="@android:color/black"
+        app:layout_constraintBottom_toTopOf="@+id/userFullCompleteLevelsTextView"
+        app:layout_constraintLeft_toRightOf="@+id/userAvatarImageView"
+        app:layout_constraintRight_toLeftOf="@+id/userScoreTextView"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="USERNAME" />
+
+    <TextView
+        android:id="@+id/userFullCompleteLevelsTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/defaultMarginSmall"
+        android:paddingEnd="@dimen/defaultMarginSmall"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toTopOf="@+id/userPartCompleteLevelsTextView"
+        app:layout_constraintLeft_toRightOf="@+id/userAvatarImageView"
+        app:layout_constraintRight_toLeftOf="@+id/userScoreTextView"
+        app:layout_constraintTop_toBottomOf="@+id/userFullNameTextView"
+        tools:text="12 пройденных уровней" />
+
+    <TextView
+        android:id="@+id/userPartCompleteLevelsTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/defaultMarginSmall"
+        android:paddingEnd="@dimen/defaultMarginSmall"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/userAvatarImageView"
+        app:layout_constraintRight_toLeftOf="@+id/userScoreTextView"
+        app:layout_constraintTop_toBottomOf="@+id/userFullCompleteLevelsTextView"
+        tools:text="3 частично пройденных " />
 
     <TextView
         android:id="@+id/userScoreTextView"
@@ -40,6 +77,10 @@
         android:layout_gravity="center_vertical"
         android:padding="@dimen/defaultMargin"
         android:textColor="@color/colorAccent"
-        tools:text="049709470" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/userFullNameTextView"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1111" />
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

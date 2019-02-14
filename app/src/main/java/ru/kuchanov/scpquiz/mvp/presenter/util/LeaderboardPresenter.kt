@@ -11,7 +11,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
-import ru.kuchanov.scpquiz.controller.adapter.viewmodel.UserLeaderboardViewModel
+import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LeaderboardViewModel
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
@@ -37,7 +37,7 @@ class LeaderboardPresenter @Inject constructor(
         override var transactionInteractor: TransactionInteractor
 ) : BasePresenter<LeaderboardView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor), AuthPresenter<LeaderboardFragment> {
 
-    private val userList = mutableListOf<UserLeaderboardViewModel>()
+    private val userList = mutableListOf<LeaderboardViewModel>()
 
     override lateinit var authDelegate: AuthDelegate<LeaderboardFragment>
 
@@ -62,10 +62,12 @@ class LeaderboardPresenter @Inject constructor(
         apiClient.getLeaderboard(offset, Constants.LIMIT_PAGE)
                 .map {
                     it.map { nwUser ->
-                        UserLeaderboardViewModel(
+                        LeaderboardViewModel(
                                 name = nwUser.fullName,
                                 avatarUrl = nwUser.avatar,
-                                score = nwUser.score
+                                score = nwUser.score,
+                                fullCompleteLevels = nwUser.fullCompleteLevels,
+                                partCompleteLevels = nwUser.partCompleteLevels
                         )
                     }
                 }
@@ -115,16 +117,19 @@ class LeaderboardPresenter @Inject constructor(
                     .doOnSubscribe {
                         viewState.showCurrentUserUI(false)
                         viewState.showCurrentUserProgressBar(true)
+                        viewState.showRetryButton(false)
                     }
                     .doOnEvent { _, _ ->
                         viewState.showCurrentUserProgressBar(false)
                     }
                     .subscribeBy(
                             onSuccess = {
+                                viewState.showRetryButton(false)
                                 viewState.showCurrentUserUI(true)
                                 viewState.showUserPosition(it.first, it.second)
                             },
                             onError = {
+                                viewState.showRetryButton(true)
                                 viewState.showCurrentUserUI(false)
                                 Timber.e(it)
                                 viewState.showMessage(it.toString())
