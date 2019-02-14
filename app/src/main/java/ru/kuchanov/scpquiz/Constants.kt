@@ -44,7 +44,6 @@ object Constants {
     object Api {
         const val GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials"
         const val GRANT_TYPE_REFRESH_TOKEN = "refresh_token"
-
         const val HEADER_AUTHORIZATION = "Authorization"
         const val HEADER_PART_BEARER = "Bearer"
     }
