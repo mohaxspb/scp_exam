@@ -1,12 +1,10 @@
 package ru.kuchanov.scpquiz.controller.api
 
 import io.reactivex.Single
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.Header
-import retrofit2.http.POST
+import retrofit2.http.*
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.api.response.TokenResponse
+import ru.kuchanov.scpquiz.model.api.NwUser
 
 interface AuthApi {
 
@@ -36,4 +34,10 @@ interface AuthApi {
             @Field("clientSecret") clientSecret: String,
             @Field("clientApp") clientApp: String
     ): Single<TokenResponse>
+
+    @GET("leaderboard/getLeaderboard")
+    fun getLeaderboard(
+            @Query("offset") offset: Int,
+            @Query("limit") limit: Int
+    ): Single<List<NwUser>>
 }

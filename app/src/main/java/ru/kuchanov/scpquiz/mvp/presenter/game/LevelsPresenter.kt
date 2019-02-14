@@ -199,4 +199,8 @@ class LevelsPresenter @Inject constructor(
             viewState.showMessage(R.string.message_not_enough_coins_level_unlock)
         }
     }
+
+    fun onLeaderboardButtonClicked() {
+        router.navigateTo(Constants.Screens.LEADERBOARD)
+    }
 }

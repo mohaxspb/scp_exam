@@ -57,9 +57,8 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(getLayoutResId(), container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+            inflater.inflate(getLayoutResId(), container, false)
 
     abstract val translucent: Boolean
 
@@ -91,8 +90,8 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
             val w = activity!!.window
             if (translucent) {
                 w.setFlags(
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
                 )
             } else {
                 w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)

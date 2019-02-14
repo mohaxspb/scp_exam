@@ -26,4 +26,7 @@ interface TransactionApi {
     @GET("user/meClient")
     fun getNwUser(): Single<NwUser>
 
+    @GET("leaderboard/currentPosition")
+    fun getCurrentPositionInLeaderboard():Single<Int>
+
 }

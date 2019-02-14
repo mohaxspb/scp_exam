@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout android:id="@+id/root"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -30,6 +30,19 @@
         app:fontFamily="@font/trixie_cyr_plain"
         app:layout_constraintBottom_toBottomOf="@+id/hamburgerButton"
         app:layout_constraintLeft_toRightOf="@+id/hamburgerButton"
+        app:layout_constraintRight_toLeftOf="@+id/getCoinsButton"
+        app:layout_constraintTop_toTopOf="@+id/hamburgerButton" />
+
+    <ImageView
+        android:id="@+id/leaderboardButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@string/leaderboard"
+        android:padding="@dimen/defaultMargin"
+        android:src="@drawable/ic_equalizer_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/hamburgerButton"
+        app:layout_constraintLeft_toRightOf="@+id/levelsTextView"
         app:layout_constraintRight_toLeftOf="@+id/getCoinsButton"
         app:layout_constraintTop_toTopOf="@+id/hamburgerButton" />
 

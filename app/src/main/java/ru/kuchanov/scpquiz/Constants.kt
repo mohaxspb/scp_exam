@@ -38,12 +38,12 @@ object Constants {
         const val QUIZ = "QUIZ"
         const val INTRO_DIALOG = "INTRO_DIALOG"
         const val MONETIZATION = "MONETIZATION"
+        const val LEADERBOARD = "LEADERBOARD"
     }
 
     object Api {
         const val GRANT_TYPE_CLIENT_CREDENTIALS = "client_credentials"
         const val GRANT_TYPE_REFRESH_TOKEN = "refresh_token"
-
         const val HEADER_AUTHORIZATION = "Authorization"
         const val HEADER_PART_BEARER = "Bearer"
     }
@@ -59,5 +59,7 @@ object Constants {
     }
 
     const val GAME = "GAME"
+    const val LIMIT_PAGE = 50
     const val SYNC_PERIOD = (1000 * 60 * 120).toLong()
+    const val OFFSET_ZERO = 0
 }

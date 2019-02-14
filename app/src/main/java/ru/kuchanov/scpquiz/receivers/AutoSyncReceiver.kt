@@ -14,7 +14,6 @@ import ru.kuchanov.scpquiz.services.PeriodicallySyncService
 import toothpick.Toothpick
 import javax.inject.Inject
 
-
 class AutoSyncReceiver : BroadcastReceiver() {
 
     @Inject
