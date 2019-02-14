@@ -105,6 +105,8 @@
     <string name="i_accept">Я согласен</string>
     <string name="leaderboard">Доска почёта</string>
     <string name="retryGetYourPosition">Повторить попытку получить вашу позицию</string>
+    <string name="complete_levels_text">%d пройденных уровней</string>
+    <string name="part_complete_levels_text">%d частично пройденных</string>
 
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>

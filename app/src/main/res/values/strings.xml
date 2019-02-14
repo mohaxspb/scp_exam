@@ -120,6 +120,8 @@
     <string name="i_accept">I accept</string>
     <string name="leaderboard">Leaderboard</string>
     <string name="retryGetYourPosition">Retry get your position</string>
+    <string name="complete_levels_text">%d levels completed</string>
+    <string name="part_complete_levels_text">%d partially completed </string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>
