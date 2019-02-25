@@ -10,5 +10,5 @@ data class MonetizationViewModel(
         val price: String,
         val sku: String? = null,
         val isAlreadyOwned: Boolean,
-        val action: (Unit) -> Unit
+        val action: (String?) -> Unit
 ) : MyListItem

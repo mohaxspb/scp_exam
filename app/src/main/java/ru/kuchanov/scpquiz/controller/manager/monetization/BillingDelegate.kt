@@ -149,10 +149,10 @@ class BillingDelegate(
         }
     }
 
-    fun loadInAppsToBuy(): Single<SkuDetails> =
+    fun loadInAppsToBuy(): Single<List<SkuDetails>> =
             Single
-                    .create<SkuDetails> { emitter ->
-                        val skuList = listOf(Constants.SKU_INAPP_DISABLE_ADS)
+                    .create<List<SkuDetails>> { emitter ->
+                        val skuList = listOf(Constants.SKU_INAPP_DISABLE_ADS, Constants.SKU_INAPP_BUY_COINS_0)
                         val params = SkuDetailsParams.newBuilder()
                                 .setSkusList(skuList)
                                 .setType(BillingClient.SkuType.INAPP)
@@ -161,14 +161,9 @@ class BillingDelegate(
                             billingClient.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
                                 //Timber.d("inapps: $responseCode, $skuDetailsList")
                                 if (responseCode == BillingClient.BillingResponse.OK && skuDetailsList != null) {
-                                    val disableAdsInapp = skuDetailsList.firstOrNull {
-                                        it.sku == Constants.SKU_INAPP_DISABLE_ADS
-                                    }
-                                    if (disableAdsInapp != null) {
-                                        emitter.onSuccess(disableAdsInapp)
-                                    } else {
-                                        emitter.onError(IllegalStateException("skuDetail with sku not found"))
-                                    }
+                                    emitter.onSuccess(skuDetailsList)
+                                } else {
+                                    emitter.onError(IllegalStateException("skuDetail with sku not found"))
                                 }
                             }
                         } else {

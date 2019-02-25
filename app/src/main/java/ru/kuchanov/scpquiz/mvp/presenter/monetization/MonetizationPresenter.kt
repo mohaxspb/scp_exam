@@ -36,7 +36,7 @@ class MonetizationPresenter @Inject constructor(
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor
-) : BasePresenter<MonetizationView>(appContext, preferences, router, appDatabase, apiClient,transactionInteractor) {
+) : BasePresenter<MonetizationView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor) {
 
     var billingDelegate: BillingDelegate? = null
 
@@ -46,9 +46,9 @@ class MonetizationPresenter @Inject constructor(
         billingDelegate?.startConnection()
     }
 
-    private fun buyNoAdsInApp() {
-//        Timber.d("buyNoAdsInApp")
-        billingDelegate?.startPurchaseFlow(Constants.SKU_INAPP_DISABLE_ADS)
+    private fun buyInApp(sku: String) {
+//        Timber.d("buyInApp")
+        billingDelegate?.startPurchaseFlow(sku)
     }
 
     private fun showAppodealAds() {
@@ -68,7 +68,7 @@ class MonetizationPresenter @Inject constructor(
                         .doOnEvent { _, _ -> view?.showProgress(false) }
                         .subscribeBy(
                                 onSuccess = {
-//                                    Timber.d("loadInAppsToBuy force: $it")
+                                    //                                    Timber.d("loadInAppsToBuy force: $it")
                                     onBillingClientReady()
                                 },
                                 onError = {
@@ -90,8 +90,8 @@ class MonetizationPresenter @Inject constructor(
                         appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
                         billingDelegate!!.loadInAppsToBuy().toFlowable(),
                         billingDelegate!!.isHasDisableAdsInApp().toFlowable(),
-                        Function3 { player: User, disableAdsSkuDetails: SkuDetails, isHasDisableAds: Boolean ->
-                            Triple(player, disableAdsSkuDetails, isHasDisableAds)
+                        Function3 { player: User, listSkuDetails: List<SkuDetails>, isHasDisableAds: Boolean ->
+                            Triple(player, listSkuDetails, isHasDisableAds)
                         }
                 )
                 .subscribeOn(Schedulers.io())
@@ -113,14 +113,26 @@ class MonetizationPresenter @Inject constructor(
                                     null,
                                     false
                             ) { showAppodealAds() }
-                            items += MonetizationViewModel(
-                                    R.drawable.ic_adblock,
-                                    appContext.getString(R.string.monetization_action_noads_title),
-                                    appContext.getString(R.string.monetization_action_noads_description),
-                                    it.second.price,
-                                    it.second.sku,
-                                    hasDisableAdsInApp
-                            ) { buyNoAdsInApp() }
+
+                            items += it.second.map { skuDetails ->
+                                MonetizationViewModel(
+                                        if (skuDetails.sku == Constants.SKU_INAPP_DISABLE_ADS) {
+                                            R.drawable.ic_adblock
+                                        } else {
+                                            R.drawable.ic_coin
+                                        }
+                                        ,
+                                        skuDetails.title,
+                                        skuDetails.description,
+                                        skuDetails.price,
+                                        skuDetails.sku,
+                                        if (skuDetails.sku == Constants.SKU_INAPP_DISABLE_ADS) {
+                                            hasDisableAdsInApp
+                                        } else {
+                                            false
+                                        }
+                                ) { buyInApp(skuDetails.sku) }
+                            }
 
                             viewState.showMonetizationActions(items)
 
@@ -152,12 +164,12 @@ class MonetizationPresenter @Inject constructor(
                     .doOnEvent { view?.showProgress(false) }
                     .subscribeBy(
                             onComplete = {
-//                                Timber.d("Successfully consume in app")
+                                //                                Timber.d("Successfully consume in app")
                                 view?.showMessage("Successfully consume inApp!")
                                 loadInAppsToBuy(true)
                             },
                             onError = {
-//                                Timber.e(it, "Error while consume inApp")
+                                //                                Timber.e(it, "Error while consume inApp")
                                 view?.showMessage("Error while consume inApp: ${it.message}")
                             }
                     )
