@@ -17,6 +17,7 @@ import ru.kuchanov.scpquiz.controller.api.response.VALID
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
+import ru.kuchanov.scpquiz.model.db.InAppPurchase
 import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.TransactionType
 import ru.kuchanov.scpquiz.mvp.presenter.monetization.MonetizationPresenter
@@ -160,20 +161,36 @@ class BillingDelegate(
                                         }
                                 )
                             }
-                            .map { nwQuizTransaction ->
-                                appDatabase.transactionDao().insert(QuizTransaction(
+                            .flatMap { nwQuizTransaction ->
+                                apiClient.addInAppPurchase(
+                                        transactionId = nwQuizTransaction.id,
+                                        skuId = purchase.sku,
+                                        purchaseTime = purchase.purchaseTime,
+                                        purchaseToken = purchase.purchaseToken,
+                                        orderId = purchase.orderId
+                                )
+                                return@flatMap Single.just(appDatabase.transactionDao().insert(QuizTransaction(
                                         quizId = null,
                                         transactionType = TransactionType.INAPP_PURCHASE,
                                         externalId = nwQuizTransaction.id,
                                         coinsAmount = nwQuizTransaction.coinsAmount
-                                ))
+                                )))
                             }
-                            .flatMapCompletable {  }
+                            .flatMap { insertedTransactionId ->
+                                return@flatMap Single.just(appDatabase.inAppPurchaseDao().insert(InAppPurchase(
+                                        orderId = purchase.orderId,
+                                        purchaseTime = purchase.purchaseTime,
+                                        purchaseToken = purchase.purchaseToken,
+                                        skuId = purchase.sku,
+                                        transactionId = insertedTransactionId
+                                )))
+                            }
+                            .ignoreElement()
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeBy(
                                     onComplete = {
-                                        view?.showMessage(R.string.ads_disabled)
+                                        view?.showMessage(R.string.success_purchase)
                                         presenter?.loadInAppsToBuy(true)
                                     },
                                     onError = {
@@ -181,7 +198,6 @@ class BillingDelegate(
                                         view?.showMessage(it.message.toString())
                                     }
                             )
-
                 }
             }
         } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
@@ -198,7 +214,13 @@ class BillingDelegate(
     fun loadInAppsToBuy(): Single<List<SkuDetails>> =
             Single
                     .create<List<SkuDetails>> { emitter ->
-                        val skuList = listOf(Constants.SKU_INAPP_DISABLE_ADS, Constants.SKU_INAPP_BUY_COINS_0)
+                        val skuList = listOf(
+                                Constants.SKU_INAPP_DISABLE_ADS,
+                                Constants.SKU_INAPP_BUY_COINS_0,
+                                Constants.SKU_INAPP_BUY_COINS_1,
+                                Constants.SKU_INAPP_BUY_COINS_2,
+                                Constants.SKU_INAPP_BUY_COINS_3
+                        )
                         val params = SkuDetailsParams.newBuilder()
                                 .setSkusList(skuList)
                                 .setType(BillingClient.SkuType.INAPP)

@@ -6,7 +6,7 @@ import android.arch.persistence.room.PrimaryKey
 @Entity
 data class InAppPurchase(
         @PrimaryKey
-        val id: Long,
+        val id: Long? = null,
         //content
         val transactionId: Long,
         val skuId: String,
