@@ -17,9 +17,11 @@ import ru.kuchanov.scpquiz.controller.api.response.VALID
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
+import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
 import ru.kuchanov.scpquiz.model.db.InAppPurchase
 import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.TransactionType
+import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.presenter.monetization.MonetizationPresenter
 import ru.kuchanov.scpquiz.mvp.view.monetization.MonetizationView
 import timber.log.Timber
@@ -157,10 +159,26 @@ class BillingDelegate(
                                             Constants.SKU_INAPP_BUY_COINS_0 -> Constants.COINS_FOR_SKU_INAPP_0
                                             Constants.SKU_INAPP_BUY_COINS_1 -> Constants.COINS_FOR_SKU_INAPP_1
                                             Constants.SKU_INAPP_BUY_COINS_2 -> Constants.COINS_FOR_SKU_INAPP_2
-                                            else -> Constants.COINS_FOR_SKU_INAPP_3
+                                            Constants.SKU_INAPP_BUY_COINS_3 -> Constants.COINS_FOR_SKU_INAPP_3
+                                            else -> return@flatMap Single.error<NwQuizTransaction>(IllegalStateException(context.getString(R.string.error_buy)))
                                         }
                                 )
                             }
+                            .flatMap { nwQuizTransaction ->
+                                appDatabase.transactionDao().insert(QuizTransaction(
+                                        quizId = null,
+                                        transactionType = TransactionType.INAPP_PURCHASE,
+                                        externalId = nwQuizTransaction.id,
+                                        coinsAmount = nwQuizTransaction.coinsAmount
+                                ))
+
+                                appDatabase.userDao().getOneByRole(UserRole.PLAYER).map {
+                                    it.score += nwQuizTransaction.coinsAmount!!
+                                    appDatabase.userDao().update(it)
+                                }
+                                return@flatMap Single.just(nwQuizTransaction)
+                            }
+
                             .flatMap { nwQuizTransaction ->
                                 apiClient.addInAppPurchase(
                                         transactionId = nwQuizTransaction.id,
@@ -169,23 +187,17 @@ class BillingDelegate(
                                         purchaseToken = purchase.purchaseToken,
                                         orderId = purchase.orderId
                                 )
-                                return@flatMap Single.just(appDatabase.transactionDao().insert(QuizTransaction(
-                                        quizId = null,
-                                        transactionType = TransactionType.INAPP_PURCHASE,
-                                        externalId = nwQuizTransaction.id,
-                                        coinsAmount = nwQuizTransaction.coinsAmount
-                                )))
                             }
-                            .flatMap { insertedTransactionId ->
+                            .flatMap { nwInAppPurchase ->
                                 return@flatMap Single.just(appDatabase.inAppPurchaseDao().insert(InAppPurchase(
                                         orderId = purchase.orderId,
                                         purchaseTime = purchase.purchaseTime,
                                         purchaseToken = purchase.purchaseToken,
                                         skuId = purchase.sku,
-                                        transactionId = insertedTransactionId
+                                        transactionId = nwInAppPurchase.transactionId
                                 )))
                             }
-                            .ignoreElement()
+                            .flatMapCompletable { consumeInApp(purchase.purchaseToken) }
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeBy(
@@ -205,7 +217,7 @@ class BillingDelegate(
             //nothing to do
         } else {
             // Handle any other error codes.
-//            Timber.e("Error while onPurchasesUpdated: $responseCode")
+            Timber.e("Error while onPurchasesUpdated: $responseCode")
             view?.showMessage(context.getString(R.string.error_purchase, responseCode.toString())
                     ?: "Unexpected error")
         }
