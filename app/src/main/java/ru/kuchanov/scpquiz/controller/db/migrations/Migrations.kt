@@ -148,27 +148,4 @@ object Migrations {
             }
         }
     }
-
-    val MIGRATION_5_6 = object : Migration(5, 6) {
-        override fun migrate(database: SupportSQLiteDatabase) {
-            Timber.d("executeMigration 5_6")
-
-            try {
-                database.execSQL(
-                        """
-                            CREATE TABLE InAppPurchase(
-                                 id INTEGER,
-                                 transactionId INTEGER,
-                                 skuId TEXT NOT NULL,
-                                 purchaseTime INTEGER DEFAULT '0' NOT NULL,
-                                 purchaseToken TEXT NOT NULL,
-                                 orderId TEXT NOT NULL,
-                                 PRIMARY KEY (id)
-                            )
-                            """)
-            } catch (e: Throwable) {
-                Timber.e(e)
-            }
-        }
-    }
 }

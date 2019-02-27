@@ -33,6 +33,9 @@ interface TransactionDao {
     @Query("SELECT * FROM QuizTransaction WHERE transactionType = :transactionType")
     fun getOneByType(transactionType: TransactionType): Single<QuizTransaction>
 
+    @Query("SELECT * FROM QuizTransaction WHERE externalId = :externalId")
+    fun getOneByExternalId(externalId: Long?): QuizTransaction?
+
     @Query("SELECT * FROM QuizTransaction WHERE transactionType = :transactionType")
     fun getOneByTypeNoReactive(transactionType: TransactionType): QuizTransaction?
 

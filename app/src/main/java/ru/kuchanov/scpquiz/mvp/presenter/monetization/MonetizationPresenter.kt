@@ -2,6 +2,7 @@ package ru.kuchanov.scpquiz.mvp.presenter.monetization
 
 import android.app.Application
 import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.SkuDetails
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Flowable
@@ -48,7 +49,11 @@ class MonetizationPresenter @Inject constructor(
 
     private fun buyInApp(sku: String) {
         Timber.d("buyInApp")
-        billingDelegate?.startPurchaseFlow(sku)
+        if (preferences.getTrueAccessToken() != null || sku != Constants.SKU_INAPP_DISABLE_ADS) {
+            billingDelegate?.startPurchaseFlow(sku)
+        } else {
+            viewState.showMessage(appContext.getString(R.string.need_to_login))
+        }
     }
 
     private fun showAppodealAds() {
@@ -89,9 +94,25 @@ class MonetizationPresenter @Inject constructor(
                 .combineLatest(
                         appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
                         billingDelegate!!.loadInAppsToBuy().toFlowable(),
-                        billingDelegate!!.isHasDisableAdsInApp().toFlowable(),
-                        Function3 { player: User, listSkuDetails: List<SkuDetails>, isHasDisableAds: Boolean ->
-                            Triple(player, listSkuDetails, isHasDisableAds)
+                        billingDelegate!!.getAllUserOwnedPurchases()
+                                .doOnSuccess { purchaseList ->
+                                    purchaseList.filter { it.sku != Constants.SKU_INAPP_DISABLE_ADS }.forEach {
+                                        billingDelegate?.writeAndConsumePurchase(it)
+                                                ?.subscribeOn(Schedulers.io())
+                                                ?.observeOn(AndroidSchedulers.mainThread())
+                                                ?.subscribeBy(
+                                                        onComplete = {
+                                                            Timber.d("Purchase consumed: $it")
+                                                        },
+                                                        onError = {
+                                                            Timber.e(it)
+                                                        }
+                                                )
+                                    }
+                                }
+                                .toFlowable(),
+                        Function3 { player: User, listSkuDetails: List<SkuDetails>, allUsersOwnedPurchases: List<Purchase> ->
+                            Triple(player, listSkuDetails, allUsersOwnedPurchases)
                         }
                 )
                 .subscribeOn(Schedulers.io())
@@ -99,13 +120,12 @@ class MonetizationPresenter @Inject constructor(
                 .doOnSubscribe { viewState?.showProgress(true) }
                 .doOnNext { viewState.showProgress(false) }
                 .subscribeBy(
-                        onNext = {
-                            val hasDisableAdsInApp = it.third
-                            preferences.disableAds(hasDisableAdsInApp)
-                            //todo создать транзакции покупки очков и сделать consume
+                        onNext = { tripple ->
+                            val disableAdsInApp = tripple.third.firstOrNull { it.sku == Constants.SKU_INAPP_DISABLE_ADS }
+                            preferences.disableAds(disableAdsInApp != null)
 
                             val items = mutableListOf<MyListItem>()
-                            items += MonetizationHeaderViewModel(it.first)
+                            items += MonetizationHeaderViewModel(tripple.first)
                             items += MonetizationViewModel(
                                     R.drawable.ic_no_money,
                                     appContext.getString(R.string.monetization_action_appodeal_title),
@@ -115,7 +135,7 @@ class MonetizationPresenter @Inject constructor(
                                     false
                             ) { showAppodealAds() }
 
-                            items += it.second.map { skuDetails ->
+                            items += tripple.second.map { skuDetails ->
                                 MonetizationViewModel(
                                         if (skuDetails.sku == Constants.SKU_INAPP_DISABLE_ADS) {
                                             R.drawable.ic_adblock
@@ -128,7 +148,7 @@ class MonetizationPresenter @Inject constructor(
                                         skuDetails.price,
                                         skuDetails.sku,
                                         if (skuDetails.sku == Constants.SKU_INAPP_DISABLE_ADS) {
-                                            hasDisableAdsInApp
+                                            disableAdsInApp != null
                                         } else {
                                             false
                                         }

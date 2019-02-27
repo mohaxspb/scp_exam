@@ -1,11 +1,12 @@
 package ru.kuchanov.scpquiz.controller.api
 
 import io.reactivex.Single
-import retrofit2.http.*
-import ru.kuchanov.scpquiz.model.api.NwInAppPurchase
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.POST
 import ru.kuchanov.scpquiz.model.api.NwQuizTransaction
 import ru.kuchanov.scpquiz.model.api.NwUser
-import ru.kuchanov.scpquiz.model.db.InAppPurchase
 import ru.kuchanov.scpquiz.model.db.TransactionType
 
 interface TransactionApi {
@@ -25,12 +26,12 @@ interface TransactionApi {
     @FormUrlEncoded
     @POST("inAppPurchase/add")
     fun addInAppPurchase(
-            @Field("transactionId") transactionId: Long,
             @Field("skuId") skuId: String,
             @Field("purchaseTime") purchaseTime: Long,
             @Field("purchaseToken") purchaseToken: String,
-            @Field("orderId") orderId: String
-    ): Single<NwInAppPurchase>
+            @Field("orderId") orderId: String,
+            @Field("coinsAmount") coinsAmount: Int
+    ): Single<NwQuizTransaction>
 
     @GET("transactions/resetProgress")
     fun resetProgress(): Single<Int>

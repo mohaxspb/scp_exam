@@ -17,10 +17,9 @@ import ru.kuchanov.scpquiz.model.db.*
             QuizTranslationPhrase::class,
             User::class,
             FinishedLevel::class,
-            QuizTransaction::class,
-            InAppPurchase::class
+            QuizTransaction::class
         ],
-        version = 6
+        version = 5
 )
 @TypeConverters(
         MyDateConverter::class,
@@ -39,5 +38,4 @@ abstract class AppDatabase : RoomDatabase() {
 
     abstract fun transactionDao(): TransactionDao
 
-    abstract fun inAppPurchaseDao(): InAppPurchaseDao
 }

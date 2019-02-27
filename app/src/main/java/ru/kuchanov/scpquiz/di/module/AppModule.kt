@@ -43,7 +43,7 @@ class AppModule(context: Context) : Module() {
                         AppDatabase::class.java,
                         "database"
                 )
-                        .addMigrations(Migrations.MIGRATION_1_2, Migrations.MIGRATION_2_3, Migrations.MIGRATION_3_4, Migrations.MIGRATION_4_5, Migrations.MIGRATION_5_6)
+                        .addMigrations(Migrations.MIGRATION_1_2, Migrations.MIGRATION_2_3, Migrations.MIGRATION_3_4, Migrations.MIGRATION_4_5)
                         .build()
         )
 

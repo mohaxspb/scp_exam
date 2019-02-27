@@ -1,7 +1,6 @@
 package ru.kuchanov.scpquiz.controller.api
 
 import io.reactivex.Single
-import retrofit2.http.Field
 import ru.kuchanov.scpquiz.App
 import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
@@ -55,13 +54,13 @@ class ApiClient @Inject constructor(
                     System.currentTimeMillis().toString()
             )
 
-    fun addInAppPurchase(transactionId: Long, skuId: String, purchaseTime: Long, purchaseToken: String, orderId: String): Single<NwInAppPurchase> =
+    fun addInAppPurchase(skuId: String, purchaseTime: Long, purchaseToken: String, orderId: String, coinsAmount: Int): Single<NwQuizTransaction> =
             transactionApi.addInAppPurchase(
-                    transactionId,
                     skuId,
                     purchaseTime,
                     purchaseToken,
-                    orderId
+                    orderId,
+                    coinsAmount
             )
 
     fun resetProgress(): Single<Int> = transactionApi.resetProgress()
