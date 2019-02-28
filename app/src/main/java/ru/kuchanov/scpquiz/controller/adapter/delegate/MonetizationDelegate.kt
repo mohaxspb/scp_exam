@@ -45,7 +45,7 @@ class MonetizationDelegate(
                 alreadyOwnedTextView.visibility = GONE
                 alreadyOwnedTextView.setOnClickListener(null)
 
-                setOnClickListener { item.action.invoke(Unit) }
+                setOnClickListener { item.action.invoke(item.sku) }
             }
 
             priceTextView.text = item.price

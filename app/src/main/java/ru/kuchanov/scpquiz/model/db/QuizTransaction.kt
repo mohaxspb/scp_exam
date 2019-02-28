@@ -35,8 +35,10 @@ enum class TransactionType {
     NUMBER_ENTERED_MIGRATION,
     NAME_CHARS_REMOVED_MIGRATION,
     NUMBER_CHARS_REMOVED_MIGRATION,
-    LEVEL_AVAILABLE_MIGRATION
+    LEVEL_AVAILABLE_MIGRATION,
     // енумы только для синхронизации с новой версией
+    INAPP_PURCHASE
+    // енум для покупки за деньги
 }
 
 

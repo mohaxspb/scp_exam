@@ -29,6 +29,19 @@ object Constants {
     const val COINS_FOR_ADS_DISABLE = 0
     const val NUM_OF_FINISHED_LEVEL_BEFORE_SHOW_ADS = 3
     const val SKU_INAPP_DISABLE_ADS = "disable_ads_0718"
+
+    const val SKU_INAPP_BUY_COINS_0 = "buy_coins_0_25022019"
+    const val COINS_FOR_SKU_INAPP_0 = 150
+
+    const val SKU_INAPP_BUY_COINS_1 = "buy_coins_1_25022019"
+    const val COINS_FOR_SKU_INAPP_1 = 300
+
+    const val SKU_INAPP_BUY_COINS_2 = "buy_coins_2_25022019"
+    const val COINS_FOR_SKU_INAPP_2 = 500
+
+    const val SKU_INAPP_BUY_COINS_3 = "buy_coins_3_25022019"
+    const val COINS_FOR_SKU_INAPP_3 = 1000
+
     const val COINS_FOR_LEVEL_UNLOCK = 5
 
     object Screens {

@@ -4,6 +4,8 @@ import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import com.android.billingclient.api.*
 import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -19,6 +21,7 @@ import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.TransactionType
+import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.presenter.monetization.MonetizationPresenter
 import ru.kuchanov.scpquiz.mvp.view.monetization.MonetizationView
 import timber.log.Timber
@@ -57,19 +60,13 @@ class BillingDelegate(
         view?.showRefreshFab(false)
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(@BillingClient.BillingResponse billingResponseCode: Int) {
-//                Timber.d("billingClient onBillingSetupFinished: $billingResponseCode")
+                Timber.d("billingClient onBillingSetupFinished: $billingResponseCode")
                 if (billingResponseCode == BillingClient.BillingResponse.OK) {
                     clientReady = true
                     // The billing client is ready. You can query purchases here.
 
                     presenter?.onBillingClientReady()
 
-                    if (!preferencesManager.isAdsDisabled()) {
-                        isHasDisableAdsInApp()
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribeBy { preferencesManager.disableAds(it) }
-                    }
                 } else {
                     clientReady = false
                     presenter?.onBillingClientFailedToStart(billingResponseCode)
@@ -77,7 +74,7 @@ class BillingDelegate(
             }
 
             override fun onBillingServiceDisconnected() {
-//                Timber.d("billingClient onBillingServiceDisconnected")
+                Timber.d("billingClient onBillingServiceDisconnected")
                 // Try to restart the connection on the next request to
                 // Google Play by calling the startConnection() method.
                 clientReady = false
@@ -87,72 +84,149 @@ class BillingDelegate(
     }
 
     override fun onPurchasesUpdated(responseCode: Int, purchases: MutableList<Purchase>?) {
-//        Timber.d("onPurchasesUpdated: $responseCode, $purchases")
+        Timber.d("onPurchasesUpdated: $responseCode, $purchases")
 
         if (responseCode == BillingClient.BillingResponse.OK && purchases != null) {
             for (purchase in purchases) {
-                apiClient.validateInApp(purchase.sku, purchase.purchaseToken)
-                        .flatMap {
-                            when (it) {
-                                VALID -> return@flatMap Single.just(it)
-                                INVALID -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.purchase_not_valid)))
-                                GOOGLE_SERVER_ERROR -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.purchase_validation_google_error)))
-                                else -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.error_buy)))
-                            }
-                        }
-                        .map {
-                            val quizTransaction = QuizTransaction(
-                                    quizId = null,
-                                    transactionType = TransactionType.ADV_BUY_NEVER_SHOW,
-                                    coinsAmount = Constants.COINS_FOR_ADS_DISABLE
-                            )
-                            return@map appDatabase.transactionDao().insert(quizTransaction)
-                        }
-                        .flatMapCompletable { quizTransactionId ->
-                            apiClient.addTransaction(
-                                    null,
-                                    TransactionType.ADV_BUY_NEVER_SHOW,
-                                    Constants.COINS_FOR_ADS_DISABLE
-                            )
-                                    .doOnSuccess { nwQuizTransaction ->
-                                        appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                                quizTransactionId = quizTransactionId,
-                                                quizTransactionExternalId = nwQuizTransaction.id)
-                                        //Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
-                                    }
-                                    .ignoreElement()
-                                    .onErrorComplete()
-                        }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeBy(
-                                onComplete = {
-                                    //Timber.d("on Complete purchase")
-                                    preferencesManager.disableAds(true)
-                                    view?.showMessage(R.string.ads_disabled)
-                                    presenter?.loadInAppsToBuy(true)
-                                },
-                                onError = {
-                                    Timber.e(it)
-                                    view?.showMessage(it.message.toString())
+                if (purchase.sku == Constants.SKU_INAPP_DISABLE_ADS) {
+                    apiClient.validateInApp(purchase.sku, purchase.purchaseToken)
+                            .flatMap {
+                                when (it) {
+                                    VALID -> return@flatMap Single.just(it)
+                                    INVALID -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.purchase_not_valid)))
+                                    GOOGLE_SERVER_ERROR -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.purchase_validation_google_error)))
+                                    else -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.error_buy)))
                                 }
-                        )
+                            }
+                            .map {
+                                val quizTransaction = QuizTransaction(
+                                        quizId = null,
+                                        transactionType = TransactionType.ADV_BUY_NEVER_SHOW,
+                                        coinsAmount = Constants.COINS_FOR_ADS_DISABLE
+                                )
+                                return@map appDatabase.transactionDao().insert(quizTransaction)
+                            }
+                            .flatMapCompletable { quizTransactionId ->
+                                apiClient.addTransaction(
+                                        null,
+                                        TransactionType.ADV_BUY_NEVER_SHOW,
+                                        Constants.COINS_FOR_ADS_DISABLE
+                                )
+                                        .doOnSuccess { nwQuizTransaction ->
+                                            appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                    quizTransactionId = quizTransactionId,
+                                                    quizTransactionExternalId = nwQuizTransaction.id)
+                                            //Timber.d("GET TRANSACTION BY ID : %s", appDatabase.transactionDao().getOneById(quizTransactionId))
+                                        }
+                                        .ignoreElement()
+                                        .onErrorComplete()
+                            }
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeBy(
+                                    onComplete = {
+                                        //Timber.d("on Complete purchase")
+                                        preferencesManager.disableAds(true)
+                                        view?.showMessage(R.string.ads_disabled)
+                                        presenter?.loadInAppsToBuy(true)
+                                    },
+                                    onError = {
+                                        Timber.e(it)
+                                        view?.showMessage(it.message.toString())
+                                    }
+                            )
+                } else {
+                    apiClient.validateInApp(purchase.sku, purchase.purchaseToken)
+                            .flatMap {
+                                when (it) {
+                                    VALID -> return@flatMap Single.just(it)
+                                    INVALID -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.purchase_not_valid)))
+                                    GOOGLE_SERVER_ERROR -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.purchase_validation_google_error)))
+                                    else -> return@flatMap Single.error<Int>(IllegalStateException(context.getString(R.string.error_buy)))
+                                }
+                            }
+                            .flatMapCompletable { writeAndConsumePurchase(purchase) }
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeBy(
+                                    onComplete = {
+                                        view?.showMessage(R.string.success_purchase)
+                                        presenter?.loadInAppsToBuy(true)
+                                    },
+                                    onError = {
+                                        Timber.e(it)
+                                        view?.showMessage(it.message.toString())
+                                    }
+                            )
+                }
             }
         } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
             // Handle an error caused by a user cancelling the purchase flow.
             //nothing to do
         } else {
             // Handle any other error codes.
-//            Timber.e("Error while onPurchasesUpdated: $responseCode")
+            Timber.e("Error while onPurchasesUpdated: $responseCode")
             view?.showMessage(context.getString(R.string.error_purchase, responseCode.toString())
                     ?: "Unexpected error")
         }
     }
 
-    fun loadInAppsToBuy(): Single<SkuDetails> =
+    fun writeAndConsumePurchase(purchase: Purchase) =
+            apiClient.addInAppPurchase(
+                    purchase.sku,
+                    purchase.purchaseTime,
+                    purchase.purchaseToken,
+                    purchase.orderId,
+                    when (purchase.sku) {
+                        Constants.SKU_INAPP_BUY_COINS_0 -> Constants.COINS_FOR_SKU_INAPP_0
+                        Constants.SKU_INAPP_BUY_COINS_1 -> Constants.COINS_FOR_SKU_INAPP_1
+                        Constants.SKU_INAPP_BUY_COINS_2 -> Constants.COINS_FOR_SKU_INAPP_2
+                        Constants.SKU_INAPP_BUY_COINS_3 -> Constants.COINS_FOR_SKU_INAPP_3
+                        else -> throw (IllegalStateException(context.getString(R.string.error_buy)))
+                    }
+            )
+                    .map { nwQuizTransaction ->
+                        val insertedTransaction = appDatabase.transactionDao().getOneByExternalId(nwQuizTransaction.id)
+
+                        if (insertedTransaction == null) {
+                            appDatabase.userDao().getOneByRoleSync(UserRole.PLAYER).apply {
+                                this.score += nwQuizTransaction.coinsAmount!!
+                                appDatabase.userDao().update(this)
+                            }
+
+                            appDatabase.transactionDao().insert(QuizTransaction(
+                                    quizId = null,
+                                    transactionType = TransactionType.INAPP_PURCHASE,
+                                    externalId = nwQuizTransaction.id,
+                                    coinsAmount = nwQuizTransaction.coinsAmount
+                            ))
+                        } else {
+                            insertedTransaction.id
+                        }
+                    }
+                    .flatMapCompletable { insertedTransactionId ->
+                        val insertedTransaction = appDatabase.transactionDao().getOneById(insertedTransactionId)
+                        consumeInApp(purchase.purchaseToken)
+                                .observeOn(Schedulers.io())
+                                .doOnError {
+                                    appDatabase.userDao().getOneByRoleSync(UserRole.PLAYER).apply {
+                                        score -= insertedTransaction.coinsAmount!!
+                                        appDatabase.userDao().update(this)
+                                    }
+                                    appDatabase.transactionDao().delete(insertedTransaction)
+                                }
+                    }
+
+    fun loadInAppsToBuy(): Single<List<SkuDetails>> =
             Single
-                    .create<SkuDetails> { emitter ->
-                        val skuList = listOf(Constants.SKU_INAPP_DISABLE_ADS)
+                    .create<List<SkuDetails>> { emitter ->
+                        val skuList = listOf(
+                                Constants.SKU_INAPP_DISABLE_ADS,
+                                Constants.SKU_INAPP_BUY_COINS_0,
+                                Constants.SKU_INAPP_BUY_COINS_1,
+                                Constants.SKU_INAPP_BUY_COINS_2,
+                                Constants.SKU_INAPP_BUY_COINS_3
+                        )
                         val params = SkuDetailsParams.newBuilder()
                                 .setSkusList(skuList)
                                 .setType(BillingClient.SkuType.INAPP)
@@ -161,14 +235,9 @@ class BillingDelegate(
                             billingClient.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
                                 //Timber.d("inapps: $responseCode, $skuDetailsList")
                                 if (responseCode == BillingClient.BillingResponse.OK && skuDetailsList != null) {
-                                    val disableAdsInapp = skuDetailsList.firstOrNull {
-                                        it.sku == Constants.SKU_INAPP_DISABLE_ADS
-                                    }
-                                    if (disableAdsInapp != null) {
-                                        emitter.onSuccess(disableAdsInapp)
-                                    } else {
-                                        emitter.onError(IllegalStateException("skuDetail with sku not found"))
-                                    }
+                                    emitter.onSuccess(skuDetailsList)
+                                } else {
+                                    emitter.onError(IllegalStateException("skuDetail with sku not found"))
                                 }
                             }
                         } else {
@@ -183,15 +252,33 @@ class BillingDelegate(
                         .setType(BillingClient.SkuType.INAPP)
                         .build()
                 val responseCode = billingClient.launchBillingFlow(activity, flowParams)
-                //Timber.d("startPurchaseFlow responseCode $responseCode")
+                Timber.d("startPurchaseFlow responseCode $responseCode")
 
+                if (responseCode == BillingClient.BillingResponse.ITEM_ALREADY_OWNED) {
+                    getAllUserOwnedPurchases()
+                            .flatMapObservable { purchaseList ->
+                                Observable.fromIterable(purchaseList)
+                            }
+                            .flatMapCompletable { purchase -> writeAndConsumePurchase(purchase) }
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeBy(
+                                    onComplete = {
+                                        startPurchaseFlow(sku)
+                                    },
+                                    onError = {
+                                        Timber.e(it)
+                                        view?.showMessage(it.message.toString())
+                                    }
+                            )
+                }
                 responseCode == BillingClient.BillingResponse.OK
             } else {
                 view?.showMessage(R.string.error_billing_client_not_ready)
                 false
             }
 
-    fun isHasDisableAdsInApp(): Single<Boolean> =
+    fun getAllUserOwnedPurchases(): Single<List<Purchase>> =
             Single
                     .fromCallable {
                         if (clientReady) {
@@ -202,16 +289,22 @@ class BillingDelegate(
                     }
                     .flatMap { purchasesResult ->
                         Timber.d("purchasesResult: ${purchasesResult.purchasesList}")
-                        val disableAdsInApp = purchasesResult
-                                .purchasesList
-                                ?.firstOrNull { it.sku == Constants.SKU_INAPP_DISABLE_ADS }
-                        if (disableAdsInApp == null) {
-                            Single.just(false)
+
+                        if (purchasesResult.purchasesList == null) {
+                            Single.just(listOf())
                         } else {
-                            apiClient
-                                    .validateInApp(disableAdsInApp.sku, disableAdsInApp.purchaseToken)
-                                    .doOnSuccess { Timber.d("isHasDisableAdsInApp validateInApp doOnSuccess: $it") }
-                                    .map { it == VALID }
+                            Flowable.fromIterable(purchasesResult.purchasesList)
+                                    .flatMapSingle { purchase ->
+                                        apiClient
+                                                .validateInApp(purchase.sku, purchase.purchaseToken)
+                                                .doOnSuccess { Timber.d("getAllUserOwnedPurchases validateInApp doOnSuccess: $it") }
+                                                .map { Pair(purchase, it == VALID) }
+                                    }
+                                    .toList()
+                                    .map { listOfPair ->
+                                        listOfPair.filter { pair -> pair.second == true }
+                                                .map { it.first }
+                                    }
                         }
                     }
 
