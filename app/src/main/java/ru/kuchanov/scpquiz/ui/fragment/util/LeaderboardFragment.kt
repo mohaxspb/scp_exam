@@ -160,6 +160,8 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
         itemUserInLeaderboardView.userPositionTextView.text = position.toString()
         itemUserInLeaderboardView.userFullNameTextView.text = user.fullName
         itemUserInLeaderboardView.userScoreTextView.text = user.score.toString()
+        itemUserInLeaderboardView.userFullCompleteLevelsTextView.text = context?.getString(R.string.complete_levels_text, user.fullCompleteLevels)
+        itemUserInLeaderboardView.userPartCompleteLevelsTextView.text = context?.getString(R.string.part_complete_levels_text, user.partCompleteLevels)
 
         val glideRequest = GlideApp.with(itemUserInLeaderboardView.userAvatarImageView.context)
         when (user.avatar) {

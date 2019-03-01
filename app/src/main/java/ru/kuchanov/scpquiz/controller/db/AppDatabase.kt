@@ -37,4 +37,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun finishedLevelsDao(): FinishedLevelsDao
 
     abstract fun transactionDao(): TransactionDao
+
 }

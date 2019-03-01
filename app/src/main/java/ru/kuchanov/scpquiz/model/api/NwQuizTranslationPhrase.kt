@@ -7,7 +7,6 @@ import java.util.*
 @JsonClass(generateAdapter = true)
 data class NwQuizTranslationPhrase(
     //db
-    @PrimaryKey
     val id: Long,
     //content
     val translation: String,
