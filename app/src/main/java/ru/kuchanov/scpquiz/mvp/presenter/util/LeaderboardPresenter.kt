@@ -106,7 +106,7 @@ class LeaderboardPresenter @Inject constructor(
     fun getCurrentPositionInLeaderboard() {
         if (preferences.getTrueAccessToken() != null) {
             Single.zip(
-                    apiClient.getNwUser(),
+                    apiClient.getUserForLeaderboard(),
                     apiClient.getCurrentPositionInLeaderboard(),
                     BiFunction { nwUser: NwUser, position: Int ->
                         nwUser to position
