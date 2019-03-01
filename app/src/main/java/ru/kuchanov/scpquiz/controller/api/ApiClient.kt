@@ -67,6 +67,8 @@ class ApiClient @Inject constructor(
 
     fun getNwUser(): Single<NwUser> = transactionApi.getNwUser()
 
+    fun getUserForLeaderboard(): Single<NwUser> = transactionApi.getUserForLeaderboard()
+
     fun getLeaderboard(offset: Int, limit: Int): Single<List<NwUser>> = authApi.getLeaderboard(offset, limit)
 
     fun getCurrentPositionInLeaderboard(): Single<Int> = transactionApi.getCurrentPositionInLeaderboard()
