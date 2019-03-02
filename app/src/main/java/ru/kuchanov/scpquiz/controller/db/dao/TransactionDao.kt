@@ -15,6 +15,9 @@ interface TransactionDao {
     @Query("SELECT * FROM QuizTransaction WHERE externalId IS NULL")
     fun getAllWithoutExternalId(): Single<List<QuizTransaction>>
 
+    @Query("SELECT * FROM QuizTransaction WHERE externalId IS NULL AND transactionType IN (:types) ")
+    fun getAllWithoutExternalIdByTypeWhenSendProgress(types: Array<TransactionType>): Single<List<QuizTransaction>>
+
     @Query("SELECT * FROM QuizTransaction")
     fun getAllSingle(): Single<List<QuizTransaction>>
 

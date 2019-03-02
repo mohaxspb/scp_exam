@@ -80,15 +80,17 @@ class App : MultiDexApplication() {
     private fun initScore() {
         Completable.fromCallable {
             if (appDatabase.transactionDao().getOneByTypeNoReactive(TransactionType.UPDATE_SYNC) == null) {
-                val quizTransaction = QuizTransaction(
+                 val quizTransaction = QuizTransaction(
                         quizId = null,
                         transactionType = TransactionType.UPDATE_SYNC,
-                        coinsAmount = appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet().score
+                        coinsAmount = appDatabase.userDao().getOneByRoleSync(UserRole.PLAYER)?.score
+                                ?: 0
                 )
                 appDatabase.transactionDao().insert(quizTransaction)
             }
         }
                 .doOnComplete { Timber.d("DEFAULT transaction after entering APP:%s", appDatabase.transactionDao().getAllList()) }
+                .doOnError { Timber.e(it, "On Error init SCORE") }
                 .onErrorComplete()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
