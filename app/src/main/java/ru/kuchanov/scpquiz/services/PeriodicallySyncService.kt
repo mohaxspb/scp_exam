@@ -8,7 +8,9 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.di.Di
@@ -42,13 +44,14 @@ class PeriodicallySyncService : Service() {
                 .setContentIntent(pendingIntent)
                 .build()
 
-        startForeground(PeriodicallySyncService.NOTIFICATION_ID, notification)
+        startForeground(NOTIFICATION_ID, notification)
         super.onCreate()
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         transactionInteractor.syncAllProgress()
-                .andThen(transactionInteractor.syncTransactions())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onComplete = {
                             Timber.d("SYnc from service complete")

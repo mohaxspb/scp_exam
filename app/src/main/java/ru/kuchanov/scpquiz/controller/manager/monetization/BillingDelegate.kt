@@ -189,7 +189,7 @@ class BillingDelegate(
                         val insertedTransaction = appDatabase.transactionDao().getOneByExternalId(nwQuizTransaction.id)
 
                         if (insertedTransaction == null) {
-                            appDatabase.userDao().getOneByRoleSync(UserRole.PLAYER).apply {
+                            appDatabase.userDao().getOneByRoleSync(UserRole.PLAYER)?.apply {
                                 this.score += nwQuizTransaction.coinsAmount!!
                                 appDatabase.userDao().update(this)
                             }
@@ -209,7 +209,7 @@ class BillingDelegate(
                         consumeInApp(purchase.purchaseToken)
                                 .observeOn(Schedulers.io())
                                 .doOnError {
-                                    appDatabase.userDao().getOneByRoleSync(UserRole.PLAYER).apply {
+                                    appDatabase.userDao().getOneByRoleSync(UserRole.PLAYER)?.apply {
                                         score -= insertedTransaction.coinsAmount!!
                                         appDatabase.userDao().update(this)
                                     }
