@@ -168,18 +168,6 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                             preferences.setRefreshToken(refreshToken)
                         }
                         .flatMap {
-                            apiClient.getNwUser()
-                                    .flatMap { nwUser ->
-                                        appDatabase.userDao().getOneByRole(UserRole.PLAYER)
-                                                .map {
-                                                    it.name = nwUser.fullName!!
-                                                    it.avatarUrl = nwUser.avatar
-                                                    it.score = nwUser.score
-                                                    appDatabase.userDao().update(it)
-                                                }
-                                    }
-                        }
-                        .flatMap {
                             apiClient.getNwQuizTransactionList()
                                     .map { nwTransactionList ->
                                         nwTransactionList.forEach { nwQuizTransaction ->

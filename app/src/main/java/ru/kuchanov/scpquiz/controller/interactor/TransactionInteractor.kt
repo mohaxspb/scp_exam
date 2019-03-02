@@ -1,14 +1,13 @@
 package ru.kuchanov.scpquiz.controller.interactor
 
 import io.reactivex.*
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.model.db.FinishedLevel
 import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.TransactionType
+import ru.kuchanov.scpquiz.model.db.UserRole
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -57,8 +56,43 @@ class TransactionInteractor @Inject constructor(
         }
     }
             .flatMapCompletable { syncScoreWithServer() }
-            .andThen(syncFinishedLevels())
+            .andThen(sendProgressToServer())
+            .andThen(syncFinishedLevelsMigration())
             .andThen(getProgressFromServer())
+            .andThen(
+                    apiClient.getNwUser()
+                            .doOnSuccess { nwUser ->
+                                appDatabase.userDao().getOneByRoleSync(UserRole.PLAYER)
+                                        ?.apply {
+                                            name = nwUser.fullName!!
+                                            avatarUrl = nwUser.avatar
+                                            score = nwUser.score
+                                            appDatabase.userDao().update(this)
+                                        }
+                            }
+                            .ignoreElement()
+            )
+
+    private fun sendProgressToServer() =
+            appDatabase.transactionDao().getAllWithoutExternalIdByTypeWhenSendProgress(typesToSend)
+                    .flatMap { listWithoutExtId ->
+                        Observable.fromIterable(listWithoutExtId)
+                                .flatMapSingle { transaction ->
+                                    apiClient.addTransaction(
+                                            transaction.quizId,
+                                            transaction.transactionType,
+                                            transaction.coinsAmount
+                                    )
+                                            .doOnSuccess { nwTransaction ->
+                                                appDatabase.transactionDao().updateQuizTransactionExternalId(
+                                                        transaction.id!!,
+                                                        nwTransaction.id
+                                                )
+                                            }
+                                }
+                                .toList()
+                    }
+                    .ignoreElement()
 
     private fun getProgressFromServer() =
             apiClient.getNwQuizTransactionList()
@@ -189,36 +223,12 @@ class TransactionInteractor @Inject constructor(
                     }
                     .ignoreElement()
                     .onErrorComplete()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-
-
-    fun syncTransactions() =
-            appDatabase.transactionDao().getAllWithoutExternalId()
-                    .flatMap { listWithoutExtId ->
-                        Observable.fromIterable(listWithoutExtId)
-                                .flatMapSingle { transaction ->
-                                    apiClient.addTransaction(
-                                            transaction.quizId,
-                                            transaction.transactionType,
-                                            transaction.coinsAmount
-                                    )
-                                            .doOnSuccess { nwTransaction ->
-                                                appDatabase.transactionDao().updateQuizTransactionExternalId(
-                                                        transaction.id!!,
-                                                        nwTransaction.id
-                                                )
-                                            }
-                                }
-                                .toList()
-                    }
-                    .ignoreElement()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
 
     private fun syncScoreWithServer() =
             Maybe.fromCallable {
                 val updateSyncTransaction = appDatabase.transactionDao().getOneByTypeNoReactive(TransactionType.UPDATE_SYNC)
+                Timber.d("appDatabase.transactionDao().getOneByTypeNoReactive(TransactionType.UPDATE_SYNC) : %s", appDatabase.transactionDao().getOneByTypeNoReactive(TransactionType.UPDATE_SYNC))
+                Timber.d("All transactions : %s", appDatabase.transactionDao().getAllList())
                 return@fromCallable if (updateSyncTransaction?.externalId == null) {
                     updateSyncTransaction
                 } else {
@@ -240,8 +250,6 @@ class TransactionInteractor @Inject constructor(
                                 .ignoreElement()
                                 .onErrorComplete()
                     }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
 
 
     /**
@@ -252,11 +260,11 @@ class TransactionInteractor @Inject constructor(
      * отправляем на сервер, flatmap()
      * обновляем externalId doOnSuccess()
      */
-    private fun syncFinishedLevels() =
+    private fun syncFinishedLevelsMigration() =
             appDatabase.finishedLevelsDao().getAllSingle()
                     .map { finishedLevels -> finishedLevels.filter { it.isLevelAvailable } }
                     .map { levelsAvailableTrue ->
-                        val finishedLevelsToTransactions = arrayListOf<QuizTransaction>()
+                        val finishedLevelsToTransactions = mutableListOf<QuizTransaction>()
                         levelsAvailableTrue.forEach { levelAvailableFinishedLevel ->
                             val quizId = levelAvailableFinishedLevel.quizId
                             if (levelAvailableFinishedLevel.nameRedundantCharsRemoved
@@ -287,7 +295,7 @@ class TransactionInteractor @Inject constructor(
                             }
                         }
 //                        Timber.d("finishedLevelsToTransactions.toList() : %s", finishedLevelsToTransactions.toList())
-                        return@map finishedLevelsToTransactions.toList()
+                        return@map finishedLevelsToTransactions
                     }
                     .map { quizTransactionList ->
                         //                        Timber.d("quizTransactionList :%s", quizTransactionList)
@@ -315,8 +323,6 @@ class TransactionInteractor @Inject constructor(
                     }
                     .ignoreElement()
                     .onErrorComplete()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
 
     private fun quizTransactionForMigration(quizId: Long, transactionType: TransactionType) =
             QuizTransaction(
@@ -324,4 +330,21 @@ class TransactionInteractor @Inject constructor(
                     quizId = quizId,
                     transactionType = transactionType
             )
+
+    companion object {
+        /**
+         * Enum specification for SqlLite(room) dont use arrayList or list or some another collection type
+         */
+        val typesToSend = arrayOf(
+                TransactionType.ADV_WATCHED,
+                TransactionType.LEVEL_ENABLE_FOR_COINS,
+                TransactionType.NAME_WITH_PRICE,
+                TransactionType.NAME_NO_PRICE,
+                TransactionType.NAME_CHARS_REMOVED,
+                TransactionType.NUMBER_WITH_PRICE,
+                TransactionType.NUMBER_NO_PRICE,
+                TransactionType.NUMBER_CHARS_REMOVED,
+                TransactionType.ADV_BUY_NEVER_SHOW
+        )
+    }
 }

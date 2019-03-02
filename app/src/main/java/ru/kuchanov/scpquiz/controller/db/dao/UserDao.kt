@@ -23,7 +23,7 @@ interface UserDao {
     fun getOneByRole(role: UserRole): Single<User>
 
     @Query("SELECT * FROM User WHERE role = :role limit 1")
-    fun getOneByRoleSync(role: UserRole): User
+    fun getOneByRoleSync(role: UserRole): User?
 
     @Query("SELECT * FROM User WHERE role = :role limit 1")
     fun getByRoleWithUpdates(role: UserRole): Flowable<List<User>>
