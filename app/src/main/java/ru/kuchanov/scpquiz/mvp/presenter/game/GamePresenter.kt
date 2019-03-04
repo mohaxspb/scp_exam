@@ -1150,7 +1150,7 @@ class GamePresenter @Inject constructor(
         const val PERIODIC_SUGGESTIONS_PERIOD = 180L
         const val PERIODIC_GAME_AUTH_INITIAL_DELAY = 180L
         const val PERIODIC_GAME_AUTH_PERIOD = 600L
-        const val PERIODIC_GO_TO_ADMIN_APP_INITIAL_DELAY = 90L
-        const val PERIODIC_GO_TO_ADMIN_APP_PERIOD = 180L
+        const val PERIODIC_GO_TO_ADMIN_APP_INITIAL_DELAY = 60L
+        const val PERIODIC_GO_TO_ADMIN_APP_PERIOD = 120L
     }
 }
