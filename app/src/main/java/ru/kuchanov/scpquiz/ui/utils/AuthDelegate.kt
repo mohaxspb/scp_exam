@@ -145,7 +145,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
             }
         }
         Timber.d("onActivityResult: $resultCode")
-        if (requestCode != Activity.RESULT_OK) {
+        if (resultCode != Activity.RESULT_OK) {
             authPresenter.onAuthCanceled()
         } else {
             if (!VKSdk.onActivityResult(requestCode, resultCode, data, vkCallback)) {
