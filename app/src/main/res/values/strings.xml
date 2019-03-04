@@ -124,6 +124,7 @@
     <string name="part_complete_levels_text">%d partially completed </string>
     <string name="success_purchase">Success purchase</string>
     <string name="need_to_login">Please, auth first from settings</string>
+    <string name="canceled_auth">Error while auth, agent</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>

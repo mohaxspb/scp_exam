@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.ui.utils
 
+import android.app.Activity
 import android.content.Intent
 import android.support.v4.app.FragmentActivity
 import com.facebook.CallbackManager
@@ -144,18 +145,22 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
             }
         }
         Timber.d("onActivityResult: $resultCode")
-        if (!VKSdk.onActivityResult(requestCode, resultCode, data, vkCallback)) {
-            when (requestCode) {
-                REQUEST_CODE_GOOGLE -> {
-                    val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
-                    Timber.d("result: ${result.isSuccess}/${result.signInAccount}")
-                    if (result.isSuccess) {
-                        socialLogin(Constants.Social.GOOGLE, result.signInAccount!!.idToken)
-                    } else {
-                        Timber.e("ERROR : %s", result.status)
+        if (requestCode != Activity.RESULT_OK) {
+            authPresenter.onAuthCanceled()
+        } else {
+            if (!VKSdk.onActivityResult(requestCode, resultCode, data, vkCallback)) {
+                when (requestCode) {
+                    REQUEST_CODE_GOOGLE -> {
+                        val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+                        Timber.d("result: ${result.isSuccess}/${result.signInAccount}")
+                        if (result.isSuccess) {
+                            socialLogin(Constants.Social.GOOGLE, result.signInAccount!!.idToken)
+                        } else {
+                            Timber.e("ERROR : %s", result.status)
+                        }
                     }
+                    else -> callbackManager.onActivityResult(requestCode, resultCode, data)
                 }
-                else -> callbackManager.onActivityResult(requestCode, resultCode, data)
             }
         }
     }

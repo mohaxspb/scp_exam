@@ -54,6 +54,10 @@ class LeaderboardPresenter @Inject constructor(
         getCurrentPositionInLeaderboard()
     }
 
+    override fun onAuthCanceled() {
+        viewState.showMessage(R.string.canceled_auth)
+    }
+
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         authDelegate.onActivityResult(requestCode, resultCode, data)
     }

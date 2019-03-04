@@ -109,6 +109,7 @@
     <string name="part_complete_levels_text">%d частично пройденных</string>
     <string name="success_purchase">Успешная покупка</string>
     <string name="need_to_login">Агент, необходима авторизация из настроек</string>
+    <string name="canceled_auth">Агент, ошибка при авторизации</string>
 
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>
