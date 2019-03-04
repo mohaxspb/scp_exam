@@ -187,6 +187,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                         .subscribeBy(
                                 onComplete = { authPresenter.onAuthSuccess() },
                                 onError = {
+                                    //TODO doctor need to suggest authAgain by Chat dialog
                                     Timber.e(it)
                                     fragment.showMessage(it.toString())
                                 }
