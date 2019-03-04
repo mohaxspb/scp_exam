@@ -40,7 +40,6 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
-
 @InjectViewState
 class GamePresenter @Inject constructor(
         override var appContext: Application,
