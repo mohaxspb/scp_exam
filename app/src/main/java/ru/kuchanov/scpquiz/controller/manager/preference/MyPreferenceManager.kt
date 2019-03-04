@@ -46,6 +46,10 @@ class MyPreferenceManager @Inject constructor(context: Context) {
 
     fun getNeverShowAuth() = preferences.getBoolean(Key.NEVER_SHOW_AUTH, false)
 
+    fun setNeverShowAdminForQuizAppAds(neverShowAdminForQuizAppAds: Boolean) = preferences.edit().putBoolean(Key.NEVER_SHOW_ADMIN_APP_ADS, neverShowAdminForQuizAppAds).apply()
+
+    fun getNeverShowAdminForQuizAppAds() = preferences.getBoolean(Key.NEVER_SHOW_ADMIN_APP_ADS, false)
+
     fun getAccessToken(): String? = preferences.getString(Key.ACCESS_TOKEN, null)
 
     fun setAccessToken(accessToken: String?) = preferences.edit().putString(Key.ACCESS_TOKEN, accessToken).apply()

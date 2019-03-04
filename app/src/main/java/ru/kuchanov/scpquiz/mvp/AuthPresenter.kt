@@ -23,4 +23,6 @@ interface AuthPresenter<T : BaseFragment<out AuthView, out BasePresenter<out Aut
     }
 
     fun onAuthSuccess()
+
+//    fun onAuthCanceled()
 }
