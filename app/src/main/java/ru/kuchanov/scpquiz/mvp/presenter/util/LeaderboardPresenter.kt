@@ -36,7 +36,6 @@ class LeaderboardPresenter @Inject constructor(
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor
 ) : BasePresenter<LeaderboardView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor), AuthPresenter<LeaderboardFragment> {
-
     private val userList = mutableListOf<LeaderboardViewModel>()
 
     override lateinit var authDelegate: AuthDelegate<LeaderboardFragment>
@@ -56,6 +55,10 @@ class LeaderboardPresenter @Inject constructor(
 
     override fun onAuthCanceled() {
         viewState.showMessage(R.string.canceled_auth)
+    }
+
+    override fun onAuthError() {
+        viewState.showMessage(appContext.getString(R.string.auth_retry))
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

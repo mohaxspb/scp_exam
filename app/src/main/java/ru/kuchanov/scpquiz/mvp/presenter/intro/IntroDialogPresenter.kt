@@ -51,8 +51,8 @@ class IntroDialogPresenter @Inject constructor(
     override fun onAuthSuccess() {
         Single
                 .fromCallable {
-                    appDatabase.finishedLevelsDao().getCountWhereLevelAvailableTrueFinishedLevels() > 5 ||
-                            appDatabase.finishedLevelsDao().getCountWhereSomethingExceptLevelAvailableTrueFinishedLevels() > 0
+                    appDatabase.finishedLevelsDao().getCountWhereLevelAvailableTrueFinishedLevels() > 5
+                            || appDatabase.finishedLevelsDao().getCountWhereSomethingExceptLevelAvailableTrueFinishedLevels() > 0
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -71,6 +71,11 @@ class IntroDialogPresenter @Inject constructor(
     override fun onAuthCanceled() {
         navigateToFirstLevel()
         viewState.showMessage(R.string.canceled_auth)
+    }
+
+    override fun onAuthError() {
+        viewState.showMessage(appContext.getString(R.string.auth_retry))
+        viewState.showChatActions(generateAuthActions(),ChatActionsGroupType.AUTH)
     }
 
     override lateinit var authDelegate: AuthDelegate<IntroDialogFragment>

@@ -47,6 +47,10 @@ class ScpSettingsPresenter @Inject constructor(
         viewState.showMessage(R.string.canceled_auth)
     }
 
+    override fun onAuthError() {
+        viewState.showMessage(appContext.getString(R.string.auth_retry))
+    }
+
     override lateinit var authDelegate: AuthDelegate<ScpSettingsFragment>
 
     override fun getAuthView(): SettingsView = viewState
