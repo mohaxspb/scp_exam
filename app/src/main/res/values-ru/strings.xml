@@ -109,6 +109,12 @@
     <string name="part_complete_levels_text">%d частично пройденных</string>
     <string name="success_purchase">Успешная покупка</string>
     <string name="need_to_login">Агент, необходима авторизация из настроек</string>
+    <string name="auth_error_text">Ошибка при авторизации</string>
+    <string name="suggestion_go_to_admin_app">Агент, ты можешь составлять собственные вопросы в этом приложении</string>
+    <string name="chat_action_admin_app_download">Загрузить приложение</string>
+    <string name="chat_action_dont_want_to_download_app_and_never_show">Пропустить это предложение, никогда не показывать и продолжить тест</string>
+    <string name="admin_app_package_name">com.scp.adminforquiz</string>
+    <string name="chat_action_skip_suggestion_of_admin_app">Пропустить мимо ушей</string>
 
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>

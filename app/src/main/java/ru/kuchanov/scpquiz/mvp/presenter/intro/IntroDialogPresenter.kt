@@ -51,23 +51,20 @@ class IntroDialogPresenter @Inject constructor(
     override fun onAuthSuccess() {
         Single
                 .fromCallable {
-                    appDatabase
-                            .finishedLevelsDao()
-                            .getCountWhereLevelAvailableTrueFinishedLevels() > 5
-                            || appDatabase
-                            .finishedLevelsDao()
-                            .getCountWhereSomethingExceptLevelAvailableTrueFinishedLevels() > 0
+                    appDatabase.finishedLevelsDao().getCountWhereLevelAvailableTrueFinishedLevels() > 5 ||
+                            appDatabase.finishedLevelsDao().getCountWhereSomethingExceptLevelAvailableTrueFinishedLevels() > 0
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onSuccess = { hasAnyGameAction ->
                             if (hasAnyGameAction) {
-                                navigateToAllQuizscreen()
+                                navigateToAllQuizScreen()
                             } else {
                                 navigateToFirstLevel()
                             }
-                        }, onError = { Timber.e(it) }
+                        },
+                        onError = { Timber.e(it) }
                 )
     }
 
@@ -209,7 +206,7 @@ class IntroDialogPresenter @Inject constructor(
                 )
     }
 
-    private fun navigateToAllQuizscreen() {
+    private fun navigateToAllQuizScreen() {
         Single.timer(1, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

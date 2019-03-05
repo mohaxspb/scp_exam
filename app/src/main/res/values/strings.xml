@@ -124,6 +124,12 @@
     <string name="part_complete_levels_text">%d partially completed </string>
     <string name="success_purchase">Success purchase</string>
     <string name="need_to_login">Please, auth first from settings</string>
+    <string name="auth_error_text">Authorization error</string>
+    <string name="suggestion_go_to_admin_app">Agent, you can make your own questions in this app</string>
+    <string name="chat_action_admin_app_download">Download application</string>
+    <string name="chat_action_dont_want_to_download_app_and_never_show">Skip that suggestion, never show and continue playing</string>
+    <string name="admin_app_package_name">com.scp.adminforquiz</string>
+    <string name="chat_action_skip_suggestion_of_admin_app">Skip past the ears</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>

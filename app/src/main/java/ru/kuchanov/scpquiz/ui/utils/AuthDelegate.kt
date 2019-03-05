@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.ui.utils
 
+import android.app.Activity
 import android.content.Intent
 import android.support.v4.app.FragmentActivity
 import com.facebook.CallbackManager
@@ -33,7 +34,6 @@ import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.model.CommonUserData
 import ru.kuchanov.scpquiz.model.api.QuizConverter
-import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.AuthPresenter
 import ru.kuchanov.scpquiz.mvp.AuthView
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -143,19 +143,23 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                 Timber.d("Error: $error")
             }
         }
-        Timber.d("onActivityResult: $resultCode")
-        if (!VKSdk.onActivityResult(requestCode, resultCode, data, vkCallback)) {
-            when (requestCode) {
-                REQUEST_CODE_GOOGLE -> {
-                    val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
-                    Timber.d("result: ${result.isSuccess}/${result.signInAccount}")
-                    if (result.isSuccess) {
-                        socialLogin(Constants.Social.GOOGLE, result.signInAccount!!.idToken)
-                    } else {
-                        Timber.e("ERROR : %s", result.status)
+        if (resultCode != Activity.RESULT_OK) {
+//            authPresenter.onAuthCanceled()
+        } else {
+            Timber.d("onActivityResult: $resultCode")
+            if (!VKSdk.onActivityResult(requestCode, resultCode, data, vkCallback)) {
+                when (requestCode) {
+                    REQUEST_CODE_GOOGLE -> {
+                        val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+                        Timber.d("result: ${result.isSuccess}/${result.signInAccount}")
+                        if (result.isSuccess) {
+                            socialLogin(Constants.Social.GOOGLE, result.signInAccount!!.idToken)
+                        } else {
+                            Timber.e("ERROR : %s", result.status)
+                        }
                     }
+                    else -> callbackManager.onActivityResult(requestCode, resultCode, data)
                 }
-                else -> callbackManager.onActivityResult(requestCode, resultCode, data)
             }
         }
     }
@@ -183,6 +187,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                         .subscribeBy(
                                 onComplete = { authPresenter.onAuthSuccess() },
                                 onError = {
+                                    //TODO doctor need to suggest authAgain by Chat dialog
                                     Timber.e(it)
                                     fragment.showMessage(it.toString())
                                 }
