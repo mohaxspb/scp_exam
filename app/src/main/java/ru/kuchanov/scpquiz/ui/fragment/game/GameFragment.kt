@@ -391,6 +391,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         super.onPause()
         authDelegate.onPause()
     }
+
     override fun clearChatMessages() = chatMessagesView.removeAllViews()
 
     override fun onNeedToOpenSettings() {
