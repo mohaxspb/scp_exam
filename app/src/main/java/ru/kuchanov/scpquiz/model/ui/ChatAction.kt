@@ -24,5 +24,6 @@ enum class ChatActionsGroupType {
     NUMBER_ENTERED,
     SUGGESTIONS,
     GAIN_COINS,
-    AUTH
+    AUTH,
+    GO_TO_ADMIN_APP
 }

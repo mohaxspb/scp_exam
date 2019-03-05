@@ -3,9 +3,12 @@ package ru.kuchanov.scpquiz.mvp.presenter.game
 import android.app.Application
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
+import android.support.v4.content.ContextCompat.startActivity
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -32,6 +35,7 @@ import ru.kuchanov.scpquiz.ui.fragment.game.GameFragment
 import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
 import ru.kuchanov.scpquiz.ui.view.KeyboardView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
+import ru.kuchanov.scpquiz.utils.addTo
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -67,16 +71,8 @@ class GamePresenter @Inject constructor(
 
     override lateinit var authDelegate: AuthDelegate<GameFragment>
 
-    companion object {
-        const val PERIODIC_MESSAGES_INITIAL_DELAY = 30L
-        const val PERIODIC_MESSAGES_PERIOD = 60L
-        const val PERIODIC_SUGGESTIONS_INITIAL_DELAY = 90L
-        const val PERIODIC_SUGGESTIONS_PERIOD = 180L
-        const val PERIODIC_GAME_AUTH_INITIAL_DELAY = 180L
-        const val PERIODIC_GAME_AUTH_PERIOD = 600L
-    }
-
     enum class EnterType {
+
         NAME, NUMBER, NOT_CHOOSED
     }
 
@@ -142,14 +138,61 @@ class GamePresenter @Inject constructor(
         return chatActions
     }
 
+    private fun generateGoToAdminAppActions(): List<ChatAction> {
+        val chatActions = mutableListOf<ChatAction>()
+
+        val messageAdminAppLink = appContext.getString(R.string.chat_action_admin_app_download)
+        chatActions += ChatAction(
+                messageAdminAppLink,
+                onActionClicked(messageAdminAppLink) { onGoToAdminAppClicked() },
+                R.drawable.selector_chat_action_accent
+        )
+
+        val skipSuggestionOfAdminApp = appContext.getString(R.string.chat_action_skip_suggestion_of_admin_app)
+        chatActions += ChatAction(
+                skipSuggestionOfAdminApp,
+                onActionClicked(skipSuggestionOfAdminApp) { onSkipSuggestionOfAdminAppClicked() },
+                R.drawable.selector_chat_action_accent
+        )
+
+        val messageDontWantToDownloadAppAndNeverShow = appContext.getString(R.string.chat_action_dont_want_to_download_app_and_never_show)
+        chatActions += ChatAction(
+                messageDontWantToDownloadAppAndNeverShow,
+                onActionClicked(messageDontWantToDownloadAppAndNeverShow) { onSkipDownloadAdminAppAndNeverShowSuggestionClicked() },
+                R.drawable.selector_chat_action_accent
+        )
+
+        return chatActions
+    }
+
     private fun showAuthChatActions() {
         viewState.showChatMessage(appContext.getString(R.string.message_auth_suggestion_game), quizLevelInfo.doctor)
         viewState.showChatActions(generateAuthActions(), ChatActionsGroupType.AUTH)
     }
 
+    private fun showGoToAdminAppChatActions() {
+        viewState.showChatMessage(appContext.getString(R.string.suggestion_go_to_admin_app), quizLevelInfo.doctor)
+        viewState.showChatActions(generateGoToAdminAppActions(), ChatActionsGroupType.GO_TO_ADMIN_APP)
+    }
+
     private fun onSkipAuthAndNeverShowClicked() {
         preferences.setNeverShowAuth(true)
     }
+
+    private fun onGoToAdminAppClicked() {
+        val adminForQuizAppPackageName = appContext.getString(ru.kuchanov.scpquiz.R.string.admin_app_package_name)
+        try {
+            startActivity(appContext, Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$adminForQuizAppPackageName")), null)
+        } catch (error: android.content.ActivityNotFoundException) {
+            startActivity(appContext, Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$adminForQuizAppPackageName")), null)
+        }
+    }
+
+    private fun onSkipDownloadAdminAppAndNeverShowSuggestionClicked() {
+        preferences.setNeverShowAdminForQuizAppAds(true)
+    }
+
+    private fun onSkipSuggestionOfAdminAppClicked() {}
 
     private fun onActionClicked(text: String, onCompleteAction: () -> Unit): (Int) -> Unit =
             { index ->
@@ -189,7 +232,7 @@ class GamePresenter @Inject constructor(
         if (periodicMessagesCompositeDisposable.isDisposed) {
             periodicMessagesCompositeDisposable = CompositeDisposable()
         }
-        periodicMessagesCompositeDisposable.add(Flowable.interval(
+        Flowable.interval(
                 PERIODIC_SUGGESTIONS_INITIAL_DELAY,
                 PERIODIC_SUGGESTIONS_PERIOD,
                 TimeUnit.SECONDS
@@ -204,9 +247,10 @@ class GamePresenter @Inject constructor(
                     )
                     viewState.showChatActions(generateSuggestions(), ChatActionsGroupType.SUGGESTIONS)
                 }
-        )
+                .addTo(periodicMessagesCompositeDisposable)
+
         if (!preferences.getNeverShowAuth() && preferences.getTrueAccessToken() == null) {
-            periodicMessagesCompositeDisposable.add(Flowable.interval(
+            Flowable.interval(
                     PERIODIC_GAME_AUTH_INITIAL_DELAY,
                     PERIODIC_GAME_AUTH_PERIOD,
                     TimeUnit.SECONDS
@@ -218,8 +262,32 @@ class GamePresenter @Inject constructor(
                             showAuthChatActions()
                         }
                     }
-            )
+                    .addTo(periodicMessagesCompositeDisposable)
         }
+
+        Maybe.fromCallable {
+            if (preferences.getTrueAccessToken() != null && !preferences.getNeverShowAdminForQuizAppAds() && appDatabase.finishedLevelsDao().getCountOfFullyFinishedLevels() > 4) {
+                true
+            } else {
+                null
+            }
+        }
+                .flatMapObservable {
+                    Flowable.interval(
+                            PERIODIC_GO_TO_ADMIN_APP_INITIAL_DELAY,
+                            PERIODIC_GO_TO_ADMIN_APP_PERIOD,
+                            TimeUnit.SECONDS
+                    )
+                            .toObservable()
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy {
+                    if (preferences.getTrueAccessToken() != null && !preferences.getNeverShowAdminForQuizAppAds()) {
+                        showGoToAdminAppChatActions()
+                    }
+                }
+                .addTo(periodicMessagesCompositeDisposable)
     }
 
     private fun generateSuggestions(): List<ChatAction> {
@@ -1080,5 +1148,16 @@ class GamePresenter @Inject constructor(
                 quizLevelInfo.doctor
         )
         viewState.showChatActions(generateSuggestions(), ChatActionsGroupType.SUGGESTIONS)
+    }
+
+    companion object {
+        const val PERIODIC_MESSAGES_INITIAL_DELAY = 30L
+        const val PERIODIC_MESSAGES_PERIOD = 60L
+        const val PERIODIC_SUGGESTIONS_INITIAL_DELAY = 90L
+        const val PERIODIC_SUGGESTIONS_PERIOD = 180L
+        const val PERIODIC_GAME_AUTH_INITIAL_DELAY = 180L
+        const val PERIODIC_GAME_AUTH_PERIOD = 600L
+        const val PERIODIC_GO_TO_ADMIN_APP_INITIAL_DELAY = 60L
+        const val PERIODIC_GO_TO_ADMIN_APP_PERIOD = 120L
     }
 }
