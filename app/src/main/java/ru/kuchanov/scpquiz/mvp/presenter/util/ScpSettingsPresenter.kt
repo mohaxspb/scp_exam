@@ -43,6 +43,10 @@ class ScpSettingsPresenter @Inject constructor(
         router.exit()
     }
 
+    override fun onAuthCanceled() {
+        viewState.showMessage(R.string.canceled_auth)
+    }
+
     override lateinit var authDelegate: AuthDelegate<ScpSettingsFragment>
 
     override fun getAuthView(): SettingsView = viewState

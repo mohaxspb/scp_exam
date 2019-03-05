@@ -143,10 +143,10 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                 Timber.d("Error: $error")
             }
         }
+        Timber.d("onActivityResult: $resultCode")
         if (resultCode != Activity.RESULT_OK) {
-//            authPresenter.onAuthCanceled()
+            authPresenter.onAuthCanceled()
         } else {
-            Timber.d("onActivityResult: $resultCode")
             if (!VKSdk.onActivityResult(requestCode, resultCode, data, vkCallback)) {
                 when (requestCode) {
                     REQUEST_CODE_GOOGLE -> {

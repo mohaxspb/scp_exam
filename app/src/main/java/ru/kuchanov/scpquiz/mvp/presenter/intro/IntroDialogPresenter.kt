@@ -68,6 +68,10 @@ class IntroDialogPresenter @Inject constructor(
                 )
     }
 
+    override fun onAuthCanceled() {
+        navigateToFirstLevel()
+        viewState.showMessage(R.string.canceled_auth)
+    }
 
     override lateinit var authDelegate: AuthDelegate<IntroDialogFragment>
 

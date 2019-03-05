@@ -59,7 +59,10 @@ class GamePresenter @Inject constructor(
     override fun onAuthSuccess() {
         preferences.setIntroDialogShown(true)
         viewState.showMessage(R.string.settings_success_auth)
+    }
 
+    override fun onAuthCanceled() {
+        viewState.showMessage(R.string.canceled_auth)
     }
 
     override lateinit var authDelegate: AuthDelegate<GameFragment>
