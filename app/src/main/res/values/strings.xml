@@ -125,6 +125,7 @@
     <string name="success_purchase">Success purchase</string>
     <string name="need_to_login">Please, auth first from settings</string>
     <string name="canceled_auth">Error while auth, agent</string>
+    <string name="auth_retry">Server error, you can retry auth, agent</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>

@@ -34,7 +34,6 @@ import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.model.CommonUserData
 import ru.kuchanov.scpquiz.model.api.QuizConverter
-import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.mvp.AuthPresenter
 import ru.kuchanov.scpquiz.mvp.AuthView
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
@@ -190,6 +189,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                                 onError = {
                                     Timber.e(it)
                                     fragment.showMessage(it.toString())
+                                    authPresenter.onAuthError()
                                 }
                         )
         )
