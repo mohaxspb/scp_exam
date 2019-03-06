@@ -97,7 +97,7 @@ class LevelsPresenter @Inject constructor(
     private fun loadLevels() {
         Flowable
                 .combineLatest(
-                        appDatabase.quizDao().getAll(),
+                        appDatabase.quizDao().getAllForLang(preferences.getLang()),
                         appDatabase.finishedLevelsDao().getAll(),
                         appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
                         Function3 { quizes: List<Quiz>, finishedLevels: List<FinishedLevel>, player: User ->

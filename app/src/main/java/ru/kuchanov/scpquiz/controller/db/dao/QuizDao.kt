@@ -19,16 +19,22 @@ interface QuizDao {
     fun getCount(): Long
 
     /**
-     * returns all quizes, sorted by ID ASC
+     * returns all quizzes, sorted by ID ASC
      */
     @Query("SELECT * FROM Quiz ORDER BY id ASC")
     fun getAll(): Flowable<List<Quiz>>
+
+    @Query("SELECT * FROM Quiz WHERE id IN(SELECT quizId FROM QuizTranslation WHERE langCode = :langCode ) ORDER BY id ASC")
+    fun getAllForLang(langCode: String): Flowable<List<Quiz>>
 
     @Query("SELECT * FROM Quiz ORDER BY id ASC")
     fun getAllList(): List<Quiz>
 
     @Query("SELECT * FROM Quiz ORDER BY RANDOM() LIMIT :count")
     fun getRandomQuizes(count: Int = 1): Flowable<List<Quiz>>
+
+    @Query("SELECT * FROM QuizTranslation WHERE langCode = :lang ORDER BY RANDOM() LIMIT :count")
+    fun getRandomQuizTranslationsForThisLang(count: Int = 1, lang: String): Single<List<QuizTranslation>>
 
     @Query("SELECT * FROM Quiz WHERE id = :id")
     fun getByIdWithUpdates(id: Long): Flowable<List<Quiz>>
