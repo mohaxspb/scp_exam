@@ -66,7 +66,7 @@ class GamePresenter @Inject constructor(
 
     override fun onAuthError() {
         viewState.showMessage(appContext.getString(R.string.auth_retry))
-        viewState.showChatActions(generateAuthActions(),ChatActionsGroupType.AUTH)
+        viewState.showChatActions(generateAuthActions(), ChatActionsGroupType.AUTH)
     }
 
     override lateinit var authDelegate: AuthDelegate<GameFragment>
@@ -180,7 +180,7 @@ class GamePresenter @Inject constructor(
     }
 
     private fun onGoToAdminAppClicked() {
-        val adminForQuizAppPackageName = appContext.getString(ru.kuchanov.scpquiz.R.string.admin_app_package_name)
+        val adminForQuizAppPackageName = appContext.getString(R.string.admin_app_package_name)
         try {
             startActivity(appContext, Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$adminForQuizAppPackageName")), null)
         } catch (error: android.content.ActivityNotFoundException) {
@@ -437,7 +437,34 @@ class GamePresenter @Inject constructor(
                 },
                 R.drawable.selector_chat_action_red
         )
-        //todo add other options
+
+        val buyCoinsActionText0 = appContext.getString(R.string.chat_action_buy_coins, Constants.COINS_FOR_SKU_INAPP_0)
+        actions += ChatAction(
+                buyCoinsActionText0,
+                onActionClicked(buyCoinsActionText0) { onBuyCoinsActionClicked(Constants.SKU_INAPP_BUY_COINS_0) },
+                R.drawable.selector_chat_action_red
+        )
+
+        val buyCoinsActionText1 = appContext.getString(R.string.chat_action_buy_coins, Constants.COINS_FOR_SKU_INAPP_1)
+        actions += ChatAction(
+                buyCoinsActionText1,
+                onActionClicked(buyCoinsActionText1) { onBuyCoinsActionClicked(Constants.SKU_INAPP_BUY_COINS_1) },
+                R.drawable.selector_chat_action_red
+        )
+
+        val buyCoinsActionText2 = appContext.getString(R.string.chat_action_buy_coins, Constants.COINS_FOR_SKU_INAPP_2)
+        actions += ChatAction(
+                buyCoinsActionText2,
+                onActionClicked(buyCoinsActionText2) { onBuyCoinsActionClicked(Constants.SKU_INAPP_BUY_COINS_2) },
+                R.drawable.selector_chat_action_red
+        )
+
+        val buyCoinsActionText3 = appContext.getString(R.string.chat_action_buy_coins, Constants.COINS_FOR_SKU_INAPP_3)
+        actions += ChatAction(
+                buyCoinsActionText3,
+                onActionClicked(buyCoinsActionText3) { onBuyCoinsActionClicked(Constants.SKU_INAPP_BUY_COINS_3) },
+                R.drawable.selector_chat_action_red
+        )
 
         val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_no)
         val noActionText = suggestionsMessages[Random().nextInt(suggestionsMessages.size)]
@@ -454,6 +481,12 @@ class GamePresenter @Inject constructor(
         )
 
         return actions
+    }
+
+    private fun onBuyCoinsActionClicked(skuInapp: String) {
+
+        Timber.d("onBuyCoinsActionClicked : $skuInapp")
+        viewState.onNeedToBuyCoins(skuInapp)
     }
 
     private fun onNeedToShowVideoAds() {

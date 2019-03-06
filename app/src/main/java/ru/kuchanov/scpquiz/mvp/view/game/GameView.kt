@@ -37,6 +37,9 @@ interface GameView : BaseView, AuthView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onNeedToShowRewardedVideo()
 
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun onNeedToBuyCoins(skuId: String)
+
     fun addCharToNameInput(char: Char, charId: Int)
     fun addCharToNumberInput(char: Char, charId: Int)
     //    fun removeCharFromInput(charId: Int, indexOfChild: Int, isScpNameCompleted:Boolean)

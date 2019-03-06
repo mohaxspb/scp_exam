@@ -422,4 +422,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun onNeedToShowRewardedVideo() = (activity as BaseActivity<*, *>).showRewardedVideo()
+
+    override fun onNeedToBuyCoins(skuId: String) = (activity as BaseActivity<*, *>).buyCoins(skuId)
+
 }
