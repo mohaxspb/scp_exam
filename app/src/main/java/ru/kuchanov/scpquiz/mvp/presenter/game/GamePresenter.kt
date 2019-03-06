@@ -484,9 +484,9 @@ class GamePresenter @Inject constructor(
     }
 
     private fun onBuyCoinsActionClicked(skuInapp: String) {
-        //TODO
-        Timber.d("onBuyCoinsActionClicked : $skuInapp")
 
+        Timber.d("onBuyCoinsActionClicked : $skuInapp")
+        viewState.onNeedToBuyCoins(skuInapp)
     }
 
     private fun onNeedToShowVideoAds() {
