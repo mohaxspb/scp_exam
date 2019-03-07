@@ -200,8 +200,11 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
     }
 
     override fun showLang(langString: String) {
-        val langRes = getIconForLang(langString)
-        languageImageView.setImageResource(langRes)
+        if (langString == "en") {
+            languageImageView.countryCode = "gb"
+        } else {
+            languageImageView.countryCode = langString
+        }
     }
 
     override fun showLangsChooser(langs: Set<String>, lang: String) {
@@ -254,13 +257,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
     }
 
     companion object {
-
         fun newInstance() = ScpSettingsFragment()
-
-        fun getIconForLang(langString: String) = when (langString) {
-            "ru" -> R.drawable.ic_ru
-            else -> R.drawable.ic_en
-        }
     }
 }
 
