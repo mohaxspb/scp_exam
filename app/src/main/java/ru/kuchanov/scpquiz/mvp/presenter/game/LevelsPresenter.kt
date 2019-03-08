@@ -18,11 +18,13 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
+import ru.kuchanov.scpquiz.controller.repository.SettingsRepository
 import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.game.LevelsView
 import ru.kuchanov.scpquiz.utils.BitmapUtils
+import ru.kuchanov.scpquiz.utils.addTo
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -35,7 +37,8 @@ class LevelsPresenter @Inject constructor(
         override var router: ScpRouter,
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
-        override var transactionInteractor: TransactionInteractor
+        override var transactionInteractor: TransactionInteractor,
+        val settingsRepository: SettingsRepository
 ) : BasePresenter<LevelsView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor) {
 
     lateinit var player: User
@@ -97,7 +100,9 @@ class LevelsPresenter @Inject constructor(
     private fun loadLevels() {
         Flowable
                 .combineLatest(
-                        appDatabase.quizDao().getAllForLang(preferences.getLang()),
+                        settingsRepository.observeLanguage()
+                                .doOnNext { quizProgressStates.clear() }
+                                .flatMap { appDatabase.quizDao().getAllForLang(it) },
                         appDatabase.finishedLevelsDao().getAll(),
                         appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
                         Function3 { quizes: List<Quiz>, finishedLevels: List<FinishedLevel>, player: User ->
@@ -149,6 +154,7 @@ class LevelsPresenter @Inject constructor(
                             Timber.e(it, "error while load levels")
                         }
                 )
+                .addTo(compositeDisposable)
     }
 
     fun onLevelsClick() {

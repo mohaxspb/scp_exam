@@ -200,6 +200,7 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
     }
 
     override fun showLang(langString: String) {
+        Timber.d("showLang: $langString")
         if (langString == "en") {
             languageImageView.countryCode = "gb"
         } else {
