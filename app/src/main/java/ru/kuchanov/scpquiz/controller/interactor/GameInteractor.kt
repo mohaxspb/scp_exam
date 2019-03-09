@@ -9,7 +9,6 @@ import io.reactivex.functions.Function6
 import io.reactivex.schedulers.Schedulers
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
-import ru.kuchanov.scpquiz.controller.repository.SettingsRepository
 import ru.kuchanov.scpquiz.model.db.*
 import ru.kuchanov.scpquiz.model.ui.QuizLevelInfo
 import timber.log.Timber
@@ -17,18 +16,16 @@ import javax.inject.Inject
 
 class GameInteractor @Inject constructor(
         private val appDatabase: AppDatabase,
-        private val preferenceManager: MyPreferenceManager,
-        private val settingsRepository: SettingsRepository
+        private val preferenceManager: MyPreferenceManager
 ) {
 
     fun getLevelInfo(quizId: Long): Flowable<QuizLevelInfo> = Flowable.combineLatest(
-            settingsRepository.observeLanguage()
-                    .flatMap { getQuiz(quizId).doOnNext { Timber.d("getQuiz") } },
-            getRandomTranslations().doOnNext { Timber.d(" getRandomTranslations()") },
-            getPlayer().doOnNext { Timber.d("getPlayer()") },
-            getDoctor().doOnNext { Timber.d("getDoctor()") },
-            getFinishedLevel(quizId).doOnNext { Timber.d("getFinishedLevel(quizId)") },
-            getNextQuizIdAndFinishedLevel(quizId).doOnNext { Timber.d("getNextQuizIdAndFinishedLevel") },
+            getQuiz(quizId),
+            getRandomTranslations(),
+            getPlayer(),
+            getDoctor(),
+            getFinishedLevel(quizId),
+            getNextQuizIdAndFinishedLevel(quizId),
             Function6 { quiz: Quiz,
                         randomTranslations: List<QuizTranslation>,
                         player: User,
@@ -109,9 +106,9 @@ class GameInteractor @Inject constructor(
             .toFlowable()
 
     fun increaseScore(score: Int): Completable = Completable.fromAction {
-        with(appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet()) {
-            this.score += score
-            appDatabase.userDao().update(this).toLong()
+        with(appDatabase.userDao().getOneByRoleSync(UserRole.PLAYER)) {
+            this!!.score += score
+            appDatabase.userDao().update(this!!).toLong()
         }
     }
 }

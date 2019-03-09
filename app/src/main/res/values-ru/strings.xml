@@ -117,6 +117,7 @@
     <string name="chat_action_skip_suggestion_of_admin_app">Пропустить мимо ушей</string>
     <string name="canceled_auth">Агент, ошибка при авторизации</string>
     <string name="auth_retry">Ошибка сервера, ты можешь попробовать заново</string>
+    <string name="toast_text_changed_language">Язык сменён</string>
 
     <string-array name="intro_dialog_texts">
         <item>Здравствуйте, %s</item>

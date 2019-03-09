@@ -1,7 +1,6 @@
 package ru.kuchanov.scpquiz.mvp.presenter.util
 
 import android.app.Application
-import android.app.ApplicationErrorReport
 import android.content.Intent
 import com.arellomobile.mvp.InjectViewState
 import com.google.android.gms.ads.MobileAds
@@ -178,6 +177,8 @@ class ScpSettingsPresenter @Inject constructor(
 
     fun onLangSelected(selectedLang: String) {
         settingsRepository.setLanguage(selectedLang)
+        viewState.showMessage(R.string.toast_text_changed_language)
+        router.newRootScreen(Constants.Screens.QUIZ_LIST)
     }
 
     fun onCoinsClicked() = router.navigateTo(Constants.Screens.MONETIZATION)

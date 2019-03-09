@@ -437,7 +437,6 @@ class GamePresenter @Inject constructor(
                 },
                 R.drawable.selector_chat_action_red
         )
-        //todo add other options
 
         val suggestionsMessages = appContext.resources.getStringArray(R.array.messages_suggestion_no)
         val noActionText = suggestionsMessages[Random().nextInt(suggestionsMessages.size)]
