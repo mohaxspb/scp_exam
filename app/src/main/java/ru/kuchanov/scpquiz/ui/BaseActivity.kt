@@ -235,4 +235,8 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
             loadRewardedVideoAd()
         }
     }
+
+    fun buyCoins(skuId: String) {
+        billingDelegate.startPurchaseFlow(skuId)
+    }
 }
