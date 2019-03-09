@@ -13,13 +13,13 @@ import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LangViewModel
 import ru.kuchanov.scpquiz.ui.fragment.util.ScpSettingsFragment
 
 class DelegateLang(
-    private val clickListener: (String) -> Unit
+        private val clickListener: (String) -> Unit
 ) : AbsListItemAdapterDelegate<LangViewModel, MyListItem, DelegateLang.LangViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup): LangViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(
-            R.layout.list_item_lang,
-            parent,
-            false
+                R.layout.list_item_lang,
+                parent,
+                false
         )
         return LangViewHolder(view)
     }
@@ -27,16 +27,19 @@ class DelegateLang(
     override fun isForViewType(item: MyListItem, items: MutableList<MyListItem>, position: Int) = item is LangViewModel
 
     override fun onBindViewHolder(item: LangViewModel,
-        viewHolder: LangViewHolder,
-        payloads: MutableList<Any>
+                                  viewHolder: LangViewHolder,
+                                  payloads: MutableList<Any>
     ) = with(viewHolder.itemView) {
-        languageImageView.setImageResource(ScpSettingsFragment.getIconForLang(item.lang))
-
         languageLabelTextView.text = item.lang
+        if (item.lang == "en") {
+            languageImageView.countryCode = "gb"
+        } else {
+            languageImageView.countryCode = item.lang
+        }
         languageLabelTextView.setTextColor(
-            ContextCompat.getColor(
-                context,
-                if (!item.selected) android.R.color.white else android.R.color.black)
+                ContextCompat.getColor(
+                        context,
+                        if (!item.selected) android.R.color.white else android.R.color.black)
         )
 
         setBackgroundResource(if (item.selected) android.R.color.white else R.color.bg_grey_transparent)

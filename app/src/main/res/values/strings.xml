@@ -133,6 +133,7 @@
     <string name="canceled_auth">Error while auth, agent</string>
     <string name="auth_retry">Server error, you can retry auth, agent</string>
     <string name="chat_action_buy_coins">Buy %d repticoins</string>
+    <string name="toast_text_changed_language">Language successfully changed</string>
 
     <string-array name="intro_dialog_texts">
         <item>Hello, %s</item>

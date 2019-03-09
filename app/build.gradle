@@ -206,6 +206,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.5'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
+    implementation 'com.jakewharton.rxrelay2:rxrelay:2.1.0'
 
     //db
     def roomVersion = "1.1.1"
@@ -265,6 +266,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     testImplementation('com.android.support.test:runner:1.0.2')
     testImplementation('com.android.support.test:rules:1.0.2')
+
+    //flags
+    implementation 'com.github.KaKaVip:Android-Flag-Kit:v0.1'
 }
 //google
 apply plugin: 'com.google.gms.google-services'

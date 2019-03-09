@@ -16,6 +16,7 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.interactor.TransactionInteractor
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
+import ru.kuchanov.scpquiz.controller.repository.SettingsRepository
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.model.db.generateRandomName
 import ru.kuchanov.scpquiz.mvp.AuthPresenter
@@ -34,7 +35,8 @@ class ScpSettingsPresenter @Inject constructor(
         override var router: ScpRouter,
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
-        override var transactionInteractor: TransactionInteractor
+        override var transactionInteractor: TransactionInteractor,
+        private val settingsRepository: SettingsRepository
 ) : BasePresenter<SettingsView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor), AuthPresenter<ScpSettingsFragment> {
 
     override fun onAuthSuccess() {
@@ -57,7 +59,8 @@ class ScpSettingsPresenter @Inject constructor(
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        viewState.showLang(preferences.getLang())
+        settingsRepository.observeLanguage()
+                .subscribeBy { viewState.showLang(it) }
         viewState.showSound(preferences.isSoundEnabled())
         viewState.showVibration(preferences.isVibrationEnabled())
     }
@@ -173,8 +176,9 @@ class ScpSettingsPresenter @Inject constructor(
     fun onPrivacyPolicyClicked() = IntentUtils.openUrl(appContext, Constants.PRIVACY_POLICY_URL)
 
     fun onLangSelected(selectedLang: String) {
-        preferences.setLang(selectedLang)
-        viewState.showLang(preferences.getLang())
+        settingsRepository.setLanguage(selectedLang)
+        viewState.showMessage(R.string.toast_text_changed_language)
+        router.newRootScreen(Constants.Screens.QUIZ_LIST)
     }
 
     fun onCoinsClicked() = router.navigateTo(Constants.Screens.MONETIZATION)
