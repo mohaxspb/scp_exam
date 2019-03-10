@@ -19,6 +19,7 @@ import ru.kuchanov.scpquiz.controller.db.AppDatabase
 import ru.kuchanov.scpquiz.controller.db.migrations.Migrations
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.controller.navigation.ScpRouter
+import ru.kuchanov.scpquiz.controller.repository.SettingsRepository
 import ru.kuchanov.scpquiz.model.api.QuizConverter
 import ru.kuchanov.scpquiz.model.util.QuizFilter
 import ru.terrakok.cicerone.Cicerone
@@ -203,5 +204,7 @@ class AppModule(context: Context) : Module() {
         bind(TransactionApi::class.java).toInstance(transactionRetrofit.create(TransactionApi::class.java))
 
         bind(ApiClient::class.java)
+
+        bind(SettingsRepository::class.java).singletonInScope()
     }
 }

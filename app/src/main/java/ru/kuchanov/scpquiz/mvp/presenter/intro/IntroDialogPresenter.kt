@@ -51,26 +51,32 @@ class IntroDialogPresenter @Inject constructor(
     override fun onAuthSuccess() {
         Single
                 .fromCallable {
-                    appDatabase
-                            .finishedLevelsDao()
-                            .getCountWhereLevelAvailableTrueFinishedLevels() > 5
-                            || appDatabase
-                            .finishedLevelsDao()
-                            .getCountWhereSomethingExceptLevelAvailableTrueFinishedLevels() > 0
+                    appDatabase.finishedLevelsDao().getCountWhereLevelAvailableTrueFinishedLevels() > 5
+                            || appDatabase.finishedLevelsDao().getCountWhereSomethingExceptLevelAvailableTrueFinishedLevels() > 0
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onSuccess = { hasAnyGameAction ->
                             if (hasAnyGameAction) {
-                                navigateToAllQuizscreen()
+                                navigateToAllQuizScreen()
                             } else {
                                 navigateToFirstLevel()
                             }
-                        }, onError = { Timber.e(it) }
+                        },
+                        onError = { Timber.e(it) }
                 )
     }
 
+    override fun onAuthCanceled() {
+        navigateToFirstLevel()
+        viewState.showMessage(R.string.canceled_auth)
+    }
+
+    override fun onAuthError() {
+        viewState.showMessage(appContext.getString(R.string.auth_retry))
+        viewState.showChatActions(generateAuthActions(),ChatActionsGroupType.AUTH)
+    }
 
     override lateinit var authDelegate: AuthDelegate<IntroDialogFragment>
 
@@ -209,7 +215,7 @@ class IntroDialogPresenter @Inject constructor(
                 )
     }
 
-    private fun navigateToAllQuizscreen() {
+    private fun navigateToAllQuizScreen() {
         Single.timer(1, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

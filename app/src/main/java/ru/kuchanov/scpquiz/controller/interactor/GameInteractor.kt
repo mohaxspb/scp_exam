@@ -15,43 +15,43 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class GameInteractor @Inject constructor(
-    private val appDatabase: AppDatabase,
-    private val preferenceManager: MyPreferenceManager
+        private val appDatabase: AppDatabase,
+        private val preferenceManager: MyPreferenceManager
 ) {
 
     fun getLevelInfo(quizId: Long): Flowable<QuizLevelInfo> = Flowable.combineLatest(
-        getQuiz(quizId),
-        getRandomTranslations(),
-        getPlayer(),
-        getDoctor(),
-        getFinishedLevel(quizId),
-        getNextQuizIdAndFinishedLevel(quizId),
-        Function6 { quiz: Quiz,
-            randomTranslations: List<QuizTranslation>,
-            player: User,
-            doctor: User,
-            finishedLevel: FinishedLevel,
-            nextQuizIdAndFinishedLevel: Pair<Long?, FinishedLevel?> ->
-            QuizLevelInfo(
-                quiz = quiz,
-                randomTranslations = randomTranslations,
-                player = player,
-                doctor = doctor,
-                finishedLevel = finishedLevel,
-                nextQuizIdAndFinishedLevel = nextQuizIdAndFinishedLevel
-            )
-        }
+            getQuiz(quizId),
+            getRandomTranslations(),
+            getPlayer(),
+            getDoctor(),
+            getFinishedLevel(quizId),
+            getNextQuizIdAndFinishedLevel(quizId),
+            Function6 { quiz: Quiz,
+                        randomTranslations: List<QuizTranslation>,
+                        player: User,
+                        doctor: User,
+                        finishedLevel: FinishedLevel,
+                        nextQuizIdAndFinishedLevel: Pair<Long?, FinishedLevel?> ->
+                QuizLevelInfo(
+                        quiz = quiz,
+                        randomTranslations = randomTranslations,
+                        player = player,
+                        doctor = doctor,
+                        finishedLevel = finishedLevel,
+                        nextQuizIdAndFinishedLevel = nextQuizIdAndFinishedLevel
+                )
+            }
     )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
     fun updateFinishedLevel(
-        quizId: Long,
-        scpNameFilled: Boolean? = null,
-        scpNumberFilled: Boolean? = null,
-        nameRedundantCharsRemoved: Boolean? = null,
-        numberRedundantCharsRemoved: Boolean? = null,
-        isLevelAvailable: Boolean? = null
+            quizId: Long,
+            scpNameFilled: Boolean? = null,
+            scpNumberFilled: Boolean? = null,
+            nameRedundantCharsRemoved: Boolean? = null,
+            numberRedundantCharsRemoved: Boolean? = null,
+            isLevelAvailable: Boolean? = null
     ): Single<Long> = Single.fromCallable {
         with(appDatabase.finishedLevelsDao().getByIdOrErrorOnce(quizId).blockingGet()) {
             scpNameFilled?.let { this.scpNameFilled = scpNameFilled }
@@ -70,20 +70,14 @@ class GameInteractor @Inject constructor(
 
     fun getNumberOfPartiallyAndFullyFinishedLevels(): Single<Pair<Long, Long>> = Single
             .zip(
-                Single.fromCallable { appDatabase.finishedLevelsDao().getCountOfPartiallyFinishedLevels() },
-                Single.fromCallable { appDatabase.finishedLevelsDao().getCountOfFullyFinishedLevels() },
-                BiFunction { partiallyFinished: Long, fullyFinished: Long -> Pair(partiallyFinished, fullyFinished) }
+                    Single.fromCallable { appDatabase.finishedLevelsDao().getCountOfPartiallyFinishedLevels() },
+                    Single.fromCallable { appDatabase.finishedLevelsDao().getCountOfFullyFinishedLevels() },
+                    BiFunction { partiallyFinished: Long, fullyFinished: Long -> Pair(partiallyFinished, fullyFinished) }
             )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
 
-    private fun getRandomTranslations() = appDatabase.quizDao().getRandomQuizes(2)
-            .flatMap { Flowable.fromIterable(it) }
-            .map {
-                appDatabase.quizDao().getQuizTranslationsByQuizIdAndLang(it.id, preferenceManager.getLang()).first()
-            }
-            .limit(2)
-            .toList()
+    private fun getRandomTranslations() = appDatabase.quizDao().getRandomQuizTranslationsForThisLang(2, preferenceManager.getLang())
             .toFlowable()
 
     private fun getQuiz(quizId: Long) = Single.fromCallable {
@@ -112,9 +106,9 @@ class GameInteractor @Inject constructor(
             .toFlowable()
 
     fun increaseScore(score: Int): Completable = Completable.fromAction {
-        with(appDatabase.userDao().getOneByRole(UserRole.PLAYER).blockingGet()) {
-            this.score += score
-            appDatabase.userDao().update(this).toLong()
+        with(appDatabase.userDao().getOneByRoleSync(UserRole.PLAYER)) {
+            this!!.score += score
+            appDatabase.userDao().update(this!!).toLong()
         }
     }
 }

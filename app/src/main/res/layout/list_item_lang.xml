@@ -17,7 +17,7 @@
         android:padding="@dimen/defaultMargin"
         android:text="@string/settings_language" />
 
-    <ImageView
+    <com.haipq.android.flagkit.FlagImageView
         android:id="@+id/languageImageView"
         android:layout_width="60dp"
         android:layout_height="30dp"

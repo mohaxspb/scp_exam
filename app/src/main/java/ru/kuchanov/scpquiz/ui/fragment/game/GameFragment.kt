@@ -391,6 +391,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         super.onPause()
         authDelegate.onPause()
     }
+
     override fun clearChatMessages() = chatMessagesView.removeAllViews()
 
     override fun onNeedToOpenSettings() {
@@ -421,4 +422,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun onNeedToShowRewardedVideo() = (activity as BaseActivity<*, *>).showRewardedVideo()
+
+    override fun onNeedToBuyCoins(skuId: String) = (activity as BaseActivity<*, *>).buyCoins(skuId)
+
 }
