@@ -3,8 +3,6 @@ package ru.kuchanov.scpquiz.mvp.presenter.game
 import android.app.Application
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
-import android.support.v4.content.ContextCompat.startActivity
 import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Completable
 import io.reactivex.Flowable
@@ -180,12 +178,7 @@ class GamePresenter @Inject constructor(
     }
 
     private fun onGoToAdminAppClicked() {
-        val adminForQuizAppPackageName = appContext.getString(R.string.admin_app_package_name)
-        try {
-            startActivity(appContext, Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$adminForQuizAppPackageName")), null)
-        } catch (error: android.content.ActivityNotFoundException) {
-            startActivity(appContext, Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$adminForQuizAppPackageName")), null)
-        }
+        router.navigateTo(Constants.Screens.PLAY_MARKET)
     }
 
     private fun onSkipDownloadAdminAppAndNeverShowSuggestionClicked() {
