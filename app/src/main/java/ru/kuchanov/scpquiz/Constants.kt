@@ -52,6 +52,7 @@ object Constants {
         const val INTRO_DIALOG = "INTRO_DIALOG"
         const val MONETIZATION = "MONETIZATION"
         const val LEADERBOARD = "LEADERBOARD"
+        const val PLAY_MARKET = "PLAY_MARKET"
     }
 
     object Api {
