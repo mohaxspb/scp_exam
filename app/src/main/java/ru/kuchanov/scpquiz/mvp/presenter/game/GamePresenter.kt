@@ -49,8 +49,8 @@ class GamePresenter @Inject constructor(
         private var gameInteractor: GameInteractor,
         override var transactionInteractor: TransactionInteractor,
         public override var apiClient: ApiClient
-
 ) : BasePresenter<GameView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor), AuthPresenter<GameFragment> {
+
     override fun getAuthView(): GameView = viewState
 
     override fun onAuthSuccess() {

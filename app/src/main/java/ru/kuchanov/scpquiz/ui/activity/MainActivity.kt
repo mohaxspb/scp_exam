@@ -42,6 +42,16 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
 
     override val modules: Array<Module> = arrayOf()
 
+    @InjectPresenter
+    override lateinit var presenter: MainPresenter
+
+    @ProvidePresenter
+    override fun providePresenter(): MainPresenter = scope.getInstance(MainPresenter::class.java)
+
+    override fun getLayoutResId() = R.layout.activity_main
+
+    override fun inject() = Toothpick.inject(this, scope)
+
     override var navigator: Navigator = object : SupportAppNavigator(this, containerId) {
 
         override fun createActivityIntent(context: Context, screenKey: String?, data: Any?): Intent? =
@@ -104,16 +114,6 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
             }
         }
     }
-
-    @InjectPresenter
-    override lateinit var presenter: MainPresenter
-
-    @ProvidePresenter
-    override fun providePresenter(): MainPresenter = scope.getInstance(MainPresenter::class.java)
-
-    override fun getLayoutResId() = R.layout.activity_main
-
-    override fun inject() = Toothpick.inject(this, scope)
 
     override fun showFirstTimeAppodealAdsDialog() {
         Timber.d("showFirstTimeAppodealAdsDialog")
