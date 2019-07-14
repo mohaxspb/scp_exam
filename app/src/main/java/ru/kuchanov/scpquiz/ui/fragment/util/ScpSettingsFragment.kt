@@ -32,6 +32,7 @@ import ru.kuchanov.scpquiz.ui.BaseFragment
 import ru.kuchanov.scpquiz.ui.utils.AuthDelegate
 import ru.kuchanov.scpquiz.ui.utils.GlideApp
 import ru.kuchanov.scpquiz.utils.BitmapUtils
+import ru.kuchanov.scpquiz.utils.LocaleUtils
 import ru.kuchanov.scpquiz.utils.SystemUtils
 import timber.log.Timber
 import toothpick.Toothpick
@@ -199,13 +200,9 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
         progressView.visibility = if (show) View.VISIBLE else View.GONE
     }
 
-    override fun showLang(langString: String) {
-        Timber.d("showLang: $langString")
-        if (langString == "en") {
-            languageImageView.countryCode = "gb"
-        } else {
-            languageImageView.countryCode = langString
-        }
+    override fun showLang(langCode: String) {
+        Timber.d("showLang: $langCode")
+        languageImageView.countryCode = LocaleUtils.countryCodeFromLocale(langCode)
     }
 
     override fun showLangsChooser(langs: Set<String>, lang: String) {
@@ -227,10 +224,12 @@ class ScpSettingsFragment : BaseFragment<SettingsView, ScpSettingsPresenter>(), 
 
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         val manager = AdapterDelegatesManager<List<MyListItem>>()
-        manager.addDelegate(DelegateLang {
-            presenter.onLangSelected(it)
-            popupWindow.dismiss()
-        })
+        manager.addDelegate(
+                DelegateLang {
+                    presenter.onLangSelected(it)
+                    popupWindow.dismiss()
+                }
+        )
         val adapter = ListDelegationAdapter(manager)
         recyclerView.adapter = adapter
         adapter.items = langs.map { LangViewModel(it, it == lang) }

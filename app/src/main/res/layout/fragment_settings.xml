@@ -307,9 +307,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/defaultMarginSmall"
+            android:background="?selectableItemBackground"
             android:gravity="center"
             android:padding="@dimen/defaultMargin"
-            android:text="@string/settings_privacy_policy" />
+            android:text="@string/settings_privacy_policy"
+            android:textColor="@android:color/white" />
 
     </LinearLayout>
 

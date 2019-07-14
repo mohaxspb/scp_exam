@@ -12,6 +12,8 @@ import com.vk.sdk.util.VKUtil
 import ru.kuchanov.scpquiz.App
 import timber.log.Timber
 import java.security.MessageDigest
+import kotlin.math.ln
+import kotlin.math.pow
 
 object SystemUtils {
 
@@ -20,10 +22,10 @@ object SystemUtils {
     @Suppress("unused")
     fun humanReadableByteCount(bytes: Long, si: Boolean): String {
         val unit = if (si) 1000 else 1024
-        if (bytes < unit) return bytes.toString() + " B"
-        val exp = (Math.log(bytes.toDouble()) / Math.log(unit.toDouble())).toInt()
+        if (bytes < unit) return "$bytes B"
+        val exp = (ln(bytes.toDouble()) / ln(unit.toDouble())).toInt()
         val pre = (if (si) "kMGTPE" else "KMGTPE")[exp - 1] + if (si) "" else "i"
-        return String.format("%.1f %sB", bytes / Math.pow(unit.toDouble(), exp.toDouble()), pre)
+        return String.format("%.1f %sB", bytes / unit.toDouble().pow(exp.toDouble()), pre)
     }
 
     fun vibrate() {
@@ -43,6 +45,7 @@ object SystemUtils {
     fun printCertificateFingerprints(context: Context) {
         Timber.d("sha fingerprints")
         val fingerprints = getCertificateFingerprints(context)
+
         if (fingerprints != null) {
             for (sha1 in fingerprints) {
                 Timber.d("sha1: %s", sha1)
@@ -70,7 +73,9 @@ object SystemUtils {
                 @Suppress("DEPRECATION")
                 info.signatures
             }
+            Timber.d("signatures: $signatures")
             for (signature in signatures) {
+                Timber.d("signature: ${signature.toCharsString()}")
                 val md = MessageDigest.getInstance("SHA")
                 md.update(signature.toByteArray())
                 val hashKey = String(Base64.encode(md.digest(), 0))
