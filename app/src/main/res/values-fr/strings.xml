@@ -1,0 +1,192 @@
+<resources>
+    <string name="market_url" translatable="false">market://details?id=%s</string>
+    <string name="feedback_email" translatable="false">neva.spb.rx@gmail.com</string>
+    <string name="error_unexpected" translatable="false">Unexpected error</string>
+    <string name="app_name">Scp Exam</string>
+    <string name="menu"> Menu</string>
+    <string name="level"> niveau %d</string>
+    <string name="zero" translatable="false">0</string>
+    <string name="doctor_name" translatable="false">Dr. D██ K██</string>
+    <string name="player_name" translatable="false">D-%d</string>
+    <string name="message_suggest_scp_number">Vous voulez essayer de vous rappeler le numéro de cette SCP?</string>
+    <string name="message_suggest_scp_name">Voulez-vous essayer de vous rappeler le nom de cette SCP?</string>
+    <string name="chat_action_next_level">La prochaine SCP</string>
+    <string name="chat_action_enter_number">Je vais essayer</string>
+    <string name="chat_action_enter_name">Je vais essayer</string>
+    <string name="message_correct_give_coins">Droit Vous avez gagné %d pièces </string>
+    <string name="chat_action_levels_list">Je veux choisir un niveau</string>
+    <string name="error_unknown">Une erreur inconnue est survenue</string>
+    <string name="scp_placeholder">SCP-%s</string>
+    <string name="message_level_comleted"> Très bien, %s, continuer.</string>
+    <string name="message_enter_number_description">
+Eh bien maintenant, vous pouvez essayer de vous rappeler le numéro de cette SCP et obtenir %d de pièces
+</string>
+    <string name="settings_sound">Son</string>
+    <string name="settings_language">Langage</string>
+    <string name="settings_coins">Repticoins</string>
+    <string name="settings_vibrate">Vibrations</string>
+    <string name="settings_share">Partager</string>
+    <string name="settings_privacy_policy">Politique de confidentialité</string>
+    <string name="error_start_market">Impossible de démarrer Play Market</string>
+    <string name="share_app_link_with_text">Essayez une application de quiz cool SCP
+!\nhttps://play.google.com/store/apps/details?id=%s
+</string>
+    <string name="share_choser_text">Partager avec…</string>
+    <string name="feedback_title">Commentaires SCP Exam</string>
+    <string name="chat_action_yes">Oui</string>
+    <string name="chat_action_sure">Bien sur</string>
+    <string name="monetization_action_appodeal_title">Nous soutenir</string>
+    <string name="monetization_action_appodeal_description"> Voir la publicité et vous serez facturé %d repticoins</string>
+    <string name="monetization_action_noads_title">Protocole \"Silence\"</string>
+    <string name="monetization_action_noads_description">
+Exécution d\'un meme-agent bloquant toute manifestation d\'un agent publicitaire dans une application
+</string>
+    <string name="coins_amount"> Repticoins: %d</string>
+    <string name="suggestion_remove_redundant_chars">Supprimer les lettres en trop</string>
+    <string name="message_not_enough_coins">
+Vous n\'avez pas assez de repticoins. Mais vous pouvez les gagner! Essayez les options suivantes:
+</string>
+    <string name="chat_action_watch_video">
+Voir les annonces vidéo pour obtenir %d repticoins
+</string>
+    <string name="suggestion_enter_name">Entrez un nom SCP</string>
+    <string name="message_after_suggestion_of_name">Oui! Maintenant rappelé</string>
+    <string name="message_after_suggestion_of_number">Comment pourrais-je oublier ça?</string>
+    <string name="message_correct">Droit!</string>
+    <string name="suggestion_enter_number">Entrez le numéro SCP</string>
+    <string name="will_show_ads_content">La publicité sera maintenant affichée</string>
+    <string name="want_watch_ads_content">
+Vous pouvez regarder des annonces et obtenir %d repticoins!
+</string>
+    <string name="will_show_ads_title">Un peu de publicité</string>
+    <string name="remove_ads">Supprimer les annonces</string>
+    <string name="why_ads">Pourquoi la publicité</string>
+    <string name="watch_ads">Voir l\'annonce</string>
+    <string name="why_ads_content">
+Agents d\'amis! Nous vous montrons de la publicité pour financer le projet en plus. Enracinant pour la fondation aussi ardemment que vous êtes, nous travaillons constamment sur la qualité. Après avoir examiné la publicité, vous soutenez le projet et nous motivez à poursuivre le travail.
+</string>
+    <string name="why_ads_title">Attention!</string>
+    <string name="levels">Niveaux</string>
+    <string name="reward_not_loaded_yet">La vidéo n\'a pas encore été téléchargée</string>
+    <string name="coins_received">Vous avez gagné %d repticoins</string>
+    <string name="next_levels_will_be_soon">
+Félicitations, vous avez terminé tous les niveaux! Mais ne vous précipitez pas pour supprimer l\'application - ils seront bientôt bientôt!
+</string>
+    <string name="error_buy">Erreur d\'achat. Réessayer</string>
+    <string name="purchase_not_valid">Échec de la validation de l\'achat</string>
+    <string name="purchase_validation_google_error">
+Les serveurs de Google ne peuvent pas confirmer l\'achat. Veuillez réessayer plus tard.</string>
+    <string name="error_purchase">Erreur d\'achat: %s</string>
+    <string name="ads_disabled">La publicité est désactivée! Viva!</string>
+    <string name="error_billing_client_connection">
+Erreur de démarrage du client de facturation. Code d\'erreur: %d
+</string>
+    <string name="already_owned">Acquis</string>
+    <string name="error_billing_client_not_ready">Facturation client non prêt</string>
+    <string name="message_choose_name_or_number">Voulez-vous prénom ou numéro?</string>
+    <string name="chat_action_want_to_enter_number">Je choisis un numéro!</string>
+    <string name="chat_action_want_to_enter_name">Commençons par le nom.</string>
+    <string name="message_not_enough_coins_level_unlock"> Vous n\'avez pas assez de pièces.</string>
+    <string name="settings_fingerprint">Connexion d\'empreinte digitale</string>
+    <string name="error_no_fingerprints">
+<![CDATA[
+Aucune empreinte digitale trouvée. Ajoutez-les à \ "Paramètres \" -> \ "Sécurité \" -> \ "Empreintes digitales \"
+]]>
+</string>
+    <string name="dialog_fingerprints_title">Connectez-vous en utilisant votre empreinte digitale</string>
+    <string name="touch_sensor">Touchez le capteur</string>
+    <string name="error_fingerprint_auth_failed">Échec de l\'authentification par empreinte digitale.</string>
+    <string name="try_again">Réessayer</string>
+    <string name="error_fingerprint_auth_failed_try_again">
+Échec de l\'authentification par empreinte digitale. Essaie encore.
+</string>
+    <string name="error_create_password">Impossible de créer le mot de passe.</string>
+    <string name="fingerprint_access_enabled">Entrée d\'empreinte digitale activée</string>
+    <string name="error_decode_password">
+Impossible de déchiffrer le mot de passe. Essaie encore.
+</string>
+    <string name="error_get_chipher">Impossible d\'obtenir Cipher pour le décodage.</string>
+    <string name="error_compare_password">Les mots de passe ne correspondent pas. Opération annulée</string>
+    <string name="fingerprint_access_disabled">L\'empreinte digitale est désactivée</string>
+    <string name="dialog_fingerprint_enable_title">Confirmer l\'inclusion de la saisie d\'empreinte digitale</string>
+    <string name="dialog_fingerprint_disable_title">Confirmer la désactivation de la saisie d\'empreinte digitale</string>
+    <string name="settings_logout">Déconnexion</string>
+    <string name="chat_action_skip_auth">Ignorer l\'autorisation \</string>
+    <string name="logout">Confirmer la sortie</string>
+    <string name="OK">Oui</string>
+    <string name="cancel">Annuler</string>
+    <string name="resetProgress">Réinitialiser la progression du jeu?</string>
+    <string name="settings_reset_progress">Réinitialiser la progression</string>
+    <string name="reset_progress_user_message">Progress reset</string>
+    <string name="message_auth_suggestion">
+Avant de commencer, vous pouvez vous connecter. Ainsi, votre progression sera sauvegardée sur notre serveur et vous pourrez comparer votre progression à celle d’autres joueurs. Bien sûr, vous pourrez le faire plus tard à partir des paramètres du jeu. Veuillez choisir:
+</string>
+    <string name="settings_success_auth">Vous êtes connecté avec succès.</string>
+    <string name="chat_action_skip_auth_and_dont_show">Ignorer l\'autorisation et ne plus afficher</string>
+    <string name="message_auth_suggestion_game">
+Vous pouvez vous connecter. Ainsi, votre progression sera sauvegardée sur notre serveur et vous pourrez comparer votre progression à celle d’autres joueurs. Bien sûr, vous pourrez le faire plus tard à partir des paramètres du jeu. Veuillez choisir:
+</string>
+    <string name="download_notification">Downloading data</string>
+    <string name="sync_notification">Syncronize progress</string>
+    <string name="attention">Attention!</string>
+    <string name="i_accept">Je suis d\'accord</string>
+    <string name="leaderboard">Temple de la renommée</string>
+    <string name="retryGetYourPosition">Réessayez pour obtenir votre position</string>
+    <string name="complete_levels_text">%d niveaux terminés</string>
+    <string name="part_complete_levels_text">%d partiellement traversé</string>
+    <string name="success_purchase">Achat réussi</string>
+    <string name="need_to_login">Agent, nécessite l\'autorisation des paramètres</string>
+    <string name="auth_error_text">Échec de la connexion</string>
+    <string name="suggestion_go_to_admin_app">
+Agent, vous pouvez écrire vos propres questions dans cette application.
+</string>
+    <string name="chat_action_admin_app_download">Télécharger l\'application</string>
+    <string name="chat_action_dont_want_to_download_app_and_never_show">
+Ignorer cette offre, ne jamais afficher et continuer le test.
+</string>
+    <string name="admin_app_package_name">com.scp.adminforquiz</string>
+    <string name="chat_action_skip_suggestion_of_admin_app">Passer les oreilles</string>
+    <string name="canceled_auth">Agent, échec de l\'autorisation</string>
+    <string name="auth_retry">Erreur du serveur, vous pouvez réessayer</string>
+    <string name="chat_action_buy_coins">Acheter %d repticoins</string>
+    <string name="toast_text_changed_language">Langue changée</string>
+    <string-array name="intro_dialog_texts">
+        <item>Bonjour, %s</item>
+        <item>Nous avons reçu votre demande de formation.</item>
+        <item>Êtes-vous prêt à commencer les tests?</item>
+    </string-array>
+    <string-array name="messages_level_start">
+        <item>Essayez de vous rappeler le nom du SCP</item>
+        <item>Dis moi le nom</item>
+        <item>Pouvez-vous me dire le nom?</item>
+    </string-array>
+    <string-array name="messages_suggestions">
+<item>
+Besoin d\'un indice? Vous pouvez dépenser quelques repticoins sur l\'indice.
+</item>
+        <item>Trop dur? Essayez ces options:</item>
+        <item>Peut-être avez-vous besoin d\'un indice?</item>
+    </string-array>
+    <string-array name="messages_suggestion_remove_chars">
+<item>
+– Eh bien, nous avons supprimé les lettres inutiles. Essayez maintenant de vous souvenir
+</item>
+        <item>Fait!</item>
+        <item>Comme tu veux.</item>
+    </string-array>
+    <string-array name="messages_suggestion_enter_name">
+        <item>Bon, attendez!</item>
+        <item> Fait!</item>
+        <item>Comme tu veux.</item>
+    </string-array>
+    <string-array name="messages_suggestion_enter_number">
+        <item>Bon, attendez!</item>
+        <item> Fait!</item>
+        <item>Comme tu veux.</item>
+    </string-array>
+    <string-array name="messages_suggestion_no">
+        <item>Non merci</item>
+        <item>Je n\'ai pas besoin d\'aide</item>
+        <item>Peut-être plus tard…</item>
+    </string-array>
+</resources>
