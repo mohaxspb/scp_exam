@@ -143,8 +143,8 @@ class EnterPresenter @Inject constructor(
                         Flowable.just(it)
                     }
                 }
-                .onErrorResumeNext { _: Throwable ->
-                    //                    Timber.d("onErrorResumeNext: $error")
+                .onErrorResumeNext { error: Throwable ->
+                    Timber.d("onErrorResumeNext: $error")
                     Flowable.empty()
                 }
                 .subscribeOn(Schedulers.io())
@@ -175,6 +175,7 @@ class EnterPresenter @Inject constructor(
         val json = StorageUtils.readFromAssets(appContext, "progressPhrases.json")
         val adapter = moshi.adapter(ProgressPhrasesJson::class.java)
         val parsedJson = adapter.fromJson(json)!!
+        //todo add translations
         progressPhrases = when (preferences.getLang()) {
             "ru" -> parsedJson.ru
             else -> parsedJson.en

@@ -89,7 +89,7 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
     }
 
     override fun showProgress(show: Boolean) {
-        progressView.visibility = if (show) View.VISIBLE else View.GONE
+        progressView.visibility = if (show) VISIBLE else GONE
     }
 
     override fun showProgressOnQuizLevel(itemPosition: Int) {
