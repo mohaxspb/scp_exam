@@ -138,7 +138,7 @@ class DownloadService : Service() {
                         onError = { Timber.e(it, "onError service while update quizzes from server") },
                         onComplete = { Timber.d("onComplete service") }
                 )
-        return Service.START_NOT_STICKY
+        return START_NOT_STICKY
     }
 
     private fun stopServiceAndRemoveNotification() {

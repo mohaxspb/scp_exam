@@ -1,0 +1,198 @@
+<resources>
+    <string name="market_url" translatable="false">market://details?id=%s</string>
+    <string name="feedback_email" translatable="false">neva.spb.rx@gmail.com</string>
+    <string name="error_unexpected" translatable="false">Unexpected error</string>
+    <string name="app_name">Scp Exam</string>
+    <string name="menu">菜单</string>
+    <string name="level">水平 %d</string>
+    <string name="zero" translatable="false">0</string>
+    <string name="doctor_name" translatable="false">医生 D██ K██</string>
+    <string name="player_name" translatable="false">D-%d</string>
+    <string name="message_suggest_scp_number">想要尝试记住这个数量 SCP?</string>
+    <string name="message_suggest_scp_name">想要尝试记住这个名字 SCP?</string>
+    <string name="chat_action_next_level">接下来 SCP</string>
+    <string name="chat_action_enter_number">我会试试</string>
+    <string name="chat_action_enter_name">我会试试</string>
+    <string name="message_correct_give_coins">这是正确的！ 你赢了 %d 的硬币</string>
+    <string name="chat_action_levels_list">我想选择一个级别</string>
+    <string name="error_unknown">发生了未知错误。</string>
+    <string name="scp_placeholder">SCP-%s</string>
+    <string name="message_level_comleted">非常好, %s, 我们继续。</string>
+    <string name="message_enter_number_description">
+那么现在你可以试着记住它的数量 SCP 得到 %d的硬币.</string>
+    <string name="settings_sound">声音</string>
+    <string name="settings_language">语言</string>
+    <string name="settings_coins">硬币</string>
+    <string name="settings_vibrate">振动</string>
+    <string name="settings_share">分享</string>
+    <string name="settings_privacy_policy">隐私政策</string>
+    <string name="error_start_market">无法启动Play Market</string>
+    <string name="share_app_link_with_text">
+尝试一个很酷的测验应用程序 SCP
+!\nhttps://play.google.com/store/apps/details?id=%s
+</string>
+    <string name="share_choser_text">分享…</string>
+    <string name="feedback_title">回顾SCP Exam</string>
+    <string name="chat_action_yes">是的</string>
+    <string name="chat_action_sure">当然</string>
+    <string name="monetization_action_appodeal_title">支持我们</string>
+    <string name="monetization_action_appodeal_description">看广告，您将被收取费用 %d的硬币</string>
+    <string name="monetization_action_noads_title">协议“沉默”</string>
+    <string name="monetization_action_noads_description">
+运行meme-agent阻止应用程序中广告代理的任何表现形式
+</string>
+    <string name="coins_amount">硬币: %d</string>
+    <string name="suggestion_remove_redundant_chars">删除多余的字母</string>
+    <string name="message_not_enough_coins">
+你没有足够的硬币。 但你可以赚到它们！ 请尝试以下选项：
+</string>
+    <string name="chat_action_watch_video">
+观看视频广告 %d 的硬币
+</string>
+    <string name="suggestion_enter_name">输入名称 SCP</string>
+    <string name="message_after_suggestion_of_name">是的！ 现在记住了</string>
+    <string name="message_after_suggestion_of_number">我怎么能忘记这个？</string>
+    <string name="message_correct">这是正确的！</string>
+    <string name="suggestion_enter_number">输入号码 SCP</string>
+    <string name="will_show_ads_content">现在将展示广告。</string>
+    <string name="want_watch_ads_content">
+你可以观看广告并获得 %d的硬币!
+</string>
+    <string name="will_show_ads_title">一些广告</string>
+    <string name="remove_ads">删除广告</string>
+    <string name="why_ads">为何广告</string>
+    <string name="watch_ads">查看广告</string>
+    <string name="why_ads_content">
+朋友代理商！ 我们向您展示广告以额外资助该项目。 我们热切地为您打造基础，我们不断致力于质量。 在审核广告后，您支持该项目并激励我们进一步开展工作。
+</string>
+    <string name="why_ads_title">警告！</string>
+    <string name="levels">水平</string>
+    <string name="reward_not_loaded_yet">该视频尚未下载。</string>
+    <string name="coins_received">你赢了 %d 的硬币</string>
+    <string name="next_levels_will_be_soon">
+恭喜你，你已经完成了所有级别！ 但是不要急于删除应用程序 - 很快就会有新的应用程序！</string>
+    <string name="error_buy">购买错误。 再试一次</string>
+    <string name="purchase_not_valid">无法验证购买。</string>
+    <string name="purchase_validation_google_error">
+Google
+务器无法确认购买。 请稍后再试。
+</string>
+    <string name="error_purchase">购买错误： %s</string>
+    <string name="ads_disabled">广告被禁用！
+岁！</string>
+    <string name="error_billing_client_connection">启动结算客户端时出错 错误代码： %d
+</string>
+    <string name="already_owned">购买</string>
+    <string name="error_billing_client_not_ready">帐单客户未就绪</string>
+    <string name="message_choose_name_or_number">您想先命名或编号吗？</string>
+    <string name="chat_action_want_to_enter_number">我选了一个号码！</string>
+    <string name="chat_action_want_to_enter_name">让我们从名字开始吧。</string>
+    <string name="message_not_enough_coins_level_unlock">你没有足够的硬币。</string>
+    <string name="settings_fingerprint">
+纹登录</string>
+    <string name="error_no_fingerprints">
+<![CDATA[
+没有找到指纹。 将它们添加到“设置” - > \“安全\” - > \“
+纹\”
+]]>
+</string>
+    <string name="dialog_fingerprints_title">使用指纹登录</string>
+    <string name="touch_sensor">触摸传感器</string>
+    <string name="error_fingerprint_auth_failed">无法通过指纹进行身份验证。</string>
+    <string name="try_again">再试一次</string>
+    <string name="error_fingerprint_auth_failed_try_again">
+无法通过指纹进行身份验证。 再试一次。
+</string>
+    <string name="error_create_password">无法创建密码。</string>
+    <string name="fingerprint_access_enabled">
+纹输入已激活</string>
+    <string name="error_decode_password">
+无法解密密码。 再试一次。
+</string>
+    <string name="error_get_chipher">无法获得密码进行解码。</string>
+    <string name="error_compare_password">密码不匹配。 操作已取消</string>
+    <string name="fingerprint_access_disabled">
+纹输入已禁用</string>
+    <string name="dialog_fingerprint_enable_title">确认包含指纹输入</string>
+    <string name="dialog_fingerprint_disable_title">确认指纹输入禁用</string>
+    <string name="settings_logout">退出</string>
+    <string name="chat_action_skip_auth">跳过授权</string>
+    <string name="logout">确认退出</string>
+    <string name="OK">是的</string>
+    <string name="cancel">消除</string>
+    <string name="resetProgress">重置游戏进度？</string>
+    <string name="settings_reset_progress">重置进度</string>
+    <string name="reset_progress_user_message">进度重置</string>
+    <string name="message_auth_suggestion">
+在开始之前，您可以登录。 因此，您的进度将保存在我们的服务器上，您可以将您的进度与其他玩家进行比较。 当然，您可以稍后从游戏设置中执行此操作。 请选择：
+</string>
+    <string name="settings_success_auth">您已成功登录。</string>
+    <string name="chat_action_skip_auth_and_dont_show">跳过授权，不再显示</string>
+    <string name="message_auth_suggestion_game">
+你可以登录。 因此，您的进度将保存在我们的服务器上，您可以将您的进度与其他玩家进行比较。 当然，您可以稍后从游戏设置中执行此操作。 请选择：
+</string>
+    <string name="download_notification">Downloading data</string>
+    <string name="sync_notification">Syncronize progress</string>
+    <string name="attention">警告！</string>
+    <string name="i_accept">我同意</string>
+    <string name="leaderboard">名人堂</string>
+    <string name="retryGetYourPosition">重试获得你的位置</string>
+    <string name="complete_levels_text">%d 完成水平</string>
+    <string name="part_complete_levels_text">%d 部分遍历</string>
+    <string name="success_purchase">成功购买</string>
+    <string name="need_to_login">代理，需要设置授权</string>
+    <string name="auth_error_text">登录失败</string>
+    <string name="suggestion_go_to_admin_app">
+代理，您可以在此应用程序中编写自己的问题。
+</string>
+    <string name="chat_action_admin_app_download">下载申请表</string>
+    <string name="chat_action_dont_want_to_download_app_and_never_show">
+跳过这个优惠，永远不会显示并继续测试。
+</string>
+    <string name="admin_app_package_name">com.scp.adminforquiz</string>
+    <string name="chat_action_skip_suggestion_of_admin_app">跳过耳朵</string>
+    <string name="canceled_auth">代理，授权失败</string>
+    <string name="auth_retry">
+务器错误，您可以再试一次</string>
+    <string name="chat_action_buy_coins">要买 %d的硬币</string>
+    <string name="toast_text_changed_language">语言改变了</string>
+    <string-array name="intro_dialog_texts">
+        <item>欢迎 %s</item>
+        <item>我们已收到您的培训请求。</item>
+        <item>你准备开始测试吗？</item>
+    </string-array>
+    <string-array name="messages_level_start">
+        <item>尝试记住scp的名称</item>
+        <item>告诉我这个名字</item>
+        <item>你能告诉我这个名字吗？</item>
+    </string-array>
+    <string-array name="messages_suggestions">
+<item>
+需要提示吗？ 您可以在提示上花一些钱币。
+</item>
+        <item>太难了？ 尝试以下选项：</item>
+        <item>也许你需要一个提示？</item>
+    </string-array>
+    <string-array name="messages_suggestion_remove_chars">
+<item>
+–我们删除了不必要的信件。 现在尝试记住
+</item>
+        <item>完成！</item>
+        <item>如你所愿。</item>
+    </string-array>
+    <string-array name="messages_suggestion_enter_name">
+        <item>好的，等一下！</item>
+        <item>完成！</item>
+        <item>如你所愿。</item>
+    </string-array>
+    <string-array name="messages_suggestion_enter_number">
+        <item>好的，等一下！</item>
+        <item>完成！</item>
+        <item>如你所愿。</item>
+    </string-array>
+    <string-array name="messages_suggestion_no">
+        <item>不，谢谢。</item>
+        <item>我不需要帮助</item>
+        <item>也许以后......</item>
+    </string-array>
+</resources>

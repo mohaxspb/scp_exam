@@ -37,7 +37,14 @@ class ScpSettingsPresenter @Inject constructor(
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor,
         private val settingsRepository: SettingsRepository
-) : BasePresenter<SettingsView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor), AuthPresenter<ScpSettingsFragment> {
+) : BasePresenter<SettingsView>(
+        appContext,
+        preferences,
+        router,
+        appDatabase,
+        apiClient,
+        transactionInteractor
+), AuthPresenter<ScpSettingsFragment> {
 
     override fun onAuthSuccess() {
         preferences.setIntroDialogShown(true)

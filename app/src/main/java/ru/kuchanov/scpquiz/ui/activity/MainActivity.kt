@@ -2,6 +2,7 @@ package ru.kuchanov.scpquiz.ui.activity
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.support.annotation.IdRes
 import android.support.v4.app.Fragment
 import com.afollestad.materialdialogs.MaterialDialog
@@ -21,6 +22,7 @@ import ru.kuchanov.scpquiz.ui.fragment.intro.IntroDialogFragment
 import ru.kuchanov.scpquiz.ui.fragment.monetization.MonetizationFragment
 import ru.kuchanov.scpquiz.ui.fragment.util.LeaderboardFragment
 import ru.kuchanov.scpquiz.ui.fragment.util.ScpSettingsFragment
+import ru.kuchanov.scpquiz.utils.IntentUtils
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.android.SupportAppNavigator
 import ru.terrakok.cicerone.commands.Command
@@ -40,9 +42,32 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
 
     override val modules: Array<Module> = arrayOf()
 
+    @InjectPresenter
+    override lateinit var presenter: MainPresenter
+
+    @ProvidePresenter
+    override fun providePresenter(): MainPresenter = scope.getInstance(MainPresenter::class.java)
+
+    override fun getLayoutResId() = R.layout.activity_main
+
+    override fun inject() = Toothpick.inject(this, scope)
+
     override var navigator: Navigator = object : SupportAppNavigator(this, containerId) {
 
-        override fun createActivityIntent(context: Context, screenKey: String?, data: Any?): Intent? = null
+        override fun createActivityIntent(context: Context, screenKey: String?, data: Any?): Intent? =
+                when (screenKey) {
+                    Constants.Screens.PLAY_MARKET -> {
+                        val adminForQuizAppPackageName = context.getString(R.string.admin_app_package_name)
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$adminForQuizAppPackageName"))
+                        if (IntentUtils.checkIntent(context, intent)) {
+                            intent
+                        } else {
+                            val intentIfNoActivityForPlayMarket = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$adminForQuizAppPackageName"))
+                            intentIfNoActivityForPlayMarket
+                        }
+                    }
+                    else -> null
+                }
 
         override fun createFragment(screenKey: String?, data: Any?): Fragment? {
             Timber.d("createFragment key: $screenKey, data: $data")
@@ -89,16 +114,6 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
             }
         }
     }
-
-    @InjectPresenter
-    override lateinit var presenter: MainPresenter
-
-    @ProvidePresenter
-    override fun providePresenter(): MainPresenter = scope.getInstance(MainPresenter::class.java)
-
-    override fun getLayoutResId() = R.layout.activity_main
-
-    override fun inject() = Toothpick.inject(this, scope)
 
     override fun showFirstTimeAppodealAdsDialog() {
         Timber.d("showFirstTimeAppodealAdsDialog")
