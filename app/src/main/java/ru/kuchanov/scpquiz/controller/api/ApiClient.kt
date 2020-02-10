@@ -31,7 +31,7 @@ class ApiClient @Inject constructor(
                     )
                     .map { it.status }
 
-    fun getNwQuizList(): Single<List<NwQuiz>> = quizApi.getNwQuizList(Constants.Api.HEADER_PART_BEARER)
+    fun getNwQuizList() = quizApi.getNwQuizList()
 
     fun socialLogin(provider: Constants.Social, tokenValue: String): Single<TokenResponse> =
             authApi

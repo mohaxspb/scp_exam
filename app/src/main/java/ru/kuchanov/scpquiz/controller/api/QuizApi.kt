@@ -22,7 +22,7 @@ interface QuizApi {
      * use token from [getUnloginedUserAccessToken]
      */
     @GET("quiz/all")
-    fun getNwQuizList(@Header("Authorization") authorization: String): Single<List<NwQuiz>>
+    fun getNwQuizList(): Single<List<NwQuiz>>
 
 }
 

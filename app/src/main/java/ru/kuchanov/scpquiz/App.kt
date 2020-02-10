@@ -17,7 +17,6 @@ import ru.kuchanov.scpquiz.di.module.AppModule
 import ru.kuchanov.scpquiz.model.db.QuizTransaction
 import ru.kuchanov.scpquiz.model.db.TransactionType
 import ru.kuchanov.scpquiz.model.db.UserRole
-import ru.kuchanov.scpquiz.utils.SystemUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.configuration.Configuration

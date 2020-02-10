@@ -66,13 +66,6 @@ class AppModule(context: Context) : Module() {
         bind(NavigatorHolder::class.java).toInstance(cicerone.navigatorHolder)
 
         //api
-        val certPinner = CertificatePinner
-                .Builder()
-                .add(
-                        BuildConfig.SSL_PINNING_DOMAIN,
-                        "sha256/${BuildConfig.SSL_PINNING_VALUE}")
-                .build()
-
         val okHttpClientCommon = OkHttpClient.Builder()
                 .addInterceptor(
                         HttpLoggingInterceptor { log -> Timber.tag("OkHttp").d(log) }
@@ -134,7 +127,6 @@ class AppModule(context: Context) : Module() {
                 .build()
 
         val quizOkHttpClient = OkHttpClient.Builder()
-                .certificatePinner(certPinner)
                 .addInterceptor(
                         HttpLoggingInterceptor { log -> Timber.tag("OkHttp").d(log) }
                                 .setLevel(HttpLoggingInterceptor.Level.BODY)
