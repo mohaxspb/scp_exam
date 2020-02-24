@@ -5,7 +5,6 @@ import android.content.Context
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import okhttp3.CertificatePinner
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -88,15 +87,13 @@ class AppModule(context: Context) : Module() {
                 )
                 .addInterceptor { chain ->
                     var request = chain.request()
-                    if (preferenceManager.getTrueAccessToken()?.isNotEmpty() == true) {
-                        request = request
-                                .newBuilder()
-                                .header(
-                                        Constants.Api.HEADER_AUTHORIZATION,
-                                        Constants.Api.HEADER_PART_BEARER + preferenceManager.getTrueAccessToken()
-                                )
-                                .build()
-                    }
+                    request = request
+                            .newBuilder()
+                            .header(
+                                    Constants.Api.HEADER_AUTHORIZATION,
+                                    Constants.Api.HEADER_PART_BEARER + preferenceManager.getTrueAccessToken()
+                            )
+                            .build()
                     chain.proceed(request)
                 }
                 .addInterceptor { chain ->
@@ -133,15 +130,13 @@ class AppModule(context: Context) : Module() {
                 )
                 .addInterceptor { chain ->
                     var request = chain.request()
-                    if (preferenceManager.getAccessToken()?.isNotEmpty() == true) {
-                        request = request
-                                .newBuilder()
-                                .header(
-                                        Constants.Api.HEADER_AUTHORIZATION,
-                                        Constants.Api.HEADER_PART_BEARER + preferenceManager.getAccessToken()
-                                )
-                                .build()
-                    }
+                    request = request
+                            .newBuilder()
+                            .header(
+                                    Constants.Api.HEADER_AUTHORIZATION,
+                                    Constants.Api.HEADER_PART_BEARER + preferenceManager.getAccessToken()
+                            )
+                            .build()
                     chain.proceed(request)
                 }
                 .addInterceptor { chain ->
