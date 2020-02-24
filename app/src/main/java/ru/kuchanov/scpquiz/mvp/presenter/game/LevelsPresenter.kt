@@ -145,7 +145,7 @@ class LevelsPresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onNext = {
-                            //                            Timber.d("loadLevels onNext")
+                            Timber.d("loadLevels onNext: ${it.first.size}")
                             viewState.showLevels(it.first)
                             player = it.second
                             viewState.showCoins(it.second.score)

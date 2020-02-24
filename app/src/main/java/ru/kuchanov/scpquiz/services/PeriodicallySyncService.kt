@@ -62,7 +62,7 @@ class PeriodicallySyncService : Service() {
                             stopServiceAndRemoveNotification()
                         }
                 )
-        return Service.START_NOT_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent): IBinder? {
