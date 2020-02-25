@@ -16,7 +16,7 @@ android {
     compileSdkVersion 29
 
     defaultConfig {
-        applicationId "ru.kuchanov.scpquiz"
+        applicationId "com.scp.scpexam"
         minSdkVersion 19
         targetSdkVersion 29
         versionCode buildVersionCode()
@@ -24,7 +24,7 @@ android {
         multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = [toothpick_registry_package_name: 'ru.kuchanov.scpquiz']
+                arguments = [toothpick_registry_package_name: 'com.scp.scpexam']
             }
         }
 
@@ -250,8 +250,8 @@ dependencies {
     implementation 'com.android.billingclient:billing:1.2'
 
     //rate app
+//    implementation('com.scp.scpexam.utils:rate:1.2.1@aar') { transitive = true }
     implementation('ru.kuchanov.utils:rate:1.2.1@aar') { transitive = true }
-
     //social auth
     //google
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
