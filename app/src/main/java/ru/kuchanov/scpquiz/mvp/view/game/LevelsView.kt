@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.mvp.view.game
 
+import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LevelViewModel
@@ -10,7 +11,7 @@ interface LevelsView : BaseView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showProgress(show: Boolean)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showLevels(quizes: List<LevelViewModel>)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
@@ -25,6 +26,6 @@ interface LevelsView : BaseView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showCoins(coins: Int)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showProgressOnQuizLevel(itemPosition: Int)
 }
