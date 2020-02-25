@@ -6,6 +6,7 @@ import com.scp.scpexam.controller.adapter.viewmodel.LeaderboardViewModel
 import com.scp.scpexam.model.api.NwUser
 import com.scp.scpexam.mvp.AuthView
 import com.scp.scpexam.mvp.BaseView
+import moxy.viewstate.strategy.AddToEndSingleStrategy
 
 interface LeaderboardView : BaseView, AuthView {
 
@@ -27,7 +28,7 @@ interface LeaderboardView : BaseView, AuthView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun enableScrollListener(enableScrollListener: Boolean)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showCurrentUserUI(showCurrentUserUI: Boolean)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
