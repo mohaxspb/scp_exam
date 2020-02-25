@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.mvp.view.game
 
+import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 import ru.kuchanov.scpquiz.model.db.Quiz
@@ -16,43 +17,43 @@ interface GameView : BaseView, AuthView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showError(error: Throwable)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showChatMessage(message: String, user: User)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showKeyboard(show: Boolean)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun removeChatAction(indexInParent: Int)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showChatActions(chatActions: List<ChatAction>, chatActionsGroupType: ChatActionsGroupType)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun setKeyboardChars(characters: List<Char>)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showCoins(coins: Int)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showToolbar(show: Boolean)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun setBackgroundDark(showDark: Boolean)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun animateKeyboard()
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showImage(quiz: Quiz)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showLevelNumber(levelNumber: Int)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showName(name: List<Char>)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showNumber(number: List<Char>)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
@@ -73,22 +74,22 @@ interface GameView : BaseView, AuthView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun onNeedToBuyCoins(skuId: String)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun addCharToNameInput(char: Char, charId: Int)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun addCharToNumberInput(char: Char, charId: Int)
     //    fun removeCharFromInput(charId: Int, indexOfChild: Int, isScpNameCompleted:Boolean)
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun removeCharFromNameInput(charId: Int, indexOfChild: Int)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun removeCharFromNumberInput(charId: Int, indexOfChild: Int)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showBackspaceButton(show: Boolean)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showHelpButton(show: Boolean)
 
 }

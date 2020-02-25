@@ -1,5 +1,6 @@
 package ru.kuchanov.scpquiz.mvp.view.util
 
+import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LeaderboardViewModel
@@ -12,10 +13,10 @@ interface LeaderboardView : BaseView, AuthView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showProgress(show: Boolean)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showLeaderboard(users: List<LeaderboardViewModel>)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun showUserPosition(user: NwUser, position: Int)
 
     @StateStrategyType(OneExecutionStateStrategy::class)
