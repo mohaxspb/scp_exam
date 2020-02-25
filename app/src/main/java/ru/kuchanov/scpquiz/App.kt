@@ -47,6 +47,7 @@ class App : MultiDexApplication() {
         initYandexMetrica()
         Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
         VKSdk.initialize(this)
+        FacebookSdk.sdkInitialize(applicationContext)
         AppEventsLogger.activateApp(this)
         initScore()
 
