@@ -2,15 +2,15 @@ package ru.kuchanov.scpquiz.ui.fragment.game
 
 import android.animation.ValueAnimator
 import android.os.Bundle
-import android.support.v7.widget.GridLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import com.arellomobile.mvp.presenter.InjectPresenter
-import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import kotlinx.android.synthetic.main.fragment_levels.*
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 import ru.kuchanov.scpquiz.controller.adapter.delegate.LevelDelegate
@@ -73,12 +73,12 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
 
         if (!preferenceManager.isPersonalDataAccepted()) {
             val dialogFragment = CC3LicenseDialogFragment.newInstance()
-            dialogFragment.show(fragmentManager, CC3LicenseDialogFragment.TAG)
+            dialogFragment.show(fragmentManager!!, CC3LicenseDialogFragment.TAG)
         }
     }
 
     private fun initRecyclerView() {
-        recyclerView.layoutManager = GridLayoutManager(activity, 3)
+        recyclerView.layoutManager = androidx.recyclerview.widget.GridLayoutManager(activity, 3)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
         delegateManager.addDelegate(LevelDelegate(
                 { levelViewModel -> presenter.onLevelClick(levelViewModel) },

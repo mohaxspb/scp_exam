@@ -1,6 +1,6 @@
 package ru.kuchanov.scpquiz.model.api
 
-import android.arch.persistence.room.PrimaryKey
+import androidx.room.PrimaryKey
 import com.squareup.moshi.JsonClass
 import java.util.*
 

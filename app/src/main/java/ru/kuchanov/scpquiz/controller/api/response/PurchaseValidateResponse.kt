@@ -1,6 +1,6 @@
 package ru.kuchanov.scpquiz.controller.api.response
 
-import android.support.annotation.IntDef
+import androidx.annotation.IntDef
 
 data class PurchaseValidateResponse(
     @field:PurchaseStatus

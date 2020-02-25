@@ -1,7 +1,7 @@
 package ru.kuchanov.scpquiz.controller.manager.monetization
 
 import android.content.Context
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.android.billingclient.api.*
 import io.reactivex.Completable
 import io.reactivex.Flowable

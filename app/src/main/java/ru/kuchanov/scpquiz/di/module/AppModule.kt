@@ -1,6 +1,6 @@
 package ru.kuchanov.scpquiz.di.module
 
-import android.arch.persistence.room.Room
+import androidx.room.Room
 import android.content.Context
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter

@@ -2,7 +2,7 @@ package ru.kuchanov.scpquiz.ui.utils
 
 import android.app.Activity
 import android.content.Intent
-import android.support.v4.app.FragmentActivity
+import androidx.fragment.app.FragmentActivity
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
@@ -76,7 +76,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
         return fragment
     }
 
-    fun onViewCreated(fragmentActivity: FragmentActivity) {
+    fun onViewCreated(fragmentActivity: androidx.fragment.app.FragmentActivity) {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(BuildConfig.SERVER_GOOGLE_CLIENT_ID)
                 .requestEmail()

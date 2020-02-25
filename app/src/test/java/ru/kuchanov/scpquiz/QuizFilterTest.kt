@@ -1,6 +1,6 @@
 package ru.kuchanov.scpquiz
 
-import android.support.test.filters.SmallTest
+import androidx.test.filters.SmallTest
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test

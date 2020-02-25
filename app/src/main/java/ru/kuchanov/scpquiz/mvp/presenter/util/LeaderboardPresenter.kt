@@ -2,13 +2,13 @@ package ru.kuchanov.scpquiz.mvp.presenter.util
 
 import android.app.Application
 import android.content.Intent
-import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import moxy.InjectViewState
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.adapter.viewmodel.LeaderboardViewModel

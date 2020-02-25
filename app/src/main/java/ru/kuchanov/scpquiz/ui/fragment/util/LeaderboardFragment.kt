@@ -2,16 +2,16 @@ package ru.kuchanov.scpquiz.ui.fragment.util
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.View
-import com.arellomobile.mvp.presenter.InjectPresenter
-import com.arellomobile.mvp.presenter.ProvidePresenter
 import com.bumptech.glide.request.RequestOptions
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
 import kotlinx.android.synthetic.main.fragment_leaderboard.*
 import kotlinx.android.synthetic.main.item_leaderboard.view.*
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.EndlessRecyclerViewScrollListener
 import ru.kuchanov.scpquiz.R

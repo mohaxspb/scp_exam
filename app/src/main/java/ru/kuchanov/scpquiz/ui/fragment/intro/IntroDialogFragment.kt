@@ -4,10 +4,10 @@ import android.animation.LayoutTransition
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import com.arellomobile.mvp.presenter.InjectPresenter
-import com.arellomobile.mvp.presenter.ProvidePresenter
 import jp.wasabeef.blurry.Blurry
 import kotlinx.android.synthetic.main.fragment_intro_dialog.*
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
@@ -90,7 +90,7 @@ class IntroDialogFragment : BaseFragment<IntroDialogView, IntroDialogPresenter>(
 
         if (!myPreferenceManager.isPersonalDataAccepted()) {
             val dialogFragment = CC3LicenseDialogFragment.newInstance()
-            dialogFragment.show(fragmentManager, CC3LicenseDialogFragment.TAG)
+            dialogFragment.show(fragmentManager!!, CC3LicenseDialogFragment.TAG)
         }
     }
 

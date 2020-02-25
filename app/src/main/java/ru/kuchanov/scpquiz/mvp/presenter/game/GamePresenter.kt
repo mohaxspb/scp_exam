@@ -3,7 +3,6 @@ package ru.kuchanov.scpquiz.mvp.presenter.game
 import android.app.Application
 import android.content.Intent
 import android.graphics.Bitmap
-import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
@@ -12,6 +11,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import moxy.InjectViewState
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.api.ApiClient
@@ -178,7 +178,7 @@ class GamePresenter @Inject constructor(
     }
 
     private fun onGoToAdminAppClicked() {
-        router.navigateTo(Constants.Screens.PLAY_MARKET)
+        router.navigateTo(Constants.Screens.PlayMarketScreen)
     }
 
     private fun onSkipDownloadAdminAppAndNeverShowSuggestionClicked() {
@@ -611,7 +611,7 @@ class GamePresenter @Inject constructor(
                 )
     }
 
-    fun onLevelsClicked() = router.newRootScreen(Constants.Screens.QUIZ_LIST)
+    fun onLevelsClicked() = router.newRootScreen(Constants.Screens.LevelsScreen)
 
     fun onCoinsClicked() = viewState.onNeedToOpenCoins()
 
@@ -625,7 +625,7 @@ class GamePresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                        onComplete = { router.navigateTo(Constants.Screens.MONETIZATION) }
+                        onComplete = { router.navigateTo(Constants.Screens.MonetizationScreen) }
                 )
     }
 
@@ -641,7 +641,7 @@ class GamePresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                        onComplete = { router.navigateTo(Constants.Screens.SETTINGS) }
+                        onComplete = { router.navigateTo(Constants.Screens.SettingsScreen) }
                 )
     }
 
@@ -739,7 +739,7 @@ class GamePresenter @Inject constructor(
         val enterNumberAction = ChatAction(
                 appContext.getString(R.string.chat_action_levels_list),
                 {
-                    router.newRootScreen(Constants.Screens.QUIZ_LIST)
+                    router.newRootScreen(Constants.Screens.LevelsScreen)
                 },
                 R.drawable.selector_chat_action_accent
         )
@@ -796,8 +796,9 @@ class GamePresenter @Inject constructor(
 //                    Timber.d("showAds: $showAds")
                     if (quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.isLevelAvailable) {
                         router.replaceScreen(
-                                Constants.Screens.QUIZ,
-                                QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
+                                Constants.Screens.GameScreen(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!)
+                                //TODO wtf if showAds when navigate to game screen
+//                                QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
                         )
                     } else {
                         //todo move to function
@@ -831,8 +832,9 @@ class GamePresenter @Inject constructor(
                                             },
                                             onComplete = {
                                                 router.replaceScreen(
-                                                        Constants.Screens.QUIZ,
-                                                        QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
+                                                        //TODO wtf if showAds when navigate to game screen
+                                                        Constants.Screens.GameScreen(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!)
+//                                                        QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
                                                 )
                                             }
                                     ))

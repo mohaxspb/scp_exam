@@ -1,8 +1,8 @@
 package ru.kuchanov.scpquiz.ui.utils
 
 import android.animation.ObjectAnimator
-import android.support.annotation.ColorRes
-import android.support.v4.widget.NestedScrollView
+import androidx.annotation.ColorRes
+import androidx.core.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout

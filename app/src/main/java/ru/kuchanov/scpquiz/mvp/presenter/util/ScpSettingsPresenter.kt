@@ -2,13 +2,13 @@ package ru.kuchanov.scpquiz.mvp.presenter.util
 
 import android.app.Application
 import android.content.Intent
-import com.arellomobile.mvp.InjectViewState
 import com.google.android.gms.ads.MobileAds
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import moxy.InjectViewState
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.api.ApiClient
@@ -121,7 +121,7 @@ class ScpSettingsPresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                        onSuccess = { router.newRootScreen(Constants.Screens.ENTER) },
+                        onSuccess = { router.newRootScreen(Constants.Screens.EnterScreen) },
                         onError = {
                             Timber.e(it)
                             viewState.showMessage(it.message.toString())
@@ -185,10 +185,10 @@ class ScpSettingsPresenter @Inject constructor(
     fun onLangSelected(selectedLang: String) {
         settingsRepository.setLanguage(selectedLang)
         viewState.showMessage(R.string.toast_text_changed_language)
-        router.newRootScreen(Constants.Screens.QUIZ_LIST)
+        router.newRootScreen(Constants.Screens.LevelsScreen)
     }
 
-    fun onCoinsClicked() = router.navigateTo(Constants.Screens.MONETIZATION)
+    fun onCoinsClicked() = router.navigateTo(Constants.Screens.MonetizationScreen)
 
     fun onNavigationIconClicked() = router.exit()
 

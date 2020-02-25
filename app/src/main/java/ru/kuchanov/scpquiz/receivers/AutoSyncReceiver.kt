@@ -5,7 +5,7 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.support.v4.content.ContextCompat
+import androidx.core.content.ContextCompat
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.manager.preference.MyPreferenceManager
 import ru.kuchanov.scpquiz.di.Di

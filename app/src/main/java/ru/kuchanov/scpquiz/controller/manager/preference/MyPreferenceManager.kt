@@ -1,7 +1,7 @@
 package ru.kuchanov.scpquiz.controller.manager.preference
 
 import android.content.Context
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import ru.kuchanov.scpquiz.Constants
 import javax.inject.Inject
 

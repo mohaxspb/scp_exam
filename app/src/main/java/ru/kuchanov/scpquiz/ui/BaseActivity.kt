@@ -2,10 +2,9 @@ package ru.kuchanov.scpquiz.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.LayoutRes
+import androidx.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.widget.Toast
-import com.arellomobile.mvp.MvpAppCompatActivity
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
@@ -15,6 +14,7 @@ import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKCallback
 import com.vk.sdk.VKSdk
 import com.vk.sdk.api.VKError
+import moxy.MvpAppCompatActivity
 import ru.kuchanov.rate.PreRate
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
@@ -181,7 +181,9 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
                 super.onAdOpened()
                 requestNewInterstitial()
                 preferenceManager.setNeedToShowInterstitial(false)
-                router.replaceScreen(Constants.Screens.QUIZ, QuizScreenLaunchData(quizId, true))
+                router.replaceScreen(Constants.Screens.GameScreen(quizId))
+                //TODO WTF
+//                QuizScreenLaunchData(quizId, true))
             }
         }
         interstitialAd.show()

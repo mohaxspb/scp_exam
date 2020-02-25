@@ -2,13 +2,13 @@ package ru.kuchanov.scpquiz.mvp.presenter.game
 
 import android.app.Application
 import android.graphics.Bitmap
-import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function3
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import moxy.InjectViewState
 import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
@@ -62,7 +62,9 @@ class LevelsPresenter @Inject constructor(
 //                !levelViewModel.scpNameFilled || !levelViewModel.scpNumberFilled
 //        )
 //        Timber.d("showAds: $showAds")
-        router.navigateTo(Constants.Screens.QUIZ, QuizScreenLaunchData(levelViewModel.quiz.id, !showAds))
+        //TODO wtf if showAds when navigate to game screen
+        router.navigateTo(Constants.Screens.GameScreen(levelViewModel.quiz.id))
+//                QuizScreenLaunchData(levelViewModel.quiz.id, !showAds))
     }
 
     fun onCoinsClicked() = viewState.onNeedToOpenCoins()
@@ -77,7 +79,7 @@ class LevelsPresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                        onComplete = { router.navigateTo(Constants.Screens.MONETIZATION) }
+                        onComplete = { router.navigateTo(Constants.Screens.MonetizationScreen) }
                 )
     }
 
@@ -93,7 +95,7 @@ class LevelsPresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                        onComplete = { router.navigateTo(Constants.Screens.SETTINGS) }
+                        onComplete = { router.navigateTo(Constants.Screens.SettingsScreen) }
                 )
     }
 
@@ -207,6 +209,6 @@ class LevelsPresenter @Inject constructor(
     }
 
     fun onLeaderboardButtonClicked() {
-        router.navigateTo(Constants.Screens.LEADERBOARD)
+        router.navigateTo(Constants.Screens.LeaderboardScreen)
     }
 }

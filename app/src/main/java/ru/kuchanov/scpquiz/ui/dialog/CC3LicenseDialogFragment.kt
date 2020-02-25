@@ -2,7 +2,7 @@ package ru.kuchanov.scpquiz.ui.dialog
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
+import androidx.fragment.app.DialogFragment
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.View
@@ -15,7 +15,7 @@ import toothpick.Toothpick
 import java.util.*
 import javax.inject.Inject
 
-class CC3LicenseDialogFragment : DialogFragment() {
+class CC3LicenseDialogFragment : androidx.fragment.app.DialogFragment() {
 
     @Inject
     lateinit var mMyPreferenceManager: MyPreferenceManager

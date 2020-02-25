@@ -1,12 +1,12 @@
 package ru.kuchanov.scpquiz.mvp.presenter
 
 import android.app.Application
-import com.arellomobile.mvp.MvpPresenter
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import moxy.MvpPresenter
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.api.ApiClient

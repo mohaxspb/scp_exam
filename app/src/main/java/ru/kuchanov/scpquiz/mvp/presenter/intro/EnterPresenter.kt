@@ -3,7 +3,6 @@ package ru.kuchanov.scpquiz.mvp.presenter.intro
 import android.annotation.SuppressLint
 import android.app.Application
 import android.graphics.Bitmap
-import com.arellomobile.mvp.InjectViewState
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import io.reactivex.Completable
@@ -12,6 +11,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import moxy.InjectViewState
 import ru.kuchanov.scpquiz.BuildConfig
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
@@ -162,7 +162,7 @@ class EnterPresenter @Inject constructor(
                         },
                         onComplete = {
                             if (preferences.isIntroDialogShown()) {
-                                router.newRootScreen(Constants.Screens.QUIZ_LIST)
+                                router.newRootScreen(Constants.Screens.LevelsScreen)
                             } else {
                                 viewState.onNeedToOpenIntroDialogFragment()
                             }
@@ -194,9 +194,9 @@ class EnterPresenter @Inject constructor(
                 .subscribeBy(
                         onComplete = {
                             if (preferences.isIntroDialogShown()) {
-                                router.newRootScreen(Constants.Screens.QUIZ_LIST)
+                                router.newRootScreen(Constants.Screens.LevelsScreen)
                             } else {
-                                router.newRootScreen(Constants.Screens.INTRO_DIALOG)
+                                router.newRootScreen(Constants.Screens.IntroDialogScreen)
                             }
                         }
                 )

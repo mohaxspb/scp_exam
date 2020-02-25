@@ -1,7 +1,7 @@
 package ru.kuchanov.scpquiz.model.db
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import android.content.Context
 import ru.kuchanov.scpquiz.R
 import java.util.*

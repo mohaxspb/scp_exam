@@ -2,13 +2,13 @@ package ru.kuchanov.scpquiz.mvp.presenter.intro
 
 import android.app.Application
 import android.content.Intent
-import com.arellomobile.mvp.InjectViewState
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function3
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import moxy.InjectViewState
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.controller.api.ApiClient
@@ -21,7 +21,6 @@ import ru.kuchanov.scpquiz.model.db.User
 import ru.kuchanov.scpquiz.model.db.UserRole
 import ru.kuchanov.scpquiz.model.ui.ChatAction
 import ru.kuchanov.scpquiz.model.ui.ChatActionsGroupType
-import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
 import ru.kuchanov.scpquiz.mvp.AuthPresenter
 import ru.kuchanov.scpquiz.mvp.presenter.BasePresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.IntroDialogView
@@ -207,10 +206,8 @@ class IntroDialogPresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onSuccess = {
-                            router.newRootScreen(
-                                    Constants.Screens.QUIZ,
-                                    QuizScreenLaunchData(quiz.id, true)
-                            )
+                            router.newRootScreen(Constants.Screens.GameScreen(quiz.id))
+//                                    QuizScreenLaunchData(quiz.id, true)
                         }
                 )
     }
@@ -221,9 +218,7 @@ class IntroDialogPresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onSuccess = {
-                            router.newRootScreen(
-                                    Constants.Screens.QUIZ_LIST
-                            )
+                            router.newRootScreen(Constants.Screens.LevelsScreen)
                         }
                 )
     }

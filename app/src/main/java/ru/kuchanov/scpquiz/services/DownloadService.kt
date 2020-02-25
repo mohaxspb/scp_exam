@@ -8,7 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import android.support.v4.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import io.reactivex.Maybe
 import io.reactivex.android.schedulers.AndroidSchedulers.mainThread
 import io.reactivex.rxkotlin.subscribeBy
