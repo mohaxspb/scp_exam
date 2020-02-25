@@ -2,8 +2,8 @@ package ru.kuchanov.scpquiz.ui.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.constraint.ConstraintLayout
-import android.support.v4.content.ContextCompat
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.TextView

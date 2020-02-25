@@ -2,14 +2,14 @@ package ru.kuchanov.scpquiz.ui
 
 import android.os.Build
 import android.os.Bundle
-import android.support.annotation.LayoutRes
+import androidx.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
-import com.arellomobile.mvp.MvpAppCompatFragment
-import com.arellomobile.mvp.MvpPresenter
+import moxy.MvpAppCompatFragment
+import moxy.MvpPresenter
 import ru.kuchanov.scpquiz.di.Di
 import ru.kuchanov.scpquiz.mvp.BaseView
 import toothpick.Scope

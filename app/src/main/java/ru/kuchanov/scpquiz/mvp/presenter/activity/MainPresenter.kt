@@ -2,8 +2,8 @@ package ru.kuchanov.scpquiz.mvp.presenter.activity
 
 import android.app.Application
 import android.content.Intent
-import android.support.v4.content.ContextCompat
-import com.arellomobile.mvp.InjectViewState
+import androidx.core.content.ContextCompat
+import moxy.InjectViewState
 import ru.kuchanov.scpquiz.Constants
 import ru.kuchanov.scpquiz.controller.api.ApiClient
 import ru.kuchanov.scpquiz.controller.db.AppDatabase
@@ -29,7 +29,7 @@ class MainPresenter @Inject constructor(
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
         setAlarm(appContext)
-        router.newRootScreen(Constants.Screens.ENTER)
+        router.newRootScreen(Constants.Screens.EnterScreen)
 
         val downloadServiceIntent = Intent(appContext, DownloadService::class.java)
         ContextCompat.startForegroundService(appContext, downloadServiceIntent)

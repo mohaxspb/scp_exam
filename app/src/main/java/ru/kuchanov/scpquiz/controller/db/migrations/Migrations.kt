@@ -1,7 +1,7 @@
 package ru.kuchanov.scpquiz.controller.db.migrations
 
-import android.arch.persistence.db.SupportSQLiteDatabase
-import android.arch.persistence.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.migration.Migration
 import timber.log.Timber
 
 object Migrations {

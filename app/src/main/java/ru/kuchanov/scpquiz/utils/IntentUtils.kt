@@ -3,7 +3,7 @@ package ru.kuchanov.scpquiz.utils
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import android.widget.Toast
 import ru.kuchanov.scpquiz.R
 
@@ -35,7 +35,7 @@ object IntentUtils {
     fun checkIntent(context: Context, intent: Intent): Boolean {
         val packageManager = context.packageManager
         val activities = packageManager.queryIntentActivities(intent, 0)
-        return activities != null && activities.size > 0
+        return activities.size > 0
     }
 
     private fun checkAndStart(context: Context, intent: Intent, @StringRes errorRes: Int) {

@@ -13,12 +13,12 @@ apply plugin: 'io.fabric'
 apply from: '../versioning.gradle'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         applicationId "ru.kuchanov.scpquiz"
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode buildVersionCode()
         versionName version
         multiDexEnabled true
@@ -150,35 +150,37 @@ dependencies {
 
     //kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     //support
-    String supportLibraryVersion = '28.0.0'
-    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
-    implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
-    implementation "com.android.support:design:$supportLibraryVersion"
-    implementation "com.android.support:cardview-v7:$supportLibraryVersion"
+    String supportLibraryVersion = '1.1.0'
+    implementation "androidx.appcompat:appcompat:$supportLibraryVersion"
+    implementation "androidx.recyclerview:recyclerview:$supportLibraryVersion"
+    implementation "com.google.android.material:material:$supportLibraryVersion"
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation "androidx.preference:preference-ktx:$supportLibraryVersion"
     //attempt to remove warning
-    implementation "com.android.support:customtabs:$supportLibraryVersion"
-    implementation "com.android.support:animated-vector-drawable:$supportLibraryVersion"
-    implementation "com.android.support:support-media-compat:$supportLibraryVersion"
-    implementation "com.android.support:support-v4:$supportLibraryVersion"
+    implementation 'androidx.browser:browser:1.2.0'
+    implementation "androidx.vectordrawable:vectordrawable-animated:$supportLibraryVersion"
+    implementation "androidx.media:media:$supportLibraryVersion"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     //multidex to support more than 65K methods
-    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'androidx.multidex:multidex:2.0.1'
 
     //google libs
-    implementation 'com.google.firebase:firebase-core:16.0.7'
-    implementation 'com.google.firebase:firebase-analytics:16.3.0'
-    implementation 'com.google.firebase:firebase-ads:17.1.3'
-    implementation 'com.google.firebase:firebase-messaging:17.3.4'
+    implementation 'com.google.firebase:firebase-core:17.2.2'
+    implementation 'com.google.firebase:firebase-analytics:17.2.2'
+    implementation 'com.google.firebase:firebase-ads:18.3.0'
+    implementation 'com.google.firebase:firebase-messaging:20.1.0'
 
     // AppMetrica
     implementation 'com.yandex.android:mobmetricalib:3.6.4'
 
     //new crash reporting
-    implementation('com.crashlytics.sdk.android:crashlytics:2.9.6@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
         transitive = true
     }
 
@@ -189,28 +191,29 @@ dependencies {
     kapt "com.github.stephanenicolas.toothpick:toothpick-compiler:$toothPickVersion"
 
     //mvp
-    String moxyVersion = '1.5.3'
-    implementation "com.arello-mobile:moxy:$moxyVersion"
-    kapt "com.arello-mobile:moxy-compiler:$moxyVersion"
-    implementation "com.arello-mobile:moxy-app-compat:$moxyVersion"
+    //moxy
+    String moxyVersion = '2.0.2'
+    kapt "com.github.moxy-community:moxy-compiler:$moxyVersion"
+    implementation "com.github.moxy-community:moxy-androidx:$moxyVersion"
+    implementation "com.github.moxy-community:moxy-ktx:$moxyVersion"
 
     //routing
-    implementation 'ru.terrakok.cicerone:cicerone:3.0.0'
+    implementation 'ru.terrakok.cicerone:cicerone:5.0.0'
 
     //rx
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.5'
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.9'
     implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
     implementation 'com.jakewharton.rxrelay2:rxrelay:2.1.0'
 
     //db
-    def roomVersion = "1.1.1"
-    implementation "android.arch.persistence.room:runtime:$roomVersion"
-    kapt "android.arch.persistence.room:compiler:$roomVersion"
-    implementation "android.arch.persistence.room:rxjava2:$roomVersion"
+    def roomVersion = '2.2.4'
+    implementation "androidx.room:room-runtime:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    implementation "androidx.room:room-rxjava2:$roomVersion"
 
     // Retrofit
-    implementation('com.squareup.retrofit2:retrofit:2.3.0') { exclude module: 'okhttp' }
+    implementation('com.squareup.retrofit2:retrofit:2.4.0') { exclude module: 'okhttp' }
     implementation 'com.squareup.okhttp3:okhttp:3.12.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.12.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.4.0'
@@ -230,8 +233,8 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
     //image
-    implementation 'com.github.bumptech.glide:glide:4.9.0'
-    kapt 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    kapt 'com.github.bumptech.glide:compiler:4.10.0'
 
     //dialog
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
@@ -241,7 +244,7 @@ dependencies {
     implementation 'jp.wasabeef:blurry:2.1.1'
 
     // Optional. Play Install Referrer library for better attribution.
-    implementation 'com.android.installreferrer:installreferrer:1.0'
+    implementation 'com.android.installreferrer:installreferrer:1.1.1'
 
     //inapp
     implementation 'com.android.billingclient:billing:1.2'
@@ -251,7 +254,7 @@ dependencies {
 
     //social auth
     //google
-    implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
     //facebook
     implementation 'com.facebook.android:facebook-login:5.1.1'
     //vk
@@ -259,8 +262,8 @@ dependencies {
 
     //testing
     testImplementation 'junit:junit:4.12'
-    testImplementation('com.android.support.test:runner:1.0.2')
-    testImplementation('com.android.support.test:rules:1.0.2')
+    testImplementation('androidx.test.ext:junit:1.1.1')
+    testImplementation('androidx.test:rules:1.2.0')
 
     //flags
     implementation 'com.github.KaKaVip:Android-Flag-Kit:v0.1'

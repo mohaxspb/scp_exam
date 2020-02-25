@@ -1,6 +1,6 @@
 package ru.kuchanov.scpquiz.controller.adapter.viewmodel
 
-import android.support.annotation.DrawableRes
+import androidx.annotation.DrawableRes
 import ru.kuchanov.scpquiz.controller.adapter.MyListItem
 
 data class MonetizationViewModel(

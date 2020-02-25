@@ -1,6 +1,6 @@
 package ru.kuchanov.scpquiz
 
-import android.support.multidex.MultiDexApplication
+import androidx.multidex.MultiDexApplication
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
 import com.vk.sdk.VKSdk

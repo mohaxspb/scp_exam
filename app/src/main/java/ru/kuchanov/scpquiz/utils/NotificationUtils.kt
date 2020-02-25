@@ -6,7 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.graphics.Color
 import android.os.Build
-import android.support.annotation.RequiresApi
+import androidx.annotation.RequiresApi
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun createNotificationChannel(

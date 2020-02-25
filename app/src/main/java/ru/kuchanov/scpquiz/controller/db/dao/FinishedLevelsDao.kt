@@ -1,11 +1,9 @@
 package ru.kuchanov.scpquiz.controller.db.dao
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import io.reactivex.Flowable
 import io.reactivex.Single
 import ru.kuchanov.scpquiz.model.db.FinishedLevel
-
-
 @Dao
 interface FinishedLevelsDao {
 

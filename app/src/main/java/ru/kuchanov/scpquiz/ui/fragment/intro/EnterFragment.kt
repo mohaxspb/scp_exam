@@ -2,9 +2,9 @@ package ru.kuchanov.scpquiz.ui.fragment.intro
 
 import android.animation.ObjectAnimator
 import android.view.animation.AccelerateDecelerateInterpolator
-import com.arellomobile.mvp.presenter.InjectPresenter
-import com.arellomobile.mvp.presenter.ProvidePresenter
 import kotlinx.android.synthetic.main.fragment_enter.*
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import ru.kuchanov.scpquiz.R
 import ru.kuchanov.scpquiz.mvp.presenter.intro.EnterPresenter
 import ru.kuchanov.scpquiz.mvp.view.intro.EnterView

@@ -1,9 +1,9 @@
 package ru.kuchanov.scpquiz.mvp
 
-import android.support.annotation.StringRes
-import com.arellomobile.mvp.MvpView
-import com.arellomobile.mvp.viewstate.strategy.OneExecutionStateStrategy
-import com.arellomobile.mvp.viewstate.strategy.StateStrategyType
+import androidx.annotation.StringRes
+import moxy.MvpView
+import moxy.viewstate.strategy.OneExecutionStateStrategy
+import moxy.viewstate.strategy.StateStrategyType
 
 interface BaseView : MvpView {
 

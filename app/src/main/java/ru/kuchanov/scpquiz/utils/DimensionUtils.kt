@@ -1,7 +1,7 @@
 package ru.kuchanov.scpquiz.utils
 
 import android.content.res.Resources
-import android.support.v4.app.FragmentActivity
+import androidx.fragment.app.FragmentActivity
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import ru.kuchanov.scpquiz.App
@@ -18,7 +18,7 @@ object DimensionUtils {
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT))
     }
 
-    fun getActionBarHeight(activity: FragmentActivity): Int {
+    fun getActionBarHeight(activity: androidx.fragment.app.FragmentActivity): Int {
         val tv = TypedValue()
         return if (activity.theme.resolveAttribute(R.attr.actionBarSize, tv, true)) {
             TypedValue.complexToDimensionPixelSize(tv.data, activity.resources.displayMetrics)

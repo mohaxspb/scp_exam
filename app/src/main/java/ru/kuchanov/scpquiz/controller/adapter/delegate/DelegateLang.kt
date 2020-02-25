@@ -1,7 +1,7 @@
 package ru.kuchanov.scpquiz.controller.adapter.delegate
 
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,5 +45,5 @@ class DelegateLang(private val clickListener: (String) -> Unit)
     }
 
 
-    class LangViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class LangViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView)
 }

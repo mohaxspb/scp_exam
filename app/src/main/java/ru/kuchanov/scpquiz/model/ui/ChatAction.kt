@@ -1,6 +1,6 @@
 package ru.kuchanov.scpquiz.model.ui
 
-import android.support.annotation.DrawableRes
+import androidx.annotation.DrawableRes
 
 class ChatAction(
         val actionName: String,

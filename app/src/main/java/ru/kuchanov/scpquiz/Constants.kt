@@ -1,5 +1,19 @@
 package ru.kuchanov.scpquiz
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import ru.kuchanov.scpquiz.model.ui.QuizScreenLaunchData
+import ru.kuchanov.scpquiz.ui.fragment.game.GameFragment
+import ru.kuchanov.scpquiz.ui.fragment.game.LevelsFragment
+import ru.kuchanov.scpquiz.ui.fragment.intro.EnterFragment
+import ru.kuchanov.scpquiz.ui.fragment.intro.IntroDialogFragment
+import ru.kuchanov.scpquiz.ui.fragment.monetization.MonetizationFragment
+import ru.kuchanov.scpquiz.ui.fragment.util.LeaderboardFragment
+import ru.kuchanov.scpquiz.ui.fragment.util.ScpSettingsFragment
+import ru.kuchanov.scpquiz.utils.IntentUtils
+import ru.terrakok.cicerone.android.support.SupportAppScreen
+
 object Constants {
     const val COINS_FOR_NUMBER = 5
     const val COINS_FOR_NAME = 10
@@ -45,14 +59,56 @@ object Constants {
     const val COINS_FOR_LEVEL_UNLOCK = 5
 
     object Screens {
-        const val ENTER = "ENTER"
-        const val SETTINGS = "SETTINGS"
-        const val QUIZ_LIST = "QUIZ_LIST"
-        const val QUIZ = "QUIZ"
-        const val INTRO_DIALOG = "INTRO_DIALOG"
-        const val MONETIZATION = "MONETIZATION"
-        const val LEADERBOARD = "LEADERBOARD"
-        const val PLAY_MARKET = "PLAY_MARKET"
+
+        object EnterScreen : SupportAppScreen() {
+            override fun getFragment() = EnterFragment.newInstance()
+        }
+
+        object LevelsScreen : SupportAppScreen() {
+            override fun getFragment() = LevelsFragment.newInstance()
+        }
+
+        data class GameScreen(val quizId: Long) : SupportAppScreen() {
+            override fun getFragment() = GameFragment.newInstance(quizId)
+        }
+
+        object SettingsScreen : SupportAppScreen() {
+            override fun getFragment() = ScpSettingsFragment.newInstance()
+        }
+
+        object IntroDialogScreen : SupportAppScreen() {
+            override fun getFragment() = IntroDialogFragment.newInstance()
+        }
+
+        object MonetizationScreen : SupportAppScreen() {
+            override fun getFragment() = MonetizationFragment.newInstance()
+        }
+
+        object LeaderboardScreen : SupportAppScreen() {
+            override fun getFragment() = LeaderboardFragment.newInstance()
+        }
+
+        object PlayMarketScreen : SupportAppScreen() {
+            override fun getActivityIntent(context: Context?): Intent {
+                val adminForQuizAppPackageName = context?.getString(R.string.admin_app_package_name)
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$adminForQuizAppPackageName"))
+                return if (IntentUtils.checkIntent(context!!, intent)) {
+                    intent
+                } else {
+                    val intentIfNoActivityForPlayMarket = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$adminForQuizAppPackageName"))
+                    intentIfNoActivityForPlayMarket
+                }
+            }
+        }
+
+//        const val ENTER = "ENTER"
+//        const val SETTINGS = "SETTINGS"
+//        const val QUIZ_LIST = "QUIZ_LIST"
+//        const val QUIZ = "QUIZ"
+//        const val INTRO_DIALOG = "INTRO_DIALOG"
+//        const val MONETIZATION = "MONETIZATION"
+//        const val LEADERBOARD = "LEADERBOARD"
+//        const val PLAY_MARKET = "PLAY_MARKET"
     }
 
     object Api {
