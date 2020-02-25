@@ -231,7 +231,7 @@
         app:layout_constraintVertical_weight="1"
         tools:background="#80ff0000">
 
-        <ru.kuchanov.scpquiz.ui.view.KeyboardView
+        <com.scp.scpexam.ui.view.KeyboardView
             android:id="@+id/keyboardView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent" />
