@@ -21,6 +21,7 @@ import com.scp.scpexam.model.db.User
 import com.scp.scpexam.model.db.UserRole
 import com.scp.scpexam.model.ui.ChatAction
 import com.scp.scpexam.model.ui.ChatActionsGroupType
+import com.scp.scpexam.model.ui.QuizScreenLaunchData
 import com.scp.scpexam.mvp.AuthPresenter
 import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.mvp.view.intro.IntroDialogView
@@ -206,8 +207,7 @@ class IntroDialogPresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onSuccess = {
-                            router.newRootScreen(Constants.Screens.GameScreen(quiz.id))
-//                                    QuizScreenLaunchData(quiz.id, true)
+                            router.newRootScreen(Constants.Screens.GameScreen(QuizScreenLaunchData(quiz.id,true)))
                         }
                 )
     }

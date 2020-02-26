@@ -10,6 +10,12 @@ import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.reward.RewardItem
 import com.google.android.gms.ads.reward.RewardedVideoAd
+import com.mopub.common.MoPub
+import com.mopub.common.SdkConfiguration
+import com.mopub.common.SdkInitializationListener
+import com.mopub.common.logging.MoPubLog
+import com.mopub.mobileads.BuildConfig.DEBUG
+import com.scp.scpexam.BuildConfig
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKCallback
 import com.vk.sdk.VKSdk
@@ -22,6 +28,7 @@ import com.scp.scpexam.controller.manager.monetization.BillingDelegate
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
 import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.di.Di
+import com.scp.scpexam.model.ui.QuizScreenLaunchData
 import com.scp.scpexam.mvp.BaseView
 import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.ui.utils.MyRewardedVideoCallbacks
@@ -135,10 +142,29 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         setContentView(getLayoutResId())
 
         initAds()
+        initMoPub()
 
         billingDelegate = BillingDelegate(this, null, null)
         billingDelegate.startConnection()
     }
+
+    private fun initMoPub() {
+
+        val configBuilder: SdkConfiguration.Builder = SdkConfiguration.Builder (AdsUtils.TEST_REWARD_VIDEO_AD_UNIT_ID)
+        if (BuildConfig.DEBUG) {
+            configBuilder.withLogLevel(MoPubLog.LogLevel.DEBUG)
+        } else {
+            configBuilder.withLogLevel(MoPubLog.LogLevel.NONE)
+        }
+
+        MoPub.initializeSdk(this, configBuilder.build(), initMoPubSdkListener())
+    }
+
+    private fun initMoPubSdkListener(): SdkInitializationListener =
+            SdkInitializationListener {
+                Timber.d("On mopub init finish")
+            }
+
 
     private fun initAds() {
         MobileAds.initialize(applicationContext, getString(R.string.ads_app_id))
@@ -180,9 +206,8 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
                 super.onAdOpened()
                 requestNewInterstitial()
                 preferenceManager.setNeedToShowInterstitial(false)
-                router.replaceScreen(Constants.Screens.GameScreen(quizId))
-                //TODO WTF
-//                QuizScreenLaunchData(quizId, true))
+                router.replaceScreen(Constants.Screens.GameScreen(QuizScreenLaunchData(quizId, true)))
+
             }
         }
         interstitialAd.show()

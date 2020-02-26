@@ -267,6 +267,9 @@ dependencies {
 
     //flags
     implementation 'com.github.KaKaVip:Android-Flag-Kit:v0.1'
+
+    //mopub
+    implementation('com.mopub:mopub-sdk:+@aar') { transitive = true }
 }
 //google
 apply plugin: 'com.google.gms.google-services'

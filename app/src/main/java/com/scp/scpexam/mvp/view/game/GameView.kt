@@ -38,7 +38,7 @@ interface GameView : BaseView, AuthView {
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun showToolbar(show: Boolean)
 
-    @StateStrategyType(OneExecutionStateStrategy::class)
+    @StateStrategyType(AddToEndSingleStrategy::class)
     fun setBackgroundDark(showDark: Boolean)
 
     @StateStrategyType(AddToEndSingleStrategy::class)

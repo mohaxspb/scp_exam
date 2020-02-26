@@ -25,6 +25,7 @@ import com.scp.scpexam.model.db.TransactionType
 import com.scp.scpexam.model.ui.ChatAction
 import com.scp.scpexam.model.ui.ChatActionsGroupType
 import com.scp.scpexam.model.ui.QuizLevelInfo
+import com.scp.scpexam.model.ui.QuizScreenLaunchData
 import com.scp.scpexam.mvp.AuthPresenter
 import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.mvp.view.game.GameView
@@ -69,7 +70,6 @@ class GamePresenter @Inject constructor(
     override lateinit var authDelegate: AuthDelegate<GameFragment>
 
     enum class EnterType {
-
         NAME, NUMBER, NOT_CHOOSED
     }
 
@@ -795,9 +795,7 @@ class GamePresenter @Inject constructor(
 //                    Timber.d("showAds: $showAds")
                     if (quizLevelInfo.nextQuizIdAndFinishedLevel.second!!.isLevelAvailable) {
                         router.replaceScreen(
-                                Constants.Screens.GameScreen(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!)
-                                //TODO wtf if showAds when navigate to game screen
-//                                QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
+                                Constants.Screens.GameScreen(QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds))
                         )
                     } else {
                         //todo move to function
@@ -831,9 +829,7 @@ class GamePresenter @Inject constructor(
                                             },
                                             onComplete = {
                                                 router.replaceScreen(
-                                                        //TODO wtf if showAds when navigate to game screen
-                                                        Constants.Screens.GameScreen(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!)
-//                                                        QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds)
+                                                        Constants.Screens.GameScreen(QuizScreenLaunchData(quizLevelInfo.nextQuizIdAndFinishedLevel.first!!, !showAds))
                                                 )
                                             }
                                     ))

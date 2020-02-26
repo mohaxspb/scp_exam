@@ -5,7 +5,6 @@ import moxy.viewstate.strategy.OneExecutionStateStrategy
 import moxy.viewstate.strategy.StateStrategyType
 import com.scp.scpexam.controller.adapter.viewmodel.LevelViewModel
 import com.scp.scpexam.mvp.BaseView
-import moxy.viewstate.strategy.AddToEndSingleStrategy
 
 interface LevelsView : BaseView {
 

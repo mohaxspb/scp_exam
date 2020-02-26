@@ -280,7 +280,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     private fun addCharToFlexBox(
             char: Char,
-            charId: Int = View.NO_ID,
+            charId: Int = NO_ID,
             flexBoxContainer: FlexboxLayout,
             textSize: Float = TEXT_SIZE_NAME,
             shouldIgnoreClick: () -> Boolean

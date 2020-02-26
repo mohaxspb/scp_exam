@@ -7,7 +7,6 @@ import com.scp.scpexam.controller.adapter.viewmodel.LeaderboardViewModel
 import com.scp.scpexam.model.api.NwUser
 import com.scp.scpexam.mvp.AuthView
 import com.scp.scpexam.mvp.BaseView
-import moxy.viewstate.strategy.AddToEndSingleStrategy
 
 interface LeaderboardView : BaseView, AuthView {
 
