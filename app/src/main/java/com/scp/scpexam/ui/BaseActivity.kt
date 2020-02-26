@@ -160,11 +160,11 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         MoPub.initializeSdk(this, configBuilder.build(), initMoPubSdkListener())
     }
 
-    private fun initMoPubSdkListener(): SdkInitializationListener =
-            SdkInitializationListener {
-                Timber.d("On mopub init finish")
-            }
-
+    private fun initMoPubSdkListener(): SdkInitializationListener = object : SdkInitializationListener {
+        override fun onInitializationFinished() {
+            Timber.d("On mopub init finish")
+        }
+    }
 
     private fun initAds() {
         MobileAds.initialize(applicationContext, getString(R.string.ads_app_id))
