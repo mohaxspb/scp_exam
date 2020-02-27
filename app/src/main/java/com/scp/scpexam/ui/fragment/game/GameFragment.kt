@@ -398,10 +398,6 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         authDelegate.onPause()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
     override fun clearChatMessages() = chatMessagesView.removeAllViews()
 
     override fun onNeedToOpenSettings() {
