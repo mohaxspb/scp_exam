@@ -158,14 +158,20 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
         //ads
         if (myPreferenceManager.isAdsDisabled()) {
+//            adView.isEnabled = false
+//            adView.pause()
+//            adView.visibility = GONE
             adView.isEnabled = false
-            adView.pause()
             adView.visibility = GONE
+
         } else {
+//            adView.visibility = VISIBLE
+//            adView.isEnabled = true
+//            adView.loadAd(AdsUtils.buildAdRequest())
             adView.visibility = VISIBLE
             adView.isEnabled = true
-
-            adView.loadAd(AdsUtils.buildAdRequest())
+            adView.adUnitId = AdsUtils.BANNER_AD_UNIT_ID
+            adView.loadAd()
         }
     }
 
@@ -246,7 +252,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showHelpButton(show: Boolean) {
-        helpButton.visibility = if (show) View.VISIBLE else View.GONE
+        helpButton.visibility = if (show) VISIBLE else GONE
     }
 
     override fun showCoins(coins: Int) {
@@ -392,6 +398,10 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         authDelegate.onPause()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
     override fun clearChatMessages() = chatMessagesView.removeAllViews()
 
     override fun onNeedToOpenSettings() {
@@ -418,7 +428,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     ).show()
 
     override fun showProgress(show: Boolean) {
-        progressView.visibility = if (show) View.VISIBLE else View.GONE
+        progressView.visibility = if (show) VISIBLE else GONE
     }
 
     override fun onNeedToShowRewardedVideo() = (activity as BaseActivity<*, *>).showRewardedVideo()

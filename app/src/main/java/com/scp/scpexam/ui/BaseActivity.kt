@@ -158,6 +158,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         }
 
         MoPub.initializeSdk(this, configBuilder.build(), initMoPubSdkListener())
+
     }
 
     private fun initMoPubSdkListener(): SdkInitializationListener = object : SdkInitializationListener {

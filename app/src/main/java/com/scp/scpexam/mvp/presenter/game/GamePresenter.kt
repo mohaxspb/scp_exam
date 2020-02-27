@@ -94,7 +94,6 @@ class GamePresenter @Inject constructor(
     var currentEnterType = EnterType.NOT_CHOOSED
 
     override fun onFirstViewAttach() {
-//        Timber.d("onFirstViewAttach")
         super.onFirstViewAttach()
 
         loadLevel()
