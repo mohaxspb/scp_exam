@@ -17,12 +17,12 @@ import com.scp.scpexam.R
 import com.scp.scpexam.controller.api.ApiClient
 import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.di.Di
 import com.scp.scpexam.model.api.QuizConverter
 import com.scp.scpexam.model.util.QuizFilter
 import com.scp.scpexam.ui.activity.MainActivity
 import com.scp.scpexam.utils.createNotificationChannel
+import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import toothpick.Toothpick
 import javax.inject.Inject
@@ -35,7 +35,7 @@ class DownloadService : Service() {
     @Inject
     lateinit var preferences: MyPreferenceManager
     @Inject
-    lateinit var router: ScpRouter
+    lateinit var router: Router
     @Inject
     lateinit var appDatabase: AppDatabase
     @Inject

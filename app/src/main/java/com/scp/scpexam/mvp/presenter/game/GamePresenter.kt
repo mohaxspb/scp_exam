@@ -3,15 +3,6 @@ package com.scp.scpexam.mvp.presenter.game
 import android.app.Application
 import android.content.Intent
 import android.graphics.Bitmap
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.Maybe
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
-import moxy.InjectViewState
 import com.scp.scpexam.Constants
 import com.scp.scpexam.R
 import com.scp.scpexam.controller.api.ApiClient
@@ -19,7 +10,6 @@ import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.interactor.GameInteractor
 import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.model.db.QuizTranslationPhrase
 import com.scp.scpexam.model.db.TransactionType
 import com.scp.scpexam.model.ui.ChatAction
@@ -34,6 +24,16 @@ import com.scp.scpexam.ui.utils.AuthDelegate
 import com.scp.scpexam.ui.view.KeyboardView
 import com.scp.scpexam.utils.BitmapUtils
 import com.scp.scpexam.utils.addTo
+import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.Maybe
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import moxy.InjectViewState
+import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -44,7 +44,7 @@ import kotlin.properties.Delegates
 class GamePresenter @Inject constructor(
         override var appContext: Application,
         override var preferences: MyPreferenceManager,
-        override var router: ScpRouter,
+        override var router: Router,
         override var appDatabase: AppDatabase,
         private var gameInteractor: GameInteractor,
         override var transactionInteractor: TransactionInteractor,

@@ -15,7 +15,6 @@ import com.scp.scpexam.controller.api.ApiClient
 import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.controller.repository.SettingsRepository
 import com.scp.scpexam.model.db.UserRole
 import com.scp.scpexam.model.db.generateRandomName
@@ -25,6 +24,7 @@ import com.scp.scpexam.mvp.view.util.SettingsView
 import com.scp.scpexam.ui.fragment.util.ScpSettingsFragment
 import com.scp.scpexam.ui.utils.AuthDelegate
 import com.scp.scpexam.utils.IntentUtils
+import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -32,7 +32,7 @@ import javax.inject.Inject
 class ScpSettingsPresenter @Inject constructor(
         override var appContext: Application,
         override var preferences: MyPreferenceManager,
-        override var router: ScpRouter,
+        override var router: Router,
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor,

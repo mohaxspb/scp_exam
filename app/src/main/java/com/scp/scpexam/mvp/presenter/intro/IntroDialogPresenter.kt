@@ -15,7 +15,6 @@ import com.scp.scpexam.controller.api.ApiClient
 import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.model.db.Quiz
 import com.scp.scpexam.model.db.User
 import com.scp.scpexam.model.db.UserRole
@@ -27,6 +26,7 @@ import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.mvp.view.intro.IntroDialogView
 import com.scp.scpexam.ui.fragment.intro.IntroDialogFragment
 import com.scp.scpexam.ui.utils.AuthDelegate
+import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -35,7 +35,7 @@ import javax.inject.Inject
 class IntroDialogPresenter @Inject constructor(
         override var appContext: Application,
         override var preferences: MyPreferenceManager,
-        override var router: ScpRouter,
+        override var router: Router,
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor

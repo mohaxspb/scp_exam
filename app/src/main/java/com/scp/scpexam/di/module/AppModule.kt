@@ -17,7 +17,6 @@ import com.scp.scpexam.controller.api.*
 import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.db.migrations.Migrations
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.controller.repository.SettingsRepository
 import com.scp.scpexam.model.api.QuizConverter
 import com.scp.scpexam.model.util.QuizFilter
@@ -25,6 +24,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import ru.terrakok.cicerone.Cicerone
 import ru.terrakok.cicerone.NavigatorHolder
+import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import toothpick.config.Module
 import java.net.HttpURLConnection
@@ -61,9 +61,9 @@ class AppModule(context: Context) : Module() {
         bind(Moshi::class.java).toInstance(moshi)
 
         //routing
-        val cicerone: Cicerone<ScpRouter> = Cicerone.create(ScpRouter())
+        val cicerone: Cicerone<Router> = Cicerone.create(Router())
         bind(Cicerone::class.java).toInstance(cicerone)
-        bind(ScpRouter::class.java).toInstance(cicerone.router)
+        bind(Router::class.java).toInstance(cicerone.router)
         bind(NavigatorHolder::class.java).toInstance(cicerone.navigatorHolder)
 
         //api

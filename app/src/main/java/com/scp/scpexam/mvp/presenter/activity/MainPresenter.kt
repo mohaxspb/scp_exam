@@ -9,18 +9,18 @@ import com.scp.scpexam.controller.api.ApiClient
 import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.mvp.view.activity.MainView
 import com.scp.scpexam.receivers.AutoSyncReceiver.Companion.setAlarm
 import com.scp.scpexam.services.DownloadService
+import ru.terrakok.cicerone.Router
 import javax.inject.Inject
 
 @InjectViewState
 class MainPresenter @Inject constructor(
         override var appContext: Application,
         override var preferences: MyPreferenceManager,
-        override var router: ScpRouter,
+        override var router: Router,
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor

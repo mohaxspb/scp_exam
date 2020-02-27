@@ -158,16 +158,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
         //ads
         if (myPreferenceManager.isAdsDisabled()) {
-//            adView.isEnabled = false
-//            adView.pause()
-//            adView.visibility = GONE
             adView.isEnabled = false
             adView.visibility = GONE
-
         } else {
-//            adView.visibility = VISIBLE
-//            adView.isEnabled = true
-//            adView.loadAd(AdsUtils.buildAdRequest())
             adView.visibility = VISIBLE
             adView.isEnabled = true
             adView.adUnitId = AdsUtils.BANNER_AD_UNIT_ID

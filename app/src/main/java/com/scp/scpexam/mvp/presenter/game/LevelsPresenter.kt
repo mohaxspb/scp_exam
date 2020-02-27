@@ -17,7 +17,6 @@ import com.scp.scpexam.controller.api.ApiClient
 import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.controller.repository.SettingsRepository
 import com.scp.scpexam.model.db.*
 import com.scp.scpexam.model.ui.QuizScreenLaunchData
@@ -25,6 +24,7 @@ import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.mvp.view.game.LevelsView
 import com.scp.scpexam.utils.BitmapUtils
 import com.scp.scpexam.utils.addTo
+import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -34,7 +34,7 @@ import javax.inject.Inject
 class LevelsPresenter @Inject constructor(
         override var appContext: Application,
         override var preferences: MyPreferenceManager,
-        override var router: ScpRouter,
+        override var router: Router,
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor,
