@@ -11,6 +11,7 @@ import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
 import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.mvp.view.activity.MainView
+import com.scp.scpexam.receivers.AutoSyncReceiver.Companion.isAlarmSet
 import com.scp.scpexam.receivers.AutoSyncReceiver.Companion.setAlarm
 import com.scp.scpexam.services.DownloadService
 import ru.terrakok.cicerone.Router
@@ -28,7 +29,9 @@ class MainPresenter @Inject constructor(
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        setAlarm(appContext)
+        if (!isAlarmSet(appContext)){
+            setAlarm(appContext)
+        }
         router.newRootScreen(Constants.Screens.EnterScreen)
 
         val downloadServiceIntent = Intent(appContext, DownloadService::class.java)
