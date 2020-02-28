@@ -35,7 +35,6 @@ import com.scp.scpexam.ui.utils.ChatDelegate
 import com.scp.scpexam.ui.utils.GlideApp
 import com.scp.scpexam.ui.utils.getImageUrl
 import com.scp.scpexam.ui.view.CharacterView
-import com.scp.scpexam.utils.AdsUtils
 import com.scp.scpexam.utils.BitmapUtils
 import com.scp.scpexam.utils.StorageUtils
 import com.scp.scpexam.utils.SystemUtils
@@ -159,13 +158,12 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         //ads
         if (myPreferenceManager.isAdsDisabled()) {
             adView.isEnabled = false
-            adView.pause()
             adView.visibility = GONE
         } else {
             adView.visibility = VISIBLE
             adView.isEnabled = true
-
-            adView.loadAd(AdsUtils.buildAdRequest())
+            adView.adUnitId = getString(R.string.ad_unit_id_banner)
+            adView.loadAd()
         }
     }
 
@@ -246,7 +244,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showHelpButton(show: Boolean) {
-        helpButton.visibility = if (show) View.VISIBLE else View.GONE
+        helpButton.visibility = if (show) VISIBLE else GONE
     }
 
     override fun showCoins(coins: Int) {
@@ -280,7 +278,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     private fun addCharToFlexBox(
             char: Char,
-            charId: Int = View.NO_ID,
+            charId: Int = NO_ID,
             flexBoxContainer: FlexboxLayout,
             textSize: Float = TEXT_SIZE_NAME,
             shouldIgnoreClick: () -> Boolean
@@ -418,7 +416,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     ).show()
 
     override fun showProgress(show: Boolean) {
-        progressView.visibility = if (show) View.VISIBLE else View.GONE
+        progressView.visibility = if (show) VISIBLE else GONE
     }
 
     override fun onNeedToShowRewardedVideo() = (activity as BaseActivity<*, *>).showRewardedVideo()

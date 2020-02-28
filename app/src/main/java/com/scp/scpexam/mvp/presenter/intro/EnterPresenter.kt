@@ -19,7 +19,6 @@ import com.scp.scpexam.controller.api.ApiClient
 import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.model.api.NwQuiz
 import com.scp.scpexam.model.api.QuizConverter
 import com.scp.scpexam.model.db.FinishedLevel
@@ -32,6 +31,7 @@ import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.mvp.view.intro.EnterView
 import com.scp.scpexam.utils.BitmapUtils
 import com.scp.scpexam.utils.StorageUtils
+import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -41,7 +41,7 @@ import javax.inject.Inject
 class EnterPresenter @Inject constructor(
         override var appContext: Application,
         override var preferences: MyPreferenceManager,
-        override var router: ScpRouter,
+        override var router: Router,
         override var appDatabase: AppDatabase,
         private val moshi: Moshi,
         private var quizConverter: QuizConverter,

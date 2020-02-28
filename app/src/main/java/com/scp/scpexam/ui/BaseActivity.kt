@@ -2,32 +2,35 @@ package com.scp.scpexam.ui
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.widget.Toast
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.reward.RewardItem
-import com.google.android.gms.ads.reward.RewardedVideoAd
+import androidx.annotation.LayoutRes
+import com.mopub.common.MoPub
+import com.mopub.common.MoPubReward
+import com.mopub.common.SdkConfiguration
+import com.mopub.common.SdkInitializationListener
+import com.mopub.common.logging.MoPubLog
+import com.mopub.mobileads.MoPubInterstitial
+import com.mopub.mobileads.MoPubRewardedVideos
+import com.scp.scpexam.BuildConfig
+import com.scp.scpexam.Constants
+import com.scp.scpexam.R
+import com.scp.scpexam.controller.manager.monetization.BillingDelegate
+import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
+import com.scp.scpexam.di.Di
+import com.scp.scpexam.model.ui.QuizScreenLaunchData
+import com.scp.scpexam.mvp.BaseView
+import com.scp.scpexam.mvp.presenter.BasePresenter
+import com.scp.scpexam.ui.utils.MyMoPubListener
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKCallback
 import com.vk.sdk.VKSdk
 import com.vk.sdk.api.VKError
 import moxy.MvpAppCompatActivity
 import ru.kuchanov.rate.PreRate
-import com.scp.scpexam.Constants
-import com.scp.scpexam.R
-import com.scp.scpexam.controller.manager.monetization.BillingDelegate
-import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
-import com.scp.scpexam.di.Di
-import com.scp.scpexam.mvp.BaseView
-import com.scp.scpexam.mvp.presenter.BasePresenter
-import com.scp.scpexam.ui.utils.MyRewardedVideoCallbacks
-import com.scp.scpexam.utils.AdsUtils
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.NavigatorHolder
+import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import toothpick.Scope
 import toothpick.Toothpick
@@ -47,7 +50,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     lateinit var preferenceManager: MyPreferenceManager
 
     @Inject
-    lateinit var router: ScpRouter
+    lateinit var router: Router
 
     abstract val scopes: Array<String>
 
@@ -60,9 +63,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
      */
     abstract var navigator: Navigator
 
-    private lateinit var interstitialAd: InterstitialAd
-
-    private lateinit var mRewardedVideoAd: RewardedVideoAd
+    private lateinit var moPubInterstitial: MoPubInterstitial
 
     override fun onResumeFragments() {
         super.onResumeFragments()
@@ -72,7 +73,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     override fun onPause() {
         super.onPause()
         navigationHolder.removeNavigator()
-        mRewardedVideoAd.pause(this)
+        MoPub.onPause(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -92,8 +93,9 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     override fun onResume() {
         super.onResume()
         PreRate.init(this, getString(R.string.feedback_email), getString(R.string.feedback_title)).showIfNeed()
-        requestNewInterstitial()
-        mRewardedVideoAd.resume(this)
+        if (MoPub.isSdkInitialized()){
+            requestNewInterstitial()
+        }
     }
 
     /**
@@ -134,89 +136,89 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         super.onCreate(savedInstanceState)
         setContentView(getLayoutResId())
 
-        initAds()
+        val configBuilder: SdkConfiguration.Builder = SdkConfiguration.Builder(getString(R.string.ad_unit_id_banner))
+        if (BuildConfig.DEBUG) {
+            configBuilder.withLogLevel(MoPubLog.LogLevel.DEBUG)
+        } else {
+            configBuilder.withLogLevel(MoPubLog.LogLevel.NONE)
+        }
+
+        MoPub.initializeSdk(this, configBuilder.build(), initMoPubSdkListener())
 
         billingDelegate = BillingDelegate(this, null, null)
         billingDelegate.startConnection()
     }
 
-    private fun initAds() {
-        MobileAds.initialize(applicationContext, getString(R.string.ads_app_id))
+    private fun initMoPub() {
 
-        // Set app volume to be half of current device volume.
-        if (preferenceManager.isSoundEnabled()) {
-            MobileAds.setAppMuted(false)
-            MobileAds.setAppVolume(0.5f)
-        } else {
-            // Set app volume to be half of current device volume.
-            MobileAds.setAppMuted(true)
-        }
-        interstitialAd = InterstitialAd(this)
-        interstitialAd.adUnitId = getString(R.string.ad_unit_id_interstitial)
-
-        if (!interstitialAd.isLoaded) {
-            requestNewInterstitial()
-        }
-
-        mRewardedVideoAd = MobileAds.getRewardedVideoAdInstance(this)
-        mRewardedVideoAd.rewardedVideoAdListener = object : MyRewardedVideoCallbacks() {
-            override fun onRewardedVideoAdClosed() {
-                super.onRewardedVideoAdClosed()
+        MoPubRewardedVideos.setRewardedVideoListener(object : MyMoPubListener(){
+            override fun onRewardedVideoClosed(adUnitId: String) {
+                Timber.d("onRewardedVideoClosed")
                 loadRewardedVideoAd()
             }
 
-            override fun onRewarded(rewardItem: RewardItem?) {
-                super.onRewarded(rewardItem)
+            override fun onRewardedVideoCompleted(adUnitIds: MutableSet<String>, reward: MoPubReward) {
+                Timber.d("onRewardedVideoCompleted")
                 presenter.onRewardedVideoFinished()
             }
-        }
+
+        })
+
+        moPubInterstitial = MoPubInterstitial(this, getString(R.string.ad_unit_id_interstitial))
+
+        moPubInterstitial.interstitialAdListener = MyMoPubListener()
+        moPubInterstitial.load()
 
         loadRewardedVideoAd()
     }
 
+    private fun initMoPubSdkListener(): SdkInitializationListener = SdkInitializationListener {
+        Timber.d("On mopub init finish")
+        initMoPub()
+    }
+
     fun showInterstitial(quizId: Long) {
-        interstitialAd.adListener = object : AdListener() {
-            override fun onAdOpened() {
-                super.onAdOpened()
+
+        if (moPubInterstitial.isReady){
+            moPubInterstitial.show()
+        } else {
+            requestNewInterstitial()
+        }
+        moPubInterstitial.interstitialAdListener = object : MyMoPubListener() {
+
+            override fun onInterstitialShown(interstitial: MoPubInterstitial?) {
                 requestNewInterstitial()
                 preferenceManager.setNeedToShowInterstitial(false)
-                router.replaceScreen(Constants.Screens.GameScreen(quizId))
-                //TODO WTF
-//                QuizScreenLaunchData(quizId, true))
+                router.replaceScreen(Constants.Screens.GameScreen(QuizScreenLaunchData(quizId, true)))
             }
         }
-        interstitialAd.show()
     }
 
     protected fun requestNewInterstitial() {
         Timber.d(
-                "requestNewInterstitial loading/loaded/disabled: %s/%s/%s",
-                interstitialAd.isLoading,
-                interstitialAd.isLoaded,
+                "requestNewInterstitial ready/disabled: %s/%s",
+                moPubInterstitial.isReady,
                 preferenceManager.isAdsDisabled()
         )
-        if (interstitialAd.isLoading || interstitialAd.isLoaded || preferenceManager.isAdsDisabled()) {
-            Timber.d("loading already in progress or already done or disabled")
+        if (moPubInterstitial.isReady || preferenceManager.isAdsDisabled()) {
+            Timber.d("loading already done or disabled")
         } else {
-            interstitialAd.loadAd(AdsUtils.buildAdRequest())
+            moPubInterstitial.load()
         }
     }
 
-    private fun loadRewardedVideoAd() {
-        @Suppress("ConstantConditionIf")
-        mRewardedVideoAd.loadAd(
-                getString(R.string.ad_unit_id_rewarded_video),
-                AdsUtils.buildAdRequest()
-        )
+    private fun loadRewardedVideoAd(){
+        MoPubRewardedVideos.loadRewardedVideo(getString(R.string.ad_unit_id_rewarded_video))
     }
 
-    protected fun isInterstitialLoaded() = interstitialAd.isLoaded
+    protected fun isInterstitialLoaded() = moPubInterstitial.isReady
 
     override fun showMessage(message: String) = Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 
     override fun showMessage(message: Int) = showMessage(getString(message))
 
     override fun onDestroy() {
+        moPubInterstitial.destroy()
         super.onDestroy()
 
         for (scope in scopes) {
@@ -225,12 +227,12 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 
         PreRate.clearDialogIfOpen()
 
-        mRewardedVideoAd.destroy(this)
     }
 
-    fun showRewardedVideo() {
-        if (mRewardedVideoAd.isLoaded) {
-            mRewardedVideoAd.show()
+    fun showRewardedVideo(){
+
+        if (MoPubRewardedVideos.hasRewardedVideo(getString(R.string.ad_unit_id_rewarded_video))) {
+            MoPubRewardedVideos.showRewardedVideo(getString(R.string.ad_unit_id_rewarded_video))
         } else {
             showMessage(R.string.reward_not_loaded_yet)
             loadRewardedVideoAd()

@@ -3,6 +3,7 @@ package com.scp.scpexam
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import com.scp.scpexam.model.ui.QuizScreenLaunchData
 import com.scp.scpexam.ui.fragment.game.GameFragment
 import com.scp.scpexam.ui.fragment.game.LevelsFragment
 import com.scp.scpexam.ui.fragment.intro.EnterFragment
@@ -67,8 +68,8 @@ object Constants {
             override fun getFragment() = LevelsFragment.newInstance()
         }
 
-        data class GameScreen(val quizId: Long) : SupportAppScreen() {
-            override fun getFragment() = GameFragment.newInstance(quizId)
+        data class GameScreen(val quizScreenLaunchData: QuizScreenLaunchData) : SupportAppScreen() {
+            override fun getFragment() = GameFragment.newInstance(quizScreenLaunchData.quizId)
         }
 
         object SettingsScreen : SupportAppScreen() {
@@ -99,15 +100,6 @@ object Constants {
                 }
             }
         }
-
-//        const val ENTER = "ENTER"
-//        const val SETTINGS = "SETTINGS"
-//        const val QUIZ_LIST = "QUIZ_LIST"
-//        const val QUIZ = "QUIZ"
-//        const val INTRO_DIALOG = "INTRO_DIALOG"
-//        const val MONETIZATION = "MONETIZATION"
-//        const val LEADERBOARD = "LEADERBOARD"
-//        const val PLAY_MARKET = "PLAY_MARKET"
     }
 
     object Api {

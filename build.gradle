@@ -10,9 +10,6 @@ buildscript {
         //material dialog
         maven { url "https://dl.bintray.com/drummer-aidan/maven/" }
 
-        flatDir {
-            dirs 'libs'
-        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.6.0'
@@ -28,10 +25,9 @@ allprojects {
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
-
-        flatDir {
-            dirs 'libs'
-        }
+        //ads mopub
+        maven { url "https://s3.amazonaws.com/moat-sdk-builds" }
+        
     }
 }
 

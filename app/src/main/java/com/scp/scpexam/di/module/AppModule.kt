@@ -17,12 +17,14 @@ import com.scp.scpexam.controller.api.*
 import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.db.migrations.Migrations
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.controller.repository.SettingsRepository
 import com.scp.scpexam.model.api.QuizConverter
 import com.scp.scpexam.model.util.QuizFilter
+import okhttp3.Interceptor
+import okhttp3.Response
 import ru.terrakok.cicerone.Cicerone
 import ru.terrakok.cicerone.NavigatorHolder
+import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import toothpick.config.Module
 import java.net.HttpURLConnection
@@ -59,15 +61,19 @@ class AppModule(context: Context) : Module() {
         bind(Moshi::class.java).toInstance(moshi)
 
         //routing
-        val cicerone: Cicerone<ScpRouter> = Cicerone.create(ScpRouter())
+        val cicerone: Cicerone<Router> = Cicerone.create(Router())
         bind(Cicerone::class.java).toInstance(cicerone)
-        bind(ScpRouter::class.java).toInstance(cicerone.router)
+        bind(Router::class.java).toInstance(cicerone.router)
         bind(NavigatorHolder::class.java).toInstance(cicerone.navigatorHolder)
 
         //api
         val okHttpClientCommon = OkHttpClient.Builder()
                 .addInterceptor(
-                        HttpLoggingInterceptor { log -> Timber.tag("OkHttp").d(log) }
+                        HttpLoggingInterceptor(object :HttpLoggingInterceptor.Logger{
+                            override fun log(message: String) {
+                                Timber.tag("OkHttp").d(message)
+                            }
+                        })
                                 .setLevel(HttpLoggingInterceptor.Level.BODY)
                 )
                 .build()
@@ -82,88 +88,108 @@ class AppModule(context: Context) : Module() {
 
         val authorizedOkHttpClient = OkHttpClient.Builder()
                 .addInterceptor(
-                        HttpLoggingInterceptor { log -> Timber.tag("OkHttp").d(log) }
+                        HttpLoggingInterceptor(object :HttpLoggingInterceptor.Logger{
+                            override fun log(message: String) {
+                                Timber.tag("OkHttp").d(message)
+                            }
+                        })
                                 .setLevel(HttpLoggingInterceptor.Level.BODY)
                 )
-                .addInterceptor { chain ->
-                    var request = chain.request()
-                    request = request
-                            .newBuilder()
-                            .header(
-                                    Constants.Api.HEADER_AUTHORIZATION,
-                                    Constants.Api.HEADER_PART_BEARER + preferenceManager.getTrueAccessToken()
-                            )
-                            .build()
-                    chain.proceed(request)
-                }
-                .addInterceptor { chain ->
-                    var request = chain.request()
-                    var response = chain.proceed(request)
-                    if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                        val tokenResponse = authApi
-                                .getAccessTokenByRefreshToken(
-                                        Credentials.basic(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_SECRET),
-                                        Constants.Api.GRANT_TYPE_REFRESH_TOKEN,
-                                        preferenceManager.getRefreshToken()!!
-                                )
-                                .blockingGet()
-                        preferenceManager.setTrueAccessToken(tokenResponse.accessToken)
-                        preferenceManager.setRefreshToken(tokenResponse.refreshToken)
-
+                .addInterceptor ( object : Interceptor{
+                    override fun intercept(chain: Interceptor.Chain): Response {
+                        var request = chain.request()
                         request = request
                                 .newBuilder()
                                 .header(
                                         Constants.Api.HEADER_AUTHORIZATION,
-                                        Constants.Api.HEADER_PART_BEARER + tokenResponse.accessToken
+                                        Constants.Api.HEADER_PART_BEARER + preferenceManager.getTrueAccessToken()
                                 )
                                 .build()
-                        response = chain.proceed(request)
+                        return chain.proceed(request)
                     }
-                    response
                 }
+                )
+                .addInterceptor ( object :Interceptor {
+                    override fun intercept(chain: Interceptor.Chain): Response {
+                        var request = chain.request()
+                        var response = chain.proceed(request)
+                        if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                            val tokenResponse = authApi
+                                    .getAccessTokenByRefreshToken(
+                                            Credentials.basic(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_SECRET),
+                                            Constants.Api.GRANT_TYPE_REFRESH_TOKEN,
+                                            preferenceManager.getRefreshToken()!!
+                                    )
+                                    .blockingGet()
+                            preferenceManager.setTrueAccessToken(tokenResponse.accessToken)
+                            preferenceManager.setRefreshToken(tokenResponse.refreshToken)
+
+                            request = request
+                                    .newBuilder()
+                                    .header(
+                                            Constants.Api.HEADER_AUTHORIZATION,
+                                            Constants.Api.HEADER_PART_BEARER + tokenResponse.accessToken
+                                    )
+                                    .build()
+                            response = chain.proceed(request)
+                        }
+                        return response
+                    }
+                }
+                )
                 .build()
 
         val quizOkHttpClient = OkHttpClient.Builder()
                 .addInterceptor(
-                        HttpLoggingInterceptor { log -> Timber.tag("OkHttp").d(log) }
+                        HttpLoggingInterceptor ( object : HttpLoggingInterceptor.Logger{
+                            override fun log(message: String) {
+                                Timber.tag("OkHttp").d(message)
+                            }
+                        })
                                 .setLevel(HttpLoggingInterceptor.Level.BODY)
                 )
-                .addInterceptor { chain ->
-                    var request = chain.request()
-                    request = request
-                            .newBuilder()
-                            .header(
-                                    Constants.Api.HEADER_AUTHORIZATION,
-                                    Constants.Api.HEADER_PART_BEARER + preferenceManager.getAccessToken()
-                            )
-                            .build()
-                    chain.proceed(request)
-                }
-                .addInterceptor { chain ->
-                    var request = chain.request()
-                    var response = chain.proceed(request)
-                    if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                        //use implicit grant flow if there is no refresh token
-                        val tokenResponse = authApi
-                                .getAccessToken(
-                                        Credentials.basic(BuildConfig.USER, BuildConfig.PASSWORD),
-                                        Constants.Api.GRANT_TYPE_CLIENT_CREDENTIALS
-                                )
-                                .blockingGet()
-
-                        preferenceManager.setAccessToken(tokenResponse.accessToken)
-
+                .addInterceptor ( object : Interceptor {
+                    override fun intercept(chain: Interceptor.Chain): Response {
+                        var request = chain.request()
                         request = request
                                 .newBuilder()
                                 .header(
                                         Constants.Api.HEADER_AUTHORIZATION,
-                                        Constants.Api.HEADER_PART_BEARER + tokenResponse.accessToken
+                                        Constants.Api.HEADER_PART_BEARER + preferenceManager.getAccessToken()
                                 )
                                 .build()
-                        response = chain.proceed(request)
+                        return chain.proceed(request)
                     }
-                    response
                 }
+                )
+                .addInterceptor ( object : Interceptor{
+                    override fun intercept(chain: Interceptor.Chain): Response {
+                        var request = chain.request()
+                        var response = chain.proceed(request)
+                        if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                            //use implicit grant flow if there is no refresh token
+                            val tokenResponse = authApi
+                                    .getAccessToken(
+                                            Credentials.basic(BuildConfig.USER, BuildConfig.PASSWORD),
+                                            Constants.Api.GRANT_TYPE_CLIENT_CREDENTIALS
+                                    )
+                                    .blockingGet()
+
+                            preferenceManager.setAccessToken(tokenResponse.accessToken)
+
+                            request = request
+                                    .newBuilder()
+                                    .header(
+                                            Constants.Api.HEADER_AUTHORIZATION,
+                                            Constants.Api.HEADER_PART_BEARER + tokenResponse.accessToken
+                                    )
+                                    .build()
+                            response = chain.proceed(request)
+                        }
+                        return response
+                    }
+                }
+                )
                 .build()
 
         val quizRetrofit = Retrofit.Builder()

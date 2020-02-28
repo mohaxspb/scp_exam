@@ -2,15 +2,17 @@ package com.scp.scpexam.ui.activity
 
 import androidx.annotation.IdRes
 import com.afollestad.materialdialogs.MaterialDialog
-import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
+import com.mopub.common.MoPub
 import com.scp.scpexam.Constants
 import com.scp.scpexam.R
 import com.scp.scpexam.mvp.presenter.activity.MainPresenter
 import com.scp.scpexam.mvp.view.activity.MainView
 import com.scp.scpexam.ui.BaseActivity
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import ru.terrakok.cicerone.Navigator
 import ru.terrakok.cicerone.android.support.SupportAppNavigator
+import ru.terrakok.cicerone.commands.*
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
@@ -36,66 +38,39 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
 
     override var navigator: Navigator = object : SupportAppNavigator(this, containerId) {
 
-//        override fun createActivityIntent(context: Context, screenKey: String?, data: Any?): Intent? =
-//                when (screenKey) {
-//                    Constants.Screens.PLAY_MARKET -> {
-//                        val adminForQuizAppPackageName = context.getString(R.string.admin_app_package_name)
-//                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$adminForQuizAppPackageName"))
-//                        if (IntentUtils.checkIntent(context, intent)) {
-//                            intent
-//                        } else {
-//                            val intentIfNoActivityForPlayMarket = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$adminForQuizAppPackageName"))
-//                            intentIfNoActivityForPlayMarket
-//                        }
-//                    }
-//                    else -> null
-//                }
+        override fun applyCommand(command: Command) {
+            Timber.d("applyCommand: ${command.javaClass.simpleName}")
 
-//        override fun createFragment(screenKey: String?, data: Any?): androidx.fragment.app.Fragment? {
-//            Timber.d("createFragment key: $screenKey, data: $data")
-//            return when (screenKey) {
-//                Constants.Screens.ENTER -> EnterFragment.newInstance()
-//                Constants.Screens.QUIZ_LIST -> LevelsFragment.newInstance()
-//                Constants.Screens.QUIZ -> GameFragment.newInstance((data as QuizScreenLaunchData).quizId)
-//                Constants.Screens.SETTINGS -> ScpSettingsFragment.newInstance()
-//                Constants.Screens.INTRO_DIALOG -> IntroDialogFragment.newInstance()
-//                Constants.Screens.MONETIZATION -> MonetizationFragment.newInstance()
-//                Constants.Screens.LEADERBOARD -> LeaderboardFragment.newInstance()
-//                else -> null
-//            }
+            val screen = when (command) {
+                is Forward -> {
+                    command.screen
+                }
+                is Replace -> {
+                    command.screen
+                }
+                is BackTo -> {
+                    command.screen
+                }
+                is Back -> {
+                    null
+                }
+                else -> {
+                    throw IllegalArgumentException("Unexpected command: ${command::class.java.simpleName}")
+                }
+            }
+            if ( screen is Constants.Screens.GameScreen
+                    && !screen.quizScreenLaunchData.skipAdsShowing
+                    && isInterstitialLoaded()
+            ) {
+                showAdsDialog(screen.quizScreenLaunchData.quizId)
+            } else {
+                if (MoPub.isSdkInitialized()){
+                    requestNewInterstitial()
+                }
+                super.applyCommand(command)
+            }
         }
-
-//        override fun applyCommand(command: Command?) {
-//            Timber.d("applyCommand: ${command?.javaClass?.simpleName ?: command}")
-//            if (command is ShowCommand) {
-//                supportFragmentManager.beginTransaction()
-//                        .add(containerId, createFragment(command.screenKey, command.transitionData)!!)
-//                        .addToBackStack(null)
-//                        .commit()
-//            } else {
-//                var screenKey: String? = null
-//                var data: Any? = null
-//                if (command is Forward) {
-//                    screenKey = command.screenKey
-//                    data = command.transitionData
-//                } else if (command is Replace) {
-//                    screenKey = command.screenKey
-//                    data = command.transitionData
-//                }
-//                if (
-//                        screenKey != null
-//                        && screenKey == Constants.Screens.QUIZ
-//                        && !(data as QuizScreenLaunchData).skipAdsShowing
-//                        && isInterstitialLoaded()
-//                ) {
-//                    showAdsDialog(data.quizId)
-//                } else {
-//                    requestNewInterstitial()
-//                    super.applyCommand(command)
-//                }
-//            }
-//        }
-//    }
+    }
 
     override fun showFirstTimeAppodealAdsDialog() {
         Timber.d("showFirstTimeAppodealAdsDialog")

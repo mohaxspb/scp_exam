@@ -1,28 +1,28 @@
 package com.scp.scpexam.mvp.presenter
 
 import android.app.Application
-import io.reactivex.Completable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
-import moxy.MvpPresenter
 import com.scp.scpexam.Constants
 import com.scp.scpexam.R
 import com.scp.scpexam.controller.api.ApiClient
 import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.model.db.TransactionType
 import com.scp.scpexam.model.db.UserRole
 import com.scp.scpexam.mvp.BaseView
+import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import moxy.MvpPresenter
+import ru.terrakok.cicerone.Router
 import timber.log.Timber
 
 abstract class BasePresenter<V : BaseView>(
         protected open var appContext: Application,
         open var preferences: MyPreferenceManager,
-        protected open var router: ScpRouter,
+        protected open var router: Router,
         protected open var appDatabase: AppDatabase,
         protected open var apiClient: ApiClient,
         protected open var transactionInteractor: TransactionInteractor

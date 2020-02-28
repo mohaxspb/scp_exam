@@ -63,9 +63,9 @@ android {
             debuggable true
 
             //test adUnit IDs from https://developers.google.com/admob/android/test-ads#enable_test_devices
-            resValue('string', 'ad_unit_id_interstitial', 'ca-app-pub-3940256099942544/1033173712')
-            resValue('string', 'ad_unit_id_game_screen_banner', 'ca-app-pub-3940256099942544/6300978111')
-            resValue('string', 'ad_unit_id_rewarded_video', 'ca-app-pub-3940256099942544/5224354917')
+            resValue('string', 'ad_unit_id_interstitial', '24534e1901884e398f1253216226017e')
+            resValue('string', 'ad_unit_id_banner', 'b195f8dd8ded45fe847ad89ed1d016da')
+            resValue('string', 'ad_unit_id_rewarded_video', '920b6145fb1546cf8b5cf2ac34638bb7')
         }
     }
 
@@ -98,11 +98,10 @@ android {
                 //analitics END
 
                 //ads
-                //admob
-                resValue('string', 'ads_app_id', properties.get("adMobAppId"))
-                resValue('string', 'ad_unit_id_interstitial', properties.get("adsBannerIdInterstitial"))
-                resValue('string', 'ad_unit_id_game_screen_banner', properties.get("adsBannerIdGameScreen"))
-                resValue('string', 'ad_unit_id_rewarded_video', properties.get("adsBannerIdRewardedVideo"))
+                //mopub
+                resValue('string', 'ad_unit_id_banner', properties.get("mopubBanner"))
+                resValue('string', 'ad_unit_id_interstitial', properties.get("mopubInterstitial"))
+                resValue('string', 'ad_unit_id_rewarded_video', properties.get("mopubRewardedVideo"))
 
                 //ads END
                 //vps api
@@ -125,9 +124,8 @@ android {
                 throw new GradleException(
                         "You need to have projectRoot/config/config.properties file with "
                                 + "yandexMetricaApiKey, "
-                                + "adMobAppId, "
-                                + "adsBannerIdInterstitial, "
-                                + "adsBannerIdGameScreen, "
+                                + "mopubInterstitial, "
+                                + "mopubBanner, "
                                 + "vpsApiUrl etc "
                                 + "to build project"
                 )
@@ -159,12 +157,6 @@ dependencies {
     implementation "com.google.android.material:material:$supportLibraryVersion"
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation "androidx.preference:preference-ktx:$supportLibraryVersion"
-    //attempt to remove warning
-    implementation 'androidx.browser:browser:1.2.0'
-    implementation "androidx.vectordrawable:vectordrawable-animated:$supportLibraryVersion"
-    implementation "androidx.media:media:$supportLibraryVersion"
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
     //multidex to support more than 65K methods
@@ -173,8 +165,8 @@ dependencies {
     //google libs
     implementation 'com.google.firebase:firebase-core:17.2.2'
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
-    implementation 'com.google.firebase:firebase-ads:18.3.0'
     implementation 'com.google.firebase:firebase-messaging:20.1.0'
+    implementation 'com.google.android.gms:play-services-base:17.1.0'
 
     // AppMetrica
     implementation 'com.yandex.android:mobmetricalib:3.6.4'
@@ -213,11 +205,13 @@ dependencies {
     implementation "androidx.room:room-rxjava2:$roomVersion"
 
     // Retrofit
-    implementation('com.squareup.retrofit2:retrofit:2.4.0') { exclude module: 'okhttp' }
-    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.12.0'
-    implementation 'com.squareup.retrofit2:converter-moshi:2.4.0'
-    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
+    def okHttpVersion = '4.4.0'
+    def retrofitVersion = '2.7.2'
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion") { exclude module: 'okhttp' }
+    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
+    implementation "com.squareup.retrofit2:converter-moshi:$retrofitVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
 
     //json
     def moshiVersion = "1.6.0"
@@ -243,9 +237,6 @@ dependencies {
     implementation 'com.google.android:flexbox:1.0.0'
     implementation 'jp.wasabeef:blurry:2.1.1'
 
-    // Optional. Play Install Referrer library for better attribution.
-    implementation 'com.android.installreferrer:installreferrer:1.1.1'
-
     //inapp
     implementation 'com.android.billingclient:billing:1.2'
 
@@ -267,6 +258,9 @@ dependencies {
 
     //flags
     implementation 'com.github.KaKaVip:Android-Flag-Kit:v0.1'
+
+    //mopub
+    implementation('com.mopub:mopub-sdk:+@aar') { transitive = true }
 }
 //google
 apply plugin: 'com.google.gms.google-services'

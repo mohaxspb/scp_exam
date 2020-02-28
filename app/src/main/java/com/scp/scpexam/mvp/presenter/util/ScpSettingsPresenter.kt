@@ -2,20 +2,12 @@ package com.scp.scpexam.mvp.presenter.util
 
 import android.app.Application
 import android.content.Intent
-import com.google.android.gms.ads.MobileAds
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
-import moxy.InjectViewState
 import com.scp.scpexam.Constants
 import com.scp.scpexam.R
 import com.scp.scpexam.controller.api.ApiClient
 import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.controller.repository.SettingsRepository
 import com.scp.scpexam.model.db.UserRole
 import com.scp.scpexam.model.db.generateRandomName
@@ -25,6 +17,13 @@ import com.scp.scpexam.mvp.view.util.SettingsView
 import com.scp.scpexam.ui.fragment.util.ScpSettingsFragment
 import com.scp.scpexam.ui.utils.AuthDelegate
 import com.scp.scpexam.utils.IntentUtils
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import moxy.InjectViewState
+import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -32,7 +31,7 @@ import javax.inject.Inject
 class ScpSettingsPresenter @Inject constructor(
         override var appContext: Application,
         override var preferences: MyPreferenceManager,
-        override var router: ScpRouter,
+        override var router: Router,
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor,
@@ -77,13 +76,6 @@ class ScpSettingsPresenter @Inject constructor(
 
     fun onSoundEnabled(enabled: Boolean) {
         preferences.setSoundEnabled(enabled)
-        if (enabled) {
-            MobileAds.setAppMuted(false)
-            MobileAds.setAppVolume(0.5f)
-        } else {
-            // Set app volume to be half of current device volume.
-            MobileAds.setAppMuted(true)
-        }
     }
 
     fun onVibrationEnabled(checked: Boolean) = preferences.setVibrationEnabled(checked)

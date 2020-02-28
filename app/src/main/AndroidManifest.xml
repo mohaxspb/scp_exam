@@ -5,6 +5,8 @@
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
@@ -64,15 +66,13 @@
             </intent-filter>
         </receiver>
 
-        <!-- AdMob crash fix -->
-        <!-- see https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml -->
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="@string/ads_app_id" />
         <!-- see https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml -->
         <meta-data
             android:name="com.google.android.gms.ads.AD_MANAGER_APP"
             android:value="true" />
+
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <!-- facebook -->
         <meta-data

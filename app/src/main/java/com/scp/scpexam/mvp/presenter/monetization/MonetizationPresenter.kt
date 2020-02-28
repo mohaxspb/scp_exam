@@ -21,11 +21,11 @@ import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.controller.manager.monetization.BillingDelegate
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.controller.navigation.ScpRouter
 import com.scp.scpexam.model.db.User
 import com.scp.scpexam.model.db.UserRole
 import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.mvp.view.monetization.MonetizationView
+import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -33,7 +33,7 @@ import javax.inject.Inject
 class MonetizationPresenter @Inject constructor(
         override var appContext: Application,
         override var preferences: MyPreferenceManager,
-        override var router: ScpRouter,
+        override var router: Router,
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor
