@@ -35,7 +35,6 @@ import com.scp.scpexam.ui.utils.ChatDelegate
 import com.scp.scpexam.ui.utils.GlideApp
 import com.scp.scpexam.ui.utils.getImageUrl
 import com.scp.scpexam.ui.view.CharacterView
-import com.scp.scpexam.utils.AdsUtils
 import com.scp.scpexam.utils.BitmapUtils
 import com.scp.scpexam.utils.StorageUtils
 import com.scp.scpexam.utils.SystemUtils
@@ -163,7 +162,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         } else {
             adView.visibility = VISIBLE
             adView.isEnabled = true
-            adView.adUnitId = AdsUtils.BANNER_AD_UNIT_ID
+            adView.adUnitId = getString(R.string.ad_unit_id_banner)
             adView.loadAd()
         }
     }

@@ -10,9 +10,7 @@ import com.mopub.common.MoPubReward
 import com.mopub.common.SdkConfiguration
 import com.mopub.common.SdkInitializationListener
 import com.mopub.common.logging.MoPubLog
-import com.mopub.mobileads.MoPubErrorCode
 import com.mopub.mobileads.MoPubInterstitial
-import com.mopub.mobileads.MoPubRewardedVideoListener
 import com.mopub.mobileads.MoPubRewardedVideos
 import com.scp.scpexam.BuildConfig
 import com.scp.scpexam.Constants
@@ -23,7 +21,7 @@ import com.scp.scpexam.di.Di
 import com.scp.scpexam.model.ui.QuizScreenLaunchData
 import com.scp.scpexam.mvp.BaseView
 import com.scp.scpexam.mvp.presenter.BasePresenter
-import com.scp.scpexam.utils.AdsUtils
+import com.scp.scpexam.ui.utils.MyMoPubListener
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKCallback
 import com.vk.sdk.VKSdk
@@ -40,7 +38,7 @@ import toothpick.config.Module
 import toothpick.smoothie.module.SmoothieSupportActivityModule
 import javax.inject.Inject
 
-abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatActivity(), BaseView, MoPubInterstitial.InterstitialAdListener {
+abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatActivity(), BaseView {
 
     @Inject
     lateinit var myLayoutInflater: LayoutInflater
@@ -75,7 +73,6 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     override fun onPause() {
         super.onPause()
         navigationHolder.removeNavigator()
-//        MoPub.onPause(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -95,8 +92,9 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     override fun onResume() {
         super.onResume()
         PreRate.init(this, getString(R.string.feedback_email), getString(R.string.feedback_title)).showIfNeed()
-        requestNewInterstitial()
-//        MoPub.onResume(this)
+        if (MoPub.isSdkInitialized()){
+            requestNewInterstitial()
+        }
     }
 
     /**
@@ -137,15 +135,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         super.onCreate(savedInstanceState)
         setContentView(getLayoutResId())
 
-        initMoPub()
-
-        billingDelegate = BillingDelegate(this, null, null)
-        billingDelegate.startConnection()
-    }
-
-    private fun initMoPub() {
-
-        val configBuilder: SdkConfiguration.Builder = SdkConfiguration.Builder (AdsUtils.REWARD_VIDEO_AD_UNIT_ID)
+        val configBuilder: SdkConfiguration.Builder = SdkConfiguration.Builder(getString(R.string.ad_unit_id_banner))
         if (BuildConfig.DEBUG) {
             configBuilder.withLogLevel(MoPubLog.LogLevel.DEBUG)
         } else {
@@ -154,17 +144,13 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 
         MoPub.initializeSdk(this, configBuilder.build(), initMoPubSdkListener())
 
-        moPubInterstitial = MoPubInterstitial(this, AdsUtils.INTERSTITIAL_AD_UNIT_ID)
-        moPubInterstitial.interstitialAdListener = this
-        moPubInterstitial.load()
+        billingDelegate = BillingDelegate(this, null, null)
+        billingDelegate.startConnection()
+    }
 
-//        if (!moPubInterstitial.isReady) {
-//            requestNewInterstitial()
-//        }
+    private fun initMoPub() {
 
-        loadRewardedVideoAd()
-
-        MoPubRewardedVideos.setRewardedVideoListener(object : MoPubRewardedVideoListener{
+        MoPubRewardedVideos.setRewardedVideoListener(object : MyMoPubListener(){
             override fun onRewardedVideoClosed(adUnitId: String) {
                 Timber.d("onRewardedVideoClosed")
                 loadRewardedVideoAd()
@@ -175,42 +161,35 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
                 presenter.onRewardedVideoFinished()
             }
 
-            override fun onRewardedVideoPlaybackError(adUnitId: String, errorCode: MoPubErrorCode) { Timber.d("onRewardedVideoCompleted") }
-
-            override fun onRewardedVideoLoadFailure(adUnitId: String, errorCode: MoPubErrorCode) { Timber.d("onRewardedVideoLoadFailure") }
-
-            override fun onRewardedVideoClicked(adUnitId: String) { Timber.d("onRewardedVideoClicked") }
-
-            override fun onRewardedVideoStarted(adUnitId: String) { Timber.d("onRewardedVideoStarted") }
-
-            override fun onRewardedVideoLoadSuccess(adUnitId: String) { Timber.d("onRewardedVideoLoadSuccess") }
         })
+
+        moPubInterstitial = MoPubInterstitial(this, getString(R.string.ad_unit_id_interstitial))
+
+        moPubInterstitial.interstitialAdListener = MyMoPubListener()
+        moPubInterstitial.load()
+
+        loadRewardedVideoAd()
     }
 
-    private fun initMoPubSdkListener(): SdkInitializationListener = object : SdkInitializationListener {
-        override fun onInitializationFinished() {
-            Timber.d("On mopub init finish")
-        }
+    private fun initMoPubSdkListener(): SdkInitializationListener = SdkInitializationListener {
+        Timber.d("On mopub init finish")
+        initMoPub()
     }
 
     fun showInterstitial(quizId: Long) {
-        moPubInterstitial.show()
-        moPubInterstitial.interstitialAdListener = object : MoPubInterstitial.InterstitialAdListener {
+
+        if (moPubInterstitial.isReady){
+            moPubInterstitial.show()
+        } else {
+            requestNewInterstitial()
+        }
+        moPubInterstitial.interstitialAdListener = object : MyMoPubListener() {
 
             override fun onInterstitialShown(interstitial: MoPubInterstitial?) {
                 requestNewInterstitial()
                 preferenceManager.setNeedToShowInterstitial(false)
                 router.replaceScreen(Constants.Screens.GameScreen(QuizScreenLaunchData(quizId, true)))
             }
-
-            override fun onInterstitialLoaded(interstitial: MoPubInterstitial?) { Timber.d("onInterstitialLoaded") }
-
-            override fun onInterstitialFailed(interstitial: MoPubInterstitial?, errorCode: MoPubErrorCode?) { Timber.d("onInterstitialFailed") }
-
-            override fun onInterstitialDismissed(interstitial: MoPubInterstitial?) { Timber.d("onInterstitialDismissed") }
-
-            override fun onInterstitialClicked(interstitial: MoPubInterstitial?) { Timber.d("onInterstitialClicked") }
-
         }
     }
 
@@ -228,7 +207,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     }
 
     private fun loadRewardedVideoAd(){
-        MoPubRewardedVideos.loadRewardedVideo(AdsUtils.REWARD_VIDEO_AD_UNIT_ID)
+        MoPubRewardedVideos.loadRewardedVideo(getString(R.string.ad_unit_id_rewarded_video))
     }
 
     protected fun isInterstitialLoaded() = moPubInterstitial.isReady
@@ -246,13 +225,13 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         }
 
         PreRate.clearDialogIfOpen()
-//        MoPub.onDestroy(this)
 
     }
 
     fun showRewardedVideo(){
-        if (MoPubRewardedVideos.hasRewardedVideo(AdsUtils.REWARD_VIDEO_AD_UNIT_ID)) {
-            MoPubRewardedVideos.showRewardedVideo(AdsUtils.REWARD_VIDEO_AD_UNIT_ID)
+
+        if (MoPubRewardedVideos.hasRewardedVideo(getString(R.string.ad_unit_id_rewarded_video))) {
+            MoPubRewardedVideos.showRewardedVideo(getString(R.string.ad_unit_id_rewarded_video))
         } else {
             showMessage(R.string.reward_not_loaded_yet)
             loadRewardedVideoAd()
@@ -261,20 +240,5 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
 
     fun buyCoins(skuId: String) {
         billingDelegate.startPurchaseFlow(skuId)
-    }
-
-    override fun onInterstitialLoaded(interstitial: MoPubInterstitial?) {
-    }
-
-    override fun onInterstitialShown(interstitial: MoPubInterstitial?) {
-    }
-
-    override fun onInterstitialFailed(interstitial: MoPubInterstitial?, errorCode: MoPubErrorCode?) {
-    }
-
-    override fun onInterstitialDismissed(interstitial: MoPubInterstitial?) {
-    }
-
-    override fun onInterstitialClicked(interstitial: MoPubInterstitial?) {
     }
 }

@@ -2,6 +2,7 @@ package com.scp.scpexam.ui.activity
 
 import androidx.annotation.IdRes
 import com.afollestad.materialdialogs.MaterialDialog
+import com.mopub.common.MoPub
 import com.scp.scpexam.Constants
 import com.scp.scpexam.R
 import com.scp.scpexam.mvp.presenter.activity.MainPresenter
@@ -63,7 +64,9 @@ class MainActivity : BaseActivity<MainView, MainPresenter>(), MainView {
             ) {
                 showAdsDialog(screen.quizScreenLaunchData.quizId)
             } else {
-                requestNewInterstitial()
+                if (MoPub.isSdkInitialized()){
+                    requestNewInterstitial()
+                }
                 super.applyCommand(command)
             }
         }
