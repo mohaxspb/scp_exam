@@ -47,7 +47,7 @@ class AutoSyncReceiver : BroadcastReceiver() {
             alarmManager.cancel(sender)
         }
 
-        fun isAlarmSet(context: Context):Boolean{
+        fun isAlarmSet(context: Context): Boolean {
             val intent = Intent(context, AutoSyncReceiver::class.java)
             val pendingIntent = PendingIntent.getBroadcast(context,0, intent, PendingIntent.FLAG_NO_CREATE)
             return pendingIntent != null

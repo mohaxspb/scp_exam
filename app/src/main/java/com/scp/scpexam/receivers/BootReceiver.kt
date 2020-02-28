@@ -10,13 +10,13 @@ import timber.log.Timber
 
 class BootReceiver : BroadcastReceiver() {
 
-    override fun onReceive(context: Context?, intent: Intent?) {
+    override fun onReceive(context: Context, intent: Intent?) {
         Timber.d("onReceive with action: %s", intent?.action)
         if (intent?.action == (Intent.ACTION_BOOT_COMPLETED) ||
                 intent?.action == "com.htc.intent.action.QUICKBOOT_POWERON" ||
                 intent?.action == "android.intent.action.QUICKBOOT_POWERON" &&
-                context?.let { isAlarmSet(it) }!!) {
-            context?.let { setAlarm(it) }
+                !isAlarmSet(context)) {
+            setAlarm(context)
         }
     }
 }
