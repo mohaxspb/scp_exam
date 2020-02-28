@@ -73,6 +73,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     override fun onPause() {
         super.onPause()
         navigationHolder.removeNavigator()
+        MoPub.onPause(this)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
