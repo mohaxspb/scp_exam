@@ -1,13 +1,13 @@
 package com.scp.scpexam.controller.api
 
+import com.scp.scpexam.model.api.NwQuizTransaction
+import com.scp.scpexam.model.api.NwUser
+import com.scp.scpexam.model.db.TransactionType
 import io.reactivex.Single
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
-import com.scp.scpexam.model.api.NwQuizTransaction
-import com.scp.scpexam.model.api.NwUser
-import com.scp.scpexam.model.db.TransactionType
 
 interface TransactionApi {
 

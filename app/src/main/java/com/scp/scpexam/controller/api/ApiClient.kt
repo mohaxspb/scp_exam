@@ -12,15 +12,13 @@ import javax.inject.Inject
 
 
 class ApiClient @Inject constructor(
-        private val toolsApi: ToolsApi,
         private val quizApi: QuizApi,
         private val authApi: AuthApi,
         private val transactionApi: TransactionApi
 ) {
 
-    //todo create method on quiz api (I mean server)
     fun validateInApp(sku: String, purchaseToken: String): Single<Int> =
-            toolsApi
+            authApi
                     .validatePurchase(
                             false,
                             App.INSTANCE.packageName,

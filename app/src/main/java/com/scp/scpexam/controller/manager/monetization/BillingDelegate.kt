@@ -161,13 +161,13 @@ class BillingDelegate(
                 }
             }
         } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
+            Timber.d("User cancelled purchase: $responseCode")
             // Handle an error caused by a user cancelling the purchase flow.
             //nothing to do
         } else {
             // Handle any other error codes.
             Timber.e("Error while onPurchasesUpdated: $responseCode")
-            view?.showMessage(context.getString(R.string.error_purchase, responseCode.toString())
-                    ?: "Unexpected error")
+            view?.showMessage(context.getString(R.string.error_purchase, responseCode.toString()))
         }
     }
 
