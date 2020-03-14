@@ -159,6 +159,7 @@ class AppModule(context: Context) : Module() {
                                         Constants.Api.HEADER_PART_BEARER + preferenceManager.getAccessToken()
                                 )
                                 .build()
+
                         return chain.proceed(request)
                     }
                 }
