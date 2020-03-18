@@ -35,7 +35,7 @@ class ApiClient @Inject constructor(
                             tokenValue,
                             BuildConfig.CLIENT_ID,
                             BuildConfig.CLIENT_SECRET,
-                            Constants.GAME
+                            Constants.GAME_NEW
                     )
 
     fun getNwQuizTransactionList(): Single<List<NwQuizTransaction>> =
