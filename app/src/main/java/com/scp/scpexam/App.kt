@@ -3,13 +3,6 @@ package com.scp.scpexam
 import androidx.multidex.MultiDexApplication
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
-import com.vk.sdk.VKSdk
-import com.yandex.metrica.YandexMetrica
-import com.yandex.metrica.YandexMetricaConfig
-import io.reactivex.Completable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.di.Di
@@ -17,6 +10,13 @@ import com.scp.scpexam.di.module.AppModule
 import com.scp.scpexam.model.db.QuizTransaction
 import com.scp.scpexam.model.db.TransactionType
 import com.scp.scpexam.model.db.UserRole
+import com.vk.sdk.VKSdk
+import com.yandex.metrica.YandexMetrica
+import com.yandex.metrica.YandexMetricaConfig
+import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
