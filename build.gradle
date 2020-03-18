@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.3.41'
+    ext.kotlin_version = '1.3.61'
     repositories {
         jcenter()
         google()
@@ -10,15 +10,12 @@ buildscript {
         //material dialog
         maven { url "https://dl.bintray.com/drummer-aidan/maven/" }
 
-        flatDir {
-            dirs 'libs'
-        }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.2'
-        classpath 'com.google.gms:google-services:4.3.0'
+        classpath 'com.android.tools.build:gradle:3.6.1'
+        classpath 'com.google.gms:google-services:4.3.3'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'io.fabric.tools:gradle:1.27.1'
+        classpath 'io.fabric.tools:gradle:1.28.0'
     }
 }
 
@@ -28,10 +25,9 @@ allprojects {
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
-
-        flatDir {
-            dirs 'libs'
-        }
+        //ads mopub
+        maven { url "https://s3.amazonaws.com/moat-sdk-builds" }
+        
     }
 }
 
