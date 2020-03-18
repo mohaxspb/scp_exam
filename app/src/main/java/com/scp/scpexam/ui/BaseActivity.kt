@@ -195,15 +195,17 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     }
 
     protected fun requestNewInterstitial() {
-        Timber.d(
-                "requestNewInterstitial ready/disabled: %s/%s",
-                moPubInterstitial.isReady,
-                preferenceManager.isAdsDisabled()
-        )
-        if (moPubInterstitial.isReady || preferenceManager.isAdsDisabled()) {
-            Timber.d("loading already done or disabled")
-        } else {
-            moPubInterstitial.load()
+        if (::moPubInterstitial.isInitialized) {
+            Timber.d(
+                    "requestNewInterstitial ready/disabled: %s/%s",
+                    moPubInterstitial.isReady,
+                    preferenceManager.isAdsDisabled()
+            )
+            if (moPubInterstitial.isReady || preferenceManager.isAdsDisabled()) {
+                Timber.d("loading already done or disabled")
+            } else {
+                moPubInterstitial.load()
+            }
         }
     }
 

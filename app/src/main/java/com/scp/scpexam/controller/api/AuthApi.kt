@@ -1,10 +1,10 @@
 package com.scp.scpexam.controller.api
 
-import io.reactivex.Single
-import retrofit2.http.*
 import com.scp.scpexam.Constants
 import com.scp.scpexam.controller.api.response.TokenResponse
 import com.scp.scpexam.model.api.NwUser
+import io.reactivex.Single
+import retrofit2.http.*
 
 interface AuthApi {
 
@@ -40,4 +40,12 @@ interface AuthApi {
             @Query("offset") offset: Int,
             @Query("limit") limit: Int
     ): Single<List<NwUser>>
+
+    @GET("inAppPurchase/validate")
+    fun validatePurchase(
+            @Query("isSubscription") isSubscription: Boolean,
+            @Query("packageName") packageName: String,
+            @Query("sku") sku: String,
+            @Query("purchaseToken") purchaseToken: String
+    ): Single<Int>
 }

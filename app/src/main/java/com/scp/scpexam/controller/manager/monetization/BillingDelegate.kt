@@ -11,11 +11,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import com.scp.scpexam.Constants
+import com.scp.scpexam.Constants.GOOGLE_SERVER_ERROR
+import com.scp.scpexam.Constants.INVALID
+import com.scp.scpexam.Constants.VALID
 import com.scp.scpexam.R
 import com.scp.scpexam.controller.api.ApiClient
-import com.scp.scpexam.controller.api.response.GOOGLE_SERVER_ERROR
-import com.scp.scpexam.controller.api.response.INVALID
-import com.scp.scpexam.controller.api.response.VALID
 import com.scp.scpexam.controller.db.AppDatabase
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
 import com.scp.scpexam.di.Di
@@ -161,13 +161,13 @@ class BillingDelegate(
                 }
             }
         } else if (responseCode == BillingClient.BillingResponse.USER_CANCELED) {
+            Timber.d("User cancelled purchase: $responseCode")
             // Handle an error caused by a user cancelling the purchase flow.
             //nothing to do
         } else {
             // Handle any other error codes.
             Timber.e("Error while onPurchasesUpdated: $responseCode")
-            view?.showMessage(context.getString(R.string.error_purchase, responseCode.toString())
-                    ?: "Unexpected error")
+            view?.showMessage(context.getString(R.string.error_purchase, responseCode.toString()))
         }
     }
 
@@ -219,7 +219,7 @@ class BillingDelegate(
 
     fun loadInAppsToBuy(): Single<List<SkuDetails>> =
             Single
-                    .create<List<SkuDetails>> { emitter ->
+                    .create { emitter ->
                         val skuList = listOf(
                                 Constants.SKU_INAPP_DISABLE_ADS,
                                 Constants.SKU_INAPP_BUY_COINS_0,
@@ -233,7 +233,7 @@ class BillingDelegate(
                                 .build()
                         if (clientReady) {
                             billingClient.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
-                                //Timber.d("inapps: $responseCode, $skuDetailsList")
+                                Timber.d("inapps: $responseCode, $skuDetailsList")
                                 if (responseCode == BillingClient.BillingResponse.OK && skuDetailsList != null) {
                                     emitter.onSuccess(skuDetailsList)
                                 } else {

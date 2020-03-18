@@ -77,6 +77,7 @@ class AppModule(context: Context) : Module() {
                                 .setLevel(HttpLoggingInterceptor.Level.BODY)
                 )
                 .build()
+
         val authRetrofit = Retrofit.Builder()
                 .baseUrl(BuildConfig.QUIZ_API_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -124,6 +125,8 @@ class AppModule(context: Context) : Module() {
                             preferenceManager.setTrueAccessToken(tokenResponse.accessToken)
                             preferenceManager.setRefreshToken(tokenResponse.refreshToken)
 
+                            response.close()
+
                             request = request
                                     .newBuilder()
                                     .header(
@@ -158,6 +161,7 @@ class AppModule(context: Context) : Module() {
                                         Constants.Api.HEADER_PART_BEARER + preferenceManager.getAccessToken()
                                 )
                                 .build()
+
                         return chain.proceed(request)
                     }
                 }
@@ -177,6 +181,7 @@ class AppModule(context: Context) : Module() {
 
                             preferenceManager.setAccessToken(tokenResponse.accessToken)
 
+                            response.close()
                             request = request
                                     .newBuilder()
                                     .header(
@@ -198,15 +203,8 @@ class AppModule(context: Context) : Module() {
                 .client(quizOkHttpClient)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
-        bind(QuizApi::class.java).toInstance(quizRetrofit.create(QuizApi::class.java))
 
-        val toolsRetrofit = Retrofit.Builder()
-                .baseUrl(BuildConfig.VPS_API_URL)
-                .addConverterFactory(MoshiConverterFactory.create(moshi))
-                .client(okHttpClientCommon)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
-        bind(ToolsApi::class.java).toInstance(toolsRetrofit.create(ToolsApi::class.java))
+        bind(QuizApi::class.java).toInstance(quizRetrofit.create(QuizApi::class.java))
 
         val transactionRetrofit = Retrofit.Builder()
                 .baseUrl(BuildConfig.QUIZ_API_URL)

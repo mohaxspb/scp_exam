@@ -103,9 +103,6 @@ android {
                 resValue('string', 'ad_unit_id_interstitial', properties.get("mopubInterstitial"))
                 resValue('string', 'ad_unit_id_rewarded_video', properties.get("mopubRewardedVideo"))
 
-                //ads END
-                //vps api
-                buildConfigField('String', 'VPS_API_URL', '"' + properties.get("vpsApiUrl") + '"')
                 //quiz api
                 buildConfigField('String', 'QUIZ_API_URL', '"' + properties.get("quizApiUrl") + '"')
                 //quiz api auth
@@ -126,7 +123,6 @@ android {
                                 + "yandexMetricaApiKey, "
                                 + "mopubInterstitial, "
                                 + "mopubBanner, "
-                                + "vpsApiUrl etc "
                                 + "to build project"
                 )
             }
