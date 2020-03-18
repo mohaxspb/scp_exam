@@ -17,6 +17,7 @@ import com.scp.scpexam.di.module.AppModule
 import com.scp.scpexam.model.db.QuizTransaction
 import com.scp.scpexam.model.db.TransactionType
 import com.scp.scpexam.model.db.UserRole
+import com.scp.scpexam.utils.SystemUtils
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.configuration.Configuration

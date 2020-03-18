@@ -5,11 +5,11 @@
     <string name="error_unexpected" translatable="false">Unexpected error</string>
     <!--social login-->
     <!--facebook-->
-    <string name="facebook_app_id" translatable="false">2167234416849408</string>
-    <string name="fb_login_protocol_scheme" translatable="false">fb2167234416849408</string>
-    <integer name="com_vk_sdk_AppId">6753863</integer>
+    <string name="facebook_app_id" translatable="false">584306398831035</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb584306398831035</string>
+    <integer name="com_vk_sdk_AppId">7364391</integer>
     <!-- TODO check for needenest-->
-    <string name="vk_key" translatable="false">3dtOUgvfD1xMueVAGQK7</string>
+    <string name="vk_key" translatable="false">1HjrkqbnlW4roF0ijiFC</string>
     <string name="service_vk_access_key" translatable="false">a30fa717a30fa717a30fa717bda368a950aa30fa30fa717f8e147a8e59a068245b6b626></string>
     <string name="chat_action_auth_facebook" translatable="false">Facebook</string>
     <string name="chat_action_auth_google" translatable="false">Google</string>
