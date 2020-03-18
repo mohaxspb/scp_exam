@@ -25,7 +25,6 @@ class ApiClient @Inject constructor(
                             sku,
                             purchaseToken
                     )
-                    .map { it.status }
 
     fun getNwQuizList() = quizApi.getNwQuizList()
 

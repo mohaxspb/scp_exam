@@ -125,6 +125,8 @@ class AppModule(context: Context) : Module() {
                             preferenceManager.setTrueAccessToken(tokenResponse.accessToken)
                             preferenceManager.setRefreshToken(tokenResponse.refreshToken)
 
+                            response.close()
+
                             request = request
                                     .newBuilder()
                                     .header(
@@ -179,6 +181,7 @@ class AppModule(context: Context) : Module() {
 
                             preferenceManager.setAccessToken(tokenResponse.accessToken)
 
+                            response.close()
                             request = request
                                     .newBuilder()
                                     .header(

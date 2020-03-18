@@ -58,6 +58,10 @@ object Constants {
 
     const val COINS_FOR_LEVEL_UNLOCK = 5
 
+    const val VALID = 0
+    const val INVALID = 1
+    const val GOOGLE_SERVER_ERROR = 2
+
     object Screens {
 
         object EnterScreen : SupportAppScreen() {
