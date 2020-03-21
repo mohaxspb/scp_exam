@@ -114,7 +114,7 @@ class AppModule(context: Context) : Module() {
                     override fun intercept(chain: Interceptor.Chain): Response {
                         var request = chain.request()
                         var response = chain.proceed(request)
-                        if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                        if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED && !preferenceManager.getRefreshToken().isNullOrEmpty()) {
                             val tokenResponse = authApi
                                     .getAccessTokenByRefreshToken(
                                             Credentials.basic(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_SECRET),

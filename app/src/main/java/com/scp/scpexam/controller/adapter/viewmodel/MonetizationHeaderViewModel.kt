@@ -4,5 +4,6 @@ import com.scp.scpexam.controller.adapter.MyListItem
 import com.scp.scpexam.model.db.User
 
 data class MonetizationHeaderViewModel(
-    val player: User
+        val player: User,
+        var showAuthButtons: Boolean
 ) : MyListItem

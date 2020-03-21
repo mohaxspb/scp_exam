@@ -1,16 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="180dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:paddingTop="120dp"
     tools:layout_gravity="center"
+    android:paddingTop="@dimen/defaultMargin"
     tools:background="@color/backgroundColorLevelCompleted"
     tools:ignore="UseCompoundDrawables">
 
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/authButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="faceBookImage, googleImage, vkImage"/>
+
+    <ImageView
+        android:id="@+id/vkImage"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_vk_icon"
+        android:background="?selectableItemBackgroundBorderless"
+        app:layout_constraintBottom_toBottomOf="@id/googleImage"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/googleImage"
+        app:layout_constraintTop_toTopOf="@+id/googleImage"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/googleImage"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="@dimen/defaultMargin"
+        android:layout_marginBottom="@dimen/defaultMargin"
+        android:background="?selectableItemBackgroundBorderless"
+        android:gravity="center"
+        android:padding="@dimen/defaultMarginSmall"
+        android:src="@drawable/ic_google"
+        app:layout_constraintBottom_toTopOf="@+id/coinsLabelTextView"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <ImageView
+        android:id="@+id/faceBookImage"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_fb_icon"
+        android:background="?selectableItemBackgroundBorderless"
+        app:layout_constraintBottom_toBottomOf="@id/googleImage"
+        app:layout_constraintLeft_toRightOf="@+id/googleImage"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/googleImage"
+        tools:ignore="ContentDescription" />
+
     <TextView
         android:id="@+id/coinsLabelTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         style="@style/SettingsTextStyle"
         android:layout_width="0dp"
         android:gravity="center"
@@ -21,6 +70,9 @@
 
     <ImageView
         android:id="@+id/coinsImageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/coinsLabelTextView"
+        app:layout_constraintTop_toTopOf="@+id/coinsLabelTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -29,4 +81,4 @@
         android:tint="@android:color/white"
         tools:ignore="ContentDescription" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
