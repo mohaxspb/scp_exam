@@ -1,16 +1,10 @@
 package com.scp.scpexam.mvp.presenter.monetization
 
 import android.app.Application
+import android.content.Intent
 import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.SkuDetails
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Function3
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
-import moxy.InjectViewState
 import com.scp.scpexam.Constants
 import com.scp.scpexam.R
 import com.scp.scpexam.controller.adapter.MyListItem
@@ -23,8 +17,18 @@ import com.scp.scpexam.controller.manager.monetization.BillingDelegate
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
 import com.scp.scpexam.model.db.User
 import com.scp.scpexam.model.db.UserRole
+import com.scp.scpexam.mvp.AuthPresenter
 import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.mvp.view.monetization.MonetizationView
+import com.scp.scpexam.ui.fragment.monetization.MonetizationFragment
+import com.scp.scpexam.ui.utils.AuthDelegate
+import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Function3
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import moxy.InjectViewState
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import javax.inject.Inject
@@ -37,9 +41,12 @@ class MonetizationPresenter @Inject constructor(
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor
-) : BasePresenter<MonetizationView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor) {
+) : BasePresenter<MonetizationView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor),
+        AuthPresenter<MonetizationFragment> {
 
     var billingDelegate: BillingDelegate? = null
+
+    private val monetizationItems = mutableListOf<MyListItem>()
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -48,11 +55,11 @@ class MonetizationPresenter @Inject constructor(
     }
 
     private fun buyInApp(sku: String) {
-        Timber.d("buyInApp")
-        if (preferences.getTrueAccessToken() != null || sku != Constants.SKU_INAPP_DISABLE_ADS) {
+        if (!preferences.getTrueAccessToken().isNullOrEmpty()) {
             billingDelegate?.startPurchaseFlow(sku)
         } else {
             viewState.showMessage(appContext.getString(R.string.need_to_login))
+            viewState.scrollToTop()
         }
     }
 
@@ -60,6 +67,25 @@ class MonetizationPresenter @Inject constructor(
         Timber.d("showAppodealAds")
         viewState.onNeedToShowRewardedVideo()
     }
+
+    override fun onAuthSuccess() {
+        preferences.setIntroDialogShown(true)
+        viewState.showMessage(R.string.settings_success_auth)
+        (monetizationItems.first() as MonetizationHeaderViewModel).showAuthButtons = false
+        viewState.showMonetizationActions(monetizationItems)
+    }
+
+    override fun onAuthCanceled() {
+        viewState.showMessage(R.string.canceled_auth)
+    }
+
+    override fun onAuthError() {
+        viewState.showMessage(appContext.getString(R.string.auth_retry))
+    }
+
+    override lateinit var authDelegate: AuthDelegate<MonetizationFragment>
+
+    override fun getAuthView(): MonetizationView = viewState
 
     fun onNavigationIconClicked() = router.exit()
 
@@ -87,6 +113,10 @@ class MonetizationPresenter @Inject constructor(
         } else {
             onBillingClientReady()
         }
+    }
+
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        authDelegate.onActivityResult(requestCode, resultCode, data)
     }
 
     fun onBillingClientReady() {
@@ -124,9 +154,9 @@ class MonetizationPresenter @Inject constructor(
                             val disableAdsInApp = tripple.third.firstOrNull { it.sku == Constants.SKU_INAPP_DISABLE_ADS }
                             preferences.disableAds(disableAdsInApp != null)
 
-                            val items = mutableListOf<MyListItem>()
-                            items += MonetizationHeaderViewModel(tripple.first)
-                            items += MonetizationViewModel(
+                            monetizationItems.clear()
+                            monetizationItems += MonetizationHeaderViewModel(tripple.first, preferences.getTrueAccessToken().isNullOrEmpty())
+                            monetizationItems += MonetizationViewModel(
                                     R.drawable.ic_no_money,
                                     appContext.getString(R.string.monetization_action_appodeal_title),
                                     appContext.getString(R.string.monetization_action_appodeal_description, Constants.REWARD_VIDEO_ADS),
@@ -135,7 +165,7 @@ class MonetizationPresenter @Inject constructor(
                                     false
                             ) { showAppodealAds() }
 
-                            items += tripple.second.map { skuDetails ->
+                            monetizationItems += tripple.second.map { skuDetails ->
                                 MonetizationViewModel(
                                         if (skuDetails.sku == Constants.SKU_INAPP_DISABLE_ADS) {
                                             R.drawable.ic_adblock
@@ -155,7 +185,7 @@ class MonetizationPresenter @Inject constructor(
                                 ) { buyInApp(skuDetails.sku) }
                             }
 
-                            viewState.showMonetizationActions(items)
+                            viewState.showMonetizationActions(monetizationItems)
 
                             viewState.showRefreshFab(true)
                         },
@@ -177,24 +207,29 @@ class MonetizationPresenter @Inject constructor(
     }
 
     fun onOwnedItemClicked(sku: String) {
-        billingDelegate?.apply {
-            consumeInAppIfUserHasIt(sku)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe { view?.showProgress(true) }
-                    .doOnEvent { view?.showProgress(false) }
-                    .subscribeBy(
-                            onComplete = {
-                                Timber.d("Successfully consume in app")
-                                view?.showMessage("Successfully consume inApp!")
-                                loadInAppsToBuy(true)
-                            },
-                            onError = {
-                                Timber.e(it, "Error while consume inApp")
-                                view?.showMessage("Error while consume inApp: ${it.message}")
-                            }
-                    )
-                    .addTo(compositeDisposable)
+        if (preferences.getTrueAccessToken().isNullOrEmpty()){
+            viewState.showMessage(R.string.need_to_login)
+            viewState.scrollToTop()
+        } else {
+            billingDelegate?.apply {
+                consumeInAppIfUserHasIt(sku)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe { view?.showProgress(true) }
+                        .doOnEvent { view?.showProgress(false) }
+                        .subscribeBy(
+                                onComplete = {
+                                    Timber.d("Successfully consume in app")
+                                    view?.showMessage("Successfully consume inApp!")
+                                    loadInAppsToBuy(true)
+                                },
+                                onError = {
+                                    Timber.e(it, "Error while consume inApp")
+                                    view?.showMessage("Error while consume inApp: ${it.message}")
+                                }
+                        )
+                        .addTo(compositeDisposable)
+            }
         }
     }
 }
