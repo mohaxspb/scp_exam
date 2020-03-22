@@ -18,9 +18,6 @@ interface MonetizationView : BaseView, AuthView {
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun showProgress(show: Boolean)
 
-    @StateStrategyType(AddToEndSingleStrategy::class)
-    fun showRefreshFab(show: Boolean)
-
     @StateStrategyType(OneExecutionStateStrategy::class)
     fun scrollToTop()
 

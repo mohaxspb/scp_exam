@@ -76,7 +76,10 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
 
         toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
 
-        renewFab.setOnClickListener { presenter.loadInAppsToBuy(true) }
+        swipeRefresher.setOnRefreshListener {
+            swipeRefresher.isRefreshing = false
+            presenter.loadInAppsToBuy(true)
+        }
 
         presenter.billingDelegate = BillingDelegate(activity as AppCompatActivity, this, presenter)
 
@@ -133,9 +136,6 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         progressView.visibility = if (show) VISIBLE else GONE
     }
 
-    override fun showRefreshFab(show: Boolean) {
-        renewFab.visibility = if (show) VISIBLE else GONE
-    }
-
     override fun scrollToTop() = recyclerView.scrollToPosition(0)
+
 }

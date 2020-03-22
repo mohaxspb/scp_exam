@@ -57,7 +57,6 @@ class BillingDelegate(
 
     fun startConnection() {
         view?.showProgress(true)
-        view?.showRefreshFab(false)
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(@BillingClient.BillingResponse billingResponseCode: Int) {
                 Timber.d("billingClient onBillingSetupFinished: $billingResponseCode")
