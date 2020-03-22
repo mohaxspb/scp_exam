@@ -187,14 +187,12 @@ class MonetizationPresenter @Inject constructor(
 
                             viewState.showMonetizationActions(monetizationItems)
 
-                            viewState.showRefreshFab(true)
                         },
                         onError = {
                             Timber.e(it)
                             viewState.showProgress(false)
                             viewState.showMessage(it.message
                                     ?: appContext.getString(R.string.error_unknown))
-                            viewState.showRefreshFab(true)
                         }
                 )
                 .addTo(compositeDisposable)
@@ -203,7 +201,6 @@ class MonetizationPresenter @Inject constructor(
     fun onBillingClientFailedToStart(@BillingClient.BillingResponse billingResponseCode: Int) {
         viewState.showProgress(false)
         viewState.showMessage(appContext.getString(R.string.error_billing_client_connection, billingResponseCode))
-        viewState.showRefreshFab(true)
     }
 
     fun onOwnedItemClicked(sku: String) {
