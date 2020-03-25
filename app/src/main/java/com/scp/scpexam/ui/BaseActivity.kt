@@ -35,7 +35,7 @@ import timber.log.Timber
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.config.Module
-import toothpick.smoothie.module.SmoothieSupportActivityModule
+import toothpick.smoothie.module.SmoothieActivityModule
 import javax.inject.Inject
 
 abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatActivity(), BaseView {
@@ -106,7 +106,7 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
     val scope: Scope by lazy {
         @Suppress("LocalVariableName")
         val _scope = Toothpick.openScopes(Di.Scope.APP, *scopes)
-        _scope.installModules(SmoothieSupportActivityModule(this), *modules)
+        _scope.installModules(SmoothieActivityModule(this), *modules)
         _scope
     }
 
