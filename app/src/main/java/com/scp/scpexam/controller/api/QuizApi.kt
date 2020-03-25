@@ -28,7 +28,7 @@ interface QuizApi {
     fun getNwQuizListPaging(
             @Query("offset") offset: Int,
             @Query("limit") limit: Int
-    ): Flowable<List<NwQuiz>>
+    ): Single<List<NwQuiz>>
 
 }
 
