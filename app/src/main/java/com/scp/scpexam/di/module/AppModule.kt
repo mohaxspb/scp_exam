@@ -216,6 +216,6 @@ class AppModule(context: Context) : Module() {
 
         bind(ApiClient::class.java)
 
-        bind(SettingsRepository::class.java).singletonInScope()
+        bind(SettingsRepository::class.java).singleton()
     }
 }

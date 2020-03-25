@@ -93,10 +93,10 @@ object Constants {
         }
 
         object PlayMarketScreen : SupportAppScreen() {
-            override fun getActivityIntent(context: Context?): Intent {
-                val adminForQuizAppPackageName = context?.getString(R.string.admin_app_package_name)
+            override fun getActivityIntent(context: Context): Intent? {
+                val adminForQuizAppPackageName = context.getString(R.string.admin_app_package_name)
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$adminForQuizAppPackageName"))
-                return if (IntentUtils.checkIntent(context!!, intent)) {
+                return if (IntentUtils.checkIntent(context, intent)) {
                     intent
                 } else {
                     val intentIfNoActivityForPlayMarket = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$adminForQuizAppPackageName"))
