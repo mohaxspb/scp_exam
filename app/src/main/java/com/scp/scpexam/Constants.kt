@@ -126,7 +126,7 @@ object Constants {
     const val GAME = "GAME"
     const val GAME_NEW = "GAME_NEW"
     const val LIMIT_PAGE = 50
-    const val LIMIT_PAGE_QUIZ = 1
+    const val LIMIT_PAGE_QUIZ = 5
     const val SYNC_PERIOD = (1000 * 60 * 120).toLong()
     const val OFFSET_ZERO = 0
 }

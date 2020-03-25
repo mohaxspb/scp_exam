@@ -94,7 +94,7 @@ class DownloadService : Service() {
 //                .flatMap { apiClient.getNwQuizList().toMaybe() }
                 .flatMap { levelsInteractor.downloadQuizzesPaging().toMaybe() }
                 .map {
-                    //                    Timber.d("apiClient.getNwQuizList().toMaybe() :%s", it)
+//                                        Timber.d("apiClient.getNwQuizList().toMaybe() :%s", it)
                     quizFilter.filterQuizzes(it)
                 }
                 .map { quizzes ->
