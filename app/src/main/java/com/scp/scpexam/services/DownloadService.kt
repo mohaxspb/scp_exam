@@ -16,6 +16,7 @@ import io.reactivex.schedulers.Schedulers
 import com.scp.scpexam.R
 import com.scp.scpexam.controller.api.ApiClient
 import com.scp.scpexam.controller.db.AppDatabase
+import com.scp.scpexam.controller.interactor.LevelsInteractor
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
 import com.scp.scpexam.di.Di
 import com.scp.scpexam.model.api.QuizConverter
@@ -44,6 +45,8 @@ class DownloadService : Service() {
     lateinit var quizConverter: QuizConverter
     @Inject
     lateinit var quizFilter: QuizFilter
+    @Inject
+    lateinit var levelsInteractor: LevelsInteractor
 
     private lateinit var notificationManager: NotificationManager
 
@@ -88,9 +91,9 @@ class DownloadService : Service() {
                         true
                     }
                 }
-                .flatMap { apiClient.getNwQuizList().toMaybe() }
+                .flatMap { levelsInteractor.downloadQuizzesPaging().toMaybe() }
                 .map {
-                    //                    Timber.d("apiClient.getNwQuizList().toMaybe() :%s", it)
+//                                        Timber.d("apiClient.getNwQuizList().toMaybe() :%s", it)
                     quizFilter.filterQuizzes(it)
                 }
                 .map { quizzes ->

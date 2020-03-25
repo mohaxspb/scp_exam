@@ -28,6 +28,8 @@ class ApiClient @Inject constructor(
 
     fun getNwQuizList() = quizApi.getNwQuizList()
 
+    fun getNwQuizListPaging(offset: Int, limit: Int) = quizApi.getNwQuizListPaging(offset, limit)
+
     fun socialLogin(provider: Constants.Social, tokenValue: String): Single<TokenResponse> =
             authApi
                     .socialLogin(
