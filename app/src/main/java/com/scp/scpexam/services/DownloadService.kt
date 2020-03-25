@@ -91,7 +91,6 @@ class DownloadService : Service() {
                         true
                     }
                 }
-//                .flatMap { apiClient.getNwQuizList().toMaybe() }
                 .flatMap { levelsInteractor.downloadQuizzesPaging().toMaybe() }
                 .map {
 //                                        Timber.d("apiClient.getNwQuizList().toMaybe() :%s", it)
