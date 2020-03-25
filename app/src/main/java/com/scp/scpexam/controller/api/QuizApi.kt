@@ -4,6 +4,7 @@ import io.reactivex.Single
 import retrofit2.http.*
 import com.scp.scpexam.controller.api.response.TokenResponse
 import com.scp.scpexam.model.api.NwQuiz
+import io.reactivex.Flowable
 
 interface QuizApi {
 
@@ -22,6 +23,12 @@ interface QuizApi {
      */
     @GET("quiz/all")
     fun getNwQuizList(): Single<List<NwQuiz>>
+
+    @GET("quiz/all/pagination")
+    fun getNwQuizListPaging(
+            @Query("offset") offset: Int,
+            @Query("limit") limit: Int
+    ): Flowable<List<NwQuiz>>
 
 }
 
