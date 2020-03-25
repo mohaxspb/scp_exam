@@ -8,6 +8,7 @@ import com.scp.scpexam.R
 import com.scp.scpexam.mvp.presenter.activity.MainPresenter
 import com.scp.scpexam.mvp.view.activity.MainView
 import com.scp.scpexam.ui.BaseActivity
+import kotlinx.android.synthetic.main.activity_main.*
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import ru.terrakok.cicerone.Navigator
