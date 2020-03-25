@@ -2,19 +2,13 @@ package com.scp.scpexam.mvp.presenter.game
 
 import android.app.Application
 import android.graphics.Bitmap
-import io.reactivex.Completable
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Function3
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
-import moxy.InjectViewState
 import com.scp.scpexam.BuildConfig
 import com.scp.scpexam.Constants
 import com.scp.scpexam.R
 import com.scp.scpexam.controller.adapter.viewmodel.LevelViewModel
 import com.scp.scpexam.controller.api.ApiClient
 import com.scp.scpexam.controller.db.AppDatabase
+import com.scp.scpexam.controller.interactor.LevelsInteractor
 import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
 import com.scp.scpexam.controller.repository.SettingsRepository
@@ -24,6 +18,13 @@ import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.mvp.view.game.LevelsView
 import com.scp.scpexam.utils.BitmapUtils
 import com.scp.scpexam.utils.addTo
+import io.reactivex.Completable
+import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.Function3
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import moxy.InjectViewState
 import ru.terrakok.cicerone.Router
 import timber.log.Timber
 import java.util.*
@@ -38,7 +39,8 @@ class LevelsPresenter @Inject constructor(
         override var appDatabase: AppDatabase,
         public override var apiClient: ApiClient,
         override var transactionInteractor: TransactionInteractor,
-        val settingsRepository: SettingsRepository
+        val settingsRepository: SettingsRepository,
+        private val levelsInteractor: LevelsInteractor
 ) : BasePresenter<LevelsView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor) {
 
     lateinit var player: User
@@ -79,6 +81,7 @@ class LevelsPresenter @Inject constructor(
                 .subscribeBy(
                         onComplete = { router.navigateTo(Constants.Screens.MonetizationScreen) }
                 )
+                .addTo(compositeDisposable)
     }
 
     fun onHamburgerMenuClicked() = viewState.onNeedToOpenSettings()
@@ -95,6 +98,7 @@ class LevelsPresenter @Inject constructor(
                 .subscribeBy(
                         onComplete = { router.navigateTo(Constants.Screens.SettingsScreen) }
                 )
+                .addTo(compositeDisposable)
     }
 
     private fun loadLevels() {
@@ -204,6 +208,27 @@ class LevelsPresenter @Inject constructor(
         } else {
             viewState.showMessage(R.string.message_not_enough_coins_level_unlock)
         }
+    }
+
+    fun getAllQuizzes(){
+        levelsInteractor.downloadQuizzesPaging()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe {
+                    viewState.showProgress(true)
+                    viewState.showSwipeProgressBar(false)
+                }
+                .doOnEvent { _, _ ->
+                    viewState.showProgress(false)
+                    viewState.showSwipeProgressBar(false)
+                }
+                .subscribeBy (
+                        onError = {
+                            Timber.e(it)
+                            viewState.showMessage(it.message ?: "Unexpected error")
+                        }
+                )
+                .addTo(compositeDisposable)
     }
 
     fun onLeaderboardButtonClicked() {

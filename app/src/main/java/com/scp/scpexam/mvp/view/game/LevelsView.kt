@@ -28,4 +28,7 @@ interface LevelsView : BaseView {
 
     @StateStrategyType(AddToEndSingleStrategy::class)
     fun showProgressOnQuizLevel(itemPosition: Int)
+
+    @StateStrategyType(OneExecutionStateStrategy::class)
+    fun showSwipeProgressBar(showSwipeProgressBar: Boolean)
 }

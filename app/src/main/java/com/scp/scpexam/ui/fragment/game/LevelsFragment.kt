@@ -7,6 +7,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
+import com.scp.scpexam.Constants
 import kotlinx.android.synthetic.main.fragment_levels.*
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
@@ -21,6 +22,10 @@ import com.scp.scpexam.mvp.view.game.LevelsView
 import com.scp.scpexam.ui.BaseFragment
 import com.scp.scpexam.ui.dialog.CC3LicenseDialogFragment
 import com.scp.scpexam.utils.BitmapUtils
+import kotlinx.android.synthetic.main.fragment_leaderboard.*
+import kotlinx.android.synthetic.main.fragment_levels.progressView
+import kotlinx.android.synthetic.main.fragment_levels.root
+import kotlinx.android.synthetic.main.fragment_levels.swipeRefresher
 import toothpick.Toothpick
 import toothpick.config.Module
 import javax.inject.Inject
@@ -70,6 +75,8 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
 
         levelsTextView.setOnClickListener { presenter.onLevelsClick() }
 
+        swipeRefresher.setOnRefreshListener { presenter.getAllQuizzes() }
+
         if (!preferenceManager.isPersonalDataAccepted()) {
             val dialogFragment = CC3LicenseDialogFragment.newInstance()
             dialogFragment.show(fragmentManager!!, CC3LicenseDialogFragment.TAG)
@@ -93,6 +100,10 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter>(), LevelsView {
 
     override fun showProgressOnQuizLevel(itemPosition: Int) {
         recyclerView.adapter?.notifyItemChanged(itemPosition)
+    }
+
+    override fun showSwipeProgressBar(showSwipeProgressBar: Boolean) {
+        swipeRefresher.isRefreshing = showSwipeProgressBar
     }
 
     override fun showLevels(quizes: List<LevelViewModel>) {
