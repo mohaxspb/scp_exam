@@ -106,19 +106,26 @@
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresher"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/nextLevelsTextView"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/levelsTextView"
+        app:layout_constraintVertical_weight="1">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         tools:itemCount="15"
         tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         tools:listitem="@layout/list_item_level"
         tools:spanCount="3" />
 
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/nextLevelsTextView"
         android:layout_width="match_parent"
@@ -138,6 +145,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
+        android:background="@color/bg_grey_transparent"
+        android:clickable="true"
+        android:focusable="true"
         tools:visibility="visible">
 
         <ProgressBar
