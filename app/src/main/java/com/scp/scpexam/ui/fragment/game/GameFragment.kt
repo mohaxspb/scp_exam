@@ -162,8 +162,8 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         } else {
             adView.visibility = VISIBLE
             adView.isEnabled = true
-            adView.adUnitId = getString(R.string.ad_unit_id_banner)
-            adView.loadAd()
+//            adView.adUnitId = getString(R.string.ad_unit_id_banner)
+//            adView.loadAd()
         }
     }
 

@@ -165,7 +165,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-base:17.1.0'
 
     // AppMetrica
-    implementation 'com.yandex.android:mobmetricalib:3.6.4'
+    implementation 'com.yandex.android:mobmetricalib:5.3.0'
 
     //new crash reporting
     implementation('com.crashlytics.sdk.android:crashlytics:2.10.1@aar') {
