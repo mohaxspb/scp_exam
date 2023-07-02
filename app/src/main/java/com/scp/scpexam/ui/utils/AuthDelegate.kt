@@ -2,6 +2,7 @@ package com.scp.scpexam.ui.utils
 
 import android.app.Activity
 import android.content.Intent
+import androidx.viewbinding.ViewBinding
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
@@ -10,6 +11,19 @@ import com.facebook.login.LoginResult
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.GoogleApiClient
+import com.scp.scpexam.BuildConfig
+import com.scp.scpexam.Constants
+import com.scp.scpexam.controller.api.ApiClient
+import com.scp.scpexam.controller.db.AppDatabase
+import com.scp.scpexam.controller.interactor.TransactionInteractor
+import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
+import com.scp.scpexam.di.Di
+import com.scp.scpexam.model.CommonUserData
+import com.scp.scpexam.model.api.QuizConverter
+import com.scp.scpexam.mvp.AuthPresenter
+import com.scp.scpexam.mvp.AuthView
+import com.scp.scpexam.mvp.presenter.BasePresenter
+import com.scp.scpexam.ui.BaseFragment
 import com.squareup.moshi.Moshi
 import com.vk.sdk.VKAccessToken
 import com.vk.sdk.VKCallback
@@ -24,29 +38,16 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import com.scp.scpexam.BuildConfig
-import com.scp.scpexam.Constants
-import com.scp.scpexam.controller.api.ApiClient
-import com.scp.scpexam.controller.db.AppDatabase
-import com.scp.scpexam.controller.interactor.TransactionInteractor
-import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
-import com.scp.scpexam.di.Di
-import com.scp.scpexam.model.CommonUserData
-import com.scp.scpexam.model.api.QuizConverter
-import com.scp.scpexam.mvp.AuthPresenter
-import com.scp.scpexam.mvp.AuthView
-import com.scp.scpexam.mvp.presenter.BasePresenter
-import com.scp.scpexam.ui.BaseFragment
 import timber.log.Timber
 import toothpick.Toothpick
 import javax.inject.Inject
 
 @SuppressWarnings("Injectable")
-class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView>>>(
-        private val fragment: T,
-        private val authPresenter: AuthPresenter<*>,
-        private var apiClient: ApiClient,
-        internal var preferences: MyPreferenceManager
+class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView>, out ViewBinding>>(
+    private val fragment: T,
+    private val authPresenter: AuthPresenter<*>,
+    private var apiClient: ApiClient,
+    internal var preferences: MyPreferenceManager
 ) {
 
     init {
@@ -71,19 +72,19 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
 
     private var googleApiClient: GoogleApiClient? = null
 
-    fun getFragment(): BaseFragment<out AuthView, out BasePresenter<out AuthView>> {
+    fun getFragment(): BaseFragment<out AuthView, out BasePresenter<out AuthView>, out ViewBinding> {
         return fragment
     }
 
     fun onViewCreated(fragmentActivity: androidx.fragment.app.FragmentActivity) {
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(BuildConfig.SERVER_GOOGLE_CLIENT_ID)
-                .requestEmail()
-                .build()
+            .requestIdToken(BuildConfig.SERVER_GOOGLE_CLIENT_ID)
+            .requestEmail()
+            .build()
         googleApiClient = GoogleApiClient.Builder(fragmentActivity)
-                .enableAutoManage(fragmentActivity) { Timber.d("ERROR") }
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build()
+            .enableAutoManage(fragmentActivity) { Timber.d("ERROR") }
+            .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+            .build()
 
         fbRegisterCallback()
     }
@@ -95,17 +96,17 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
 
     private fun fbRegisterCallback() {
         LoginManager.getInstance().registerCallback(callbackManager,
-                object : FacebookCallback<LoginResult> {
-                    override fun onSuccess(loginResult: LoginResult) {
-                        socialLogin(Constants.Social.FACEBOOK, loginResult.accessToken.token)
-                    }
+            object : FacebookCallback<LoginResult> {
+                override fun onSuccess(loginResult: LoginResult) {
+                    socialLogin(Constants.Social.FACEBOOK, loginResult.accessToken.token)
+                }
 
-                    override fun onCancel() {}
+                override fun onCancel() {}
 
-                    override fun onError(exception: FacebookException) {
-                        Timber.d("ON ERROR FB :%s", exception.toString())
-                    }
-                })
+                override fun onError(exception: FacebookException) {
+                    Timber.d("ON ERROR FB :%s", exception.toString())
+                }
+            })
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -132,7 +133,11 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                         Timber.e(error!!.errorMessage)
                     }
 
-                    override fun attemptFailed(request: VKRequest?, attemptNumber: Int, totalAttempts: Int) {
+                    override fun attemptFailed(
+                        request: VKRequest?,
+                        attemptNumber: Int,
+                        totalAttempts: Int
+                    ) {
                         fragment.showMessage("VK failed $request attemptNumber: $attemptNumber totalAttempts: $totalAttempts")
                     }
                 })
@@ -165,38 +170,38 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
 
     private fun socialLogin(socialName: Constants.Social, data: String?) {
         compositeDisposable.add(
-                apiClient.socialLogin(socialName, data!!)
-                        .doOnSuccess { (accessToken, refreshToken) ->
-                            preferences.setTrueAccessToken(accessToken)
-                            preferences.setRefreshToken(refreshToken)
+            apiClient.socialLogin(socialName, data!!)
+                .doOnSuccess { (accessToken, refreshToken) ->
+                    preferences.setTrueAccessToken(accessToken)
+                    preferences.setRefreshToken(refreshToken)
+                }
+                .flatMap {
+                    apiClient.getNwQuizTransactionList()
+                        .map { nwTransactionList ->
+                            nwTransactionList.forEach { nwQuizTransaction ->
+                                appDatabase.transactionDao().insert(
+                                    quizConverter.convert(nwQuizTransaction)
+                                )
+                            }
                         }
-                        .flatMap {
-                            apiClient.getNwQuizTransactionList()
-                                    .map { nwTransactionList ->
-                                        nwTransactionList.forEach { nwQuizTransaction ->
-                                            appDatabase.transactionDao().insert(
-                                                    quizConverter.convert(nwQuizTransaction)
-                                            )
-                                        }
-                                    }
-                        }
-                        .flatMapCompletable { transactionInteractor.syncAllProgress() }
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeBy(
-                                onComplete = { authPresenter.onAuthSuccess() },
-                                onError = {
-                                    Timber.e(it)
-                                    fragment.showMessage(it.toString())
-                                    authPresenter.onAuthError()
-                                }
-                        )
+                }
+                .flatMapCompletable { transactionInteractor.syncAllProgress() }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onComplete = { authPresenter.onAuthSuccess() },
+                    onError = {
+                        Timber.e(it)
+                        fragment.showMessage(it.toString())
+                        authPresenter.onAuthError()
+                    }
+                )
         )
     }
 
     fun onPause() {
         if (googleApiClient != null) {
-            googleApiClient!!.stopAutoManage(fragment.getActivity()!!)
+            googleApiClient!!.stopAutoManage(fragment.requireActivity())
             googleApiClient!!.disconnect()
         }
     }

@@ -21,7 +21,6 @@ import com.scp.scpexam.mvp.view.game.LevelsView
 import com.scp.scpexam.ui.BaseFragment
 import com.scp.scpexam.ui.dialog.CC3LicenseDialogFragment
 import com.scp.scpexam.utils.BitmapUtils
-import kotlinx.android.synthetic.main.fragment_levels.*
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import toothpick.Toothpick
@@ -78,7 +77,7 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter, FragmentLevelsB
 
         binding.levelsTextView.setOnClickListener { presenter.onLevelsClick() }
 
-        swipeRefresher.setOnRefreshListener { presenter.getAllQuizzes() }
+        binding.swipeRefresher.setOnRefreshListener { presenter.getAllQuizzes() }
 
         if (!preferenceManager.isPersonalDataAccepted()) {
             val dialogFragment = CC3LicenseDialogFragment.newInstance()
@@ -104,7 +103,7 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter, FragmentLevelsB
     }
 
     override fun showProgress(show: Boolean) {
-        progressView.visibility = if (show) VISIBLE else GONE
+        binding.progressView.visibility = if (show) VISIBLE else GONE
     }
 
     override fun showProgressOnQuizLevel(itemPosition: Int) {
@@ -112,7 +111,7 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter, FragmentLevelsB
     }
 
     override fun showSwipeProgressBar(showSwipeProgressBar: Boolean) {
-        swipeRefresher.isRefreshing = showSwipeProgressBar
+        binding.swipeRefresher.isRefreshing = showSwipeProgressBar
     }
 
     override fun showLevels(quizes: List<LevelViewModel>) {
@@ -125,11 +124,11 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter, FragmentLevelsB
     }
 
     override fun onNeedToOpenSettings() {
-        BitmapUtils.loadBitmapFromView(root)?.let { presenter.openSettings(it) }
+        BitmapUtils.loadBitmapFromView(binding.root)?.let { presenter.openSettings(it) }
     }
 
     override fun onNeedToOpenCoins() {
-        BitmapUtils.loadBitmapFromView(root)?.let { presenter.openCoins(it) }
+        BitmapUtils.loadBitmapFromView(binding.root)?.let { presenter.openCoins(it) }
     }
 
     override fun showCoins(coins: Int) {

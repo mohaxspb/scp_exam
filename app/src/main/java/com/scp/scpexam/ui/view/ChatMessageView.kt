@@ -2,22 +2,16 @@ package com.scp.scpexam.ui.view
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import android.util.AttributeSet
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.request.RequestOptions
 import com.scp.scpexam.R
 import com.scp.scpexam.model.db.User
 import com.scp.scpexam.model.db.UserRole
 import com.scp.scpexam.ui.utils.GlideApp
-import kotlinx.android.synthetic.main.view_chat_message_doctor.view.avatarImageView as doctorAvatar
-import kotlinx.android.synthetic.main.view_chat_message_doctor.view.messageTextView as doctorMessage
-import kotlinx.android.synthetic.main.view_chat_message_doctor.view.userNameTextView as doctorName
-import kotlinx.android.synthetic.main.view_chat_message_player.view.avatarImageView as playerAvatar
-import kotlinx.android.synthetic.main.view_chat_message_player.view.messageTextView as playerMessage
-import kotlinx.android.synthetic.main.view_chat_message_player.view.userNameTextView as playerName
 
 @SuppressLint("ViewConstructor")
 class ChatMessageView @JvmOverloads constructor(
@@ -41,16 +35,16 @@ class ChatMessageView @JvmOverloads constructor(
         when (user.role) {
             UserRole.DOCTOR -> {
                 inflate(context, R.layout.view_chat_message_doctor, this)
-                mAvatarImageView = doctorAvatar
-                mMessageTextView = doctorMessage
-                mUserNameTextView = doctorName
+                mAvatarImageView = findViewById<ImageView>(R.id.avatarImageView)
+                mMessageTextView = findViewById<TextView>(R.id.messageTextView)
+                mUserNameTextView = findViewById<TextView>(R.id.userNameTextView)
                 avatarRes = R.drawable.ic_doctor
             }
             UserRole.PLAYER -> {
                 inflate(context, R.layout.view_chat_message_player, this)
-                mAvatarImageView = playerAvatar
-                mMessageTextView = playerMessage
-                mUserNameTextView = playerName
+                mAvatarImageView = findViewById<ImageView>(R.id.avatarImageView)
+                mMessageTextView = findViewById<TextView>(R.id.messageTextView)
+                mUserNameTextView = findViewById<TextView>(R.id.userNameTextView)
                 avatarRes = R.drawable.ic_player
             }
             UserRole.OTHER_USER -> throw NotImplementedError("implement user role for ChatMessageView")
@@ -62,8 +56,8 @@ class ChatMessageView @JvmOverloads constructor(
             null -> glideRequest.load(avatarRes)
             else -> glideRequest.load(user.avatarUrl)
         }
-                .apply(RequestOptions.circleCropTransform())
-                .into(mAvatarImageView)
+            .apply(RequestOptions.circleCropTransform())
+            .into(mAvatarImageView)
 
         mMessageTextView.text = message
 

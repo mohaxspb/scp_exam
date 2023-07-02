@@ -2,12 +2,13 @@ package com.scp.scpexam.ui.view
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import com.google.android.flexbox.FlexboxLayout
-import kotlinx.android.synthetic.main.view_keyboard.view.*
 import com.scp.scpexam.R
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
+import com.scp.scpexam.databinding.ViewKeyboardBinding
 import com.scp.scpexam.di.Di
 import com.scp.scpexam.utils.DimensionUtils
 import com.scp.scpexam.utils.SystemUtils
@@ -34,7 +35,8 @@ class KeyboardView @JvmOverloads constructor(
 
                 Timber.d("chars: $chars")
                 Timber.d("availableChars: $availableChars")
-                val topBorder = if (availableChars.size > charsToAddCount) charsToAddCount else availableChars.size
+                val topBorder =
+                    if (availableChars.size > charsToAddCount) charsToAddCount else availableChars.size
                 chars.addAll(availableChars.subList(0, topBorder))
                 chars.shuffle()
                 Timber.d("chars.size: ${chars.size}")
@@ -45,6 +47,8 @@ class KeyboardView @JvmOverloads constructor(
             }
         }
     }
+
+    private lateinit var binding: ViewKeyboardBinding
 
     @Inject
     lateinit var myPreferenceManager: MyPreferenceManager
@@ -63,6 +67,11 @@ class KeyboardView @JvmOverloads constructor(
         setPadding(PADDING_LEFT, PADDING_TOP_BOTTOM, PADDING_LEFT, PADDING_TOP_BOTTOM)
     }
 
+    override fun onFinishInflate() {
+        super.onFinishInflate()
+        binding = ViewKeyboardBinding.inflate(LayoutInflater.from(context), this)
+    }
+
     fun removeCharView(charId: Int) = characterViewsMap[charId]?.let {
         Timber.d("removeCharView: $charId")
         it.visibility = View.INVISIBLE
@@ -73,8 +82,8 @@ class KeyboardView @JvmOverloads constructor(
         val characterView = CharacterView(context)
         characterView.char = char
 
-        flexBoxLayout.addView(characterView)
-        characterView.charId = flexBoxLayout.childCount - 1
+        binding.flexBoxLayout.addView(characterView)
+        characterView.charId = binding.flexBoxLayout.childCount - 1
         characterViewsMap[characterView.charId] = characterView
 
         characterView.setOnClickListener {
@@ -96,7 +105,7 @@ class KeyboardView @JvmOverloads constructor(
         Timber.d("setCharacters: $characters")
         this.characters.clear()
         this.characters.addAll(characters.shuffled())
-        flexBoxLayout.removeAllViews()
+        binding.flexBoxLayout.removeAllViews()
         characterViewsMap.clear()
         this.characters.forEach { addCharView(it) }
     }
