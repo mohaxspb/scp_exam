@@ -3,7 +3,6 @@ apply plugin: 'com.android.application'
 //kotlin
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin-android-extensions'
 //new crash reporting
 apply plugin: 'io.fabric'
 
