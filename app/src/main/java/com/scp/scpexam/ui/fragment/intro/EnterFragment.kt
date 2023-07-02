@@ -1,20 +1,25 @@
 package com.scp.scpexam.ui.fragment.intro
 
 import android.animation.ObjectAnimator
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import kotlinx.android.synthetic.main.fragment_enter.*
-import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
 import com.scp.scpexam.R
+import com.scp.scpexam.databinding.FragmentEnterBinding
 import com.scp.scpexam.mvp.presenter.intro.EnterPresenter
 import com.scp.scpexam.mvp.view.intro.EnterView
 import com.scp.scpexam.ui.BaseFragment
 import com.scp.scpexam.utils.BitmapUtils
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
 
-class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
+class EnterFragment : BaseFragment<EnterView, EnterPresenter, FragmentEnterBinding>(), EnterView {
+
+    override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentEnterBinding
+        get() = FragmentEnterBinding::inflate
 
     override val translucent = true
 
@@ -33,16 +38,16 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
     override fun getLayoutResId() = R.layout.fragment_enter
 
     override fun showProgressText(text: String) {
-        progressTextView.text = text
-        progressTextView.setOnClickListener { presenter.onProgressTextClicked() }
+        binding.progressTextView.text = text
+        binding.progressTextView.setOnClickListener { presenter.onProgressTextClicked() }
     }
 
     override fun showProgressAnimation() {
         val progressAnimator = ObjectAnimator.ofInt(
-                progressBar,
-                "progress",
-                0,
-                1000
+            binding.progressBar,
+            "progress",
+            0,
+            1000
         )
         progressAnimator.duration = 1000
         progressAnimator.interpolator = AccelerateDecelerateInterpolator()
@@ -52,17 +57,17 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
     override fun showImage(imageNumber: Int) {
         Timber.d("showImage: $imageNumber")
         val imageView = when (imageNumber) {
-            0 -> bottomImageView
-            1 -> middleImageView
-            2 -> topImageView
+            0 -> binding.bottomImageView
+            1 -> binding.middleImageView
+            2 -> binding.topImageView
             else -> return
         }
 
         val progressAnimator = ObjectAnimator.ofFloat(
-                imageView,
-                "alpha",
-                0f,
-                1f
+            imageView,
+            "alpha",
+            0f,
+            1f
         )
         progressAnimator.duration = 800
         progressAnimator.interpolator = AccelerateDecelerateInterpolator()
@@ -70,7 +75,7 @@ class EnterFragment : BaseFragment<EnterView, EnterPresenter>(), EnterView {
     }
 
     override fun onNeedToOpenIntroDialogFragment() {
-        BitmapUtils.loadBitmapFromView(root)?.let { presenter.openIntroDialogScreen(it) }
+        BitmapUtils.loadBitmapFromView(binding.root)?.let { presenter.openIntroDialogScreen(it) }
     }
 
     companion object {

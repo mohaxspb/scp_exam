@@ -102,7 +102,7 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>, VB : ViewBinding>
 
     private fun applyStatusBarTranslucence(translucent: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val w = activity!!.window
+            val w = requireActivity().window
             if (translucent) {
                 w.setFlags(
                     WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,

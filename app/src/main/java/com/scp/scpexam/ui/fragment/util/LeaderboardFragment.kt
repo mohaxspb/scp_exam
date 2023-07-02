@@ -1,7 +1,5 @@
 package com.scp.scpexam.ui.fragment.util
 
-//import kotlinx.android.synthetic.main.fragment_leaderboard.*
-//import kotlinx.android.synthetic.main.item_leaderboard.view.*
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
