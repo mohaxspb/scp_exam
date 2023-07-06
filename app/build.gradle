@@ -245,7 +245,7 @@ dependencies {
     implementation('ru.kuchanov.utils:rate:1.2.1@aar') { transitive = true }
     //social auth
     //google
-    implementation 'com.google.android.gms:play-services-auth:17.0.0'
+    implementation 'com.google.android.gms:play-services-auth:20.6.0'
     //facebook
     implementation 'com.facebook.android:facebook-login:5.1.1'
     //vk

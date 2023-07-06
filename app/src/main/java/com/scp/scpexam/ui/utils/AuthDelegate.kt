@@ -90,7 +90,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
     }
 
     fun startGoogleLogin() {
-        val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient)
+        val signInIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient!!)
         (fragment as AuthView).startGoogleLogin(signInIntent, fragment)
     }
 
@@ -109,7 +109,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
             })
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         val vkCallback = object : VKCallback<VKAccessToken> {
             override fun onResult(vkAccessToken: VKAccessToken) {
                 val commonUserData = CommonUserData().apply {
@@ -154,7 +154,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
             if (!VKSdk.onActivityResult(requestCode, resultCode, data, vkCallback)) {
                 when (requestCode) {
                     REQUEST_CODE_GOOGLE -> {
-                        val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+                        val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)!!
                         Timber.d("result: ${result.isSuccess}/${result.signInAccount}")
                         if (result.isSuccess) {
                             socialLogin(Constants.Social.GOOGLE, result.signInAccount!!.idToken)

@@ -102,7 +102,11 @@ class MonetizationFragment :
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        presenter.onActivityResult(requestCode, resultCode, data)
+        if (data != null) {
+            presenter.onActivityResult(requestCode, resultCode, data)
+        } else {
+            showMessage("Intent is null $requestCode")
+        }
         super.onActivityResult(requestCode, resultCode, data)
     }
 

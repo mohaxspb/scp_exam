@@ -184,7 +184,7 @@ class ScpSettingsPresenter @Inject constructor(
 
     fun onNavigationIconClicked() = router.exit()
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         authDelegate.onActivityResult(requestCode, resultCode, data)
     }
 }
