@@ -211,7 +211,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter, FragmentGameBinding>(
         with(GlideApp.with(binding.imageView.context)) {
             if (StorageUtils.ifFileExistsInAssets(
                     quiz.getImageUrl(),
-                    imageView.context,
+                    binding.imageView.context,
                     "quizImages"
                 )
             ) {
