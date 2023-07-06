@@ -136,7 +136,9 @@ class LevelsFragment : BaseFragment<LevelsView, LevelsPresenter, FragmentLevelsB
             ValueAnimator.ofInt(binding.coinsValueTextView.text.toString().toInt(), coins)
         animator.duration = 1000
         animator.addUpdateListener { animation ->
-            binding.coinsValueTextView?.text = animation.animatedValue.toString()
+            if (isAdded) {
+                binding.coinsValueTextView.text = animation.animatedValue.toString()
+            }
         }
         animator.start()
     }
