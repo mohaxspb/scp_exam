@@ -16,7 +16,7 @@ interface AuthPresenter<T : BaseFragment<out AuthView, out BasePresenter<out Aut
     }
 
     fun onVkLoginClicked() {
-        getAuthView().startVkLogin(authDelegate.getFragment())
+        authDelegate.startVkLogin()
     }
 
     fun onGoogleLoginClicked() {

@@ -1,6 +1,8 @@
 package com.scp.scpexam.ui
 
-import android.content.Intent
+//import com.vk.sdk.VKAccessToken
+//import com.vk.sdk.VKCallback
+//import com.vk.sdk.api.VKError
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -22,10 +24,6 @@ import com.scp.scpexam.model.ui.QuizScreenLaunchData
 import com.scp.scpexam.mvp.BaseView
 import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.ui.utils.MyMoPubListener
-import com.vk.sdk.VKAccessToken
-import com.vk.sdk.VKCallback
-import com.vk.sdk.VKSdk
-import com.vk.sdk.api.VKError
 import moxy.MvpAppCompatActivity
 import ru.kuchanov.rate.PreRate
 import ru.terrakok.cicerone.Navigator
@@ -76,18 +74,18 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         MoPub.onPause(this)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        VKSdk.onActivityResult(requestCode, resultCode, data, object : VKCallback<VKAccessToken> {
-            override fun onResult(res: VKAccessToken) {
-                for (fragment in supportFragmentManager.fragments) {
-                    fragment.onActivityResult(requestCode, resultCode, data)
-                }
-            }
-
-            override fun onError(error: VKError) {}
-        })
-        super.onActivityResult(requestCode, resultCode, data)
-    }
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+////        VKSdk.onActivityResult(requestCode, resultCode, data, object : VKCallback<VKAccessToken> {
+////            override fun onResult(res: VKAccessToken) {
+////                for (fragment in supportFragmentManager.fragments) {
+////                    fragment.onActivityResult(requestCode, resultCode, data)
+////                }
+////            }
+////
+////            override fun onError(error: VKError) {}
+////        })
+//        super.onActivityResult(requestCode, resultCode, data)
+//    }
 
 
     override fun onResume() {

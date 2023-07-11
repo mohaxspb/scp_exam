@@ -249,7 +249,8 @@ dependencies {
     //facebook
     implementation 'com.facebook.android:facebook-login:5.1.1'
     //vk
-    implementation 'com.vk:androidsdk:1.6.9'
+    implementation 'com.vk:android-sdk-core:4.0.1'
+    implementation 'com.vk:android-sdk-api:4.0.1'
 
     //testing
     testImplementation 'junit:junit:4.12'

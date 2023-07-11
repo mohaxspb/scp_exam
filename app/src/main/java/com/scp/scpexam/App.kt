@@ -10,7 +10,7 @@ import com.scp.scpexam.di.module.AppModule
 import com.scp.scpexam.model.db.QuizTransaction
 import com.scp.scpexam.model.db.TransactionType
 import com.scp.scpexam.model.db.UserRole
-import com.vk.sdk.VKSdk
+import com.vk.api.sdk.VK
 import com.yandex.metrica.YandexMetrica
 import com.yandex.metrica.YandexMetricaConfig
 import io.reactivex.Completable
@@ -46,7 +46,7 @@ class App : MultiDexApplication() {
         initDi()
         initYandexMetrica()
         Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
-        VKSdk.initialize(this)
+        VK.initialize(this)
         FacebookSdk.sdkInitialize(applicationContext)
         AppEventsLogger.activateApp(this)
         initScore()
