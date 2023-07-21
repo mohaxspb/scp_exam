@@ -265,7 +265,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter, FragmentGameBinding>(
             ValueAnimator.ofInt(binding.coinsValueTextView.text.toString().toInt(), coins)
         animator.duration = 1000
         animator.addUpdateListener { animation ->
-            binding.coinsValueTextView?.text = animation.animatedValue.toString()
+            if (isAdded) {
+                binding.coinsValueTextView?.text = animation.animatedValue.toString()
+            }
         }
         animator.start()
     }
