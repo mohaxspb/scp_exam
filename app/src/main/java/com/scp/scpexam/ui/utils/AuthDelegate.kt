@@ -29,15 +29,10 @@ import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiCallback
 import com.vk.api.sdk.auth.VKAuthenticationResult
 import com.vk.api.sdk.auth.VKScope
-import com.vk.api.sdk.exceptions.VKApiExecutionException
-import com.vk.api.sdk.requests.VKRequest
-import com.vk.sdk.api.users.UsersService
-import com.vk.sdk.api.users.dto.UsersUserFullDto
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import org.json.JSONObject
 import timber.log.Timber
 import toothpick.Toothpick
 import javax.inject.Inject
@@ -63,15 +58,13 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
     ) {
         when (it) {
             is VKAuthenticationResult.Success -> {
-                // TODO перенести сюда
                 Timber.d("Успешная авторизация ${it.token}")
                 val commonUserData = CommonUserData().apply {
                     email = it.token.email
                     id = it.token.userId.value.toString()
                 }
-                VK.execute(VKUsersCommand(), object: VKApiCallback<List<VKUser>> {
+                VK.execute(VKUsersCommand(), object : VKApiCallback<List<VKUser>> {
                     override fun success(result: List<VKUser>) {
-//                        @Suppress("UNCHECKED_CAST")
                         val user = result[0]
                         commonUserData.firstName = user.firstName
                         commonUserData.lastName = user.lastName
@@ -80,75 +73,16 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                         val jsonAdapter = moshi.adapter(CommonUserData::class.java)
                         socialLogin(Constants.Social.VK, jsonAdapter.toJson(commonUserData))
                     }
+
                     override fun fail(error: Exception) {
                         Timber.e(error, "ошибка ВК авторизации")
                         fragment.showMessage("VK failed $error")
                     }
                 })
-//                VK.execute(UsersService().usersGet(), object: VKApiCallback<List<UsersUserFullDto>> {
-//                    override fun success(result: List<UsersUserFullDto>) {
-//                        @Suppress("UNCHECKED_CAST")
-//                        val user = result[0]
-//                        commonUserData.firstName = user.firstName
-//                        commonUserData.lastName = user.lastName
-//                        commonUserData.avatarUrl = user.photo200
-//                        commonUserData.fullName = user.firstName + "" + user.lastName
-//                        val jsonAdapter = moshi.adapter(CommonUserData::class.java)
-//                        socialLogin(Constants.Social.VK, jsonAdapter.toJson(commonUserData))
-//                    }
-//                    override fun fail(error: Exception) {
-//                        Timber.e(error, "ошибка ВК авторизации")
-//                        fragment.showMessage("VK failed $request")
-//                    }
-//                })
-//                VK.execute(request, object : VKApiCallback<List<UsersUserFullDto>> {
-//                    override fun fail(error: Exception) {
-//                        Timber.e(error, "ошибка ВК авторизации")
-//                        fragment.showMessage("VK failed $request")
-//                    }
-//
-//                    override fun success(result: List<UsersUserFullDto>) {
-//                        @Suppress("UNCHECKED_CAST")
-//                        val user = result[0]
-//                        commonUserData.firstName = user.firstName
-//                        commonUserData.lastName = user.lastName
-//                        commonUserData.avatarUrl = user.photo200
-//                        commonUserData.fullName = user.firstName + "" + user.lastName
-//                        val jsonAdapter = moshi.adapter(CommonUserData::class.java)
-//                        socialLogin(Constants.Social.VK, jsonAdapter.toJson(commonUserData))
-//                    }
-//
-//                })
-
-//                val request = VK.users().get()
-//                request.executeWithListener(object : VKRequest.VKRequestListener() {
-//                    override fun onComplete(response: VKResponse?) {
-//                        @Suppress("UNCHECKED_CAST")
-//                        val user = (response!!.parsedModel as VKList<VKApiUserFull>)[0]
-//                        commonUserData.firstName = user.first_name
-//                        commonUserData.lastName = user.last_name
-//                        commonUserData.avatarUrl = user.photo_200
-//                        commonUserData.fullName = user.first_name + "" + user.last_name
-//                        val jsonAdapter = moshi.adapter(CommonUserData::class.java)
-//                        socialLogin(Constants.Social.VK, jsonAdapter.toJson(commonUserData))
-//                    }
-//
-//                    override fun onError(error: VKError?) {
-//                        Timber.e(error!!.errorMessage)
-//                    }
-//
-//                    override fun attemptFailed(
-//                        request: VKRequest?,
-//                        attemptNumber: Int,
-//                        totalAttempts: Int
-//                    ) {
-//                        fragment.showMessage("VK failed $request attemptNumber: $attemptNumber totalAttempts: $totalAttempts")
-//                    }
-//                })
             }
             is VKAuthenticationResult.Failed -> {
-                // TODO перенести сюда
                 Timber.e(it.exception, "Ошибка ${it.exception.authError}")
+                fragment.showMessage("VK failed ${it.exception}")
             }
         }
     }
@@ -209,44 +143,6 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
     }
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-//        TODO перенести куда-то
-//        val vkCallback = object : VKCallback<VKAccessToken> {
-//            override fun onResult(vkAccessToken: VKAccessToken) {
-//                val commonUserData = CommonUserData().apply {
-//                    email = vkAccessToken.email
-//                    id = vkAccessToken.userId
-//                }
-//                val request = VKApi.users().get()
-//                request.executeWithListener(object : VKRequest.VKRequestListener() {
-//                    override fun onComplete(response: VKResponse?) {
-//                        @Suppress("UNCHECKED_CAST")
-//                        val user = (response!!.parsedModel as VKList<VKApiUserFull>)[0]
-//                        commonUserData.firstName = user.first_name
-//                        commonUserData.lastName = user.last_name
-//                        commonUserData.avatarUrl = user.photo_200
-//                        commonUserData.fullName = user.first_name + "" + user.last_name
-//                        val jsonAdapter = moshi.adapter(CommonUserData::class.java)
-//                        socialLogin(Constants.Social.VK, jsonAdapter.toJson(commonUserData))
-//                    }
-//
-//                    override fun onError(error: VKError?) {
-//                        Timber.e(error!!.errorMessage)
-//                    }
-//
-//                    override fun attemptFailed(
-//                        request: VKRequest?,
-//                        attemptNumber: Int,
-//                        totalAttempts: Int
-//                    ) {
-//                        fragment.showMessage("VK failed $request attemptNumber: $attemptNumber totalAttempts: $totalAttempts")
-//                    }
-//                })
-//            }
-//
-//            override fun onError(error: VKError) {
-//                Timber.d("Error: $error")
-//            }
-//        }
         Timber.d("onActivityResult: $resultCode")
         if (resultCode != Activity.RESULT_OK) {
             authPresenter.onAuthCanceled()
