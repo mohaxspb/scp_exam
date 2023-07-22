@@ -198,7 +198,7 @@ class MonetizationPresenter @Inject constructor(
                 .addTo(compositeDisposable)
     }
 
-    fun onBillingClientFailedToStart(@BillingClient.BillingResponse billingResponseCode: Int) {
+    fun onBillingClientFailedToStart(@BillingClient.BillingResponseCode billingResponseCode: Int) {
         viewState.showProgress(false)
         viewState.showMessage(appContext.getString(R.string.error_billing_client_connection, billingResponseCode))
     }
