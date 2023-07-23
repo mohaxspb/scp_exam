@@ -61,7 +61,7 @@ class LeaderboardPresenter @Inject constructor(
         viewState.showMessage(appContext.getString(R.string.auth_retry))
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         authDelegate.onActivityResult(requestCode, resultCode, data)
     }
 

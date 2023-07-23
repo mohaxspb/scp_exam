@@ -2,16 +2,14 @@ package com.scp.scpexam.ui.fragment.util
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import android.view.View
 import com.bumptech.glide.request.RequestOptions
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
-import kotlinx.android.synthetic.main.fragment_leaderboard.*
-import kotlinx.android.synthetic.main.item_leaderboard.view.*
-import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
 import com.scp.scpexam.Constants
 import com.scp.scpexam.EndlessRecyclerViewScrollListener
 import com.scp.scpexam.R
@@ -19,6 +17,7 @@ import com.scp.scpexam.controller.adapter.MyListItem
 import com.scp.scpexam.controller.adapter.delegate.LeaderboardDelegate
 import com.scp.scpexam.controller.adapter.viewmodel.LeaderboardViewModel
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
+import com.scp.scpexam.databinding.FragmentLeaderboardBinding
 import com.scp.scpexam.model.api.NwUser
 import com.scp.scpexam.mvp.presenter.util.LeaderboardPresenter
 import com.scp.scpexam.mvp.view.util.LeaderboardView
@@ -26,12 +25,20 @@ import com.scp.scpexam.ui.BaseFragment
 import com.scp.scpexam.ui.utils.AuthDelegate
 import com.scp.scpexam.ui.utils.GlideApp
 import com.scp.scpexam.utils.DimensionUtils
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
 import toothpick.Toothpick
 import toothpick.config.Module
 import javax.inject.Inject
 
 
-class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(), LeaderboardView {
+class LeaderboardFragment :
+    BaseFragment<LeaderboardView, LeaderboardPresenter, FragmentLeaderboardBinding>(),
+    LeaderboardView {
+
+    override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentLeaderboardBinding
+        get() = FragmentLeaderboardBinding::inflate
+
     override val translucent = false
 
     override val scopes: Array<String> = arrayOf()
@@ -47,7 +54,8 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
     override lateinit var presenter: LeaderboardPresenter
 
     @ProvidePresenter
-    override fun providePresenter(): LeaderboardPresenter = scope.getInstance(LeaderboardPresenter::class.java)
+    override fun providePresenter(): LeaderboardPresenter =
+        scope.getInstance(LeaderboardPresenter::class.java)
 
     override fun inject() = Toothpick.inject(this, scope)
 
@@ -59,41 +67,41 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
         super.onViewCreated(view, savedInstanceState)
 
         with(activity as AppCompatActivity) {
-            setSupportActionBar(toolbar)
+            setSupportActionBar(binding.toolbar)
             supportActionBar?.let {
                 it.setDisplayHomeAsUpEnabled(true)
                 it.setHomeButtonEnabled(true)
             }
         }
-        toolbar.setNavigationOnClickListener { presenter.onBackClicked() }
+        binding.toolbar.setNavigationOnClickListener { presenter.onBackClicked() }
 
         if (preferenceManager.getTrueAccessToken() == null) {
-            itemUserInLeaderboardView.visibility = View.GONE
+            binding.itemUserInLeaderboardView.visibility = View.GONE
         } else {
-            googleImage.visibility = View.GONE
-            vkImage.visibility = View.GONE
-            faceBookImage.visibility = View.GONE
+            binding.googleImage.visibility = View.GONE
+            binding.vkImage.visibility = View.GONE
+            binding.faceBookImage.visibility = View.GONE
         }
 
-        retryGetCurrentUserImage.setOnClickListener { presenter.getCurrentPositionInLeaderboard() }
+        binding.retryGetCurrentUserImage.setOnClickListener { presenter.getCurrentPositionInLeaderboard() }
         initRecyclerView()
-        swipeRefresher.setOnRefreshListener { presenter.showLeaderboard(Constants.OFFSET_ZERO) }
+        binding.swipeRefresher.setOnRefreshListener { presenter.showLeaderboard(Constants.OFFSET_ZERO) }
 
         authDelegate = AuthDelegate(
-                this,
-                presenter,
-                presenter.apiClient,
-                presenter.preferences
+            this,
+            presenter,
+            presenter.apiClient,
+            presenter.preferences
         )
 
         val onVkLoginClickListener: (View) -> Unit = { presenter.onVkLoginClicked() }
-        vkImage.setOnClickListener(onVkLoginClickListener)
+        binding.vkImage.setOnClickListener(onVkLoginClickListener)
 
         val onFacebookLoginClickListener: (View) -> Unit = { presenter.onFacebookLoginClicked() }
-        faceBookImage.setOnClickListener(onFacebookLoginClickListener)
+        binding.faceBookImage.setOnClickListener(onFacebookLoginClickListener)
 
         val onGoogleLoginClickListener: (View) -> Unit = { presenter.onGoogleLoginClicked() }
-        googleImage.setOnClickListener(onGoogleLoginClickListener)
+        binding.googleImage.setOnClickListener(onGoogleLoginClickListener)
 
         presenter.authDelegate = authDelegate
         activity?.let { authDelegate.onViewCreated(it) }
@@ -101,7 +109,11 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        presenter.onActivityResult(requestCode, resultCode, data)
+        if (data != null) {
+            presenter.onActivityResult(requestCode, resultCode, data)
+        } else {
+            showMessage("Intent is null $requestCode")
+        }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -111,24 +123,30 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
     }
 
     override fun showProgress(show: Boolean) {
-        progressView.visibility = if (show) View.VISIBLE else View.GONE
+        binding.progressView.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     override fun showCurrentUserProgressBar(showCurrentUserProgressBar: Boolean) {
-        currentUserProgressBar.visibility = if (showCurrentUserProgressBar) View.VISIBLE else View.GONE
+        binding.currentUserProgressBar.visibility =
+            if (showCurrentUserProgressBar) View.VISIBLE else View.GONE
     }
 
     override fun showCurrentUserUI(showCurrentUserUI: Boolean) {
-        itemUserInLeaderboardView.visibility = if (showCurrentUserUI) View.VISIBLE else View.GONE
+        binding.itemUserInLeaderboardView.visibility =
+            if (showCurrentUserUI) View.VISIBLE else View.GONE
     }
 
     override fun showRetryButton(showRetryButton: Boolean) {
-        retryGetCurrentUserImage.visibility = if (showRetryButton) View.VISIBLE else View.GONE
+        binding.retryGetCurrentUserImage.visibility =
+            if (showRetryButton) View.VISIBLE else View.GONE
     }
 
     override fun showSwipeProgressBar(showSwipeProgressBar: Boolean) {
-        swipeRefresher.setProgressViewEndTarget(false, DimensionUtils.getActionBarHeight(activity!!))
-        swipeRefresher.isRefreshing = showSwipeProgressBar
+        binding.swipeRefresher.setProgressViewEndTarget(
+            false,
+            DimensionUtils.getActionBarHeight(requireActivity())
+        )
+        binding.swipeRefresher.isRefreshing = showSwipeProgressBar
     }
 
     override fun showLeaderboard(users: List<LeaderboardViewModel>) {
@@ -137,14 +155,18 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
     }
 
     override fun showBottomProgress(showBottomProgress: Boolean) {
-        swipeRefresher.setProgressViewEndTarget(false, DimensionUtils.getScreenHeight() - DimensionUtils.getActionBarHeight(activity!!) * 3)
-        swipeRefresher.isRefreshing = showBottomProgress
+        binding.swipeRefresher.setProgressViewEndTarget(
+            false,
+            DimensionUtils.getScreenHeight() - DimensionUtils.getActionBarHeight(requireActivity()) * 3
+        )
+        binding.swipeRefresher.isRefreshing = showBottomProgress
     }
 
     override fun enableScrollListener(enableScrollListener: Boolean) {
-        recyclerViewLeaderboard.clearOnScrollListeners()
+        binding.recyclerViewLeaderboard.clearOnScrollListeners()
         if (enableScrollListener) {
-            recyclerViewLeaderboard.addOnScrollListener(object : EndlessRecyclerViewScrollListener() {
+            binding.recyclerViewLeaderboard.addOnScrollListener(object :
+                EndlessRecyclerViewScrollListener() {
                 override fun onLoadMore(page: Int, totalItemsCount: Int) {
                     if (adapter.itemCount % Constants.LIMIT_PAGE != 0) {
                         enableScrollListener(false)
@@ -157,27 +179,29 @@ class LeaderboardFragment : BaseFragment<LeaderboardView, LeaderboardPresenter>(
     }
 
     override fun showUserPosition(user: NwUser, position: Int) {
-        itemUserInLeaderboardView.userPositionTextView.text = position.toString()
-        itemUserInLeaderboardView.userFullNameTextView.text = user.fullName
-        itemUserInLeaderboardView.userScoreTextView.text = user.score.toString()
-        itemUserInLeaderboardView.userFullCompleteLevelsTextView.text = context?.getString(R.string.complete_levels_text, user.fullCompleteLevels)
-        itemUserInLeaderboardView.userPartCompleteLevelsTextView.text = context?.getString(R.string.part_complete_levels_text, user.partCompleteLevels)
+        binding.itemLeaderboard.userPositionTextView.text = position.toString()
+        binding.itemLeaderboard.userFullNameTextView.text = user.fullName
+        binding.itemLeaderboard.userScoreTextView.text = user.score.toString()
+        binding.itemLeaderboard.userFullCompleteLevelsTextView.text =
+            context?.getString(R.string.complete_levels_text, user.fullCompleteLevels)
+        binding.itemLeaderboard.userPartCompleteLevelsTextView.text =
+            context?.getString(R.string.part_complete_levels_text, user.partCompleteLevels)
 
-        val glideRequest = GlideApp.with(itemUserInLeaderboardView.userAvatarImageView.context)
+        val glideRequest = GlideApp.with(binding.itemLeaderboard.userAvatarImageView.context)
         when (user.avatar) {
             null -> glideRequest.load(R.drawable.ic_player)
             else -> glideRequest.load(user.avatar)
         }
-                .apply(RequestOptions.circleCropTransform())
-                .into(itemUserInLeaderboardView.userAvatarImageView)
+            .apply(RequestOptions.circleCropTransform())
+            .into(binding.itemLeaderboard.userAvatarImageView)
     }
 
     private fun initRecyclerView() {
-        recyclerViewLeaderboard.layoutManager = LinearLayoutManager(activity)
+        binding.recyclerViewLeaderboard.layoutManager = LinearLayoutManager(activity)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
         delegateManager.addDelegate(LeaderboardDelegate())
         adapter = ListDelegationAdapter(delegateManager)
-        recyclerViewLeaderboard.adapter = adapter
+        binding.recyclerViewLeaderboard.adapter = adapter
     }
 
     companion object {

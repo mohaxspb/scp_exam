@@ -6,20 +6,18 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.snackbar.Snackbar
 import com.hannesdorfmann.adapterdelegates3.ListDelegationAdapter
-import kotlinx.android.synthetic.main.fragment_game.*
-import moxy.presenter.InjectPresenter
-import moxy.presenter.ProvidePresenter
-import moxy.presenter.ProvidePresenterTag
-import ru.kuchanov.rate.PreRate
 import com.scp.scpexam.R
 import com.scp.scpexam.controller.adapter.MyListItem
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
+import com.scp.scpexam.databinding.FragmentGameBinding
 import com.scp.scpexam.di.Di
 import com.scp.scpexam.di.module.GameModule
 import com.scp.scpexam.model.db.Quiz
@@ -38,13 +36,17 @@ import com.scp.scpexam.ui.view.CharacterView
 import com.scp.scpexam.utils.BitmapUtils
 import com.scp.scpexam.utils.StorageUtils
 import com.scp.scpexam.utils.SystemUtils
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
+import moxy.presenter.ProvidePresenterTag
+import ru.kuchanov.rate.PreRate
 import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.config.Module
 import javax.inject.Inject
 
 
-class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
+class GameFragment : BaseFragment<GameView, GamePresenter, FragmentGameBinding>(), GameView {
 
     companion object {
         const val ARG_QUIZ_ID = "ARG_QUIZ_ID"
@@ -61,6 +63,9 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             return fragment
         }
     }
+
+    override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentGameBinding
+        get() = FragmentGameBinding::inflate
 
     @Inject
     lateinit var myPreferenceManager: MyPreferenceManager
@@ -79,13 +84,13 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         Timber.d("providePresenter: ${arguments?.getLong(ARG_QUIZ_ID)}")
         val presenter = scope.getInstance(GamePresenter::class.java)
         presenter.quizId = arguments?.getLong(ARG_QUIZ_ID)
-                ?: throw IllegalStateException("cant create presenter without quizId in fragment args!")
+            ?: throw IllegalStateException("cant create presenter without quizId in fragment args!")
         return presenter
     }
 
     @ProvidePresenterTag(presenterClass = GamePresenter::class)
     fun provideRepositoryPresenterTag(): String = arguments?.getLong(ARG_QUIZ_ID)?.toString()
-            ?: throw IllegalStateException("cant create presenter without quizId in fragment args!")
+        ?: throw IllegalStateException("cant create presenter without quizId in fragment args!")
 
     override fun inject() = Toothpick.inject(this, scope)
 
@@ -102,48 +107,51 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         super.onViewCreated(view, savedInstanceState)
 
         chatDelegate = ChatDelegate(
-                chatMessagesView,
-                gameScrollView,
-                myPreferenceManager
+            binding.chatMessagesView,
+            binding.gameScrollView,
+            myPreferenceManager
         )
 
         authDelegate = AuthDelegate(
-                this,
-                presenter,
-                presenter.apiClient,
-                presenter.preferences
+            this,
+            presenter,
+            presenter.apiClient,
+            presenter.preferences
         )
         presenter.authDelegate = authDelegate
         activity?.let { authDelegate.onViewCreated(it) }
 
-        keyboardView.keyPressListener = { char, charId -> presenter.onCharClicked(char, charId) }
+        binding.keyboardView.keyPressListener =
+            { char, charId -> presenter.onCharClicked(char, charId) }
 
-        coinsButton.setOnClickListener { presenter.onCoinsClicked() }
+        binding.coinsButton.setOnClickListener { presenter.onCoinsClicked() }
 
-        hamburgerButton.setOnClickListener { presenter.onHamburgerMenuClicked() }
+        binding.hamburgerButton.setOnClickListener { presenter.onHamburgerMenuClicked() }
 
-        helpButton.setOnClickListener { presenter.onHelpClicked() }
+        binding.helpButton.setOnClickListener { presenter.onHelpClicked() }
 
-        levelNumberTextView.setOnClickListener { presenter.onLevelsClicked() }
+        binding.levelNumberTextView.setOnClickListener { presenter.onLevelsClicked() }
 
-        imageView.setOnClickListener {
+        binding.imageView.setOnClickListener {
             Timber.d("scpNameAndNumber: ${presenter.quizLevelInfo.quiz.scpNumber}/${presenter.quizLevelInfo.quiz.quizTranslations?.first()?.translation}")
         }
 
-        backspaceButton.setOnClickListener {
+        binding.backspaceButton.setOnClickListener {
             val deleteNumberChar = deleteNumberChar@{
-                if (scpNumberFlexBoxLayout.childCount == 0) return@deleteNumberChar
+                if (binding.scpNumberFlexBoxLayout.childCount == 0) return@deleteNumberChar
 
-                val indexOfChild = scpNumberFlexBoxLayout.childCount - 1
-                val charView = scpNumberFlexBoxLayout.getChildAt(indexOfChild) as CharacterView
+                val indexOfChild = binding.scpNumberFlexBoxLayout.childCount - 1
+                val charView =
+                    binding.scpNumberFlexBoxLayout.getChildAt(indexOfChild) as CharacterView
                 presenter.onCharRemovedFromNumber(charView.charId, indexOfChild)
             }
 
             val deleteNameChar = deleteNameChar@{
-                if (scpNameFlexBoxLayout.childCount == 0) return@deleteNameChar
+                if (binding.scpNameFlexBoxLayout.childCount == 0) return@deleteNameChar
 
-                val indexOfChild = scpNameFlexBoxLayout.childCount - 1
-                val charView = scpNameFlexBoxLayout.getChildAt(indexOfChild) as CharacterView
+                val indexOfChild = binding.scpNameFlexBoxLayout.childCount - 1
+                val charView =
+                    binding.scpNameFlexBoxLayout.getChildAt(indexOfChild) as CharacterView
                 presenter.onCharRemovedFromName(charView.charId, indexOfChild)
             }
 
@@ -157,117 +165,131 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
         //ads
         if (myPreferenceManager.isAdsDisabled()) {
-            adView.isEnabled = false
-            adView.visibility = GONE
+            binding.adView.isEnabled = false
+            binding.adView.visibility = GONE
         } else {
-            adView.visibility = VISIBLE
-            adView.isEnabled = true
-            adView.adUnitId = getString(R.string.ad_unit_id_banner)
-            adView.loadAd()
+            binding.adView.visibility = VISIBLE
+            binding.adView.isEnabled = true
+//            adView.adUnitId = getString(R.string.ad_unit_id_banner)
+//            adView.loadAd()
         }
     }
 
     override fun addCharToNameInput(char: Char, charId: Int) {
         Timber.d("addCharToNameInput: $char, $charId")
-        val inputFlexBox = scpNameFlexBoxLayout
+        val inputFlexBox = binding.scpNameFlexBoxLayout
         addCharToFlexBox(
-                char,
-                charId,
-                inputFlexBox,
-                TEXT_SIZE_NAME
+            char,
+            charId,
+            inputFlexBox,
+            TEXT_SIZE_NAME
         ) {
             presenter.quizLevelInfo.finishedLevel.scpNameFilled
         }
-        keyboardView.removeCharView(charId)
+        binding.keyboardView.removeCharView(charId)
     }
 
     override fun addCharToNumberInput(char: Char, charId: Int) {
         Timber.d("addCharToNumberInput: $char, $charId")
-        val inputFlexBox = scpNumberFlexBoxLayout
+        val inputFlexBox = binding.scpNumberFlexBoxLayout
         addCharToFlexBox(
-                char,
-                charId,
-                inputFlexBox,
-                TEXT_SIZE_NUMBER
+            char,
+            charId,
+            inputFlexBox,
+            TEXT_SIZE_NUMBER
         ) {
             presenter.quizLevelInfo.finishedLevel.scpNumberFilled
         }
-        keyboardView.removeCharView(charId)
+        binding.keyboardView.removeCharView(charId)
     }
 
     override fun showLevelNumber(levelNumber: Int) {
-        levelNumberTextView.text = getString(R.string.level, levelNumber)
+        binding.levelNumberTextView.text = getString(R.string.level, levelNumber)
     }
 
     override fun showImage(quiz: Quiz) {
-        with(GlideApp.with(imageView.context)) {
-            if (StorageUtils.ifFileExistsInAssets(quiz.getImageUrl(), imageView.context, "quizImages")) {
+        with(GlideApp.with(binding.imageView.context)) {
+            if (StorageUtils.ifFileExistsInAssets(
+                    quiz.getImageUrl(),
+                    binding.imageView.context,
+                    "quizImages"
+                )
+            ) {
                 load(Uri.parse("file:///android_asset/quizImages/${quiz.getImageUrl()}"))
             } else {
                 load(quiz.imageUrl)
             }
         }
-                .fitCenter()
-                .into(imageView)
+            .fitCenter()
+            .into(binding.imageView)
     }
 
     override fun animateKeyboard() {
-        keyboardScrollView?.postDelayed(
-                {
-                    keyboardScrollView?.apply {
-                        ObjectAnimator
-                                .ofInt(this, "scrollX", this.right)
-                                .setDuration(500)
-                                .start()
-                        val animBack = ObjectAnimator
-                                .ofInt(this, "scrollX", 0)
-                                .setDuration(500)
+        binding.keyboardScrollView?.postDelayed(
+            {
+                binding.keyboardScrollView?.apply {
+                    ObjectAnimator
+                        .ofInt(this, "scrollX", this.right)
+                        .setDuration(500)
+                        .start()
+                    val animBack = ObjectAnimator
+                        .ofInt(this, "scrollX", 0)
+                        .setDuration(500)
 
-                        animBack.startDelay = 500
-                        animBack.start()
-                    }
-                },
-                100
+                    animBack.startDelay = 500
+                    animBack.start()
+                }
+            },
+            100
         )
     }
 
-    override fun setBackgroundDark(showDark: Boolean) = root.setBackgroundResource(
-            if (showDark) R.color.backgroundColorLevelCompleted
-            else R.color.backgroundColor
+    override fun setBackgroundDark(showDark: Boolean) = binding.root.setBackgroundResource(
+        if (showDark) R.color.backgroundColorLevelCompleted
+        else R.color.backgroundColor
     )
 
     override fun showToolbar(show: Boolean) {
         val visibility = if (show) VISIBLE else INVISIBLE
-        hamburgerButton.visibility = visibility
-        levelNumberTextView.visibility = visibility
-        coinsButton.visibility = visibility
+        binding.hamburgerButton.visibility = visibility
+        binding.levelNumberTextView.visibility = visibility
+        binding.coinsButton.visibility = visibility
     }
 
     override fun showHelpButton(show: Boolean) {
-        helpButton.visibility = if (show) VISIBLE else GONE
+        binding.helpButton.visibility = if (show) VISIBLE else GONE
     }
 
     override fun showCoins(coins: Int) {
-        val animator = ValueAnimator.ofInt(coinsValueTextView.text.toString().toInt(), coins)
+        val animator =
+            ValueAnimator.ofInt(binding.coinsValueTextView.text.toString().toInt(), coins)
         animator.duration = 1000
-        animator.addUpdateListener { animation -> coinsValueTextView?.text = animation.animatedValue.toString() }
+        animator.addUpdateListener { animation ->
+            if (isAdded) {
+                binding.coinsValueTextView?.text = animation.animatedValue.toString()
+            }
+        }
         animator.start()
     }
 
-    override fun showNumber(number: List<Char>) = with(scpNumberFlexBoxLayout) {
+    override fun showNumber(number: List<Char>) = with(binding.scpNumberFlexBoxLayout) {
         removeAllViews()
         number.forEach {
             addCharToFlexBox(
-                    char = it,
-                    flexBoxContainer = this,
-                    textSize = TEXT_SIZE_NUMBER) { presenter.quizLevelInfo.finishedLevel.scpNumberFilled }
+                char = it,
+                flexBoxContainer = this,
+                textSize = TEXT_SIZE_NUMBER
+            ) { presenter.quizLevelInfo.finishedLevel.scpNumberFilled }
         }
     }
 
-    override fun showName(name: List<Char>) = with(scpNameFlexBoxLayout) {
+    override fun showName(name: List<Char>) = with(binding.scpNameFlexBoxLayout) {
         removeAllViews()
         name.forEach { char ->
-            addCharToFlexBox(char, flexBoxContainer = this) { presenter.quizLevelInfo.finishedLevel.scpNameFilled }
+            addCharToFlexBox(
+                char,
+                flexBoxContainer = this
+            ) { presenter.quizLevelInfo.finishedLevel.scpNameFilled }
         }
     }
 
@@ -277,17 +299,18 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     private fun addCharToFlexBox(
-            char: Char,
-            charId: Int = NO_ID,
-            flexBoxContainer: FlexboxLayout,
-            textSize: Float = TEXT_SIZE_NAME,
-            shouldIgnoreClick: () -> Boolean
+        char: Char,
+        charId: Int = NO_ID,
+        flexBoxContainer: FlexboxLayout,
+        textSize: Float = TEXT_SIZE_NAME,
+        shouldIgnoreClick: () -> Boolean
     ) {
         val characterView = CharacterView(flexBoxContainer.context)
         characterView.isSquare = false
         characterView.text = char.toString()
         characterView.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize)
-        characterView.background = ContextCompat.getDrawable(flexBoxContainer.context, android.R.color.transparent)
+        characterView.background =
+            ContextCompat.getDrawable(flexBoxContainer.context, android.R.color.transparent)
         characterView.charId = charId
 
         characterView.setOnClickListener {
@@ -296,12 +319,13 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
                     SystemUtils.vibrate()
                 }
                 Timber.d(
-                        """
+                    """
                     char: $char,
                     flexBoxContainer.indexOfChild(it): ${flexBoxContainer.indexOfChild(it)}
                     flexBoxContainer.childCount: ${flexBoxContainer.childCount}
-                """.trimIndent())
-                if (flexBoxContainer == scpNameFlexBoxLayout) {
+                """.trimIndent()
+                )
+                if (flexBoxContainer == binding.scpNameFlexBoxLayout) {
                     presenter.onCharRemovedFromName(charId, flexBoxContainer.indexOfChild(it))
                 } else {
                     presenter.onCharRemovedFromNumber(charId, flexBoxContainer.indexOfChild(it))
@@ -319,29 +343,32 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
 
     override fun removeCharFromNameInput(charId: Int, indexOfChild: Int) {
         Timber.d("removeCharFromNameInput: $charId, $indexOfChild")
-        val inputFlexBox = scpNameFlexBoxLayout
+        val inputFlexBox = binding.scpNameFlexBoxLayout
         Timber.d("inputFlexBox: ${inputFlexBox == null}")
         Timber.d("inputFlexBox childs: ${inputFlexBox.childCount}")
         Timber.d("inputFlexBox childs: ${inputFlexBox.childCount}")
         if (inputFlexBox.getChildAt(indexOfChild) != null) {
             inputFlexBox.removeViewAt(indexOfChild)
-            keyboardView.restoreChar(charId)
+            binding.keyboardView.restoreChar(charId)
         }
     }
 
     override fun removeCharFromNumberInput(charId: Int, indexOfChild: Int) {
         Timber.d("removeCharFromNameInput: $charId, $indexOfChild")
-        val inputFlexBox = scpNumberFlexBoxLayout
+        val inputFlexBox = binding.scpNumberFlexBoxLayout
         Timber.d("inputFlexBox: ${inputFlexBox == null}")
         Timber.d("inputFlexBox childs: ${inputFlexBox.childCount}")
         Timber.d("inputFlexBox childs: ${inputFlexBox.childCount}")
         if (inputFlexBox.getChildAt(indexOfChild) != null) {
             inputFlexBox.removeViewAt(indexOfChild)
-            keyboardView.restoreChar(charId)
+            binding.keyboardView.restoreChar(charId)
         }
     }
 
-    override fun showChatActions(chatActions: List<ChatAction>, chatActionsGroupType: ChatActionsGroupType) {
+    override fun showChatActions(
+        chatActions: List<ChatAction>,
+        chatActionsGroupType: ChatActionsGroupType
+    ) {
         if (!isAdded) {
             return
         }
@@ -356,11 +383,11 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
     }
 
     override fun showKeyboard(show: Boolean) {
-        keyboardScrollView.visibility = if (show) VISIBLE else GONE
+        binding.keyboardScrollView.visibility = if (show) VISIBLE else GONE
     }
 
     override fun setKeyboardChars(characters: List<Char>) {
-        keyboardView?.setCharacters(characters)
+        binding.keyboardView?.setCharacters(characters)
     }
 
     override fun showChatMessage(message: String, user: User) {
@@ -368,20 +395,24 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
             return
         }
         chatDelegate.showChatMessage(
-                message,
-                user,
-                R.color.textColorGrey
+            message,
+            user,
+            R.color.textColorGrey
         )
     }
 
     override fun askForRateApp() = PreRate.init(
-            activity,
-            getString(R.string.feedback_email),
-            getString(R.string.feedback_title)
+        activity,
+        getString(R.string.feedback_email),
+        getString(R.string.feedback_title)
     ).showRateDialog()
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        presenter.onActivityResult(requestCode, resultCode, data)
+        if (data != null) {
+            presenter.onActivityResult(requestCode, resultCode, data)
+        } else {
+            showMessage("Intent is null $requestCode")
+        }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -390,33 +421,33 @@ class GameFragment : BaseFragment<GameView, GamePresenter>(), GameView {
         authDelegate.onPause()
     }
 
-    override fun clearChatMessages() = chatMessagesView.removeAllViews()
+    override fun clearChatMessages() = binding.chatMessagesView.removeAllViews()
 
     override fun onNeedToOpenSettings() {
-        BitmapUtils.loadBitmapFromView(root)?.let { presenter.openSettings(it) }
+        BitmapUtils.loadBitmapFromView(binding.root)?.let { presenter.openSettings(it) }
     }
 
     override fun onNeedToOpenCoins() {
-        BitmapUtils.loadBitmapFromView(root)?.let { presenter.openCoins(it) }
+        BitmapUtils.loadBitmapFromView(binding.root)?.let { presenter.openCoins(it) }
     }
 
     override fun showBackspaceButton(show: Boolean) {
         Timber.d("showBackspaceButton: $show")
         if (show) {
-            backspaceButton.show()
+            binding.backspaceButton.show()
         } else {
-            backspaceButton.hide()
+            binding.backspaceButton.hide()
         }
     }
 
     override fun showError(error: Throwable) = Snackbar.make(
-            root,
-            error.message ?: getString(R.string.error_unknown),
-            Snackbar.LENGTH_LONG
+        binding.root,
+        error.message ?: getString(R.string.error_unknown),
+        Snackbar.LENGTH_LONG
     ).show()
 
     override fun showProgress(show: Boolean) {
-        progressView.visibility = if (show) VISIBLE else GONE
+        binding.progressView.visibility = if (show) VISIBLE else GONE
     }
 
     override fun onNeedToShowRewardedVideo() = (activity as BaseActivity<*, *>).showRewardedVideo()

@@ -2,9 +2,11 @@ package com.scp.scpexam.ui.fragment.monetization
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hannesdorfmann.adapterdelegates3.AdapterDelegatesManager
@@ -15,6 +17,7 @@ import com.scp.scpexam.controller.adapter.MyListItem
 import com.scp.scpexam.controller.adapter.delegate.MonetizationDelegate
 import com.scp.scpexam.controller.adapter.delegate.MonetizationHeaderDelegate
 import com.scp.scpexam.controller.manager.monetization.BillingDelegate
+import com.scp.scpexam.databinding.FragmentMonetizationBinding
 import com.scp.scpexam.mvp.presenter.monetization.MonetizationPresenter
 import com.scp.scpexam.mvp.view.monetization.MonetizationView
 import com.scp.scpexam.ui.BaseActivity
@@ -22,7 +25,6 @@ import com.scp.scpexam.ui.BaseFragment
 import com.scp.scpexam.ui.utils.AuthDelegate
 import com.scp.scpexam.utils.BitmapUtils
 import jp.wasabeef.blurry.Blurry
-import kotlinx.android.synthetic.main.fragment_monetization.*
 import moxy.presenter.InjectPresenter
 import moxy.presenter.ProvidePresenter
 import timber.log.Timber
@@ -30,7 +32,12 @@ import toothpick.Toothpick
 import toothpick.config.Module
 
 
-class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresenter>(), MonetizationView {
+class MonetizationFragment :
+    BaseFragment<MonetizationView, MonetizationPresenter, FragmentMonetizationBinding>(),
+    MonetizationView {
+
+    override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentMonetizationBinding
+        get() = FragmentMonetizationBinding::inflate
 
     companion object {
         fun newInstance() = MonetizationFragment()
@@ -46,7 +53,8 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
     override lateinit var presenter: MonetizationPresenter
 
     @ProvidePresenter
-    override fun providePresenter(): MonetizationPresenter = scope.getInstance(MonetizationPresenter::class.java)
+    override fun providePresenter(): MonetizationPresenter =
+        scope.getInstance(MonetizationPresenter::class.java)
 
     override fun inject() = Toothpick.inject(this, scope)
 
@@ -61,40 +69,44 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
 
         //todo move to delegate
         val bitmap = BitmapUtils.fileToBitmap(
-                "${activity?.cacheDir}/${Constants.SETTINGS_BACKGROUND_FILE_NAME}.png"
+            "${activity?.cacheDir}/${Constants.SETTINGS_BACKGROUND_FILE_NAME}.png"
         )
 
-        backgroundImageView.post {
+        binding.backgroundImageView.post {
             Blurry.with(context)
-                    .async()
-                    .animate(500)
-                    .from(bitmap)
-                    .into(backgroundImageView)
+                .async()
+                .animate(500)
+                .from(bitmap)
+                .into(binding.backgroundImageView)
         }
 
         initRecyclerView()
 
-        toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
+        binding.toolbar.setNavigationOnClickListener { presenter.onNavigationIconClicked() }
 
-        swipeRefresher.setOnRefreshListener {
-            swipeRefresher.isRefreshing = false
+        binding.swipeRefresher.setOnRefreshListener {
+            binding.swipeRefresher.isRefreshing = false
             presenter.loadInAppsToBuy(true)
         }
 
         presenter.billingDelegate = BillingDelegate(activity as AppCompatActivity, this, presenter)
 
         authDelegate = AuthDelegate(
-                this,
-                presenter,
-                presenter.apiClient,
-                presenter.preferences
+            this,
+            presenter,
+            presenter.apiClient,
+            presenter.preferences
         )
         presenter.authDelegate = authDelegate
         activity?.let { authDelegate.onViewCreated(it) }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        presenter.onActivityResult(requestCode, resultCode, data)
+        if (data != null) {
+            presenter.onActivityResult(requestCode, resultCode, data)
+        } else {
+            showMessage("Intent is null $requestCode")
+        }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -115,9 +127,9 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
     }
 
     private fun initRecyclerView() {
-        recyclerView.layoutManager = LinearLayoutManager(activity)
+        binding.recyclerView.layoutManager = LinearLayoutManager(activity)
         val delegateManager = AdapterDelegatesManager<List<MyListItem>>()
-        delegateManager.addDelegate(MonetizationHeaderDelegate{
+        delegateManager.addDelegate(MonetizationHeaderDelegate {
             Timber.d("$it")
             when (it) {
                 Constants.Social.VK -> presenter.onVkLoginClicked()
@@ -127,15 +139,15 @@ class MonetizationFragment : BaseFragment<MonetizationView, MonetizationPresente
         })
         delegateManager.addDelegate(MonetizationDelegate { presenter.onOwnedItemClicked(it) })
         adapter = ListDelegationAdapter(delegateManager)
-        recyclerView.adapter = adapter
+        binding.recyclerView.adapter = adapter
     }
 
     override fun onNeedToShowRewardedVideo() = (activity as BaseActivity<*, *>).showRewardedVideo()
 
     override fun showProgress(show: Boolean) {
-        progressView.visibility = if (show) VISIBLE else GONE
+        binding.progressView.visibility = if (show) VISIBLE else GONE
     }
 
-    override fun scrollToTop() = recyclerView.scrollToPosition(0)
+    override fun scrollToTop() = binding.recyclerView.scrollToPosition(0)
 
 }
