@@ -35,14 +35,21 @@ import javax.inject.Inject
 
 @InjectViewState
 class MonetizationPresenter @Inject constructor(
-        override var appContext: Application,
-        override var preferences: MyPreferenceManager,
-        override var router: Router,
-        override var appDatabase: AppDatabase,
-        public override var apiClient: ApiClient,
-        override var transactionInteractor: TransactionInteractor
-) : BasePresenter<MonetizationView>(appContext, preferences, router, appDatabase, apiClient, transactionInteractor),
-        AuthPresenter<MonetizationFragment> {
+    override var appContext: Application,
+    override var preferences: MyPreferenceManager,
+    override var router: Router,
+    override var appDatabase: AppDatabase,
+    public override var apiClient: ApiClient,
+    override var transactionInteractor: TransactionInteractor
+) : BasePresenter<MonetizationView>(
+    appContext,
+    preferences,
+    router,
+    appDatabase,
+    apiClient,
+    transactionInteractor
+),
+    AuthPresenter<MonetizationFragment> {
 
     var billingDelegate: BillingDelegate? = null
 
@@ -93,22 +100,24 @@ class MonetizationPresenter @Inject constructor(
         if (force) {
             billingDelegate?.apply {
                 userInAppHistory()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnSubscribe { view?.showProgress(true) }
-                        .doOnEvent { _, _ -> view?.showProgress(false) }
-                        .subscribeBy(
-                                onSuccess = {
-                                    Timber.d("loadInAppsToBuy force: $it")
-                                    onBillingClientReady()
-                                },
-                                onError = {
-                                    Timber.e(it, "error while force update users purchases")
-                                    view?.showMessage(it.message
-                                            ?: context.getString(R.string.error_unexpected))
-                                }
-                        )
-                        .addTo(compositeDisposable)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe { view?.showProgress(true) }
+                    .doOnEvent { _, _ -> view?.showProgress(false) }
+                    .subscribeBy(
+                        onSuccess = {
+                            Timber.d("loadInAppsToBuy force: $it")
+                            onBillingClientReady()
+                        },
+                        onError = {
+                            Timber.e(it, "error while force update users purchases")
+                            view?.showMessage(
+                                it.message
+                                    ?: context.getString(R.string.error_unexpected)
+                            )
+                        }
+                    )
+                    .addTo(compositeDisposable)
             }
         } else {
             onBillingClientReady()
@@ -121,111 +130,126 @@ class MonetizationPresenter @Inject constructor(
 
     fun onBillingClientReady() {
         Flowable
-                .combineLatest(
-                        appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
-                        billingDelegate!!.loadInAppsToBuy().toFlowable(),
-                        billingDelegate!!.getAllUserOwnedPurchases()
-                                .doOnSuccess { purchaseList ->
-                                    purchaseList.filter { it.sku != Constants.SKU_INAPP_DISABLE_ADS }.forEach {
-                                        billingDelegate?.writeAndConsumePurchase(it)
-                                                ?.subscribeOn(Schedulers.io())
-                                                ?.observeOn(AndroidSchedulers.mainThread())
-                                                ?.subscribeBy(
-                                                        onComplete = {
-                                                            Timber.d("Purchase consumed: $it")
-                                                        },
-                                                        onError = {
-                                                            Timber.e(it)
-                                                        }
-                                                )
-                                    }
-                                }
-                                .toFlowable(),
-                        Function3 { player: User, listSkuDetails: List<SkuDetails>, allUsersOwnedPurchases: List<Purchase> ->
-                            Triple(player, listSkuDetails, allUsersOwnedPurchases)
-                        }
-                )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { viewState?.showProgress(true) }
-                .doOnNext { viewState.showProgress(false) }
-                .subscribeBy(
-                        onNext = { tripple ->
-                            val disableAdsInApp = tripple.third.firstOrNull { it.sku == Constants.SKU_INAPP_DISABLE_ADS }
-                            preferences.disableAds(disableAdsInApp != null)
-
-                            monetizationItems.clear()
-                            monetizationItems += MonetizationHeaderViewModel(tripple.first, preferences.getTrueAccessToken().isNullOrEmpty())
-                            monetizationItems += MonetizationViewModel(
-                                    R.drawable.ic_no_money,
-                                    appContext.getString(R.string.monetization_action_appodeal_title),
-                                    appContext.getString(R.string.monetization_action_appodeal_description, Constants.REWARD_VIDEO_ADS),
-                                    "FREE",
-                                    null,
-                                    false
-                            ) { showAppodealAds() }
-
-                            monetizationItems += tripple.second.map { skuDetails ->
-                                MonetizationViewModel(
-                                        if (skuDetails.sku == Constants.SKU_INAPP_DISABLE_ADS) {
-                                            R.drawable.ic_adblock
-                                        } else {
-                                            R.drawable.ic_coin
+            .combineLatest(
+                appDatabase.userDao().getByRoleWithUpdates(UserRole.PLAYER).map { it.first() },
+                billingDelegate!!.loadInAppsToBuy().toFlowable(),
+                billingDelegate!!.getAllUserOwnedPurchases()
+                    .doOnSuccess { purchaseList ->
+                        purchaseList.filter { it.products.first() != Constants.SKU_INAPP_DISABLE_ADS }
+                            .forEach {
+                                billingDelegate?.writeAndConsumePurchase(it)
+                                    ?.subscribeOn(Schedulers.io())
+                                    ?.observeOn(AndroidSchedulers.mainThread())
+                                    ?.subscribeBy(
+                                        onComplete = {
+                                            Timber.d("Purchase consumed: $it")
+                                        },
+                                        onError = {
+                                            Timber.e(it)
                                         }
-                                        ,
-                                        skuDetails.title,
-                                        skuDetails.description,
-                                        skuDetails.price,
-                                        skuDetails.sku,
-                                        if (skuDetails.sku == Constants.SKU_INAPP_DISABLE_ADS) {
-                                            disableAdsInApp != null
-                                        } else {
-                                            false
-                                        }
-                                ) { buyInApp(skuDetails.sku) }
+                                    )
+                                    ?.addTo(compositeDisposable)
                             }
+                    }
+                    .toFlowable(),
+                Function3 { player: User, listSkuDetails: List<SkuDetails>, allUsersOwnedPurchases: List<Purchase> ->
+                    Triple(player, listSkuDetails, allUsersOwnedPurchases)
+                }
+            )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { viewState?.showProgress(true) }
+            .doOnNext { viewState.showProgress(false) }
+            .subscribeBy(
+                onNext = { tripple ->
+                    val disableAdsInApp =
+                        tripple.third.firstOrNull { it.products.first() == Constants.SKU_INAPP_DISABLE_ADS }
+                    preferences.disableAds(disableAdsInApp != null)
 
-                            viewState.showMonetizationActions(monetizationItems)
+                    monetizationItems.clear()
+                    monetizationItems += MonetizationHeaderViewModel(
+                        tripple.first,
+                        preferences.getTrueAccessToken().isNullOrEmpty()
+                    )
+                    monetizationItems += MonetizationViewModel(
+                        R.drawable.ic_no_money,
+                        appContext.getString(R.string.monetization_action_appodeal_title),
+                        appContext.getString(
+                            R.string.monetization_action_appodeal_description,
+                            Constants.REWARD_VIDEO_ADS
+                        ),
+                        "FREE",
+                        null,
+                        false
+                    ) { showAppodealAds() }
 
-                        },
-                        onError = {
-                            Timber.e(it)
-                            viewState.showProgress(false)
-                            viewState.showMessage(it.message
-                                    ?: appContext.getString(R.string.error_unknown))
-                        }
-                )
-                .addTo(compositeDisposable)
+                    monetizationItems += tripple.second.map { skuDetails ->
+                        MonetizationViewModel(
+                            if (skuDetails.sku == Constants.SKU_INAPP_DISABLE_ADS) {
+                                R.drawable.ic_adblock
+                            } else {
+                                R.drawable.ic_coin
+                            },
+                            skuDetails.title,
+                            skuDetails.description,
+                            skuDetails.price,
+                            skuDetails.sku,
+                            if (skuDetails.sku == Constants.SKU_INAPP_DISABLE_ADS) {
+                                disableAdsInApp != null
+                            } else {
+                                false
+                            }
+                        ) { buyInApp(skuDetails.sku) }
+                    }
+
+                    viewState.showMonetizationActions(monetizationItems)
+
+                },
+                onError = {
+                    Timber.e(it)
+                    viewState.showProgress(false)
+                    viewState.showMessage(
+                        it.message
+                            ?: appContext.getString(R.string.error_unknown)
+                    )
+                }
+            )
+            .addTo(compositeDisposable)
     }
 
     fun onBillingClientFailedToStart(@BillingClient.BillingResponseCode billingResponseCode: Int) {
         viewState.showProgress(false)
-        viewState.showMessage(appContext.getString(R.string.error_billing_client_connection, billingResponseCode))
+        viewState.showMessage(
+            appContext.getString(
+                R.string.error_billing_client_connection,
+                billingResponseCode
+            )
+        )
     }
 
     fun onOwnedItemClicked(sku: String) {
-        if (preferences.getTrueAccessToken().isNullOrEmpty()){
+        if (preferences.getTrueAccessToken().isNullOrEmpty()) {
             viewState.showMessage(R.string.need_to_login)
             viewState.scrollToTop()
         } else {
             billingDelegate?.apply {
                 consumeInAppIfUserHasIt(sku)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doOnSubscribe { view?.showProgress(true) }
-                        .doOnEvent { view?.showProgress(false) }
-                        .subscribeBy(
-                                onComplete = {
-                                    Timber.d("Successfully consume in app")
-                                    view?.showMessage("Successfully consume inApp!")
-                                    loadInAppsToBuy(true)
-                                },
-                                onError = {
-                                    Timber.e(it, "Error while consume inApp")
-                                    view?.showMessage("Error while consume inApp: ${it.message}")
-                                }
-                        )
-                        .addTo(compositeDisposable)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe { view?.showProgress(true) }
+                    .doOnEvent { view?.showProgress(false) }
+                    .subscribeBy(
+                        onComplete = {
+                            Timber.d("Successfully consume in app")
+                            view?.showMessage("Successfully consume inApp!")
+                            loadInAppsToBuy(true)
+                        },
+                        onError = {
+                            Timber.e(it, "Error while consume inApp")
+                            view?.showMessage("Error while consume inApp: ${it.message}")
+                        }
+                    )
+                    .addTo(compositeDisposable)
             }
         }
     }

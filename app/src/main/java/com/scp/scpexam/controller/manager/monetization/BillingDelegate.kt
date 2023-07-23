@@ -50,7 +50,7 @@ class BillingDelegate(
     lateinit var appDatabase: AppDatabase
 
     private var billingClient: BillingClient =
-        BillingClient.newBuilder(activity!!).setListener(this).build()
+        BillingClient.newBuilder(activity!!).enablePendingPurchases().setListener(this).build()
 
     private var clientReady = false
 
@@ -331,24 +331,34 @@ class BillingDelegate(
 
     fun getAllUserOwnedPurchases(): Single<List<Purchase>> =
         Single
-            .fromCallable {
+            .create {
                 if (clientReady) {
-//                    TODO async
-                    billingClient.queryPurchases(BillingClient.SkuType.INAPP)
+                    billingClient
+                        .queryPurchasesAsync(BillingClient.SkuType.INAPP) { billingResult, purchases ->
+                            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                                it.onSuccess(purchases)
+                            } else {
+                                it.onError(IllegalStateException())
+                            }
+                        }
                 } else {
-                    throw IllegalStateException(context.getString(R.string.error_billing_client_not_ready))
+                    it.onError(
+                        IllegalStateException(
+                            context.getString(R.string.error_billing_client_not_ready)
+                        )
+                    )
                 }
             }
-            .flatMap { purchasesResult ->
-                Timber.d("purchasesResult: ${purchasesResult.purchasesList}")
+            .flatMap { purchases ->
+                Timber.d("purchases: $purchases")
 
-                if (purchasesResult.purchasesList == null) {
+                if (purchases.isEmpty()) {
                     Single.just(listOf())
                 } else {
-                    Flowable.fromIterable(purchasesResult.purchasesList)
+                    Flowable.fromIterable(purchases)
                         .flatMapSingle { purchase ->
                             apiClient
-                                .validateInApp(purchase.sku, purchase.purchaseToken)
+                                .validateInApp(purchase.products.first(), purchase.purchaseToken)
                                 .doOnSuccess { Timber.d("getAllUserOwnedPurchases validateInApp doOnSuccess: $it") }
                                 .map { Pair(purchase, it == VALID) }
                         }
@@ -362,17 +372,19 @@ class BillingDelegate(
 
     fun consumeInAppIfUserHasIt(sku: String): Completable =
         userInAppHistory()
-            .map { inApps -> inApps.first { it.sku == sku }.purchaseToken }
+            .map { inApps -> inApps.first { it.products.first() == sku }.purchaseToken }
             .flatMapCompletable { consumeInApp(it) }
 
     @Suppress("UNUSED_ANONYMOUS_PARAMETER")
     private fun consumeInApp(purchaseTokenToConsume: String): Completable =
         Completable.create {
             if (clientReady) {
-                billingClient.consumeAsync(purchaseTokenToConsume) { responseCode, purchaseToken ->
-                    when (responseCode) {
-                        BillingClient.BillingResponse.OK -> it.onComplete()
-                        else -> it.onError(IllegalStateException("Error while consume inapp. Code: $responseCode"))
+                billingClient.consumeAsync(
+                    ConsumeParams.newBuilder().setPurchaseToken(purchaseTokenToConsume).build()
+                ) { billingResult, purchaseToken ->
+                    when (billingResult.responseCode) {
+                        BillingClient.BillingResponseCode.OK -> it.onComplete()
+                        else -> it.onError(IllegalStateException("Error while consume inapp. Code: $billingResult"))
                     }
                 }
             } else {
@@ -380,13 +392,13 @@ class BillingDelegate(
             }
         }
 
-    fun userInAppHistory(): Single<List<Purchase>> =
+    fun userInAppHistory(): Single<List<PurchaseHistoryRecord>> =
         Single.create {
             if (clientReady) {
-                billingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.INAPP) { responseCode, purchasesList ->
-                    when (responseCode) {
-                        BillingClient.BillingResponse.OK -> it.onSuccess(purchasesList)
-                        else -> it.onError(IllegalStateException("Error while get userInAppHistory. Code: $responseCode"))
+                billingClient.queryPurchaseHistoryAsync(BillingClient.SkuType.INAPP) { billingResult, purchasesList ->
+                    when (billingResult.responseCode) {
+                        BillingClient.BillingResponseCode.OK -> it.onSuccess(purchasesList!!)
+                        else -> it.onError(IllegalStateException("Error while get userInAppHistory. Code: $billingResult"))
                     }
                 }
             } else {
