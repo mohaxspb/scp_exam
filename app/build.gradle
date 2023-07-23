@@ -238,7 +238,7 @@ dependencies {
     implementation 'jp.wasabeef:blurry:2.1.1'
 
     //inapp
-    implementation 'com.android.billingclient:billing:1.2'
+    implementation 'com.android.billingclient:billing:6.0.1'
 
     //rate app
 //    implementation('com.scp.scpexam.utils:rate:1.2.1@aar') { transitive = true }
