@@ -2,25 +2,32 @@ package com.scp.scpexam.ui
 
 import android.os.Build
 import android.os.Bundle
-import androidx.annotation.LayoutRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Toast
-import moxy.MvpAppCompatFragment
-import moxy.MvpPresenter
+import androidx.annotation.LayoutRes
+import androidx.viewbinding.ViewBinding
 import com.scp.scpexam.di.Di
 import com.scp.scpexam.mvp.BaseView
+import moxy.MvpAppCompatFragment
+import moxy.MvpPresenter
 import toothpick.Scope
 import toothpick.Toothpick
 import toothpick.config.Module
 
-abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFragment(), BaseView {
+abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>, VB : ViewBinding> :
+    MvpAppCompatFragment(), BaseView {
 
     abstract val scopes: Array<String>
 
     abstract val modules: Array<out Module>
+
+    private var _binding: VB? = null
+    abstract val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> VB
+    protected val binding: VB
+        get() = _binding as VB
 
     /**
      * your fragment scope, which constructs from [scopes]
@@ -57,8 +64,15 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-            inflater.inflate(getLayoutResId(), container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = bindingInflater(inflater, container, false)
+        return binding.root
+    }
+
 
     abstract val translucent: Boolean
 
@@ -83,15 +97,16 @@ abstract class BaseFragment<V : BaseView, P : MvpPresenter<V>> : MvpAppCompatFra
     override fun onDestroyView() {
         super.onDestroyView()
         scopes.forEach { Toothpick.closeScope(it) }
+        _binding = null
     }
 
     private fun applyStatusBarTranslucence(translucent: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val w = activity!!.window
+            val w = requireActivity().window
             if (translucent) {
                 w.setFlags(
-                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
-                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
                 )
             } else {
                 w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)

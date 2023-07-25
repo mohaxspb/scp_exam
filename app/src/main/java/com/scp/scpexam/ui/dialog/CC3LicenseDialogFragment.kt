@@ -27,7 +27,7 @@ class CC3LicenseDialogFragment : androidx.fragment.app.DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         //icons from https://github.com/hjnilsson/country-flags/tree/master/svg
 
-        val dialogTextSizeBuilder = MaterialDialog.Builder(activity!!)
+        val dialogTextSizeBuilder = MaterialDialog.Builder(requireActivity())
         dialogTextSizeBuilder
                 .customView(R.layout.dialog_cc3_license, false)
                 .title(R.string.attention)

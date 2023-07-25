@@ -36,20 +36,33 @@ class AutoSyncReceiver : BroadcastReceiver() {
             cancelAlarm(context)
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val syncIntent = Intent(context, AutoSyncReceiver::class.java)
-            val pendingSyncIntent = PendingIntent.getBroadcast(context, 0, syncIntent, 0)
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), Constants.SYNC_PERIOD, pendingSyncIntent)
+            val pendingSyncIntent =
+                PendingIntent.getBroadcast(context, 0, syncIntent, PendingIntent.FLAG_IMMUTABLE)
+            alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis(),
+                Constants.SYNC_PERIOD,
+                pendingSyncIntent
+            )
         }
 
         private fun cancelAlarm(context: Context) {
             val intent = Intent(context, AutoSyncReceiver::class.java)
-            val sender = PendingIntent.getBroadcast(context, 0, intent, 0)
+            val sender =
+                PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             alarmManager.cancel(sender)
         }
 
         fun isAlarmSet(context: Context): Boolean {
             val intent = Intent(context, AutoSyncReceiver::class.java)
-            val pendingIntent = PendingIntent.getBroadcast(context,0, intent, PendingIntent.FLAG_NO_CREATE)
+            val pendingIntent =
+                PendingIntent.getBroadcast(
+                    context,
+                    0,
+                    intent,
+                    PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
+                )
             return pendingIntent != null
         }
     }

@@ -95,7 +95,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent">
 
-        <include layout="@layout/item_leaderboard" />
+        <include layout="@layout/item_leaderboard"
+            android:id="@+id/itemLeaderboard"/>
 
     </FrameLayout>
 

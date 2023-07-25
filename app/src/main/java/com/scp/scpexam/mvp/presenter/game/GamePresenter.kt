@@ -99,7 +99,7 @@ class GamePresenter @Inject constructor(
         loadLevel()
     }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         authDelegate.onActivityResult(requestCode, resultCode, data)
     }
 

@@ -10,7 +10,12 @@ import com.scp.scpexam.di.module.AppModule
 import com.scp.scpexam.model.db.QuizTransaction
 import com.scp.scpexam.model.db.TransactionType
 import com.scp.scpexam.model.db.UserRole
-import com.vk.sdk.VKSdk
+import com.scp.scpexam.utils.MyProvider
+import com.vk.api.sdk.VK
+import com.vk.api.sdk.VKApiConfig
+import com.vk.api.sdk.VKDefaultValidationHandler
+import com.vk.api.sdk.utils.log.DefaultApiLogger
+import com.vk.api.sdk.utils.log.Logger
 import com.yandex.metrica.YandexMetrica
 import com.yandex.metrica.YandexMetricaConfig
 import io.reactivex.Completable
@@ -46,7 +51,19 @@ class App : MultiDexApplication() {
         initDi()
         initYandexMetrica()
         Toothpick.inject(this, Toothpick.openScope(Di.Scope.APP))
-        VKSdk.initialize(this)
+//        VK.initialize(this)
+        VK.setConfig(
+            VKApiConfig(
+                logger = DefaultApiLogger(
+                    logLevel = lazy { Logger.LogLevel.DEBUG },
+                    "VKSdkApi"
+                ),
+                context = this,
+                appId = VK.getAppId(this),
+                validationHandler = VKDefaultValidationHandler(this),
+                okHttpProvider = MyProvider()
+            )
+        )
         FacebookSdk.sdkInitialize(applicationContext)
         AppEventsLogger.activateApp(this)
         initScore()
@@ -66,11 +83,11 @@ class App : MultiDexApplication() {
 
     private fun initDi() {
         Toothpick
-                .openScope(Di.Scope.APP)
-                .installModules(
-                        SmoothieApplicationModule(this),
-                        AppModule(this)
-                )
+            .openScope(Di.Scope.APP)
+            .installModules(
+                SmoothieApplicationModule(this),
+                AppModule(this)
+            )
 
         if (BuildConfig.DEBUG) {
             Toothpick.setConfiguration(Configuration.forDevelopment())
@@ -79,26 +96,33 @@ class App : MultiDexApplication() {
 
     private fun initScore() {
         Completable.fromCallable {
-            if (appDatabase.transactionDao().getOneByTypeNoReactive(TransactionType.UPDATE_SYNC) == null) {
+            if (appDatabase.transactionDao()
+                    .getOneByTypeNoReactive(TransactionType.UPDATE_SYNC) == null
+            ) {
                 val quizTransaction = QuizTransaction(
-                        quizId = null,
-                        transactionType = TransactionType.UPDATE_SYNC,
-                        coinsAmount = appDatabase.userDao().getOneByRoleSync(UserRole.PLAYER)?.score
-                                ?: 0
+                    quizId = null,
+                    transactionType = TransactionType.UPDATE_SYNC,
+                    coinsAmount = appDatabase.userDao().getOneByRoleSync(UserRole.PLAYER)?.score
+                        ?: 0
                 )
                 appDatabase.transactionDao().insert(quizTransaction)
             }
         }
-                .doOnComplete { Timber.d("DEFAULT transaction after entering APP:%s", appDatabase.transactionDao().getAllList()) }
-                .doOnError { Timber.e(it, "On Error init SCORE") }
-                .onErrorComplete()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onComplete = { Timber.d("Success sync score") },
-                        onError = {
-                            Timber.e(it)
-                        }
+            .doOnComplete {
+                Timber.d(
+                    "DEFAULT transaction after entering APP:%s",
+                    appDatabase.transactionDao().getAllList()
                 )
+            }
+            .doOnError { Timber.e(it, "On Error init SCORE") }
+            .onErrorComplete()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onComplete = { Timber.d("Success sync score") },
+                onError = {
+                    Timber.e(it)
+                }
+            )
     }
 }
