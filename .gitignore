@@ -10,4 +10,4 @@ google-services.json
 /config
 keystore.properties
 *.keystore
-release.jks
+scpquiz.jks
