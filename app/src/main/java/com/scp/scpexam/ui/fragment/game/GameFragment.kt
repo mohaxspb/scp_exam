@@ -225,22 +225,24 @@ class GameFragment : BaseFragment<GameView, GamePresenter, FragmentGameBinding>(
     }
 
     override fun animateKeyboard() {
-        binding.keyboardScrollView?.postDelayed(
+        binding.keyboardScrollView.postDelayed(
             {
-                binding.keyboardScrollView?.apply {
-                    ObjectAnimator
-                        .ofInt(this, "scrollX", this.right)
-                        .setDuration(500)
-                        .start()
-                    val animBack = ObjectAnimator
-                        .ofInt(this, "scrollX", 0)
-                        .setDuration(500)
+                if (isAdded) {
+                    binding.keyboardScrollView.apply {
+                        ObjectAnimator
+                            .ofInt(this, "scrollX", this.right)
+                            .setDuration(500)
+                            .start()
+                        val animBack = ObjectAnimator
+                            .ofInt(this, "scrollX", 0)
+                            .setDuration(500)
 
-                    animBack.startDelay = 500
-                    animBack.start()
+                        animBack.startDelay = 500
+                        animBack.start()
+                    }
                 }
             },
-            100
+            1000
         )
     }
 
