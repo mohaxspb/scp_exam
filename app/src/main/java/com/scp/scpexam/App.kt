@@ -1,6 +1,9 @@
 package com.scp.scpexam
 
 import androidx.multidex.MultiDexApplication
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
 import com.scp.scpexam.controller.db.AppDatabase
@@ -10,6 +13,8 @@ import com.scp.scpexam.di.module.AppModule
 import com.scp.scpexam.model.db.QuizTransaction
 import com.scp.scpexam.model.db.TransactionType
 import com.scp.scpexam.model.db.UserRole
+import com.scp.scpexam.services.DownloadWorker
+import com.scp.scpexam.services.DownloadWorker.Companion.WORKER_ID
 import com.scp.scpexam.utils.MyProvider
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiConfig
@@ -26,6 +31,7 @@ import timber.log.Timber
 import toothpick.Toothpick
 import toothpick.configuration.Configuration
 import toothpick.smoothie.module.SmoothieApplicationModule
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -71,6 +77,18 @@ class App : MultiDexApplication() {
         //use it for printing keys hash for facebook
 //        Timber.d("App#onCreate")
 //        SystemUtils.printCertificateFingerprints(this)
+        val getArticlesRequest = PeriodicWorkRequest.Builder(
+            DownloadWorker::class.java,
+            30,
+            TimeUnit.MINUTES
+        ).build()
+        WorkManager
+            .getInstance(this)
+            .enqueueUniquePeriodicWork(
+                WORKER_ID,
+                ExistingPeriodicWorkPolicy.KEEP,
+                getArticlesRequest
+            )
     }
 
     private fun initYandexMetrica() {

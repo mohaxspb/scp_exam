@@ -179,6 +179,10 @@ dependencies {
     // AppMetrica
     implementation 'com.yandex.android:mobmetricalib:5.3.0'
 
+    // Worker
+    implementation 'androidx.work:work-runtime-ktx:2.8.1'
+    implementation 'androidx.work:work-rxjava2:2.8.1'
+
     //DI
     String toothPickVersion = '3.1.0'
     implementation "com.github.stephanenicolas.toothpick:toothpick-runtime:$toothPickVersion"
