@@ -1,6 +1,7 @@
 package com.scp.scpexam
 
 import android.app.Application
+import androidx.work.Configuration
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
@@ -29,7 +30,6 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import toothpick.Toothpick
-import toothpick.configuration.Configuration
 import toothpick.smoothie.module.SmoothieApplicationModule
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -53,6 +53,12 @@ class App : Application() {
 
         INSTANCE = this
 
+        val myConfig = Configuration.Builder()
+            .setMinimumLoggingLevel(android.util.Log.INFO)
+            .build()
+
+// initialize WorkManager
+        WorkManager.initialize(this, myConfig)
         initTimber()
         initDi()
         initYandexMetrica()
@@ -108,7 +114,7 @@ class App : Application() {
             )
 
         if (BuildConfig.DEBUG) {
-            Toothpick.setConfiguration(Configuration.forDevelopment())
+            Toothpick.setConfiguration(toothpick.configuration.Configuration.forDevelopment())
         }
     }
 
