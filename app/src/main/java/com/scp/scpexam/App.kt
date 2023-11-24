@@ -1,6 +1,6 @@
 package com.scp.scpexam
 
-import androidx.multidex.MultiDexApplication
+import android.app.Application
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
@@ -36,7 +36,7 @@ import javax.inject.Inject
 
 
 @SuppressWarnings("unused")
-class App : MultiDexApplication() {
+class App : Application() {
 
     companion object {
         lateinit var INSTANCE: App

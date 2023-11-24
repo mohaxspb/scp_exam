@@ -11,6 +11,7 @@ import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
 import com.scp.scpexam.di.Di
 import com.scp.scpexam.services.DownloadService
 import com.scp.scpexam.services.PeriodicallySyncService
+import timber.log.Timber
 import toothpick.Toothpick
 import javax.inject.Inject
 
@@ -40,10 +41,11 @@ class AutoSyncReceiver : BroadcastReceiver() {
                 PendingIntent.getBroadcast(context, 0, syncIntent, PendingIntent.FLAG_IMMUTABLE)
             alarmManager.setRepeating(
                 AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis(),
+                System.currentTimeMillis() + 5000L,
                 Constants.SYNC_PERIOD,
                 pendingSyncIntent
             )
+            Timber.d("setAlarm work")
         }
 
         private fun cancelAlarm(context: Context) {

@@ -12,26 +12,27 @@ apply plugin: 'io.fabric'
 apply from: '../versioning.gradle'
 
 android {
-    compileSdkVersion 33
+    namespace "com.scp.scpexam"
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId "com.scp.scpexam"
         minSdkVersion 23
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode buildVersionCode()
         versionName version
-        multiDexEnabled true
+//        multiDexEnabled true
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [toothpick_registry_package_name: 'com.scp.scpexam']
             }
         }
 
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas".toString())
-            }
-        }
+//        kapt {
+//            arguments {
+//                arg("room.schemaLocation", "$projectDir/schemas".toString())
+//            }
+//        }
     }
     buildTypes {
         release {
@@ -70,6 +71,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
     
     flavorDimensions "mode"
@@ -160,7 +162,7 @@ dependencies {
     implementation "androidx.activity:activity-ktx:1.7.2"
 
     //multidex to support more than 65K methods
-    implementation 'androidx.multidex:multidex:2.0.1'
+//    implementation 'androidx.multidex:multidex:2.0.1'
 
     //google libs
     implementation 'com.google.firebase:firebase-core:21.1.1'
@@ -208,8 +210,8 @@ dependencies {
     //db
     def roomVersion = '2.2.5'
     implementation "androidx.room:room-runtime:$roomVersion"
-    kapt "androidx.room:room-compiler:$roomVersion"
     implementation "androidx.room:room-rxjava2:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
 
     // Retrofit
     def okHttpVersion = '4.11.0'
