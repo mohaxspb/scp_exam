@@ -1,6 +1,7 @@
 package com.scp.scpexam
 
-import androidx.multidex.MultiDexApplication
+import android.app.Application
+import androidx.work.Configuration
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
@@ -14,7 +15,7 @@ import com.scp.scpexam.model.db.QuizTransaction
 import com.scp.scpexam.model.db.TransactionType
 import com.scp.scpexam.model.db.UserRole
 import com.scp.scpexam.services.DownloadWorker
-import com.scp.scpexam.services.DownloadWorker.Companion.WORKER_ID
+import com.scp.scpexam.services.DownloadWorker.Companion.PERIODIC_WORKER_ID
 import com.scp.scpexam.utils.MyProvider
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiConfig
@@ -29,14 +30,13 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import toothpick.Toothpick
-import toothpick.configuration.Configuration
 import toothpick.smoothie.module.SmoothieApplicationModule
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
 @SuppressWarnings("unused")
-class App : MultiDexApplication() {
+class App : Application() {
 
     companion object {
         lateinit var INSTANCE: App
@@ -53,6 +53,12 @@ class App : MultiDexApplication() {
 
         INSTANCE = this
 
+        val myConfig = Configuration.Builder()
+            .setMinimumLoggingLevel(android.util.Log.INFO)
+            .build()
+
+// initialize WorkManager
+        WorkManager.initialize(this, myConfig)
         initTimber()
         initDi()
         initYandexMetrica()
@@ -85,7 +91,7 @@ class App : MultiDexApplication() {
         WorkManager
             .getInstance(this)
             .enqueueUniquePeriodicWork(
-                WORKER_ID,
+                PERIODIC_WORKER_ID,
                 ExistingPeriodicWorkPolicy.KEEP,
                 getArticlesRequest
             )
@@ -108,7 +114,7 @@ class App : MultiDexApplication() {
             )
 
         if (BuildConfig.DEBUG) {
-            Toothpick.setConfiguration(Configuration.forDevelopment())
+            Toothpick.setConfiguration(toothpick.configuration.Configuration.forDevelopment())
         }
     }
 

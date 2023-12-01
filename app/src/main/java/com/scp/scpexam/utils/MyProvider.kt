@@ -25,7 +25,7 @@ class MyProvider : VKOkHttpProvider() {
                             Timber.tag("OkHttp").d(message)
                         }
                     })
-                        .setLevel(HttpLoggingInterceptor.Level.BODY)
+                        .setLevel(HttpLoggingInterceptor.Level.BASIC)
                 )
                 .build()
         }

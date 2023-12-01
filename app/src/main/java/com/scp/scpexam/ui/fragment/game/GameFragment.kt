@@ -98,6 +98,7 @@ class GameFragment : BaseFragment<GameView, GamePresenter, FragmentGameBinding>(
 
     lateinit var adapter: ListDelegationAdapter<List<MyListItem>>
 
+    //TODO сделать nullable, учитывать жизненный цикл VB
     private lateinit var chatDelegate: ChatDelegate
 
     private lateinit var authDelegate: AuthDelegate<GameFragment>

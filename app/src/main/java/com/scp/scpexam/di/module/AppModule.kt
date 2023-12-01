@@ -74,7 +74,7 @@ class AppModule(context: Context) : Module() {
                                 Timber.tag("OkHttp").d(message)
                             }
                         })
-                                .setLevel(HttpLoggingInterceptor.Level.BODY)
+                                .setLevel(HttpLoggingInterceptor.Level.BASIC)
                 )
                 .build()
 
@@ -94,7 +94,7 @@ class AppModule(context: Context) : Module() {
                                 Timber.tag("OkHttp").d(message)
                             }
                         })
-                                .setLevel(HttpLoggingInterceptor.Level.BODY)
+                                .setLevel(HttpLoggingInterceptor.Level.BASIC)
                 )
                 .addInterceptor ( object : Interceptor{
                     override fun intercept(chain: Interceptor.Chain): Response {
@@ -149,7 +149,7 @@ class AppModule(context: Context) : Module() {
                                 Timber.tag("OkHttp").d(message)
                             }
                         })
-                                .setLevel(HttpLoggingInterceptor.Level.BODY)
+                                .setLevel(HttpLoggingInterceptor.Level.BASIC)
                 )
                 .addInterceptor ( object : Interceptor {
                     override fun intercept(chain: Interceptor.Chain): Response {
