@@ -29,7 +29,8 @@ class DownloadWorker(
 ) : RxWorker(context, workerParams) {
 
     companion object {
-        const val WORKER_ID = "DownloadWork"
+        const val PERIODIC_WORKER_ID = "PERIODIC_WORKER_ID"
+        const val ONE_TIME_WORKER_ID = "ONE_TIME_WORKER_ID"
     }
 
     private val compositeDisposable = CompositeDisposable()
@@ -63,7 +64,7 @@ class DownloadWorker(
     }
 
     override fun createWork(): Single<Result> {
-        Timber.d("Service started")
+        Timber.d("Worker started")
         // Maybe нужен на случай ответ с сервера пришёл раньше чем зпсались данные с asset
         return Single.create { emitter ->
             Maybe

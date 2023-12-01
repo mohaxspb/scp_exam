@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import com.scp.scpexam.Constants
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
 import com.scp.scpexam.di.Di
-import com.scp.scpexam.services.DownloadService
 import com.scp.scpexam.services.PeriodicallySyncService
 import timber.log.Timber
 import toothpick.Toothpick
@@ -27,9 +26,6 @@ class AutoSyncReceiver : BroadcastReceiver() {
             val periodicallyServiceIntent = Intent(context, PeriodicallySyncService::class.java)
             ContextCompat.startForegroundService(context, periodicallyServiceIntent)
         }
-
-        val downloadServiceIntent = Intent(context, DownloadService::class.java)
-        ContextCompat.startForegroundService(context, downloadServiceIntent)
     }
 
     companion object {

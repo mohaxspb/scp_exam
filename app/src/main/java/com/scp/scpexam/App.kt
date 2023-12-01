@@ -15,7 +15,7 @@ import com.scp.scpexam.model.db.QuizTransaction
 import com.scp.scpexam.model.db.TransactionType
 import com.scp.scpexam.model.db.UserRole
 import com.scp.scpexam.services.DownloadWorker
-import com.scp.scpexam.services.DownloadWorker.Companion.WORKER_ID
+import com.scp.scpexam.services.DownloadWorker.Companion.PERIODIC_WORKER_ID
 import com.scp.scpexam.utils.MyProvider
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiConfig
@@ -91,7 +91,7 @@ class App : Application() {
         WorkManager
             .getInstance(this)
             .enqueueUniquePeriodicWork(
-                WORKER_ID,
+                PERIODIC_WORKER_ID,
                 ExistingPeriodicWorkPolicy.KEEP,
                 getArticlesRequest
             )
