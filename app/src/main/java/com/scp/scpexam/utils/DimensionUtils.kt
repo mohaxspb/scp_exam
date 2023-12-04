@@ -19,7 +19,7 @@ object DimensionUtils {
 
     fun getActionBarHeight(activity: androidx.fragment.app.FragmentActivity): Int {
         val tv = TypedValue()
-        return if (activity.theme.resolveAttribute(R.attr.actionBarSize, tv, true)) {
+        return if (activity.theme.resolveAttribute(androidx.constraintlayout.widget.R.attr.actionBarSize, tv, true)) {
             TypedValue.complexToDimensionPixelSize(tv.data, activity.resources.displayMetrics)
         } else {
             0

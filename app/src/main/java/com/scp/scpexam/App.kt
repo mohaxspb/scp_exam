@@ -1,6 +1,10 @@
 package com.scp.scpexam
 
-import androidx.multidex.MultiDexApplication
+import android.app.Application
+import androidx.work.Configuration
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsLogger
 import com.scp.scpexam.controller.db.AppDatabase
@@ -10,6 +14,10 @@ import com.scp.scpexam.di.module.AppModule
 import com.scp.scpexam.model.db.QuizTransaction
 import com.scp.scpexam.model.db.TransactionType
 import com.scp.scpexam.model.db.UserRole
+import com.scp.scpexam.services.DownloadWorker
+import com.scp.scpexam.services.DownloadWorker.Companion.PERIODIC_WORKER_ID
+import com.scp.scpexam.services.PeriodicallySyncWorker
+import com.scp.scpexam.services.PeriodicallySyncWorker.Companion.PERIODICALLY_SYNC_PERIODIC_WORKER_ID
 import com.scp.scpexam.utils.MyProvider
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiConfig
@@ -24,13 +32,13 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import toothpick.Toothpick
-import toothpick.configuration.Configuration
 import toothpick.smoothie.module.SmoothieApplicationModule
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
 @SuppressWarnings("unused")
-class App : MultiDexApplication() {
+class App : Application() {
 
     companion object {
         lateinit var INSTANCE: App
@@ -47,6 +55,12 @@ class App : MultiDexApplication() {
 
         INSTANCE = this
 
+        val myConfig = Configuration.Builder()
+            .setMinimumLoggingLevel(android.util.Log.INFO)
+            .build()
+
+// initialize WorkManager
+        WorkManager.initialize(this, myConfig)
         initTimber()
         initDi()
         initYandexMetrica()
@@ -71,6 +85,31 @@ class App : MultiDexApplication() {
         //use it for printing keys hash for facebook
 //        Timber.d("App#onCreate")
 //        SystemUtils.printCertificateFingerprints(this)
+        val getArticlesRequest = PeriodicWorkRequest.Builder(
+            DownloadWorker::class.java,
+            30,
+            TimeUnit.MINUTES
+        ).build()
+        WorkManager
+            .getInstance(this)
+            .enqueueUniquePeriodicWork(
+                PERIODIC_WORKER_ID,
+                ExistingPeriodicWorkPolicy.KEEP,
+                getArticlesRequest
+            )
+        val syncRequest = PeriodicWorkRequest.Builder(
+            PeriodicallySyncWorker::class.java,
+            30,
+            TimeUnit.MINUTES
+        ).build()
+        WorkManager
+            .getInstance(this)
+            .enqueueUniquePeriodicWork(
+                PERIODICALLY_SYNC_PERIODIC_WORKER_ID,
+                ExistingPeriodicWorkPolicy.KEEP,
+                syncRequest
+            )
+
     }
 
     private fun initYandexMetrica() {
@@ -90,7 +129,7 @@ class App : MultiDexApplication() {
             )
 
         if (BuildConfig.DEBUG) {
-            Toothpick.setConfiguration(Configuration.forDevelopment())
+            Toothpick.setConfiguration(toothpick.configuration.Configuration.forDevelopment())
         }
     }
 
