@@ -80,6 +80,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                     }
                 })
             }
+
             is VKAuthenticationResult.Failed -> {
                 Timber.e(it.exception, "Ошибка ${it.exception.authError}")
                 fragment.showMessage("VK failed ${it.exception}")
@@ -157,6 +158,7 @@ class AuthDelegate<T : BaseFragment<out AuthView, out BasePresenter<out AuthView
                         Timber.e("ERROR : %s", result.status)
                     }
                 }
+
                 else -> callbackManager.onActivityResult(requestCode, resultCode, data)
             }
         }

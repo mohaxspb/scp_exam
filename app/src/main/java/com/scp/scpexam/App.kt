@@ -16,6 +16,8 @@ import com.scp.scpexam.model.db.TransactionType
 import com.scp.scpexam.model.db.UserRole
 import com.scp.scpexam.services.DownloadWorker
 import com.scp.scpexam.services.DownloadWorker.Companion.PERIODIC_WORKER_ID
+import com.scp.scpexam.services.PeriodicallySyncWorker
+import com.scp.scpexam.services.PeriodicallySyncWorker.Companion.PERIODICALLY_SYNC_PERIODIC_WORKER_ID
 import com.scp.scpexam.utils.MyProvider
 import com.vk.api.sdk.VK
 import com.vk.api.sdk.VKApiConfig
@@ -95,6 +97,19 @@ class App : Application() {
                 ExistingPeriodicWorkPolicy.KEEP,
                 getArticlesRequest
             )
+        val syncRequest = PeriodicWorkRequest.Builder(
+            PeriodicallySyncWorker::class.java,
+            30,
+            TimeUnit.MINUTES
+        ).build()
+        WorkManager
+            .getInstance(this)
+            .enqueueUniquePeriodicWork(
+                PERIODICALLY_SYNC_PERIODIC_WORKER_ID,
+                ExistingPeriodicWorkPolicy.KEEP,
+                syncRequest
+            )
+
     }
 
     private fun initYandexMetrica() {

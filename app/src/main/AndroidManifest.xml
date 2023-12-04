@@ -42,10 +42,6 @@
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove"></provider>
 
-        <service
-            android:name="com.scp.scpexam.services.PeriodicallySyncService"
-            android:enabled="true" />
-
         <receiver
             android:name="com.scp.scpexam.receivers.BootReceiver"
             android:enabled="true"
@@ -57,14 +53,6 @@
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <!--For HTC devices-->
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name="com.scp.scpexam.receivers.AutoSyncReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.scp.scpquiz.SYNC_INTENT" />
             </intent-filter>
         </receiver>
 

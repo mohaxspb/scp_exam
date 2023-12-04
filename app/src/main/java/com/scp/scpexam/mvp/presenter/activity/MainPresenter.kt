@@ -11,10 +11,10 @@ import com.scp.scpexam.controller.interactor.TransactionInteractor
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
 import com.scp.scpexam.mvp.presenter.BasePresenter
 import com.scp.scpexam.mvp.view.activity.MainView
-import com.scp.scpexam.receivers.AutoSyncReceiver.Companion.isAlarmSet
-import com.scp.scpexam.receivers.AutoSyncReceiver.Companion.setAlarm
 import com.scp.scpexam.services.DownloadWorker
 import com.scp.scpexam.services.DownloadWorker.Companion.ONE_TIME_WORKER_ID
+import com.scp.scpexam.services.PeriodicallySyncWorker
+import com.scp.scpexam.services.PeriodicallySyncWorker.Companion.PERIODICALLY_SYNC_ONE_TIME_WORKER_ID
 import moxy.InjectViewState
 import ru.terrakok.cicerone.Router
 import javax.inject.Inject
@@ -38,9 +38,6 @@ class MainPresenter @Inject constructor(
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        if (!isAlarmSet(appContext)) {
-            setAlarm(appContext)
-        }
         router.newRootScreen(Constants.Screens.EnterScreen)
 
         val getArticlesRequest = OneTimeWorkRequest.Builder(
@@ -49,12 +46,21 @@ class MainPresenter @Inject constructor(
         WorkManager
             .getInstance(appContext)
             .beginUniqueWork(
-                //DownloadWorker.WORKER_ID,
                 ONE_TIME_WORKER_ID,
                 ExistingWorkPolicy.KEEP,
                 getArticlesRequest
             )
             .enqueue()
-
+        val syncRequest = OneTimeWorkRequest.Builder(
+            PeriodicallySyncWorker::class.java
+        ).build()
+        WorkManager
+            .getInstance(appContext)
+            .beginUniqueWork(
+                PERIODICALLY_SYNC_ONE_TIME_WORKER_ID,
+                ExistingWorkPolicy.KEEP,
+                syncRequest
+            )
+            .enqueue()
     }
 }
