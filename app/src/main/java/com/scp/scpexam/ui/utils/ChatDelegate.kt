@@ -1,11 +1,11 @@
 package com.scp.scpexam.ui.utils
 
 import android.animation.ObjectAnimator
-import androidx.annotation.ColorRes
-import androidx.core.widget.NestedScrollView
 import android.view.LayoutInflater
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
+import androidx.annotation.ColorRes
+import androidx.core.widget.NestedScrollView
 import com.google.android.flexbox.FlexboxLayout
 import com.scp.scpexam.R
 import com.scp.scpexam.controller.manager.preference.MyPreferenceManager
@@ -36,7 +36,8 @@ class ChatDelegate(
 
         chatView.addView(chatMessageView)
 
-        chatMessageView.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        chatMessageView.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 val width = chatMessageView.width
                 val height = chatMessageView.height
@@ -44,9 +45,9 @@ class ChatDelegate(
                     chatMessageView.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
                     ObjectAnimator
-                            .ofInt(scrollView, "scrollY", chatMessageView.bottom)
-                            .setDuration(500)
-                            .start()
+                        .ofInt(scrollView, "scrollY", chatMessageView.bottom)
+                        .setDuration(500)
+                        .start()
 
                     if (myPreferenceManager.isVibrationEnabled()) {
                         SystemUtils.vibrate()
@@ -86,7 +87,8 @@ class ChatDelegate(
             }
         }
 
-        chatActionsFlexBoxLayout.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        chatActionsFlexBoxLayout.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 val width = chatActionsFlexBoxLayout.width
                 val height = chatActionsFlexBoxLayout.height
@@ -95,9 +97,9 @@ class ChatDelegate(
                     chatActionsFlexBoxLayout.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
                     ObjectAnimator
-                            .ofInt(scrollView, "scrollY", chatActionsFlexBoxLayout.bottom)
-                            .setDuration(500)
-                            .start()
+                        .ofInt(scrollView, "scrollY", chatActionsFlexBoxLayout.bottom)
+                        .setDuration(500)
+                        .start()
 
                     if (myPreferenceManager.isVibrationEnabled()) {
                         SystemUtils.vibrate()
@@ -108,6 +110,9 @@ class ChatDelegate(
     }
 
     fun removeChatAction(indexInParent: Int) {
-        chatView.removeViewAt(indexInParent)
+        Timber.d("childCount ${chatView.childCount}")
+        if (indexInParent < chatView.childCount) {
+            chatView.removeViewAt(indexInParent)
+        }
     }
 }
