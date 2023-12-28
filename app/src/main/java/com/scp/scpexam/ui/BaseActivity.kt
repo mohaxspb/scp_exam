@@ -211,7 +211,12 @@ abstract class BaseActivity<V : BaseView, P : BasePresenter<V>> : MvpAppCompatAc
         MoPubRewardedVideos.loadRewardedVideo(getString(R.string.ad_unit_id_rewarded_video))
     }
 
-    protected fun isInterstitialLoaded() = moPubInterstitial.isReady
+    protected fun isInterstitialLoaded() =
+        if (::moPubInterstitial.isInitialized) {
+            moPubInterstitial.isReady
+        } else {
+            false
+        }
 
     override fun showMessage(message: String) = Toast.makeText(this, message, Toast.LENGTH_LONG).show()
 
